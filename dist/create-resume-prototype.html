@@ -47,11 +47,20 @@
   --radius-btn: 10px;
   --radius-card: 16px;
   --ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* Motion scale: three durations, three curves. Close to the system's
+     "short and subtle, 0.25s ease-in-out, no bounce" guidance. */
+  --dur-fast: 160ms;   /* feedback, exits, fades */
+  --dur-base: 260ms;   /* most enters */
+  --dur-slow: 380ms;   /* spatial moves, height changes */
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);  /* enters, moves */
+  --ease-exit: cubic-bezier(.4, 0, 1, 1);      /* leaving */
+  --ease-inout: cubic-bezier(.4, 0, .2, 1);    /* size changes */
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { min-height: 100%; }
+html, body { min-height: 100%; overflow-anchor: none; }
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -68,7 +77,7 @@ button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit
 svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- Device wrapper (desktop = full page, mobile = phone frame) ---------- */
-.device { container-type: inline-size; padding-inline: 16px; }
+.device { container-type: inline-size; padding-inline: 16px; overflow-anchor: none; }
 .statusbar { display: none; }
 body.is-mobile { background-image: none; background-color: var(--kr-grey-40); }
 body.is-mobile .stage { padding-block: 24px 112px; display: grid; justify-items: center; }
@@ -107,7 +116,25 @@ body.is-mobile .statusbar {
 
 /* ---------- Page ---------- */
 .page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 160px; }
-.page-head { text-align: center; display: grid; gap: 12px; }
+.page { position: relative; }
+.page-head { position: relative; text-align: center; display: grid; gap: 12px; }
+.goal-chip {
+  position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  padding: 4px 12px 4px 4px; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 999px;
+  font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+}
+.goal-chip:hover { background: var(--kr-grey-40); }
+.goal-chip:active { background: var(--kr-grey-60); }
+.goal-chip:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.goal-chip .gc-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--kr-primary-tint); color: var(--kr-grey-100); display: grid; place-items: center; }
+.goal-chip .gc-icon svg.i { width: 16px; height: 16px; }
+.goal-chip .gc-change { font-weight: 400; color: var(--kr-grey-80); padding-left: 8px; border-left: 1px solid var(--kr-grey-60); }
+.ghost {
+  position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none; transform-origin: 0 0;
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); box-shadow: var(--kr-shadow-dropdown);
+}
 .page-head h1 {
   font-family: var(--font-display); font-weight: 400; font-size: 48px; line-height: 56px;
   letter-spacing: -1.4px; margin: 0; text-wrap: balance;
@@ -125,6 +152,7 @@ body.is-mobile .statusbar {
   transition: box-shadow .25s ease-in-out, border-color .25s ease-in-out;
 }
 .intent:hover { box-shadow: var(--kr-shadow-dropdown); }
+.intent:active:not(:disabled) { border-color: var(--kr-grey-80); background: var(--kr-grey-20); transition-duration: 60ms; }
 .intent:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .intent:disabled { cursor: not-allowed; }
 .intent:disabled:hover { box-shadow: none; }
@@ -189,7 +217,8 @@ body.is-mobile .statusbar {
 
 .mcard {
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
-  transition: box-shadow .25s ease-in-out;
+  transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard);
+  contain: layout style;
 }
 .mcard:hover, .mcard.is-open { box-shadow: var(--kr-shadow-dropdown); }
 .mhead {
@@ -197,6 +226,10 @@ body.is-mobile .statusbar {
   background: none; border: 0; border-radius: var(--radius-card); cursor: pointer;
 }
 .mhead:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.mhead { transition: background 60ms linear; }
+button.mhead:active { background: var(--kr-grey-20); }
+.mhead[aria-disabled="true"] { cursor: default; }
+.mhead[aria-disabled="true"]:active { background: none; }
 div.mhead { cursor: default; }
 .mtile { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; flex: none; }
 .mtile svg.i { width: 24px; height: 24px; }
@@ -207,25 +240,39 @@ div.mhead { cursor: default; }
 .mtext { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .mtitle { font-size: 18px; line-height: 24px; font-weight: 500; }
 .msub { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
-.chev { display: inline-flex; color: var(--kr-grey-100); transition: transform .42s cubic-bezier(.22, 1, .36, 1); }
+.chev { display: inline-flex; color: var(--kr-grey-100); transition: transform var(--dur-slow) var(--ease-inout), opacity var(--dur-fast) var(--ease-standard); }
 .mcard.is-open .chev { transform: rotate(90deg); }
 
-/* Variant A — accordion */
-.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .42s cubic-bezier(.22, 1, .36, 1); }
+/* Expanding body — shared by both variants. Collapsing = fade first, then fold;
+   expanding = unfold, then the content settles in. All CSS transitions, so a
+   second click mid-way reverses from wherever it is. */
+.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
 .mcard.is-open .acc { grid-template-rows: 1fr; }
 .acc-inner { overflow: hidden; min-height: 0; }
-.acc-inner > .mbody { opacity: 0; transform: translateY(-8px); transition: opacity .18s ease-in, transform .3s ease-in; }
-.mcard.is-open .acc-inner > .mbody { opacity: 1; transform: none; transition: opacity .3s ease-out .1s, transform .45s cubic-bezier(.22, 1, .36, 1) .06s; }
+.acc-inner > .mbody { opacity: 0; transform: translateY(-6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
+.mcard.is-open .acc-inner > .mbody { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 80ms, transform var(--dur-slow) var(--ease-standard) 40ms; }
 
-/* Variant B — separate screens */
+/* Variant B — the picked card becomes the screen: the others fold away, Back slides in */
+.b-list { display: grid; }
+.slot { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 60ms; }
+.slot-inner { min-height: 0; overflow: hidden; margin: -10px -14px 0; padding: 10px 14px 12px; }
+.slot > .slot-inner > .mcard { transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard) 40ms; }
+.b-wrap.has-focus .slot:not(.is-focus) { grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 40ms, opacity var(--dur-fast) var(--ease-exit); }
+.b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard { transform: scale(.97); transition: box-shadow var(--dur-base), transform var(--dur-fast) var(--ease-exit); }
+.b-wrap .mcard.is-open .chev { transform: translateX(8px); opacity: 0; }
+.b-back { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
+.b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
+.b-back .back { opacity: 0; transform: translateX(12px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit), color .2s; }
+.b-wrap.has-focus .b-back .back { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 140ms, transform var(--dur-slow) var(--ease-standard) 120ms, color .2s; }
+
 .back {
-  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 6px 8px 6px 4px;
+  display: inline-flex; align-items: center; gap: 8px; margin: 4px 0 12px; padding: 6px 8px 6px 4px;
   background: none; border: 0; cursor: pointer; color: var(--kr-grey-80); font-size: 16px; border-radius: var(--radius);
   transition: color .2s;
 }
 .back:hover { color: var(--kr-grey-100); }
 .back:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.detail .mcard { box-shadow: var(--kr-shadow-dropdown); }
 
 /* ---------- Method bodies ---------- */
 .mbody { padding: 4px 16px 20px; display: grid; gap: 16px; }
@@ -365,7 +412,7 @@ div.mhead { cursor: default; }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; }
   .logo svg { width: 120px; }
-  .page { padding-block: 16px 128px; }
+  .page { padding-block: 56px 128px; }
   .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
   .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
   .intent { flex-direction: row; align-items: center; padding: 12px; }
@@ -378,8 +425,11 @@ body.is-mobile .page { padding-bottom: 48px; }
 @media (max-width: 760px) {
   .proto-label, .seg .long { display: none; }
 }
+/* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; }
+  .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard { transition-property: opacity, box-shadow !important; }
+  .acc-inner > .mbody, .b-back .back, .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard, .b-wrap .mcard.is-open .chev { transform: none !important; }
+  .step.is-active .dot { animation-duration: 1.6s; }
 }
 </style>
 
@@ -404,6 +454,10 @@ body.is-mobile .page { padding-bottom: 48px; }
   <!-- Screen 2: resume creation -->
   <section class="screen" id="screen-create" aria-labelledby="create-h" hidden>
     <div class="page-head">
+      <button class="goal-chip" type="button" data-action="restart" aria-label="Goal: Create a resume. Change goal">
+        <span class="gc-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+        Create a resume<span class="gc-change">Change</span>
+      </button>
       <h1 id="create-h" tabindex="-1">How do you want to start?</h1>
       <p>Pick the method that works for you. It’s completely free, no need to worry.</p>
     </div>
@@ -564,169 +618,196 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function renderCreate() {
     clearTimers();
+    const card = (m, p, action) => `
+      <div class="mcard" data-id="${m.id}">
+        ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
+        <div class="acc" id="${p}-${m.id}-panel" role="region" aria-label="${m.title}" inert>
+          <div class="acc-inner"><div class="mbody">${bodyHTML(m.id, p)}</div></div>
+        </div>
+      </div>`;
     if (variant === 'A') {
-      methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => `
-        <div class="mcard" data-id="${m.id}">
-          ${headHTML(m, 'button', `type="button" data-action="toggle" aria-expanded="false" aria-controls="a-${m.id}-panel"`)}
-          <div class="acc" id="a-${m.id}-panel" role="region" aria-label="${m.title}" inert>
-            <div class="acc-inner"><div class="mbody">${bodyHTML(m.id, 'a')}</div></div>
-          </div>
-        </div>`).join('')}</div>`;
+      methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle')).join('')}</div>`;
     } else {
       methodsEl.innerHTML = `
-        <div class="view list"><div class="method-list">${METHODS.map(m => `
-          <div class="mcard" data-id="${m.id}">${headHTML(m, 'button', `type="button" data-action="open" aria-label="${m.title}. ${m.sub}"`)}</div>`).join('')}</div></div>
-        <div class="view detail" hidden></div>`;
+        <div class="b-wrap">
+          <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
+          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'b', 'open')}</div></div>`).join('')}</div>
+        </div>`;
     }
   }
 
-  /* ---------- Motion helpers (Web Animations API) ---------- */
-  const EASE_OUT = 'cubic-bezier(.22, 1, .36, 1)';
-  const EASE_IN = 'cubic-bezier(.4, 0, 1, 1)';
-  const EASE_IO = 'cubic-bezier(.65, 0, .35, 1)';
-  let busy = false;
+  /* ---------- Motion ---------- */
+  // Mirrors the CSS motion tokens so JS-driven and CSS-driven motion share one scale.
+  const DUR = { fast: 160, base: 260, slow: 380 };
+  const EASE = { standard: 'cubic-bezier(.2, 0, 0, 1)', exit: 'cubic-bezier(.4, 0, 1, 1)', inout: 'cubic-bezier(.4, 0, .2, 1)' };
+  const STAGGER = 30;
   const play = (el, kf, o) => el.animate(kf, Object.assign({ fill: 'both' }, o));
-  const done = anims => Promise.all(anims.map(a => a.finished.catch(() => {})));
-  const clear = els => els.forEach(el => el && el.getAnimations().forEach(a => a.cancel()));
   const shown = el => el.getClientRects().length > 0;
-  const footLink = () => screens.create.querySelector(':scope > .center');
-  const glide = (el, oldTop, o) => {
-    const dy = oldTop - el.getBoundingClientRect().top;
-    return dy ? play(el, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], Object.assign({ duration: 560, easing: EASE_OUT }, o)) : null;
-  };
-  const items = screen => [...screen.querySelectorAll('.page-head, .intent, .mcard, .center')].filter(shown);
+  const scrollPos = () => framed() ? device.scrollTop : window.scrollY;
 
-  /* Screen change: items leave in a quick stagger (the picked card last),
-     then the next screen's headline and cards rise in one after another. */
+  function scrollToTop() {
+    if (scrollPos() < 4) return Promise.resolve();
+    scroller().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    return new Promise(res => {
+      const t0 = performance.now();
+      const tick = () => (scrollPos() < 1 || performance.now() - t0 > 450) ? res() : requestAnimationFrame(tick);
+      tick();
+    });
+  }
+
+  /* Screen change.
+     - The two screens overlap; total ≈ 450ms.
+     - The headline changes in place (cross-fade, no movement): same flow, next question.
+     - Content moves along one axis: forward = from the right, back = from the left.
+     - The picked goal card shrinks into the "Create a resume" chip above the headline,
+       and grows back out of it when you change the goal.
+     Clicking mid-way fast-forwards the running change and starts the new one, so no click is lost. */
+  let screenRun = null;
   async function go(screen, picked) {
-    if (screen === current || busy) return;
-    busy = true;
+    if (screenRun) screenRun.finish();
+    if (screen === current) return;
     const from = screens[current], to = screens[screen];
+    const dir = screen === 'create' ? 1 : -1;
     current = screen;
-    const out = items(from);
-    if (!reduce) {
-      const order = picked ? out.filter(e => e !== picked).concat(picked) : out;
-      await done(order.map((el, i) => play(el,
-        [{ opacity: 1, transform: 'none' },
-         el === picked ? { opacity: 0, transform: 'translateY(-4px) scale(1.03)' } : { opacity: 0, transform: 'translateY(-10px)' }],
-        { duration: el === picked ? 280 : 200, delay: i * 30, easing: EASE_IN })));
-    }
-    from.hidden = true; clear(out);
+    await scrollToTop();
+    if (current !== screen) return; // another change started while scrolling
+
+    const chip = screens.create.querySelector('.goal-chip');
+    const goalCard = screens.intent.querySelector('[data-action="pick-intent"]');
+    const fromRect = dir > 0 ? (picked || goalCard).getBoundingClientRect() : chip.getBoundingClientRect();
+    const fromOffset = from.offsetTop;
     if (screen === 'create') renderCreate();
+
+    // Overlap: pin the outgoing screen where it is while the new one lays out in flow.
+    Object.assign(from.style, { position: 'absolute', top: fromOffset + 'px', left: '0', right: '0', pointerEvents: 'none' });
     to.hidden = false;
-    scroller().scrollTo({ top: 0 });
-    if (!reduce) {
-      const inn = items(to);
-      await done(inn.map((el, i) => play(el,
-        [{ opacity: 0, transform: 'translateY(20px)', filter: i === 0 ? 'blur(6px)' : 'blur(0px)' },
-         { opacity: 1, transform: 'none', filter: 'blur(0px)' }],
-        { duration: 620, delay: 40 + i * 65, easing: EASE_OUT })));
-      clear(inn);
+    const toRect = dir > 0 ? chip.getBoundingClientRect() : goalCard.getBoundingClientRect();
+
+    const anims = [];
+    const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
+    const outItems = [...from.querySelectorAll('.intent, .mcard, :scope > .center')].filter(shown);
+    const inItems = [...to.querySelectorAll('.intent, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
+    const morphFrom = dir > 0 ? picked || goalCard : chip;   // element that becomes the ghost
+    const morphTo = dir > 0 ? chip : goalCard;              // element the ghost becomes
+
+    if (reduce) {
+      anims.push(play(from, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }));
+      anims.push(play(to, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 60, easing: EASE.standard }));
+    } else {
+      // Headline: cross-fade in place
+      [...outHead.children].forEach(el => { if (el !== chip) anims.push(play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit })); });
+      [...inHead.children].forEach(el => { if (el !== chip) anims.push(play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 100, easing: EASE.standard })); });
+      // Content: leave toward the side we came from, enter from the side we're heading to
+      outItems.forEach((el, i) => {
+        if (el === morphFrom) return;
+        anims.push(play(el, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }],
+          { duration: DUR.fast, delay: i * (STAGGER / 2), easing: EASE.exit }));
+      });
+      inItems.forEach((el, i) => {
+        if (el === morphTo) return;
+        anims.push(play(el, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }],
+          { duration: DUR.base, delay: 120 + i * STAGGER, easing: EASE.standard }));
+      });
+      // Shared element: a plain card-coloured box travels from the picked card to the chip (or back)
+      const ghost = document.createElement('div');
+      ghost.className = 'ghost';
+      document.body.appendChild(ghost);
+      const box = r => ({ transform: `translate(${r.left}px, ${r.top}px)`, width: r.width + 'px', height: r.height + 'px' });
+      const rFrom = dir > 0 ? 16 : 999, rTo = dir > 0 ? 999 : 16;
+      const g = play(ghost, [
+        Object.assign(box(fromRect), { borderRadius: rFrom + 'px', opacity: 1 }),
+        Object.assign(box(toRect), { borderRadius: rTo + 'px', opacity: 1, offset: .82 }),
+        Object.assign(box(toRect), { borderRadius: rTo + 'px', opacity: 0 })
+      ], { duration: DUR.slow + 120, easing: EASE.standard });
+      anims.push(g);
+      // The source's contents go immediately (instant acknowledgement); the target's contents arrive as the box lands
+      anims.push(play(morphFrom, [{ opacity: 1 }, { opacity: 0 }], { duration: 90, easing: 'linear' }));
+      anims.push(play(morphTo, [{ opacity: 0 }, { opacity: 0, offset: .7 }, { opacity: 1 }], { duration: DUR.slow + 60, easing: 'linear' }));
+      g.finished.catch(() => {}).then(() => ghost.remove());
+      anims.ghost = ghost;
     }
-    busy = false;
+
+    let finished = false;
+    const cleanup = () => {
+      if (finished) return; finished = true;
+      from.hidden = true; from.removeAttribute('style');
+      anims.forEach(a => a.cancel());
+      anims.ghost && anims.ghost.remove();
+      if (screenRun === run) screenRun = null;
+    };
+    const run = { finish() { anims.forEach(a => { try { a.finish(); } catch (e) {} }); cleanup(); } };
+    screenRun = run;
+    await Promise.all(anims.map(a => a.finished.catch(() => {})));
+    cleanup();
   }
 
-  /* Variant A: one card open at a time */
-  function toggleA(card) {
-    const opening = !card.classList.contains('is-open');
-    methodsEl.querySelectorAll('.mcard.is-open').forEach(c => setOpen(c, false));
-    if (opening) setOpen(card, true);
+  /* Keeps an element at a fixed spot on screen while layout above it changes
+     (the browser's own scroll anchoring can't be relied on mid-transition). */
+  let anchorRaf = 0;
+  function holdInPlace(el, ms, then) {
+    cancelAnimationFrame(anchorRaf);
+    const top = el.getBoundingClientRect().top, t0 = performance.now(), sc = scroller();
+    const step = () => {
+      const d = el.getBoundingClientRect().top - top;
+      if (Math.abs(d) > .5) sc.scrollBy(0, d);
+      if (performance.now() - t0 < ms) anchorRaf = requestAnimationFrame(step); else then && then();
+    };
+    anchorRaf = requestAnimationFrame(step);
   }
+  function revealBottom(card) {
+    const r = card.getBoundingClientRect();
+    const pad = framed() ? 16 : 104, vb = viewBottom();
+    if (r.bottom > vb - pad) scroller().scrollBy({ top: Math.min(r.bottom - vb + pad, r.top - (framed() ? device.getBoundingClientRect().top + 52 : 16)), behavior: reduce ? 'auto' : 'smooth' });
+  }
+  let focusTimer = 0;
+  function focusLater(el, ms) { clearTimeout(focusTimer); if (el) focusTimer = setTimeout(() => el.focus({ preventScroll: true }), ms); }
+
   function setOpen(card, open) {
     card.classList.toggle('is-open', open);
     card.querySelector('.mhead').setAttribute('aria-expanded', String(open));
-    const acc = card.querySelector('.acc');
-    if (open) {
-      acc.removeAttribute('inert');
-      later(() => {
-        const r = card.getBoundingClientRect();
-        const pad = framed() ? 16 : 110, vb = viewBottom();
-        if (r.bottom > vb - pad + 20) scroller().scrollBy({ top: r.bottom - vb + pad, behavior: reduce ? 'auto' : 'smooth' });
-        const first = card.querySelector('.input, .textarea');
-        if (first) first.focus({ preventScroll: true });
-      }, 340);
-    } else acc.setAttribute('inert', '');
+    card.querySelector('.acc').inert = !open;
   }
 
-  /* Variant B: the picked card travels to its own screen and unfolds;
-     the other cards step aside. Back reverses it. */
-  async function openB(id) {
-    if (busy) return;
-    busy = true;
-    const m = byId(id);
-    const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
-    const cards = [...list.querySelectorAll('.mcard')];
-    const src = cards.find(c => c.dataset.id === id), idx = cards.indexOf(src);
-    const chev = src.querySelector('.chev');
-    const first = src.getBoundingClientRect();
-    if (!reduce) {
-      await done([
-        ...cards.filter(c => c !== src).map(c => {
-          const ci = cards.indexOf(c);
-          return play(c, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateY(${ci < idx ? -10 : 10}px) scale(.96)` }],
-            { duration: 220, delay: (Math.abs(ci - idx) - 1) * 45, easing: EASE_IN });
-        }),
-        play(chev, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(8px)' }], { duration: 180, easing: EASE_IN })
-      ]);
-    }
-    detail.innerHTML = `
-      <button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button>
-      <div class="mcard" data-id="${m.id}">${headHTML(m, 'div', '')}<div class="reveal"><div class="mbody">${bodyHTML(m.id, 'b')}</div></div></div>`;
-    const link = footLink(), linkTop = link.getBoundingClientRect().top;
-    list.hidden = true; clear(cards); clear([chev]);
-    detail.hidden = false;
-    const card = detail.querySelector('.mcard'), back = detail.querySelector('.back');
-    const wrap = card.querySelector('.reveal'), body = card.querySelector('.mbody');
-    if (!reduce) {
-      const dy = first.top - card.getBoundingClientRect().top;
-      const h = wrap.offsetHeight;
-      wrap.style.overflow = 'hidden';
-      await done([
-        play(card, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 560, easing: EASE_OUT }),
-        play(wrap, [{ height: '0px' }, { height: h + 'px' }], { duration: 520, delay: 120, easing: EASE_OUT }),
-        play(body, [{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 220, easing: EASE_OUT }),
-        play(back, [{ opacity: 0, transform: 'translateX(12px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 260, easing: EASE_OUT }),
-        glide(link, linkTop, { delay: 60 })
-      ].filter(Boolean));
-      wrap.style.overflow = ''; clear([card, wrap, body, back, link]);
-    }
-    busy = false;
-    (detail.querySelector('.input, .textarea') || back).focus({ preventScroll: true });
+  /* Variant A: one card open at a time; the card you clicked stays put under the cursor. */
+  function toggleA(card) {
+    const opening = !card.classList.contains('is-open');
+    holdInPlace(card.querySelector('.mhead'), DUR.slow + 60, () => opening && revealBottom(card));
+    methodsEl.querySelectorAll('.mcard.is-open').forEach(c => { if (c !== card) setOpen(c, false); });
+    setOpen(card, opening);
+    focusLater(opening ? card.querySelector('.input, .textarea') : null, DUR.slow);
   }
-  async function backB() {
-    if (busy) return;
-    busy = true;
-    const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
-    const card = detail.querySelector('.mcard'), back = detail.querySelector('.back');
-    const wrap = card.querySelector('.reveal'), id = card.dataset.id;
-    if (!reduce) {
-      wrap.style.overflow = 'hidden';
-      await done([
-        play(wrap, [{ height: wrap.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 340, easing: EASE_IO }),
-        play(back, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(12px)' }], { duration: 200, easing: EASE_IN })
-      ]);
-    }
-    const top = card.getBoundingClientRect().top;
-    const link = footLink(), linkTop = link.getBoundingClientRect().top;
-    detail.hidden = true; list.hidden = false;
-    const cards = [...list.querySelectorAll('.mcard')];
-    const dst = cards.find(c => c.dataset.id === id), idx = cards.indexOf(dst);
-    const chev = dst.querySelector('.chev');
-    if (!reduce) {
-      const dy = top - dst.getBoundingClientRect().top;
-      await done([
-        play(dst, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 520, easing: EASE_OUT }),
-        play(chev, [{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 260, easing: EASE_OUT }),
-        ...cards.filter(c => c !== dst).map(c => play(c,
-          [{ opacity: 0, transform: `translateY(${cards.indexOf(c) < idx ? -10 : 10}px) scale(.96)` }, { opacity: 1, transform: 'none' }],
-          { duration: 460, delay: 140 + (Math.abs(cards.indexOf(c) - idx) - 1) * 60, easing: EASE_OUT })),
-        glide(link, linkTop)
-      ].filter(Boolean));
-      clear(cards); clear([chev, link]);
-    }
-    detail.innerHTML = '';
-    busy = false;
-    dst.querySelector('.mhead').focus({ preventScroll: true });
+
+  /* Variant B: other options fold away and the picked one becomes the screen.
+     Pure CSS state, so Back mid-way simply reverses it. */
+  function openB(id) {
+    const wrap = methodsEl.querySelector('.b-wrap');
+    if (!wrap || wrap.classList.contains('has-focus')) return;
+    wrap.classList.add('has-focus');
+    wrap.querySelector('.b-back-inner').inert = false;
+    wrap.querySelectorAll('.slot').forEach(slot => {
+      const mine = slot.dataset.id === id, card = slot.querySelector('.mcard'), head = card.querySelector('.mhead');
+      slot.classList.toggle('is-focus', mine);
+      slot.inert = !mine;
+      setOpen(card, mine);
+      if (mine) { head.setAttribute('aria-disabled', 'true'); head.tabIndex = -1; }
+    });
+    const top = wrap.getBoundingClientRect().top, minTop = framed() ? device.getBoundingClientRect().top + 52 : 16;
+    if (top < minTop) scroller().scrollBy({ top: top - minTop, behavior: reduce ? 'auto' : 'smooth' });
+    focusLater(wrap.querySelector('.slot.is-focus .input, .slot.is-focus .textarea') || wrap.querySelector('.back'), DUR.slow);
+  }
+  function backB() {
+    const wrap = methodsEl.querySelector('.b-wrap');
+    if (!wrap || !wrap.classList.contains('has-focus')) return;
+    const focus = wrap.querySelector('.slot.is-focus');
+    wrap.classList.remove('has-focus');
+    wrap.querySelector('.b-back-inner').inert = true;
+    wrap.querySelectorAll('.slot').forEach(slot => {
+      const card = slot.querySelector('.mcard'), head = card.querySelector('.mhead');
+      slot.classList.remove('is-focus'); slot.inert = false;
+      setOpen(card, false);
+      head.removeAttribute('aria-disabled'); head.removeAttribute('tabindex');
+    });
+    focusLater(focus && focus.querySelector('.mhead'), 0);
   }
 
   /* ---------- Method behaviour ---------- */
@@ -757,7 +838,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     status.innerHTML = `<ol class="steps">${r.steps.map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('')}</ol>`;
     form.hidden = true;
     body.appendChild(status);
-    if (!reduce) status.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 360, easing: EASE_OUT });
+    status.animate(reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
     const steps = status.querySelectorAll('.step');
     steps.forEach((s, i) => {
       later(() => { if (i) steps[i - 1].classList.replace('is-active', 'is-done'); s.classList.add('is-active'); }, i * 750);
@@ -773,9 +854,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             <button class="btn btn-coral btn-block" type="button" data-action="toast" data-msg="End of prototype. The resume editor opens here.">Open my resume</button>
             <button class="inline-link" type="button" data-action="redo">Try a different input</button>
           </div>`;
-        if (!reduce) [...status.children].forEach((el, i) => el.animate(
-          [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
-          { duration: 480, delay: i * 80, easing: EASE_OUT, fill: 'backwards' }));
+        [...status.children].forEach((el, i) => el.animate(
+          reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+          { duration: DUR.base, delay: i * 60, easing: EASE.standard, fill: 'backwards' }));
         status.querySelector('.btn').focus({ preventScroll: true });
       }, 400);
     }, steps.length * 750);
@@ -834,7 +915,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function setVariant(v) {
-    if ((v !== 'A' && v !== 'B') || busy) return;
+    if (v !== 'A' && v !== 'B') return;
     variant = v;
     document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
     try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
@@ -859,9 +940,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const a = el.dataset.action;
     const form = el.closest('form');
     if (a === 'pick-intent') go('create', el);
-    else if (a === 'restart') { if (busy) return; clearTimers(); if (current === 'create') go('intent'); }
+    else if (a === 'restart') { clearTimers(); go('intent'); }
     else if (a === 'toggle') toggleA(el.closest('.mcard'));
-    else if (a === 'open') openB(el.closest('.mcard').dataset.id);
+    else if (a === 'open') { if (el.getAttribute('aria-disabled') !== 'true') openB(el.closest('.mcard').dataset.id); }
     else if (a === 'back') backB();
     else if (a === 'toast') toast(el.dataset.msg);
     else if (a === 'paste-example') {
