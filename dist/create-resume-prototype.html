@@ -63,10 +63,41 @@ body {
   background-image: linear-gradient(180deg, var(--kr-background) 0%, var(--kr-background) 50%, var(--kr-white) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
-  padding-inline: 16px;
 }
 button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
 svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Device wrapper (desktop = full page, mobile = phone frame) ---------- */
+.device { container-type: inline-size; padding-inline: 16px; }
+.statusbar { display: none; }
+body.is-mobile { background-image: none; background-color: var(--kr-grey-40); }
+body.is-mobile .stage { padding-block: 24px 112px; display: grid; justify-items: center; }
+body.is-mobile .device {
+  width: 390px; max-width: 100%; height: min(844px, calc(100vh - 136px)); min-height: 560px;
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: none;
+  border: 10px solid var(--kr-blue-dark); border-radius: 48px; box-shadow: var(--kr-shadow-modal);
+  background-color: var(--kr-white);
+  background-image: linear-gradient(180deg, var(--kr-background) 0%, var(--kr-background) 50%, var(--kr-white) 100%);
+  background-attachment: local;
+}
+body.is-mobile .device::-webkit-scrollbar { display: none; }
+body.is-mobile .statusbar {
+  display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5;
+  height: 44px; margin-inline: -16px; padding: 4px 28px 0; background: var(--kr-background);
+  font-size: 15px; line-height: 20px; font-weight: 500; font-variant-numeric: tabular-nums;
+}
+.statusbar .notch { width: 104px; height: 28px; border-radius: 999px; background: var(--kr-blue-dark); }
+.statusbar .sys { display: flex; gap: 6px; align-items: center; }
+.statusbar .bars { display: flex; gap: 2px; align-items: flex-end; height: 11px; }
+.statusbar .bars i { width: 3px; background: var(--kr-grey-100); border-radius: 1px; }
+.statusbar .batt { width: 24px; height: 11px; border: 1.5px solid var(--kr-grey-100); border-radius: 3px; padding: 1px; }
+.statusbar .batt i { display: block; height: 100%; width: 75%; background: var(--kr-grey-100); border-radius: 1px; }
+/* On a real phone the frame would not fit, so mobile view just fills the screen */
+@media (max-width: 480px) {
+  body.is-mobile .stage { padding-block: 0; }
+  body.is-mobile .device { width: auto; height: auto; min-height: 0; overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
+  body.is-mobile .statusbar { display: none; }
+}
 
 /* ---------- Top bar ---------- */
 .topbar { display: flex; align-items: center; padding-block: 24px; max-width: 1400px; margin-inline: auto; }
@@ -309,6 +340,9 @@ div.mhead { cursor: default; }
 .seg button[aria-pressed="true"] { background: var(--kr-blue); color: var(--kr-white); }
 .seg button:focus-visible, .proto-reset:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
 .seg .long { opacity: .8; font-weight: 400; }
+.seg button { display: inline-flex; align-items: center; gap: 6px; }
+.seg svg.i { width: 16px; height: 16px; }
+.proto-sep { width: 1px; align-self: stretch; margin-block: 6px; background: #2c3a5c; }
 .proto-reset {
   width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: #d6dae4; cursor: pointer;
   display: grid; place-items: center; transition: background .2s, color .2s;
@@ -325,25 +359,33 @@ div.mhead { cursor: default; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+@container (max-width: 860px) {
   .intent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 560px) {
-  .page { padding-block: 24px 160px; }
+@container (max-width: 560px) {
+  .topbar { padding-block: 16px; }
+  .logo svg { width: 120px; }
+  .page { padding-block: 16px 128px; }
   .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
   .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
   .intent { flex-direction: row; align-items: center; padding: 12px; }
   .intent .scene { width: 96px; flex: none; }
-  .badge-soon { top: 12px; right: 12px; }
+  .badge-soon { position: static; justify-self: start; margin-bottom: 4px; }
   .methods { margin-top: 32px; }
-  .proto-label, .seg .long { display: none; }
   .btn { min-height: 44px; }
+}
+body.is-mobile .page { padding-bottom: 48px; }
+@media (max-width: 760px) {
+  .proto-label, .seg .long { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; }
 }
 </style>
 
+<div class="stage">
+<div class="device" id="device">
+<div class="statusbar" aria-hidden="true"><span>9:41</span><span class="notch"></span><span class="sys"><span class="bars"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:11px"></i></span><span class="batt"><i></i></span></span></div>
 <header class="topbar">
   <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start"><svg viewBox="0 0 152 24" width="152" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.794 4.102a2.242 2.242 0 00-2.28 2.279 2.292 2.292 0 003.935 1.658 2.292 2.292 0 00.65-1.658 2.243 2.243 0 00-2.305-2.279zm0 3.135a.824.824 0 01-.833-.856.806.806 0 01.833-.833.824.824 0 01.855.833.84.84 0 01-.855.852v.004z" fill="#FF5E59"></path><path d="M14.544.106c-2.742 0-5.728 1.23-7.372 3.289l1.141 1.557c.346.465.731.9 1.15 1.3a3.843 3.843 0 00-1.501-.291c-4.475 0-7.81 3.64-7.81 8.621 0 5.256 4.168 9.312 9.566 9.312 4.452 0 7.904-3.202 7.904-7.345 0-1.857-.703-3.531-1.976-4.494h4.763c.944-1.823 1.382-3.573 1.382-5.153-.01-3.944-2.729-6.796-7.247-6.796zM9.718 22.271c-2.657 0-4.954-1.195-6.377-3.079L7.04 15.48a3.36 3.36 0 003.402 3.415c1.689 0 2.917-1.184 2.917-2.785 0-.92-.57-1.907-1.403-2.236l-1.053 1.053a1.337 1.337 0 01.789 1.183c0 .68-.526 1.163-1.273 1.163-1.162 0-1.886-.9-1.886-2.148 0-1.755 1.404-3.158 3.379-3.158 2.303 0 4.036 1.951 4.036 4.582 0 3.222-2.723 5.722-6.23 5.722zm9.608-11.839h-6.648c-2.544 0-3.663.746-4.914 1.995l-5.276 5.316a7.715 7.715 0 01-.664-3.16c0-4.102 2.759-7.088 6.445-7.088 1.368 0 2.347.548 3.181 1.271l.899-.9-2.961-4.23a7.755 7.755 0 015.156-1.907c3.51 0 5.57 2.105 5.57 5.152a9.008 9.008 0 01-.788 3.551z" fill="#FF5E59"></path><path d="M39.836 6.289h-4.41l-3.377 5.376v-9.76h-3.905v16.223h3.905v-5.133l3.554 5.133h4.563l-4.235-5.964 3.905-5.875zM43.106.91c-1.36 0-2.325.923-2.325 2.172 0 1.294.965 2.214 2.325 2.214 1.316 0 2.28-.92 2.28-2.214.002-1.243-.964-2.171-2.28-2.171zm1.864 5.38h-3.906v11.837h3.905V6.289zm8.096 3.069c1.207 0 2.105.876 2.303 2.148l3.648-.986c-.877-3.661-3.598-4.67-5.968-4.67-3.465 0-6.296 2.367-6.296 6.357s2.83 6.359 6.296 6.359c2.37 0 5.09-1.009 5.968-4.671l-3.648-.986c-.198 1.272-1.096 2.148-2.303 2.148-1.272 0-2.414-.898-2.414-2.85 0-1.951 1.142-2.85 2.414-2.85zm19.302-3.07h-4.407l-3.38 5.376v-9.76h-3.904v16.223h3.905v-5.133l3.553 5.133h4.563l-4.233-5.964 3.903-5.875zm8.294-.283c-2.293 0-2.888 2.08-3.226 4.536l-.304-4.253h-3.557v11.839h3.905v-6.29c.374-.921 1.098-1.646 2.128-1.646h2.32l-.652-4.115a2.863 2.863 0 00-.614-.07zm13.251 5.347c0-3.33-2.479-5.502-5.66-5.502-4.036 0-6.01 3.113-6.01 6.27 0 3.99 2.676 6.446 6.688 6.446 1.976 0 3.75-.658 4.826-1.601L92.389 14.4c-1.075.571-2.215.944-3.4.944-1.636 0-2.64-.695-3.054-1.732l7.77.021c.15-.75.22-1.514.208-2.28zm-8.112-.395c.152-1.358 1.037-2.169 2.41-2.169 1.271 0 2.192.744 2.258 2.17H85.8zm14.275-2.104c1.119 0 2.171.417 2.675 1.776l2.831-1.212c-.68-2.471-2.831-3.567-5.44-3.567-3.072 0-4.936 1.863-4.936 3.968 0 1.67.965 3.003 3.07 3.42l1.91.373 1.249.242c.572.109.791.372.791.759 0 .504-.484.942-1.58.942s-2.172-.416-2.677-1.776l-2.83 1.214c.681 2.477 2.83 3.574 5.442 3.574 3.07 0 4.935-1.864 4.935-3.97 0-1.67-.965-3.002-3.072-3.418l-1.907-.374-1.251-.24c-.57-.11-.79-.374-.79-.76 0-.512.483-.95 1.58-.95zm14.215 5.832c-.374.549-.76.877-1.579.877-.769 0-1.602-.417-1.602-1.797V6.289h-3.905v8.002c0 2.324 1.031 4.276 3.773 4.276 1.889 0 3.031-.945 3.371-3.09l.293 2.651h3.554V6.29h-3.905v8.397zm20.666-8.835c-1.586 0-3.11.619-3.595 3.058-.28-1.519-1.286-3.058-3.557-3.058-1.572 0-3.084.608-3.583 2.99l-.278-2.552h-3.56v11.839h3.905V9.622a1.828 1.828 0 011.567-.768c.987 0 1.71.635 1.71 2.018v7.256h3.884V9.61v.012a1.83 1.83 0 011.55-.768c.987 0 1.71.635 1.71 2.018v7.256h3.884V9.84c.005-1.753-.895-3.989-3.637-3.989zm11.977 9.491c-1.635 0-2.638-.694-3.053-1.732l7.77.022c.147-.75.213-1.514.198-2.279 0-3.33-2.48-5.502-5.661-5.502-4.036 0-6.01 3.113-6.01 6.27 0 3.99 2.677 6.446 6.688 6.446 1.976 0 3.751-.658 4.826-1.601l-1.363-2.566c-1.064.571-2.211.942-3.395.942zm-.789-6.554c1.273 0 2.194.744 2.259 2.169h-4.668c.155-1.357 1.037-2.168 2.409-2.168v-.001z" fill="#081430"></path></svg></button>
 </header>
@@ -369,6 +411,8 @@ div.mhead { cursor: default; }
     <div class="center"><button class="text-link" type="button" data-action="toast" data-msg="You’d land on an empty resume with sample content.">I’m just looking around</button></div>
   </section>
 </main>
+</div>
+</div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -378,6 +422,13 @@ div.mhead { cursor: default; }
     <button type="button" data-variant="A" aria-pressed="true">A <span class="long">· Expand in place</span></button>
     <button type="button" data-variant="B" aria-pressed="false">B <span class="long">· Separate screens</span></button>
   </div>
+  <span class="proto-sep" aria-hidden="true"></span>
+  <span class="proto-label">View</span>
+  <div class="seg">
+    <button type="button" data-view="desktop" aria-pressed="true" aria-label="Desktop view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg><span class="long">Desktop</span></button>
+    <button type="button" data-view="mobile" aria-pressed="false" aria-label="Mobile view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span class="long">Mobile</span></button>
+  </div>
+  <span class="proto-sep" aria-hidden="true"></span>
   <button class="proto-reset" type="button" data-action="restart" aria-label="Restart prototype" title="Restart prototype">
     <svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
   </button>
@@ -415,9 +466,8 @@ div.mhead { cursor: default; }
 
   document.getElementById('intent-grid').innerHTML = INTENTS.map(it => `
     <button class="intent" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}${it.enabled ? '' : ', coming soon'}">
-      ${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}
       <div class="scene ${it.tone}${it.id === 'tailor' ? ' scene-tailor' : ''}" aria-hidden="true">${it.scene}</div>
-      <div class="intent-text"><span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
+      <div class="intent-text">${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}<span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
     </button>`).join('');
 
   /* ---------- Creation methods ---------- */
@@ -504,6 +554,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create') };
   let current = 'intent';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const device = document.getElementById('device');
+  const framed = () => getComputedStyle(device).overflowY === 'auto';
+  const scroller = () => framed() ? device : window;
+  const viewBottom = () => framed() ? device.getBoundingClientRect().bottom : window.innerHeight;
   const timers = new Set();
   const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
   const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
@@ -549,7 +603,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (screen === 'create') renderCreate();
     current = screen;
     swap(from, to, screen === 'create' ? 1 : -1, 'y', () => {
-      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      scroller().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
   }
 
@@ -567,7 +621,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       acc.removeAttribute('inert');
       later(() => {
         const r = card.getBoundingClientRect();
-        if (r.bottom > window.innerHeight - 90) window.scrollBy({ top: r.bottom - window.innerHeight + 110, behavior: reduce ? 'auto' : 'smooth' });
+        const pad = framed() ? 16 : 110, vb = viewBottom();
+        if (r.bottom > vb - pad + 20) scroller().scrollBy({ top: r.bottom - vb + pad, behavior: reduce ? 'auto' : 'smooth' });
         const first = card.querySelector('.input, .textarea');
         if (first) first.focus({ preventScroll: true });
       }, 340);
@@ -702,9 +757,19 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current === 'create') renderCreate();
   }
 
+  function setView(v) {
+    if (v !== 'desktop' && v !== 'mobile') return;
+    document.body.classList.toggle('is-mobile', v === 'mobile');
+    document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+    try { localStorage.setItem('kr-start-view', v); } catch (e) {}
+    window.scrollTo(0, 0); device.scrollTop = 0;
+  }
+
   document.addEventListener('click', e => {
     const vb = e.target.closest('[data-variant]');
     if (vb) return setVariant(vb.dataset.variant);
+    const vw = e.target.closest('[data-view]');
+    if (vw) return setView(vw.dataset.view);
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const a = el.dataset.action;
@@ -768,10 +833,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (e.dataTransfer.files[0]) setFile(dz.closest('form'), e.dataTransfer.files[0]);
   });
 
-  /* Start: #a / #b deep-links a variant; otherwise remember the last one */
-  const fromHash = (location.hash || '').replace('#', '').toUpperCase();
-  let saved = null;
-  try { saved = localStorage.getItem('kr-start-variant'); } catch (e) {}
-  setVariant(fromHash === 'A' || fromHash === 'B' ? fromHash : (saved || 'A'));
+  /* Start: #a, #b, #a-mobile, #b-mobile deep-link a state; otherwise remember the last one */
+  const hash = (location.hash || '').replace('#', '').toLowerCase();
+  const hv = hash.match(/^(a|b)\b/), hm = hash.match(/mobile|desktop/);
+  let savedV = null, savedView = null;
+  try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
+  setVariant(hv ? hv[1].toUpperCase() : (savedV || 'A'));
+  setView(hm ? hm[0] : (savedView || 'desktop'));
 })();
 </script>
