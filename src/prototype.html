@@ -207,15 +207,15 @@ div.mhead { cursor: default; }
 .mtext { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .mtitle { font-size: 18px; line-height: 24px; font-weight: 500; }
 .msub { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
-.chev { color: var(--kr-grey-100); transition: transform .3s var(--ease); }
+.chev { display: inline-flex; color: var(--kr-grey-100); transition: transform .42s cubic-bezier(.22, 1, .36, 1); }
 .mcard.is-open .chev { transform: rotate(90deg); }
 
 /* Variant A — accordion */
-.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s var(--ease); }
+.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .42s cubic-bezier(.22, 1, .36, 1); }
 .mcard.is-open .acc { grid-template-rows: 1fr; }
 .acc-inner { overflow: hidden; min-height: 0; }
-.acc-inner > .mbody { opacity: 0; transition: opacity .2s ease-in-out; }
-.mcard.is-open .acc-inner > .mbody { opacity: 1; transition-delay: .08s; }
+.acc-inner > .mbody { opacity: 0; transform: translateY(-8px); transition: opacity .18s ease-in, transform .3s ease-in; }
+.mcard.is-open .acc-inner > .mbody { opacity: 1; transform: none; transition: opacity .3s ease-out .1s, transform .45s cubic-bezier(.22, 1, .36, 1) .06s; }
 
 /* Variant B — separate screens */
 .back {
@@ -580,31 +580,50 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     }
   }
 
-  /* Slide/fade swap used for screen changes and variant B's page change */
-  function swap(from, to, dir, axis, after) {
-    if (reduce) { from.hidden = true; to.hidden = false; after && after(); return; }
-    const d = 28 * dir, t = v => axis === 'y' ? `translateY(${v}px)` : `translateX(${v}px)`;
-    from.style.transition = 'opacity .2s ease-in, transform .2s ease-in';
-    from.style.opacity = '0'; from.style.transform = t(-d);
-    later(() => {
-      from.hidden = true; from.style.cssText = '';
-      to.style.transition = 'none'; to.style.opacity = '0'; to.style.transform = t(d); to.hidden = false;
-      void to.offsetHeight;
-      to.style.transition = 'opacity .32s cubic-bezier(.2,0,0,1), transform .32s cubic-bezier(.2,0,0,1)';
-      to.style.opacity = '1'; to.style.transform = 'none';
-      later(() => { to.style.cssText = ''; }, 340);
-      after && after();
-    }, 200);
-  }
+  /* ---------- Motion helpers (Web Animations API) ---------- */
+  const EASE_OUT = 'cubic-bezier(.22, 1, .36, 1)';
+  const EASE_IN = 'cubic-bezier(.4, 0, 1, 1)';
+  const EASE_IO = 'cubic-bezier(.65, 0, .35, 1)';
+  let busy = false;
+  const play = (el, kf, o) => el.animate(kf, Object.assign({ fill: 'both' }, o));
+  const done = anims => Promise.all(anims.map(a => a.finished.catch(() => {})));
+  const clear = els => els.forEach(el => el && el.getAnimations().forEach(a => a.cancel()));
+  const shown = el => el.getClientRects().length > 0;
+  const footLink = () => screens.create.querySelector(':scope > .center');
+  const glide = (el, oldTop, o) => {
+    const dy = oldTop - el.getBoundingClientRect().top;
+    return dy ? play(el, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], Object.assign({ duration: 560, easing: EASE_OUT }, o)) : null;
+  };
+  const items = screen => [...screen.querySelectorAll('.page-head, .intent, .mcard, .center')].filter(shown);
 
-  function go(screen) {
-    if (screen === current) return;
+  /* Screen change: items leave in a quick stagger (the picked card last),
+     then the next screen's headline and cards rise in one after another. */
+  async function go(screen, picked) {
+    if (screen === current || busy) return;
+    busy = true;
     const from = screens[current], to = screens[screen];
-    if (screen === 'create') renderCreate();
     current = screen;
-    swap(from, to, screen === 'create' ? 1 : -1, 'y', () => {
-      scroller().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-    });
+    const out = items(from);
+    if (!reduce) {
+      const order = picked ? out.filter(e => e !== picked).concat(picked) : out;
+      await done(order.map((el, i) => play(el,
+        [{ opacity: 1, transform: 'none' },
+         el === picked ? { opacity: 0, transform: 'translateY(-4px) scale(1.03)' } : { opacity: 0, transform: 'translateY(-10px)' }],
+        { duration: el === picked ? 280 : 200, delay: i * 30, easing: EASE_IN })));
+    }
+    from.hidden = true; clear(out);
+    if (screen === 'create') renderCreate();
+    to.hidden = false;
+    scroller().scrollTo({ top: 0 });
+    if (!reduce) {
+      const inn = items(to);
+      await done(inn.map((el, i) => play(el,
+        [{ opacity: 0, transform: 'translateY(20px)', filter: i === 0 ? 'blur(6px)' : 'blur(0px)' },
+         { opacity: 1, transform: 'none', filter: 'blur(0px)' }],
+        { duration: 620, delay: 40 + i * 65, easing: EASE_OUT })));
+      clear(inn);
+    }
+    busy = false;
   }
 
   /* Variant A: one card open at a time */
@@ -629,24 +648,85 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     } else acc.setAttribute('inert', '');
   }
 
-  /* Variant B: open a method on its own screen */
-  function openB(id) {
+  /* Variant B: the picked card travels to its own screen and unfolds;
+     the other cards step aside. Back reverses it. */
+  async function openB(id) {
+    if (busy) return;
+    busy = true;
     const m = byId(id);
     const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
+    const cards = [...list.querySelectorAll('.mcard')];
+    const src = cards.find(c => c.dataset.id === id), idx = cards.indexOf(src);
+    const chev = src.querySelector('.chev');
+    const first = src.getBoundingClientRect();
+    if (!reduce) {
+      await done([
+        ...cards.filter(c => c !== src).map(c => {
+          const ci = cards.indexOf(c);
+          return play(c, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateY(${ci < idx ? -10 : 10}px) scale(.96)` }],
+            { duration: 220, delay: (Math.abs(ci - idx) - 1) * 45, easing: EASE_IN });
+        }),
+        play(chev, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(8px)' }], { duration: 180, easing: EASE_IN })
+      ]);
+    }
     detail.innerHTML = `
       <button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button>
-      <div class="mcard" data-id="${m.id}">${headHTML(m, 'div', '')}<div class="mbody">${bodyHTML(m.id, 'b')}</div></div>`;
-    swap(list, detail, 1, 'x', () => {
-      const first = detail.querySelector('.input, .textarea');
-      later(() => (first || detail.querySelector('.back')).focus({ preventScroll: true }), 340);
-    });
+      <div class="mcard" data-id="${m.id}">${headHTML(m, 'div', '')}<div class="reveal"><div class="mbody">${bodyHTML(m.id, 'b')}</div></div></div>`;
+    const link = footLink(), linkTop = link.getBoundingClientRect().top;
+    list.hidden = true; clear(cards); clear([chev]);
+    detail.hidden = false;
+    const card = detail.querySelector('.mcard'), back = detail.querySelector('.back');
+    const wrap = card.querySelector('.reveal'), body = card.querySelector('.mbody');
+    if (!reduce) {
+      const dy = first.top - card.getBoundingClientRect().top;
+      const h = wrap.offsetHeight;
+      wrap.style.overflow = 'hidden';
+      await done([
+        play(card, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 560, easing: EASE_OUT }),
+        play(wrap, [{ height: '0px' }, { height: h + 'px' }], { duration: 520, delay: 120, easing: EASE_OUT }),
+        play(body, [{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 220, easing: EASE_OUT }),
+        play(back, [{ opacity: 0, transform: 'translateX(12px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 260, easing: EASE_OUT }),
+        glide(link, linkTop, { delay: 60 })
+      ].filter(Boolean));
+      wrap.style.overflow = ''; clear([card, wrap, body, back, link]);
+    }
+    busy = false;
+    (detail.querySelector('.input, .textarea') || back).focus({ preventScroll: true });
   }
-  function backB() {
+  async function backB() {
+    if (busy) return;
+    busy = true;
     const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
-    const id = detail.querySelector('.mcard')?.dataset.id;
-    swap(detail, list, -1, 'x', () => {
-      later(() => { detail.innerHTML = ''; list.querySelector(`.mcard[data-id="${id}"] .mhead`)?.focus({ preventScroll: true }); }, 340);
-    });
+    const card = detail.querySelector('.mcard'), back = detail.querySelector('.back');
+    const wrap = card.querySelector('.reveal'), id = card.dataset.id;
+    if (!reduce) {
+      wrap.style.overflow = 'hidden';
+      await done([
+        play(wrap, [{ height: wrap.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 340, easing: EASE_IO }),
+        play(back, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(12px)' }], { duration: 200, easing: EASE_IN })
+      ]);
+    }
+    const top = card.getBoundingClientRect().top;
+    const link = footLink(), linkTop = link.getBoundingClientRect().top;
+    detail.hidden = true; list.hidden = false;
+    const cards = [...list.querySelectorAll('.mcard')];
+    const dst = cards.find(c => c.dataset.id === id), idx = cards.indexOf(dst);
+    const chev = dst.querySelector('.chev');
+    if (!reduce) {
+      const dy = top - dst.getBoundingClientRect().top;
+      await done([
+        play(dst, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 520, easing: EASE_OUT }),
+        play(chev, [{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 260, easing: EASE_OUT }),
+        ...cards.filter(c => c !== dst).map(c => play(c,
+          [{ opacity: 0, transform: `translateY(${cards.indexOf(c) < idx ? -10 : 10}px) scale(.96)` }, { opacity: 1, transform: 'none' }],
+          { duration: 460, delay: 140 + (Math.abs(cards.indexOf(c) - idx) - 1) * 60, easing: EASE_OUT })),
+        glide(link, linkTop)
+      ].filter(Boolean));
+      clear(cards); clear([chev, link]);
+    }
+    detail.innerHTML = '';
+    busy = false;
+    dst.querySelector('.mhead').focus({ preventScroll: true });
   }
 
   /* ---------- Method behaviour ---------- */
@@ -677,6 +757,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     status.innerHTML = `<ol class="steps">${r.steps.map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('')}</ol>`;
     form.hidden = true;
     body.appendChild(status);
+    if (!reduce) status.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 360, easing: EASE_OUT });
     const steps = status.querySelectorAll('.step');
     steps.forEach((s, i) => {
       later(() => { if (i) steps[i - 1].classList.replace('is-active', 'is-done'); s.classList.add('is-active'); }, i * 750);
@@ -692,6 +773,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             <button class="btn btn-coral btn-block" type="button" data-action="toast" data-msg="End of prototype. The resume editor opens here.">Open my resume</button>
             <button class="inline-link" type="button" data-action="redo">Try a different input</button>
           </div>`;
+        if (!reduce) [...status.children].forEach((el, i) => el.animate(
+          [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 480, delay: i * 80, easing: EASE_OUT, fill: 'backwards' }));
         status.querySelector('.btn').focus({ preventScroll: true });
       }, 400);
     }, steps.length * 750);
@@ -750,7 +834,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function setVariant(v) {
-    if (v !== 'A' && v !== 'B') return;
+    if ((v !== 'A' && v !== 'B') || busy) return;
     variant = v;
     document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
     try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
@@ -774,8 +858,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!el) return;
     const a = el.dataset.action;
     const form = el.closest('form');
-    if (a === 'pick-intent') go('create');
-    else if (a === 'restart') { clearTimers(); if (current === 'create') go('intent'); }
+    if (a === 'pick-intent') go('create', el);
+    else if (a === 'restart') { if (busy) return; clearTimers(); if (current === 'create') go('intent'); }
     else if (a === 'toggle') toggleA(el.closest('.mcard'));
     else if (a === 'open') openB(el.closest('.mcard').dataset.id);
     else if (a === 'back') backB();
