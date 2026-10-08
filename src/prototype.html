@@ -81,9 +81,9 @@ svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor;
 .device { container-type: inline-size; padding-inline: 16px; overflow-anchor: none; }
 .statusbar { display: none; }
 body.is-mobile { background-image: none; background-color: var(--kr-grey-40); }
-body.is-mobile .stage { padding-block: 24px 112px; display: grid; justify-items: center; }
+body.is-mobile .stage { padding-block: 24px; display: grid; justify-items: center; }
 body.is-mobile .device {
-  width: 390px; max-width: 100%; height: min(844px, calc(100vh - 136px)); min-height: 560px;
+  width: 390px; max-width: 100%; height: min(844px, calc(100vh - 48px)); min-height: 560px;
   overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: none;
   border: 10px solid var(--kr-blue-dark); border-radius: 48px; box-shadow: var(--kr-shadow-modal);
   background-color: var(--kr-white);
@@ -116,7 +116,7 @@ body.is-mobile .statusbar {
 .logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 
 /* ---------- Page ---------- */
-.page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 160px; }
+.page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 96px; }
 .page { position: relative; }
 .page-head { position: relative; text-align: center; display: grid; gap: 12px; }
 .page-head h1 {
@@ -585,33 +585,43 @@ body.is-mobile .editor { min-height: 100%; }
   .ebody { padding: 4px 16px 16px; }
 }
 
-/* ---------- Prototype controls (not part of the product UI) ---------- */
+/* ---------- Prototype controls (not part of the product UI) ----------
+   A slim vertical rail on the right edge; labels show as tooltips. */
 .proto {
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
-  display: flex; align-items: center; gap: 8px; padding: 6px; max-width: calc(100% - 32px);
+  position: fixed; right: 12px; top: 50%; transform: translateY(-50%); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px;
   background: var(--kr-blue-dark); color: var(--kr-white); border-radius: 14px; box-shadow: var(--kr-shadow-modal);
 }
-.proto-label { font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: #b5bccb; padding-inline: 8px 2px; white-space: nowrap; }
-.seg { display: flex; background: #1b2747; border-radius: 10px; padding: 3px; gap: 2px; }
-.seg button {
-  border: 0; background: none; color: #d6dae4; padding: 6px 12px; border-radius: 8px; cursor: pointer;
-  font-size: 13px; line-height: 18px; font-weight: 500; white-space: nowrap; transition: background .2s, color .2s;
+.seg { display: flex; flex-direction: column; background: #1b2747; border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button, .proto-reset {
+  position: relative; width: 34px; height: 34px; border: 0; background: none; color: #d6dae4; border-radius: 8px; cursor: pointer;
+  display: grid; place-items: center; font-size: 13px; line-height: 1; font-weight: 600; transition: background .2s, color .2s;
 }
-.seg button:hover { color: var(--kr-white); }
+.seg button:hover, .proto-reset:hover { color: var(--kr-white); background: #24325a; }
 .seg button[aria-pressed="true"] { background: var(--kr-blue); color: var(--kr-white); }
 .seg button:focus-visible, .proto-reset:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
-.seg .long { opacity: .8; font-weight: 400; }
-.seg button { display: inline-flex; align-items: center; gap: 6px; }
-.seg svg.i { width: 16px; height: 16px; }
-.proto-sep { width: 1px; align-self: stretch; margin-block: 6px; background: #2c3a5c; }
-.proto-reset {
-  width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: #d6dae4; cursor: pointer;
-  display: grid; place-items: center; transition: background .2s, color .2s;
+.seg svg.i, .proto-reset svg.i { width: 16px; height: 16px; }
+.proto-sep { width: 20px; height: 1px; background: #2c3a5c; margin-block: 2px; }
+[data-tip]::after {
+  content: attr(data-tip); position: absolute; right: calc(100% + 12px); top: 50%; transform: translate(4px, -50%);
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  background: var(--kr-blue-dark); color: var(--kr-white); font-size: 12px; line-height: 16px; font-weight: 500; padding: 6px 10px; border-radius: 8px; box-shadow: var(--kr-shadow-dropdown);
 }
-.proto-reset:hover { background: #1b2747; color: var(--kr-white); }
+[data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+/* Keep the rail clear of content on wide screens */
+@media (min-width: 481px) { body:not(.is-mobile) .stage { padding-right: 52px; } }
+/* On a real phone: tuck it into the bottom-right corner */
+.proto-toggle { display: none; }
+@media (max-width: 480px) {
+  .proto { top: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: none; right: 8px; }
+  .proto-toggle { display: grid; }
+  .proto:not(.is-open) > :not(.proto-toggle) { display: none; }
+  .proto:not(.is-open) { padding: 4px; border-radius: 12px; }
+  [data-tip]::after { display: none; }
+}
 
 .toast {
-  position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 21;
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 21;
   transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
   background: var(--kr-white); color: var(--kr-grey-100); border: 1px solid var(--kr-grey-60); box-shadow: var(--kr-shadow-modal);
   padding: 10px 16px; border-radius: 10px; font-size: 14px; line-height: 20px; max-width: calc(100% - 32px); text-align: center;
@@ -636,9 +646,6 @@ body.is-mobile .editor { min-height: 100%; }
   .btn { min-height: 44px; }
 }
 body.is-mobile .page { padding-bottom: 48px; }
-@media (max-width: 760px) {
-  .proto-label, .seg .long { display: none; }
-}
 /* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
 @media (prefers-reduced-motion: reduce) {
   .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard { transition-property: opacity, box-shadow !important; }
@@ -704,20 +711,21 @@ body.is-mobile .page { padding-bottom: 48px; }
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
-  <span class="proto-label">Variant</span>
+  <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+  </button>
   <div class="seg">
-    <button type="button" data-variant="A" aria-pressed="true">A <span class="long">· Expand in place</span></button>
-    <button type="button" data-variant="B" aria-pressed="false">B <span class="long">· Separate screens</span></button>
+    <button type="button" data-variant="A" aria-pressed="true" aria-label="Variant A, expand in place" data-tip="A · Expand in place">A</button>
+    <button type="button" data-variant="B" aria-pressed="false" aria-label="Variant B, separate screens" data-tip="B · Separate screens">B</button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
-  <span class="proto-label">View</span>
   <div class="seg">
-    <button type="button" data-view="desktop" aria-pressed="true" aria-label="Desktop view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg><span class="long">Desktop</span></button>
-    <button type="button" data-view="mobile" aria-pressed="false" aria-label="Mobile view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span class="long">Mobile</span></button>
+    <button type="button" data-view="desktop" aria-pressed="true" aria-label="Desktop view" data-tip="Desktop view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></button>
+    <button type="button" data-view="mobile" aria-pressed="false" aria-label="Mobile view" data-tip="Mobile view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
-  <button class="proto-reset" type="button" data-action="restart" aria-label="Restart prototype" title="Restart prototype">
-    <svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+  <button class="proto-reset" type="button" data-action="restart" aria-label="Restart prototype" data-tip="Restart">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
   </button>
 </div>
 
@@ -993,7 +1001,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   function revealBottom(card) {
     const r = card.getBoundingClientRect();
-    const pad = framed() ? 16 : 104, vb = viewBottom();
+    const pad = framed() ? 16 : 24, vb = viewBottom();
     if (r.bottom > vb - pad) scroller().scrollBy({ top: Math.min(r.bottom - vb + pad, r.top - (framed() ? device.getBoundingClientRect().top + 52 : 16)), behavior: reduce ? 'auto' : 'smooth' });
   }
   let focusTimer = 0;
@@ -1460,6 +1468,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const ta = form.querySelector('textarea'); ta.value = SAMPLE_TEXT;
       ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus();
     }
+    else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'pane') setPane(el.dataset.pane);
     else if (a === 'ecard') toggleEcard(el.closest('.ecard'));
     else if (a === 'premium') {
