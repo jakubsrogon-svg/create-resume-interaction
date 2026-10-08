@@ -159,41 +159,44 @@ body.is-mobile .statusbar {
 .text-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .center { text-align: center; }
 
-/* Mini scenes inside intent cards */
-.scene { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; overflow: hidden; display: grid; place-items: center; }
+/* Mini scenes inside intent cards.
+   Everything is sized in cqw (1% of the scene's width), so each scene keeps
+   its proportions at any card size, from the 96px phone tile to the desktop card. */
+.scene { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; overflow: hidden; display: grid; place-items: center; container-type: inline-size; }
 .scene.t-coral { background: var(--kr-primary-tint); }
 .scene.t-violet { background: var(--kr-blue-tint); }
 .scene.t-mint { background: var(--kr-mint-tint); }
 .scene.t-beige { background: var(--kr-beige); }
 .paper {
-  width: 54%; aspect-ratio: 3 / 4; background: var(--kr-white); border-radius: 4px; box-shadow: var(--kr-shadow-cv);
-  padding: 9%; display: flex; flex-direction: column; gap: 6%;
+  width: 50cqw; height: 66cqw; background: var(--kr-white); border-radius: 1.6cqw; box-shadow: 0 2.4cqw 6cqw rgba(140, 140, 140, .18);
+  padding: 6cqw 6cqw; display: flex; flex-direction: column; gap: 3.2cqw;
 }
-.paper .row { display: flex; align-items: center; gap: 8%; }
-.paper .av { width: 22%; aspect-ratio: 1; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
-.ln { height: 4px; border-radius: 2px; background: var(--kr-grey-60); }
+.paper .row { display: flex; align-items: center; gap: 4cqw; margin-bottom: 1.2cqw; }
+.paper .av { width: 10cqw; height: 10cqw; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.ln { height: 1.8cqw; border-radius: 1cqw; background: var(--kr-grey-60); flex: none; }
 .ln.dk { background: #cfcfcf; }
 .ln.w90 { width: 90%; } .ln.w80 { width: 80%; } .ln.w70 { width: 70%; } .ln.w60 { width: 60%; } .ln.w50 { width: 50%; } .ln.w40 { width: 40%; } .ln.w30 { width: 30%; }
-.stack { display: grid; gap: 5px; flex: 1; }
+.stack { display: grid; gap: 2cqw; flex: 1; min-width: 0; }
 .ai-chip {
-  position: absolute; right: 16%; bottom: 16%; width: 34px; height: 34px; border-radius: 50%;
+  position: absolute; right: 19cqw; bottom: 14cqw; width: 15cqw; height: 15cqw; border-radius: 50%;
   background: var(--kr-premium-gradient); color: var(--kr-white); display: grid; place-items: center;
-  box-shadow: 1px 2px 6px 0 rgba(160, 102, 255, 0.3), 1px 2px 16px 0 rgba(102, 108, 255, 0.3);
+  box-shadow: 0 .8cqw 2.4cqw rgba(160, 102, 255, .3), 0 .8cqw 6cqw rgba(102, 108, 255, .3);
 }
-.ai-chip svg.i { width: 16px; height: 16px; }
-.scene-tailor .paper { transform: translateX(-14%); }
+.ai-chip svg.i { width: 7cqw; height: 7cqw; }
+.scene-tailor .paper { transform: translateX(-12cqw); }
 .job-card {
-  position: absolute; right: 10%; bottom: 18%; width: 46%; background: var(--kr-white); border-radius: 6px;
-  box-shadow: var(--kr-shadow-dropdown); padding: 8%; display: grid; gap: 6px;
+  position: absolute; right: 8cqw; bottom: 16cqw; width: 44cqw; background: var(--kr-white); border-radius: 2.4cqw;
+  box-shadow: 0 .8cqw 4cqw rgba(0, 0, 0, .1); padding: 4.5cqw; display: grid; gap: 2.6cqw;
 }
-.pill { justify-self: start; font-size: 10px; line-height: 14px; font-weight: 500; padding: 1px 6px; border-radius: 999px; background: var(--kr-blue-tint); color: var(--kr-blue); white-space: nowrap; }
-.jobs { width: 74%; display: grid; gap: 8px; }
-.job-row { background: var(--kr-white); border-radius: 6px; padding: 8px; display: flex; gap: 8px; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-.job-logo { width: 20px; height: 20px; border-radius: 5px; flex: none; }
-.board { width: 80%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.col { display: grid; gap: 5px; align-content: start; }
-.mini { background: var(--kr-white); border-radius: 4px; padding: 6px; display: grid; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-.mini .ln { height: 3px; }
+.pill { justify-self: start; font-size: 4.2cqw; line-height: 1.4; font-weight: 500; padding: .6cqw 2.4cqw; border-radius: 999px; background: var(--kr-blue-tint); color: var(--kr-blue); white-space: nowrap; }
+.jobs { width: 74cqw; display: grid; gap: 3.5cqw; }
+.job-row { background: var(--kr-white); border-radius: 2.6cqw; padding: 3.5cqw; display: flex; gap: 3.5cqw; align-items: center; box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .04); }
+.job-logo { width: 9cqw; height: 9cqw; border-radius: 2cqw; flex: none; }
+.board { width: 78cqw; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3cqw; }
+.col { display: grid; gap: 2.6cqw; align-content: start; }
+.col > .ln { margin-bottom: .6cqw; }
+.mini { background: var(--kr-white); border-radius: 1.8cqw; padding: 2.6cqw; display: grid; gap: 1.8cqw; box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .04); }
+.mini .ln { height: 1.4cqw; }
 
 /* ---------- Creation screen ---------- */
 .methods { width: 100%; max-width: var(--card-w); margin: 48px auto 0; }
