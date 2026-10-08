@@ -14,6 +14,9 @@ html = (html
     .replace("__LOGO_SVG__", (root / "assets/kickresume-colored.svg").read_text().strip()
         .replace('width="152" height="24"', 'viewBox="0 0 152 24" width="152" height="24"')))
 
+html = html.replace("__LOGO_SYMBOL__", (root / "assets/kickresume-symbol-red.svg").read_text().strip()
+    .replace('width="71" height="77"', 'viewBox="0 0 71 77" width="71" height="77"'))
+
 out = root / "dist/create-resume-prototype.html"
 out.write_text(html)
 print(f"wrote {out} ({out.stat().st_size // 1024} KB)")

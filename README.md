@@ -9,9 +9,10 @@ Interactive prototype of the Kickresume onboarding start flow, built on the Kick
 
 3. **Building screen** – after you submit a method, the resume visibly takes shape step by step.
 4. **Editor** – the built page travels into the preview pane of the resume editor (sidebar, Fill In form, live preview). Editing fields updates the preview; clicking a preview section opens it in the form.
+5. **Dashboard** – where people land if they skip personalization (“Skip personalization” or “I’m just looking around”). Its LinkedIn, PDF import and resume builder shortcuts drop you into the creation flow with that method already open.
 
 Content column is 950px, method cards are 400px.
 
 - Source: `src/prototype.html`
 - Build (inlines brand fonts + logo): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
-- Deep links: `#a` / `#b` open a variant, add `-mobile` for the phone view, `#editor` jumps straight to the editor.
+- Deep links: `#a` / `#b` open a variant, add `-mobile` for the phone view, `#editor` / `#dashboard` jump straight to those screens.
