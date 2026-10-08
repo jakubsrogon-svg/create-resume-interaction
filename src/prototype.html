@@ -318,11 +318,15 @@ div.mhead { cursor: default; }
 
 /* Dropzone (matches the provided upload mock) */
 .dropzone {
-  display: grid; justify-items: center; gap: 8px; text-align: center; padding: 32px 16px;
+  display: grid; justify-items: center; gap: 8px; text-align: center; padding: 32px 16px; cursor: pointer;
   border: 2px dashed var(--kr-primary); border-radius: 12px; background: var(--kr-white);
-  transition: background .2s, border-color .2s;
+  transition: background var(--dur-fast) var(--ease-standard), border-color var(--dur-fast);
 }
+.dropzone:hover { background: var(--kr-grey-20); }
+.dropzone:active { background: var(--kr-grey-40); transition-duration: 60ms; }
+.dropzone:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .dropzone.is-over { background: var(--kr-primary-tint); }
+.dz-link { color: var(--kr-blue); text-decoration: underline; text-underline-offset: 2px; }
 .dropzone .cloud { color: var(--kr-primary); }
 .dropzone .cloud svg.i { width: 40px; height: 40px; stroke-width: 1.75; }
 .dz-title { font-size: 16px; line-height: 24px; }
@@ -842,12 +846,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </form>`;
     if (id === 'upload') return `
       <form class="mform" data-method="upload" novalidate>
-        <div class="dropzone">
+        <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file, PDF or DOCX up to 10 MB">
           <span class="cloud">${icon('cloud')}</span>
           <span class="dz-title">Drop your resume file here</span>
-          <span class="dz-meta">or <button class="inline-link" type="button" data-action="browse">browse your files</button> · PDF or DOCX, up to 10 MB</span>
-          <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-label="Choose resume file">
+          <span class="dz-meta">or <span class="dz-link">browse your files</span> · PDF or DOCX, up to 10 MB</span>
         </div>
+        <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
         <div class="file-slot field"><span class="error">That file type won’t work. Upload a PDF or a Word document.</span></div>
         <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
       </form>`;
@@ -1019,7 +1023,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     holdInPlace(card.querySelector('.mhead'), DUR.slow + 60, () => opening && revealBottom(card));
     methodsEl.querySelectorAll('.mcard.is-open').forEach(c => { if (c !== card) setOpen(c, false); });
     setOpen(card, opening);
-    focusLater(opening ? card.querySelector('.input, .textarea') : null, DUR.slow);
+    focusLater(opening ? card.querySelector('.input, .textarea, .dropzone') : null, DUR.slow);
   }
 
   /* Variant B: other options fold away and the picked one becomes the screen.
@@ -1038,7 +1042,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
     const top = wrap.getBoundingClientRect().top, minTop = framed() ? device.getBoundingClientRect().top + 52 : 16;
     if (top < minTop) scroller().scrollBy({ top: top - minTop, behavior: reduce ? 'auto' : 'smooth' });
-    focusLater(wrap.querySelector('.slot.is-focus .input, .slot.is-focus .textarea') || wrap.querySelector('.back'), DUR.slow);
+    focusLater(wrap.querySelector('.slot.is-focus .input, .slot.is-focus .textarea, .slot.is-focus .dropzone') || wrap.querySelector('.back'), DUR.slow);
   }
   function backB() {
     const wrap = methodsEl.querySelector('.b-wrap');
@@ -1500,6 +1504,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (v) { person[e.target.dataset.add].push(v); e.target.value = ''; refreshChips(e.target.dataset.add); }
     }
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.rv-sec')) { e.preventDefault(); editSection(e.target.dataset.sec); }
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.dropzone')) { e.preventDefault(); e.target.closest('form').querySelector('input[type="file"]').click(); }
   });
 
   document.addEventListener('input', e => {
