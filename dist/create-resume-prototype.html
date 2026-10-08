@@ -32,6 +32,7 @@
   --kr-grad-hover: linear-gradient(315deg, #b07dff 0%, #7a80ff 100%);
   --kr-grad-press: linear-gradient(315deg, #8f4fee 0%, #5359e6 100%);
   --kr-grad-disabled: #b9b6f5;
+  --kr-green-apple: #48ad43;  /* resume template accent (extended palette) */
 
   --kr-shadow-dropdown: 1px 2px 10px 0 rgba(0, 0, 0, 0.1);
   --kr-shadow-modal: 1px 2px 20px 0 rgba(0, 0, 0, 0.1);
@@ -333,26 +334,253 @@ div.mhead { cursor: default; }
 .file-row .icon-btn { position: static; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Progress + success states */
-.status { display: grid; gap: 16px; padding-block: 4px; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.step { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 20px; color: var(--kr-grey-80); transition: color .2s; }
-.step .dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 1.5px solid var(--kr-grey-60); color: var(--kr-white); transition: background .2s, border-color .2s; }
-.step .dot svg.i { width: 12px; height: 12px; stroke-width: 3; opacity: 0; }
+/* Progress steps (building screen) */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.step { display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 20px; color: var(--kr-grey-80); transition: color var(--dur-base) var(--ease-standard); }
+.step .dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 1.5px solid var(--kr-grey-60); color: var(--kr-white); transition: background var(--dur-base), border-color var(--dur-base); }
+.step .dot svg.i { width: 12px; height: 12px; stroke-width: 3; opacity: 0; transform: scale(.6); transition: opacity var(--dur-fast), transform var(--dur-base) var(--ease-standard); }
 .step.is-active { color: var(--kr-grey-100); }
 .step.is-active .dot { border-color: var(--kr-blue); border-top-color: transparent; animation: spin .8s linear infinite; }
 .step.is-done { color: var(--kr-grey-100); }
 .step.is-done .dot { background: var(--kr-mint); border-color: var(--kr-mint); }
-.step.is-done .dot svg.i { opacity: 1; }
+.step.is-done .dot svg.i { opacity: 1; transform: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.success-head { display: flex; gap: 12px; align-items: flex-start; }
-.ok { width: 40px; height: 40px; border-radius: 50%; background: var(--kr-mint-tint); color: var(--kr-mint); display: grid; place-items: center; flex: none; }
-.success-head h3 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; }
-.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.fact { background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); border-radius: var(--radius); padding: 10px 8px; text-align: center; }
-.fact b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 32px; font-variant-numeric: tabular-nums; }
-.fact span { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
-.success-actions { display: grid; gap: 8px; justify-items: center; }
+.btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
+
+/* ---------- Building screen ---------- */
+.ld-stage { margin: 40px auto 0; width: 100%; max-width: var(--card-w); display: grid; gap: 28px; justify-items: center; }
+.ld-paper {
+  position: relative; width: 220px; max-width: 100%; aspect-ratio: 1 / 1.414; background: var(--kr-white); border-radius: 4px;
+  box-shadow: var(--kr-shadow-cv); padding: 22px 20px; display: grid; align-content: start; gap: 16px; overflow: hidden;
+}
+.ld-paper::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%);
+  transform: translateX(-100%); animation: shimmer 1.5s var(--ease-inout) infinite;
+}
+.ld-paper.is-done::after { animation: none; opacity: 0; }
+@keyframes shimmer { to { transform: translateX(100%); } }
+.ld-group { display: grid; gap: 6px; }
+.ld-paper .ln { height: 5px; border-radius: 3px; background: var(--kr-grey-40); transition: background var(--dur-slow) var(--ease-standard); }
+.ld-paper .ln.h { height: 10px; width: 64%; margin-bottom: 4px; }
+.ld-paper .ln.t { height: 6px; width: 32%; margin-bottom: 2px; }
+.ld-group.is-filled .ln { background: #d6d6d6; }
+.ld-group.is-filled .ln.h, .ld-group.is-filled .ln.t { background: var(--kr-green-apple); }
+.ld-icons { display: flex; gap: 12px; }
+.ld-icons i { width: 16px; height: 16px; border-radius: 50%; background: var(--kr-grey-40); transition: background var(--dur-slow) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
+.ld-group.is-filled .ld-icons i { background: #cfe9cd; }
+.ld-steps { width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card); padding: 20px; }
+
+/* ---------- Editor ---------- */
+.editor {
+  margin-inline: -16px; min-height: 100vh; background: var(--kr-background);
+  display: grid; grid-template-columns: 232px minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "side main preview";
+}
+body.is-mobile .editor { min-height: 100%; }
+.ed-side {
+  grid-area: side; position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: calc(100vh - 16px);
+  margin: 8px 0 8px 8px; background: var(--kr-white); border-radius: var(--radius-card); padding: 20px 12px 16px;
+  display: flex; flex-direction: column; gap: 24px; overflow-y: auto; scrollbar-width: none;
+}
+.ed-side .logo { align-self: flex-start; margin-left: 6px; }
+.acct { display: flex; gap: 10px; align-items: center; padding: 6px; }
+.av { width: 36px; height: 36px; border-radius: 8px; background: var(--kr-blue-dark); color: var(--kr-white); display: grid; place-items: center; font-weight: 500; flex: none; }
+.acct-text { display: grid; min-width: 0; }
+.acct-text b { font-size: 13px; line-height: 16px; font-weight: 500; }
+.acct-text span { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.nav-item {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 9px 10px; border: 0; background: none; border-radius: 10px;
+  font-size: 15px; line-height: 20px; font-weight: 500; color: var(--kr-grey-100); cursor: pointer; text-align: left;
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+.nav-item:hover { background: var(--kr-grey-40); }
+.nav-item:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.nav-doc { background: var(--kr-grey-40); border-radius: 12px; padding: 4px; display: grid; gap: 2px; margin-block: 6px; }
+.nav-doc .nav-item:hover { background: var(--kr-grey-60); }
+.nav-doc .doc-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-sub { padding: 8px 12px 8px 14px; font-weight: 400; font-size: 14px; }
+.nav-sub.is-active, .nav-sub.is-active:hover { background: var(--kr-grey-100); color: var(--kr-white); }
+.badge-new { font-size: 10px; line-height: 14px; font-weight: 700; font-style: italic; letter-spacing: .3px; color: var(--kr-white); background: var(--kr-primary); padding: 1px 6px; border-radius: 4px; }
+.ed-plan { margin-top: auto; display: grid; gap: 10px; text-align: center; font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
+.ed-plan b { font-weight: 700; font-style: italic; color: var(--kr-grey-100); }
+
+.ed-mbar { display: none; grid-area: mbar; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); }
+.ed-mbar .logo svg { width: 116px; }
+.ed-tabs { display: none; grid-area: tabs; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; justify-content: center; padding: 12px 16px; background: var(--kr-background); }
+.seg-light { display: flex; padding: 3px; gap: 2px; background: var(--kr-grey-60); border-radius: 10px; }
+.seg-light button { border: 0; background: none; padding: 7px 18px; border-radius: 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast), box-shadow var(--dur-fast); }
+.seg-light button[aria-pressed="true"] { background: var(--kr-white); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.seg-light button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+
+.ed-main { grid-area: main; min-width: 0; padding: 0 24px 140px; }
+.ed-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 4; display: flex; justify-content: space-between; align-items: center; padding: 14px 0 12px; background: var(--kr-background); }
+.saved { display: inline-flex; gap: 8px; align-items: center; color: var(--kr-grey-80); font-size: 14px; line-height: 20px; }
+.hist { display: flex; gap: 8px; }
+.icon-sq { width: 40px; height: 40px; border-radius: 10px; border: 0; background: var(--kr-grey-40); color: var(--kr-grey-100); display: grid; place-items: center; cursor: pointer; transition: background var(--dur-fast) var(--ease-standard); }
+.icon-sq:hover:not(:disabled) { background: var(--kr-grey-60); }
+.icon-sq:disabled { color: var(--kr-grey-80); opacity: .55; cursor: default; }
+.icon-sq:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.ed-col { max-width: 760px; margin-inline: auto; display: grid; gap: 16px; }
+
+.premium { border: 1.5px solid transparent; border-radius: var(--radius-card); background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, var(--kr-premium-gradient) border-box; box-shadow: var(--kr-shadow-premium-light); }
+.premium-head { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 20px; border: 0; background: none; cursor: pointer; text-align: left; font-size: 15px; line-height: 22px; font-weight: 500; border-radius: var(--radius-card); }
+.premium-head:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.premium-head .txt { flex: 1; min-width: 0; }
+.kr-text-premium-gradient { background: var(--kr-premium-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.premium-head .chev-d { color: #666cff; }
+.chev-d { display: inline-flex; transition: transform var(--dur-slow) var(--ease-inout); }
+.is-open > * > .chev-d, .premium.is-open .chev-d, .ecard.is-open > .ehead .chev-d { transform: rotate(180deg); }
+.premium-list { list-style: none; margin: 0; padding: 0 20px 16px; display: grid; gap: 10px; font-size: 14px; line-height: 20px; }
+.premium-list li { display: flex; gap: 10px; align-items: center; }
+.pdot { width: 20px; height: 20px; border-radius: 50%; background: var(--kr-premium-gradient); color: var(--kr-white); display: grid; place-items: center; flex: none; }
+.pdot svg.i { width: 12px; height: 12px; stroke-width: 3; }
+.premium-list .btn { justify-self: start; margin-top: 4px; min-height: 38px; padding: 6px 20px; font-size: 14px; }
+.doc-line { margin: 4px 0 0; font-size: 15px; line-height: 22px; }
+.doc-line b { font-weight: 500; }
+
+.ecard { background: var(--kr-white); border-radius: var(--radius-card); border: 1px solid var(--kr-grey-60); transition: box-shadow var(--dur-base) var(--ease-standard); scroll-margin-top: 76px; }
+.ecard.is-flash { box-shadow: 0 0 0 1px var(--kr-blue), 0 0 0 4px var(--kr-blue-tint); }
+.ehead { width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px 20px; border: 0; background: none; cursor: pointer; text-align: left; border-radius: var(--radius-card); font-size: 18px; line-height: 24px; font-weight: 500; transition: background 60ms linear; }
+.ehead:active { background: var(--kr-grey-20); }
+.ehead:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.ehead .eicon { width: 36px; height: 36px; border-radius: 10px; background: var(--kr-grey-40); display: grid; place-items: center; flex: none; }
+.ehead .eicon svg.i { width: 18px; height: 18px; }
+.ehead .meta { margin-left: auto; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--kr-grey-80); white-space: nowrap; }
+.ehead.analysis { font-size: 16px; font-weight: 400; color: var(--kr-grey-80); }
+.ehead.analysis .meta { color: var(--kr-grey-80); }
+.ecard > .acc { transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.ecard.is-open > .acc { grid-template-rows: 1fr; }
+.acc-inner > .ebody { opacity: 0; transform: translateY(-6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
+.ecard.is-open .acc-inner > .ebody { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 80ms, transform var(--dur-slow) var(--ease-standard) 40ms; }
+.ebody { padding: 4px 20px 20px; display: grid; gap: 16px; }
+.ebody > p { margin: 0; font-size: 14px; line-height: 20px; color: var(--kr-grey-80); }
+.hint-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 14px; line-height: 20px; }
+.hint-list li { display: flex; gap: 10px; align-items: center; }
+.hint-list .hd { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+.pi { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 20px; align-items: start; }
+.photo { display: grid; justify-items: center; gap: 12px; }
+.photo-circle { width: 108px; height: 108px; border-radius: 50%; background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); display: grid; place-items: center; color: var(--kr-grey-100); }
+.photo-circle svg.i { width: 26px; height: 26px; }
+.check { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; line-height: 20px; cursor: pointer; }
+.check input { width: 16px; height: 16px; margin: 0; accent-color: var(--kr-blue); }
+.btn-ol-sm { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 6px 14px; border: 1px solid var(--kr-grey-100); border-radius: var(--radius-btn); background: var(--kr-white); font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background var(--dur-fast); }
+.btn-ol-sm:hover { background: var(--kr-grey-40); }
+.btn-ol-sm:active { background: var(--kr-grey-60); }
+.btn-ol-sm:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.btn-ol-sm svg.i { width: 16px; height: 16px; }
+.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fgrid .full { grid-column: 1 / -1; }
+.f { display: grid; gap: 4px; min-width: 0; }
+.f > label { font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
+.input.sm { min-height: 42px; padding: 9px 12px; font-size: 15px; line-height: 22px; border-radius: 8px; }
+.textarea.sm { min-height: 120px; padding: 10px 12px; font-size: 14px; border-radius: 8px; }
+.more { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.more.is-hidden { grid-template-rows: 0fr; }
+.more-inner { min-height: 0; overflow: hidden; display: grid; gap: 16px; margin-inline: -4px; padding-inline: 4px; }
+.more-inner > .fgrid { padding-top: 2px; }
+.add-fields { width: 100%; padding: 10px; border: 1px dashed var(--kr-primary); border-radius: 10px; background: var(--kr-white); color: var(--kr-primary); font-size: 15px; line-height: 20px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast); }
+.add-fields:hover { background: var(--kr-grey-20); }
+.add-fields:focus-visible, .more-toggle:focus-visible, .add-row:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.more-toggle { justify-self: center; border: 0; background: none; color: var(--kr-primary); font-size: 15px; line-height: 20px; font-weight: 500; cursor: pointer; padding: 6px 8px; border-radius: 6px; }
+.entry { display: flex; gap: 12px; align-items: flex-start; padding: 12px 6px 12px 14px; border: 1px solid var(--kr-grey-60); border-radius: 10px; }
+.entry-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.entry-text b { font-size: 15px; line-height: 20px; font-weight: 500; }
+.entry-text span { font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
+.entry .icon-btn { position: static; width: 36px; height: 36px; }
+.entry .icon-btn svg.i { width: 18px; height: 18px; }
+.add-row { justify-self: start; border: 0; background: none; color: var(--kr-blue); font-size: 14px; line-height: 20px; font-weight: 500; display: inline-flex; gap: 6px; align-items: center; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+.add-row:hover { color: var(--kr-grey-100); }
+.add-row svg.i { width: 16px; height: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; gap: 4px; align-items: center; padding: 4px 4px 4px 12px; border: 1px solid var(--kr-grey-60); border-radius: 999px; background: var(--kr-grey-20); font-size: 14px; line-height: 20px; }
+.chip button { width: 24px; height: 24px; border-radius: 50%; border: 0; background: none; display: grid; place-items: center; cursor: pointer; color: var(--kr-grey-80); transition: background var(--dur-fast), color var(--dur-fast); }
+.chip button:hover { background: var(--kr-grey-60); color: var(--kr-grey-100); }
+.chip button svg.i { width: 14px; height: 14px; }
+
+.ed-preview {
+  grid-area: preview; position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; overflow-y: auto;
+  background: var(--kr-white); border-left: 1px solid var(--kr-grey-60); padding: 16px 24px 120px; display: grid; align-content: start; gap: 20px;
+}
+.pv-tabs { justify-self: center; display: flex; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); }
+.pv-tab { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border: 0; border-right: 1px solid var(--kr-grey-60); background: none; font-size: 15px; line-height: 20px; color: var(--kr-grey-100); cursor: pointer; white-space: nowrap; transition: background var(--dur-fast); }
+.pv-tab:first-child { border-radius: 10px 0 0 10px; } .pv-tab:last-child { border-right: 0; border-radius: 0 10px 10px 0; }
+.pv-tab:hover { background: var(--kr-grey-40); }
+.pv-tab.is-active, .pv-tab.is-active:hover { color: var(--kr-primary); background: var(--kr-white); box-shadow: inset 0 0 0 1px var(--kr-primary); }
+.pv-tab:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.pv-tab svg.i { width: 18px; height: 18px; }
+.pv-body { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; }
+.pv-tools { display: grid; gap: 12px; align-content: start; padding-top: 24px; }
+.pv-paper-wrap { container-type: inline-size; min-width: 0; }
+
+/* The resume page — sized in container units so it scales with the pane */
+.rv {
+  position: relative; width: 100%; aspect-ratio: 1 / 1.414; overflow: clip; background: var(--kr-white); box-shadow: var(--kr-shadow-cv);
+  padding: 7cqw 6cqw; font-family: var(--font-sans); font-size: 1.62cqw; line-height: 1.5; color: var(--kr-grey-100); display: grid; align-content: start; gap: 1.2cqw;
+}
+.rv::before {
+  content: ""; position: absolute; right: -10cqw; top: -10cqw; width: 42cqw; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
+  background: repeating-radial-gradient(circle, transparent 0 2.6cqw, rgba(0, 0, 0, .045) 2.6cqw calc(2.6cqw + 1px));
+}
+.rv-mark { position: absolute; left: 50%; top: 60%; transform: translate(-50%, -50%); font-weight: 700; font-size: 16cqw; line-height: 1; letter-spacing: .4cqw; color: rgba(0, 0, 0, .045); pointer-events: none; user-select: none; }
+.rv-sec { position: relative; margin-inline: -1.6cqw; padding: 1cqw 1.6cqw; border-radius: .6cqw; outline: 2px solid transparent; outline-offset: -1px; cursor: pointer; transition: outline-color var(--dur-fast) var(--ease-standard); }
+.rv-sec:hover, .rv-sec:focus-visible { outline-color: var(--kr-primary); }
+.rv-sec::after {
+  content: "Click to edit this section"; position: absolute; left: -1px; bottom: -1px; opacity: 0; transition: opacity var(--dur-fast);
+  background: var(--kr-primary); color: var(--kr-white); font-size: max(10px, 1.5cqw); line-height: 1.5; padding: .2cqw 1cqw; border-radius: 0 .6cqw 0 .6cqw;
+}
+.rv-sec:hover::after, .rv-sec:focus-visible::after { opacity: 1; }
+.rv-name { font-family: var(--font-display); font-weight: 400; color: var(--kr-green-apple); font-size: 5.4cqw; line-height: 1.12; letter-spacing: -.06cqw; margin: 0; }
+.rv-role { margin: .2cqw 0 1.4cqw; font-size: 2cqw; color: var(--kr-grey-80); }
+.rv-details { display: grid; gap: .25cqw; }
+.rv-details b { font-weight: 500; }
+.rv h3 { font-family: var(--font-display); font-weight: 400; font-size: 2.5cqw; line-height: 1.3; margin: 0 0 1cqw; display: flex; gap: 1.2cqw; align-items: baseline; }
+.rv h3 span { color: var(--kr-green-apple); font-size: 2.1cqw; }
+.rv h3::after { content: ""; flex: none; }
+.rv-ul { display: block; width: 9cqw; height: .25cqw; background: var(--kr-green-apple); margin: -.6cqw 0 1.2cqw; }
+.rv p { margin: 0; }
+.rv-entry { display: grid; gap: .2cqw; }
+.rv-entry + .rv-entry { margin-top: 1.6cqw; }
+.rv-entry b { font-size: 1.85cqw; font-weight: 500; }
+.rv-meta { color: var(--kr-grey-80); font-size: 1.4cqw; }
+.rv-entry ul { margin: .4cqw 0 0; padding-left: 2.4cqw; }
+.rv-skills { display: flex; flex-wrap: wrap; gap: .6cqw 1.4cqw; list-style: none; margin: 0; padding: 0; }
+.rv-skills li { display: inline-flex; align-items: center; gap: 1.4cqw; }
+.rv-skills li::after { content: ""; width: .8cqw; height: .8cqw; border-radius: 50%; background: var(--kr-green-apple); }
+.rv-skills li:last-child::after { display: none; }
+.rv-hobbies { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.2cqw 2cqw; text-align: center; }
+.rv-hobbies div { display: grid; justify-items: center; gap: .8cqw; font-size: 1.5cqw; }
+.rv-hobbies svg.i { width: 4.6cqw; height: 4.6cqw; stroke-width: 1.4; }
+
+/* Editor: tablet (sidebar + one pane with tabs), phone (top bar + tabs) */
+@container (max-width: 1100px) {
+  .editor { grid-template-columns: 232px minmax(0, 1fr); grid-template-areas: "side tabs" "side pane"; grid-template-rows: auto 1fr; }
+  .ed-side { grid-row: 1 / 3; }
+  .ed-tabs { display: flex; }
+  .ed-main, .ed-preview { grid-area: pane; }
+  .ed-preview { position: static; height: auto; overflow: visible; border-left: 0; background: var(--kr-background); padding: 4px 24px 140px; }
+  .ed-top { top: calc(env(safe-area-inset-top, 0px) + 64px); }
+  .editor[data-pane="edit"] .ed-preview, .editor[data-pane="preview"] .ed-main { display: none; }
+}
+@container (max-width: 760px) {
+  .editor { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mbar" "tabs" "pane"; grid-template-rows: auto auto 1fr; }
+  .ed-side { display: none; }
+  .ed-mbar { display: flex; }
+  .ed-main { padding: 0 16px 120px; }
+  .ed-preview { padding: 4px 16px 120px; }
+  .ed-top { position: static; }
+  .pv-tabs { display: none; }
+  .pv-body { grid-template-columns: minmax(0, 1fr); }
+  .pv-tools { display: none; }
+  .premium-head { padding: 12px 16px; font-size: 14px; line-height: 20px; }
+  .pi { grid-template-columns: minmax(0, 1fr); }
+  .photo { grid-template-columns: auto 1fr; justify-items: start; align-items: center; column-gap: 16px; }
+  .photo-circle { width: 72px; height: 72px; grid-row: 1 / 3; }
+  .fgrid { grid-template-columns: minmax(0, 1fr); }
+  .ehead { padding: 14px 16px; font-size: 16px; }
+  .ebody { padding: 4px 16px 16px; }
+}
 
 /* ---------- Prototype controls (not part of the product UI) ---------- */
 .proto {
@@ -413,17 +641,20 @@ body.is-mobile .page { padding-bottom: 48px; }
   .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard { transition-property: opacity, box-shadow !important; }
   .acc-inner > .mbody, .b-back .back, .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard, .b-wrap .mcard.is-open .chev { transform: none !important; }
   .step.is-active .dot { animation-duration: 1.6s; }
+  .ld-paper::after { animation: none; opacity: 0; }
+  .more, .ecard > .acc { transition-property: opacity !important; }
+  .acc-inner > .ebody { transform: none !important; }
 }
 </style>
 
 <div class="stage">
 <div class="device" id="device">
 <div class="statusbar" aria-hidden="true"><span>9:41</span><span class="notch"></span><span class="sys"><span class="bars"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:11px"></i></span><span class="batt"><i></i></span></span></div>
-<header class="topbar">
+<header class="topbar" id="topbar">
   <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start"><svg viewBox="0 0 152 24" width="152" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.794 4.102a2.242 2.242 0 00-2.28 2.279 2.292 2.292 0 003.935 1.658 2.292 2.292 0 00.65-1.658 2.243 2.243 0 00-2.305-2.279zm0 3.135a.824.824 0 01-.833-.856.806.806 0 01.833-.833.824.824 0 01.855.833.84.84 0 01-.855.852v.004z" fill="#FF5E59"></path><path d="M14.544.106c-2.742 0-5.728 1.23-7.372 3.289l1.141 1.557c.346.465.731.9 1.15 1.3a3.843 3.843 0 00-1.501-.291c-4.475 0-7.81 3.64-7.81 8.621 0 5.256 4.168 9.312 9.566 9.312 4.452 0 7.904-3.202 7.904-7.345 0-1.857-.703-3.531-1.976-4.494h4.763c.944-1.823 1.382-3.573 1.382-5.153-.01-3.944-2.729-6.796-7.247-6.796zM9.718 22.271c-2.657 0-4.954-1.195-6.377-3.079L7.04 15.48a3.36 3.36 0 003.402 3.415c1.689 0 2.917-1.184 2.917-2.785 0-.92-.57-1.907-1.403-2.236l-1.053 1.053a1.337 1.337 0 01.789 1.183c0 .68-.526 1.163-1.273 1.163-1.162 0-1.886-.9-1.886-2.148 0-1.755 1.404-3.158 3.379-3.158 2.303 0 4.036 1.951 4.036 4.582 0 3.222-2.723 5.722-6.23 5.722zm9.608-11.839h-6.648c-2.544 0-3.663.746-4.914 1.995l-5.276 5.316a7.715 7.715 0 01-.664-3.16c0-4.102 2.759-7.088 6.445-7.088 1.368 0 2.347.548 3.181 1.271l.899-.9-2.961-4.23a7.755 7.755 0 015.156-1.907c3.51 0 5.57 2.105 5.57 5.152a9.008 9.008 0 01-.788 3.551z" fill="#FF5E59"></path><path d="M39.836 6.289h-4.41l-3.377 5.376v-9.76h-3.905v16.223h3.905v-5.133l3.554 5.133h4.563l-4.235-5.964 3.905-5.875zM43.106.91c-1.36 0-2.325.923-2.325 2.172 0 1.294.965 2.214 2.325 2.214 1.316 0 2.28-.92 2.28-2.214.002-1.243-.964-2.171-2.28-2.171zm1.864 5.38h-3.906v11.837h3.905V6.289zm8.096 3.069c1.207 0 2.105.876 2.303 2.148l3.648-.986c-.877-3.661-3.598-4.67-5.968-4.67-3.465 0-6.296 2.367-6.296 6.357s2.83 6.359 6.296 6.359c2.37 0 5.09-1.009 5.968-4.671l-3.648-.986c-.198 1.272-1.096 2.148-2.303 2.148-1.272 0-2.414-.898-2.414-2.85 0-1.951 1.142-2.85 2.414-2.85zm19.302-3.07h-4.407l-3.38 5.376v-9.76h-3.904v16.223h3.905v-5.133l3.553 5.133h4.563l-4.233-5.964 3.903-5.875zm8.294-.283c-2.293 0-2.888 2.08-3.226 4.536l-.304-4.253h-3.557v11.839h3.905v-6.29c.374-.921 1.098-1.646 2.128-1.646h2.32l-.652-4.115a2.863 2.863 0 00-.614-.07zm13.251 5.347c0-3.33-2.479-5.502-5.66-5.502-4.036 0-6.01 3.113-6.01 6.27 0 3.99 2.676 6.446 6.688 6.446 1.976 0 3.75-.658 4.826-1.601L92.389 14.4c-1.075.571-2.215.944-3.4.944-1.636 0-2.64-.695-3.054-1.732l7.77.021c.15-.75.22-1.514.208-2.28zm-8.112-.395c.152-1.358 1.037-2.169 2.41-2.169 1.271 0 2.192.744 2.258 2.17H85.8zm14.275-2.104c1.119 0 2.171.417 2.675 1.776l2.831-1.212c-.68-2.471-2.831-3.567-5.44-3.567-3.072 0-4.936 1.863-4.936 3.968 0 1.67.965 3.003 3.07 3.42l1.91.373 1.249.242c.572.109.791.372.791.759 0 .504-.484.942-1.58.942s-2.172-.416-2.677-1.776l-2.83 1.214c.681 2.477 2.83 3.574 5.442 3.574 3.07 0 4.935-1.864 4.935-3.97 0-1.67-.965-3.002-3.072-3.418l-1.907-.374-1.251-.24c-.57-.11-.79-.374-.79-.76 0-.512.483-.95 1.58-.95zm14.215 5.832c-.374.549-.76.877-1.579.877-.769 0-1.602-.417-1.602-1.797V6.289h-3.905v8.002c0 2.324 1.031 4.276 3.773 4.276 1.889 0 3.031-.945 3.371-3.09l.293 2.651h3.554V6.29h-3.905v8.397zm20.666-8.835c-1.586 0-3.11.619-3.595 3.058-.28-1.519-1.286-3.058-3.557-3.058-1.572 0-3.084.608-3.583 2.99l-.278-2.552h-3.56v11.839h3.905V9.622a1.828 1.828 0 011.567-.768c.987 0 1.71.635 1.71 2.018v7.256h3.884V9.61v.012a1.83 1.83 0 011.55-.768c.987 0 1.71.635 1.71 2.018v7.256h3.884V9.84c.005-1.753-.895-3.989-3.637-3.989zm11.977 9.491c-1.635 0-2.638-.694-3.053-1.732l7.77.022c.147-.75.213-1.514.198-2.279 0-3.33-2.48-5.502-5.661-5.502-4.036 0-6.01 3.113-6.01 6.27 0 3.99 2.677 6.446 6.688 6.446 1.976 0 3.751-.658 4.826-1.601l-1.363-2.566c-1.064.571-2.211.942-3.395.942zm-.789-6.554c1.273 0 2.194.744 2.259 2.169h-4.668c.155-1.357 1.037-2.168 2.409-2.168v-.001z" fill="#081430"></path></svg></button>
 </header>
 
-<main class="page">
+<main class="page" id="page">
   <!-- Screen 1: intent -->
   <section class="screen" id="screen-intent" aria-labelledby="intent-h">
     <div class="page-head">
@@ -443,7 +674,27 @@ body.is-mobile .page { padding-bottom: 48px; }
     <div class="methods" id="methods"></div>
     <div class="center"><button class="text-link" type="button" data-action="toast" data-msg="You’d land on an empty resume with sample content.">I’m just looking around</button></div>
   </section>
+
+  <!-- Screen 3: building the resume -->
+  <section class="screen" id="screen-loading" aria-labelledby="loading-h" hidden>
+    <div class="page-head">
+      <h1 id="loading-h">Building your resume</h1>
+      <p id="loading-sub">This takes a few seconds.</p>
+    </div>
+    <div class="ld-stage ld-item">
+      <div class="ld-paper" aria-hidden="true">
+        <div class="ld-group"><i class="ln h"></i><i class="ln" style="width:44%"></i><i class="ln" style="width:58%"></i><i class="ln" style="width:50%"></i></div>
+        <div class="ld-group"><i class="ln t"></i><i class="ln"></i><i class="ln" style="width:86%"></i><i class="ln t" style="margin-top:6px"></i><i class="ln" style="width:72%"></i><i class="ln" style="width:90%"></i><i class="ln" style="width:64%"></i></div>
+        <div class="ld-group"><i class="ln t"></i><i class="ln" style="width:66%"></i><i class="ln" style="width:48%"></i></div>
+        <div class="ld-group"><i class="ln t"></i><div class="ld-icons"><i></i><i></i><i></i><i></i></div></div>
+      </div>
+      <div class="ld-steps"><ol class="steps" id="loading-steps" role="status" aria-live="polite"></ol></div>
+    </div>
+  </section>
 </main>
+
+<!-- Screen 4: the editor -->
+<div class="editor" id="screen-editor" data-pane="preview" hidden></div>
 </div>
 </div>
 
@@ -481,7 +732,35 @@ body.is-mobile .page { padding-bottom: 48px; }
     file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
-    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
+    map: '<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/>',
+    chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    list: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+    cloud2: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/>',
+    down: '<path d="m6 9 6 6 6-6"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1"/>',
+    help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    menu: '<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    briefcase: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+    cap: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+    star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+    book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+    music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    bike: '<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>'
   };
   const icon = (n, cls) => `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 
@@ -584,7 +863,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- State ---------- */
   let variant = 'A';
   const methodsEl = document.getElementById('methods');
-  const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create') };
+  const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading') };
+  const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor');
   let current = 'intent';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const device = document.getElementById('device');
@@ -617,7 +897,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- Motion ---------- */
   // Mirrors the CSS motion tokens so JS-driven and CSS-driven motion share one scale.
-  const DUR = { fast: 160, base: 260, slow: 380 };
+  const DUR = { fast: 160, base: 260, slow: 380, travel: 560 };  // travel: one long spatial move (page → editor)
   const EASE = { standard: 'cubic-bezier(.2, 0, 0, 1)', exit: 'cubic-bezier(.4, 0, 1, 1)', inout: 'cubic-bezier(.4, 0, .2, 1)' };
   const STAGGER = 30;
   const play = (el, kf, o) => el.animate(kf, Object.assign({ fill: 'both' }, o));
@@ -644,8 +924,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   async function go(screen, picked) {
     if (screenRun) screenRun.finish();
     if (screen === current) return;
+    if (current === 'editor') return leaveEditor(screen);
     const from = screens[current], to = screens[screen];
-    const dir = screen === 'create' ? 1 : -1;
+    const dir = screen === 'intent' ? -1 : 1;
     current = screen;
     await scrollToTop();
     if (current !== screen) return; // another change started while scrolling
@@ -659,8 +940,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     const anims = [];
     const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
-    const outItems = [...from.querySelectorAll('.intent, .mcard, :scope > .center')].filter(shown);
-    const inItems = [...to.querySelectorAll('.intent, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
+    const outItems = [...from.querySelectorAll('.intent, .mcard, .ld-item, :scope > .center')].filter(shown);
+    const inItems = [...to.querySelectorAll('.intent, .method-list > .mcard, .slot, .ld-item, :scope > .center')].filter(shown);
 
     if (reduce) {
       anims.push(play(from, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }));
@@ -766,53 +1047,320 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- Method behaviour ---------- */
   const setError = (field, on) => field.classList.toggle('has-error', on);
 
-  const RESULTS = {
-    linkedin: { steps: ['Reading your public profile', 'Pulling work history and education', 'Laying it out on a template'],
-      title: 'Your LinkedIn profile is in', text: 'We filled your resume with what we found. Check the details before you send it anywhere.',
-      facts: [['4', 'positions'], ['2', 'schools'], ['14', 'skills']] },
-    ai: { steps: ['Writing your profile summary', 'Drafting work experience bullets', 'Picking skills for the role'],
-      title: 'Your AI draft is ready', text: 'Edit anything that doesn’t sound like you. The AI writer stays available in the editor.',
-      facts: [['1', 'summary'], ['6', 'bullet points'], ['10', 'skills']] },
-    upload: { steps: ['Uploading your file', 'Reading sections and dates', 'Moving everything to a template'],
-      title: 'We read your resume', text: 'Everything is on a fresh template now. Your original file stays untouched.',
-      facts: [['3', 'positions'], ['1', 'school'], ['11', 'skills']] },
-    paste: { steps: ['Reading your text', 'Sorting it into resume sections', 'Laying it out on a template'],
-      title: 'Your text is now a resume', text: 'We sorted what you pasted into sections. Anything we couldn’t place is under Additional info.',
-      facts: [['2', 'positions'], ['1', 'school'], ['9', 'skills']] }
+  /* ---------- Creating the resume ---------- */
+  const STEPS = {
+    linkedin: ['Reading your public profile', 'Pulling work history and education', 'Laying it out on a template'],
+    ai: ['Writing your profile summary', 'Drafting your work experience', 'Picking skills for the role'],
+    upload: ['Reading your file', 'Finding sections and dates', 'Moving it onto a template'],
+    paste: ['Reading your text', 'Sorting it into resume sections', 'Laying it out on a template']
   };
+  const BUSY_LABEL = { linkedin: 'Importing…', ai: 'Writing…', upload: 'Uploading…', paste: 'Reading…' };
+  const SUBTITLE = {
+    linkedin: 'We’re turning your LinkedIn profile into a resume.',
+    ai: 'The AI is drafting a resume around your job title.',
+    upload: 'We’re moving your old resume onto a fresh template.',
+    paste: 'We’re sorting your text into resume sections.'
+  };
+  const BASE_PERSON = {
+    titleBefore: '', titleAfter: '', first: 'Jana', last: 'Novák', jobTitle: 'Product Designer',
+    phone: '+421 905 123 456', email: 'jana.novak@email.com', dob: '14.03.1993', nationality: 'Slovak',
+    street: 'Obchodná 12', city: 'Bratislava', zip: '811 06', country: 'Slovakia', web: 'jananovak.design',
+    profile: 'Product designer with 7 years of experience in health and finance apps. I turn research into clear decisions, prototype early, and work side by side with engineers to ship.',
+    work: [
+      { title: 'Senior Product Designer', org: 'Lumen Health', place: 'Bratislava', from: '03/2021', to: 'Present',
+        bullets: ['Redesigned the patient booking flow and cut drop-off by 23%.', 'Built the first shared component library with two engineers.'] },
+      { title: 'UX Designer', org: 'Pixelfield', place: 'Bratislava', from: '09/2018', to: '02/2021',
+        bullets: ['Designed mobile banking features used by 400,000 people.'] }
+    ],
+    education: [{ title: 'MA Visual Communication', org: 'Academy of Fine Arts and Design', place: 'Bratislava', from: '2013', to: '2018' }],
+    skills: ['Figma', 'User research', 'Prototyping', 'Design systems', 'Accessibility', 'Workshop facilitation'],
+    hobbies: [['plane', 'Exploring distant lands'], ['book', 'Getting lost in a good book'], ['camera', 'Capturing moments'], ['music', 'Feeling the music'], ['bike', 'Weekend cycling']]
+  };
+  const cap = w => w ? w[0].toUpperCase() + w.slice(1) : '';
+  function buildPerson(id, opts) {
+    const p = JSON.parse(JSON.stringify(BASE_PERSON));
+    if (id === 'ai' && opts) {
+      const parts = opts.name.trim().split(/\s+/);
+      p.first = parts[0]; p.last = parts.slice(1).join(' ');
+      p.jobTitle = opts.title.trim();
+      const ascii = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+      p.email = [ascii(p.first), ascii(p.last)].filter(Boolean).join('.') + '@email.com';
+      p.work[0].title = p.jobTitle;
+      p.profile = `${p.jobTitle} with 7 years of experience delivering work people rely on every day. Known for turning messy problems into clear plans and for working closely with the people around me.`;
+    }
+    if (id === 'linkedin' && opts) {
+      const slug = (opts.url.match(/linkedin\.com\/in\/([^/?#]+)/i) || [])[1] || '';
+      const parts = slug.split('-').filter(w => /^[a-z]+$/i.test(w));
+      if (parts.length >= 2) { p.first = cap(parts[0].toLowerCase()); p.last = cap(parts[1].toLowerCase()); p.email = `${parts[0]}.${parts[1]}@email.com`.toLowerCase(); }
+    }
+    const slugOf = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+    if (id === 'ai' || id === 'linkedin') p.web = slugOf(p.first) + slugOf(p.last) + '.com';
+    return p;
+  }
+  let person = buildPerson('paste');
 
-  function runFlow(form, id, opts) {
-    const body = form.closest('.mbody');
-    const r = RESULTS[id];
-    const name = opts && opts.name ? opts.name.split(' ')[0] : '';
-    const status = document.createElement('div');
-    status.className = 'status';
-    status.setAttribute('role', 'status');
-    status.innerHTML = `<ol class="steps">${r.steps.map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('')}</ol>`;
-    form.hidden = true;
-    body.appendChild(status);
-    status.animate(reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
-    const steps = status.querySelectorAll('.step');
-    steps.forEach((s, i) => {
-      later(() => { if (i) steps[i - 1].classList.replace('is-active', 'is-done'); s.classList.add('is-active'); }, i * 750);
-    });
+  function startCreation(form, id, opts) {
+    const btn = form.querySelector('[type="submit"]');
+    btn.style.minWidth = btn.offsetWidth + 'px';
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${BUSY_LABEL[id]}`;
+    person = buildPerson(id, opts);
     later(() => {
-      steps[steps.length - 1].classList.replace('is-active', 'is-done');
-      later(() => {
-        status.innerHTML = `
-          <div class="success-head"><span class="ok">${icon('check')}</span>
-            <div><h3>${name && id === 'ai' ? `${name}, your AI draft is ready` : r.title}</h3><p>${r.text}</p></div></div>
-          <div class="facts">${r.facts.map(([n, l]) => `<div class="fact"><b>${n}</b><span>${l}</span></div>`).join('')}</div>
-          <div class="success-actions">
-            <button class="btn btn-coral btn-block" type="button" data-action="toast" data-msg="End of prototype. The resume editor opens here.">Open my resume</button>
-            <button class="inline-link" type="button" data-action="redo">Try a different input</button>
-          </div>`;
-        [...status.children].forEach((el, i) => el.animate(
-          reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
-          { duration: DUR.base, delay: i * 60, easing: EASE.standard, fill: 'backwards' }));
-        status.querySelector('.btn').focus({ preventScroll: true });
-      }, 400);
-    }, steps.length * 750);
+      document.getElementById('loading-sub').textContent = SUBTITLE[id];
+      document.getElementById('loading-steps').innerHTML = STEPS[id].map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
+      const paper = screens.loading.querySelector('.ld-paper');
+      paper.classList.remove('is-done');
+      paper.querySelectorAll('.ld-group').forEach(g => g.classList.remove('is-filled'));
+      go('loading');
+      runBuilding();
+    }, 450);
+  }
+
+  /* Each finished step visibly fills part of the page, so progress reads as "your resume taking shape" */
+  function runBuilding() {
+    const steps = [...screens.loading.querySelectorAll('.step')];
+    const paper = screens.loading.querySelector('.ld-paper');
+    const groups = [...paper.querySelectorAll('.ld-group')];
+    const fills = [[0], [1, 2], [3]];
+    const T = 900, start = 420;
+    steps.forEach((st, i) => later(() => {
+      if (i) { steps[i - 1].classList.replace('is-active', 'is-done'); fills[i - 1].forEach(g => groups[g].classList.add('is-filled')); }
+      st.classList.add('is-active');
+    }, start + i * T));
+    later(() => {
+      const last = steps.length - 1;
+      steps[last].classList.replace('is-active', 'is-done');
+      fills[last].forEach(g => groups[g].classList.add('is-filled'));
+      paper.classList.add('is-done');
+      later(openEditor, 520);
+    }, start + steps.length * T);
+  }
+
+  /* ---------- Editor ---------- */
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const fullName = () => [person.titleBefore, person.first, person.last].filter(Boolean).join(' ') + (person.titleAfter ? ', ' + person.titleAfter : '');
+  const docName = () => `${[person.first, person.last].filter(Boolean).join(' ') || 'Untitled'} Resume`;
+
+  function resumeHTML() {
+    const P = person;
+    const addr = [P.street, [P.zip, P.city].filter(Boolean).join(' '), P.country].filter(Boolean).join(', ');
+    const rows = [['Date of birth', P.dob], ['Nationality', P.nationality], ['Address', addr], ['Phone number', P.phone], ['Email address', P.email], ['Web', P.web]]
+      .filter(r => r[1]).map(([k, v]) => `<div><b>${k}:</b> ${esc(v)}</div>`).join('');
+    const sec = (key, n, title, body) => `<div class="rv-sec" data-action="rv-sec" data-sec="${key}" tabindex="0" role="button" aria-label="Edit ${title}"><h3><span>${n}</span>${title}</h3><i class="rv-ul"></i>${body}</div>`;
+    const entry = e => `<div class="rv-entry"><b>${esc(e.title)}${e.org ? ' | ' + esc(e.org) : ''}</b><span class="rv-meta">${esc(e.from)} – ${esc(e.to)}${e.place ? ' · ' + esc(e.place) : ''}</span>${e.bullets && e.bullets.length ? `<ul>${e.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}</div>`;
+    return `
+      <div class="rv-sec" data-action="rv-sec" data-sec="personal" tabindex="0" role="button" aria-label="Edit personal information">
+        <h2 class="rv-name">${esc(fullName()) || '&nbsp;'}</h2>
+        ${P.jobTitle ? `<p class="rv-role">${esc(P.jobTitle)}</p>` : ''}
+        <div class="rv-details">${rows}</div>
+      </div>
+      ${P.profile ? sec('profile', '01', 'Profile', `<p>${esc(P.profile)}</p>`) : ''}
+      ${sec('work', '02', 'Work Experience', P.work.map(entry).join(''))}
+      ${sec('education', '03', 'Education', P.education.map(entry).join(''))}
+      ${sec('skills', '04', 'Strengths', `<ul class="rv-skills">${P.skills.map(k => `<li>${esc(k)}</li>`).join('')}</ul>`)}
+      ${sec('hobbies', '05', 'Hobbies', `<div class="rv-hobbies">${P.hobbies.map(([ic, t]) => `<div>${icon(ic)}<span>${esc(t)}</span></div>`).join('')}</div>`)}
+      <span class="rv-mark" aria-hidden="true">PREVIEW</span>`;
+  }
+
+  function editorHTML() {
+    const P = person;
+    const f = (k, label, cls, ph) => `<div class="f${cls ? ' ' + cls : ''}"><label for="ed-${k}">${label}</label><input class="input sm" id="ed-${k}" data-k="${k}" value="${esc(P[k])}"${ph ? ` placeholder="${ph}"` : ''}></div>`;
+    const navItem = (ic, label, extra) => `<li><button class="nav-item" type="button" data-action="toast" data-msg="${label} isn’t part of this prototype.">${icon(ic)}${label}${extra || ''}</button></li>`;
+    const sub = (label, active) => `<button class="nav-item nav-sub${active ? ' is-active' : ''}" type="button" ${active ? 'aria-current="page"' : `data-action="toast" data-msg="${label} isn’t part of this prototype."`}>${label}</button>`;
+    const ecard = (key, ic, title, meta, body, open) => `
+      <div class="ecard${open ? ' is-open' : ''}" data-sec="${key}">
+        <button class="ehead" type="button" data-action="ecard" aria-expanded="${!!open}"><span class="eicon">${icon(ic)}</span>${title}<span class="meta">${meta}</span><span class="chev-d">${icon('down')}</span></button>
+        <div class="acc"${open ? '' : ' inert'}><div class="acc-inner"><div class="ebody">${body}</div></div></div>
+      </div>`;
+    const entries = (list, what) => list.map(e => `
+      <div class="entry"><div class="entry-text"><b>${esc(e.title)}</b><span>${esc(e.org)} · ${esc(e.from)} – ${esc(e.to)}</span></div>
+        <button class="icon-btn" type="button" data-action="toast" data-msg="Editing a single ${what} opens a detail form here." aria-label="Edit ${esc(e.title)}">${icon('pen')}</button></div>`).join('') +
+      `<button class="add-row" type="button" data-action="toast" data-msg="A new empty ${what} would appear here.">${icon('plus')}Add ${what}</button>`;
+    const chips = key => `<div class="chips">${person[key].map((c, i) => `<span class="chip">${esc(Array.isArray(c) ? c[1] : c)}<button type="button" data-action="chip-remove" data-list="${key}" data-i="${i}" aria-label="Remove ${esc(Array.isArray(c) ? c[1] : c)}">${icon('x')}</button></span>`).join('')}</div>`;
+
+    return `
+      <div class="ed-mbar">
+        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
+        <button class="icon-sq" type="button" data-action="toast" data-msg="The menu holds the same links as the desktop sidebar." aria-label="Menu">${icon('menu')}</button>
+      </div>
+      <nav class="ed-side" aria-label="Main">
+        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
+        <div class="acct"><span class="av" data-out="initial">${esc((P.first || 'J')[0])}</span><span class="acct-text"><b>My Account</b><span data-out="fullname">${esc([P.first, P.last].join(' '))}</span></span></div>
+        <ul class="nav">
+          ${navItem('home', 'Dashboard')}
+          ${navItem('file', 'My Documents')}
+          <li class="nav-doc">
+            <button class="nav-item" type="button" aria-current="true">${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
+            ${sub('Fill In', true)}${sub('Design')}${sub('ATS Checker')}${sub('Proofread &amp; Translate')}${sub('Download &amp; Share')}
+          </li>
+          ${navItem('map', 'Career Map')}
+          ${navItem('chat', 'Job Interviews')}
+          ${navItem('search', 'Find Jobs')}
+          ${navItem('list', 'Job Tracker', ' <span class="badge-new">NEW</span>')}
+        </ul>
+        <div class="ed-plan"><span>Current plan: <b>FREE</b></span><button class="btn btn-gradient btn-block" type="button" data-action="toast" data-msg="Upgrade opens the plans page.">Upgrade</button></div>
+      </nav>
+      <div class="ed-tabs"><div class="seg-light" role="group" aria-label="Editor view">
+        <button type="button" data-action="pane" data-pane="edit" aria-pressed="false">Fill In</button>
+        <button type="button" data-action="pane" data-pane="preview" aria-pressed="true">Preview</button>
+      </div></div>
+      <div class="ed-main">
+        <div class="ed-top">
+          <span class="saved" role="status">${icon('cloud2')}<span data-out="saved">Saved</span></span>
+          <div class="hist"><button class="icon-sq" type="button" disabled aria-label="Undo">${icon('undo')}</button><button class="icon-sq" type="button" disabled aria-label="Redo">${icon('redo')}</button></div>
+        </div>
+        <div class="ed-col">
+          <div class="premium">
+            <button class="premium-head" type="button" data-action="premium" aria-expanded="false">
+              <span class="txt kr-text-premium-gradient">This resume uses 3 premium features. Upgrade to Premium to download it as is.</span><span class="chev-d">${icon('down')}</span>
+            </button>
+            <div class="acc" inert><div class="acc-inner"><ul class="premium-list">
+              <li><span class="pdot">${icon('check')}</span>Timeline template</li>
+              <li><span class="pdot">${icon('check')}</span>Custom accent colour</li>
+              <li><span class="pdot">${icon('check')}</span>Hobby icons</li>
+              <li><button class="btn btn-gradient" type="button" data-action="toast" data-msg="Upgrade opens the plans page.">See Premium plans</button></li>
+            </ul></div></div>
+          </div>
+          <p class="doc-line">Document: <b data-out="docname">${esc(docName())}</b></p>
+          <div class="ecard" data-sec="analysis">
+            <button class="ehead analysis" type="button" data-action="ecard" aria-expanded="false">Section Analysis<span class="meta">2 suggestions</span><span class="chev-d">${icon('eye')}</span></button>
+            <div class="acc" inert><div class="acc-inner"><div class="ebody"><ul class="hint-list">
+              <li><span class="hd" style="background:var(--kr-mint)"></span>Personal information is complete.</li>
+              <li><span class="hd" style="background:var(--kr-yellow)"></span>Profile: add one result you can measure.</li>
+              <li><span class="hd" style="background:var(--kr-yellow)"></span>Work experience: start bullets with a verb.</li>
+            </ul></div></div></div>
+          </div>
+          ${ecard('personal', 'user', 'Personal Information', '', `
+            <div class="pi">
+              <div class="photo">
+                <div class="photo-circle">${icon('eyeOff')}</div>
+                <label class="check"><input type="checkbox" id="ed-showpic">Show picture</label>
+                <button class="btn-ol-sm" type="button" data-action="toast" data-msg="Edit Labels lets you rename fields like “Date of birth”.">${icon('tag')}Edit Labels</button>
+              </div>
+              <div class="fgrid">
+                ${f('titleBefore', 'Title before', '', 'Mgr.')}${f('titleAfter', 'Title after', '', 'PhD.')}
+                ${f('first', 'First name')}${f('last', 'Last name')}
+                ${f('jobTitle', 'Job title', 'full')}
+                ${f('phone', 'Phone number')}${f('email', 'Email address')}
+              </div>
+            </div>
+            <div class="more"><div class="more-inner">
+              <div class="fgrid">
+                ${f('dob', 'Date of birth')}${f('nationality', 'Nationality')}
+                ${f('street', 'Street')}${f('city', 'City')}${f('zip', 'ZIP code')}${f('country', 'Country')}
+                ${f('web', 'Web', 'full')}
+              </div>
+              <button class="add-fields" type="button" data-action="toast" data-msg="Custom fields let you add things like a driving licence.">+ Add Custom Fields</button>
+            </div></div>
+            <button class="more-toggle" type="button" data-action="more-toggle" aria-expanded="true">Hide Additional Fields</button>`, true)}
+          ${ecard('profile', 'gauge', 'Profile', '', `<p>Two or three sentences about who you are and what you’re great at.</p>
+            <div class="f"><label for="ed-profile" class="sr-only">Profile</label><textarea class="textarea sm" id="ed-profile" data-k="profile">${esc(P.profile)}</textarea></div>`)}
+          ${ecard('work', 'briefcase', 'Work Experience', `${P.work.length} positions`, entries(P.work, 'position'))}
+          ${ecard('education', 'cap', 'Education', `${P.education.length} school`, entries(P.education, 'school'))}
+          ${ecard('skills', 'star', 'Strengths', `<span data-out="skillcount">${P.skills.length}</span>`, `<div data-out="skills">${chips('skills')}</div>
+            <div class="f"><label for="ed-skill-new">Add a strength</label><input class="input sm" id="ed-skill-new" data-add="skills" placeholder="Type and press Enter"></div>`)}
+          ${ecard('hobbies', 'heart', 'Hobbies', `${P.hobbies.length}`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}
+        </div>
+      </div>
+      <aside class="ed-preview" aria-label="Resume preview">
+        <div class="pv-tabs">
+          <button class="pv-tab is-active" type="button" aria-current="true">${icon('eye')}Preview</button>
+          <button class="pv-tab" type="button" data-action="toast" data-msg="Resume Tailoring matches this resume to a job ad.">${icon('target')}Resume Tailoring</button>
+          <button class="pv-tab" type="button" data-action="toast" data-msg="Help Center opens in a new tab.">${icon('help')}Help Center</button>
+        </div>
+        <div class="pv-body">
+          <div class="pv-tools">
+            <button class="icon-sq" type="button" data-action="toast" data-msg="Full-screen preview opens here." aria-label="Full-screen preview">${icon('eye')}</button>
+            <button class="icon-sq" type="button" data-action="toast" data-msg="Download is a Premium feature for this template." aria-label="Download">${icon('download')}</button>
+          </div>
+          <div class="pv-paper-wrap"><div class="rv" id="rv">${resumeHTML()}</div></div>
+        </div>
+      </aside>`;
+  }
+
+  function setPane(pane) {
+    editorEl.dataset.pane = pane;
+    editorEl.querySelectorAll('[data-action="pane"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pane === pane)));
+  }
+
+  let saveTimer = 0;
+  function syncEditor() {
+    const rv = editorEl.querySelector('#rv');
+    if (rv) rv.innerHTML = resumeHTML();
+    editorEl.querySelectorAll('[data-out="docname"]').forEach(el => el.textContent = docName());
+    editorEl.querySelectorAll('[data-out="fullname"]').forEach(el => el.textContent = [person.first, person.last].join(' '));
+    editorEl.querySelectorAll('[data-out="initial"]').forEach(el => el.textContent = (person.first || '?')[0]);
+    const saved = editorEl.querySelector('[data-out="saved"]');
+    saved.textContent = 'Saving…';
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => { saved.textContent = 'Saved'; }, 700);
+  }
+  function refreshChips(key) {
+    const box = editorEl.querySelector(`[data-out="${key}"]`);
+    const label = c => Array.isArray(c) ? c[1] : c;
+    box.innerHTML = `<div class="chips">${person[key].map((c, i) => `<span class="chip">${esc(label(c))}<button type="button" data-action="chip-remove" data-list="${key}" data-i="${i}" aria-label="Remove ${esc(label(c))}">${icon('x')}</button></span>`).join('')}</div>`;
+    const count = editorEl.querySelector('[data-out="skillcount"]');
+    if (count && key === 'skills') count.textContent = person.skills.length;
+    syncEditor();
+  }
+  function toggleEcard(card, open) {
+    open = open ?? !card.classList.contains('is-open');
+    card.classList.toggle('is-open', open);
+    card.querySelector(':scope > .ehead').setAttribute('aria-expanded', String(open));
+    card.querySelector(':scope > .acc').inert = !open;
+  }
+  function editSection(key) {
+    const card = editorEl.querySelector(`.ecard[data-sec="${key}"]`);
+    if (!card) return;
+    if (editorEl.dataset.pane === 'preview' && getComputedStyle(editorEl.querySelector('.ed-main')).display === 'none') setPane('edit');
+    toggleEcard(card, true);
+    requestAnimationFrame(() => card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }));
+    card.classList.remove('is-flash'); void card.offsetWidth; card.classList.add('is-flash');
+    setTimeout(() => card.classList.remove('is-flash'), 1400);
+    focusLater(card.querySelector('.input, .textarea'), 420);
+  }
+
+  /* Building screen → editor. The page you watched being built travels into the
+     preview pane and becomes the real resume; the editor chrome settles in around it. */
+  async function openEditor() {
+    if (screenRun) screenRun.finish();
+    const ldPaper = screens.loading.querySelector('.ld-paper');
+    const r0 = ldPaper.getBoundingClientRect();
+    editorEl.innerHTML = editorHTML();
+    setPane('preview');
+    topbarEl.hidden = true; pageEl.hidden = true; editorEl.hidden = false;
+    Object.values(screens).forEach(sc => { sc.hidden = true; });
+    current = 'editor';
+    scroller().scrollTo({ top: 0 });
+    if (reduce) { editorEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); return; }
+    const paper = editorEl.querySelector('#rv'), pv = editorEl.querySelector('.ed-preview');
+    const r1 = paper.getBoundingClientRect();
+    pv.style.overflow = 'visible'; pv.style.zIndex = '7';
+    const anims = [play(paper, [
+      { transformOrigin: '0 0', transform: `translate(${r0.left - r1.left}px, ${r0.top - r1.top}px) scale(${r0.width / r1.width})` },
+      { transformOrigin: '0 0', transform: 'none' }], { duration: DUR.travel, easing: EASE.standard })];
+    const chrome = [...editorEl.querySelectorAll('.ed-mbar, .ed-side, .ed-tabs, .pv-tabs, .pv-tools, .ed-top, .ed-col > *')].filter(shown);
+    chrome.forEach((el, i) => anims.push(play(el, [
+      { opacity: 0, transform: el.classList.contains('ed-side') ? 'translateX(-16px)' : 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+      { duration: DUR.base, delay: 200 + Math.min(i, 8) * STAGGER, easing: EASE.standard })));
+    await Promise.all(anims.map(a => a.finished.catch(() => {})));
+    anims.forEach(a => a.cancel());
+    pv.style.overflow = ''; pv.style.zIndex = '';
+  }
+
+  async function leaveEditor(screen) {
+    if (!reduce) await editorEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+    editorEl.getAnimations().forEach(a => a.cancel());
+    editorEl.hidden = true; editorEl.innerHTML = '';
+    topbarEl.hidden = false; pageEl.hidden = false;
+    Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== screen; });
+    current = screen;
+    scroller().scrollTo({ top: 0 });
+    if (screen === 'create') renderCreate();
+    const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
+    const anims = inItems.map((el, i) => play(el, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-32px)' }, { opacity: 1, transform: 'none' }],
+      { duration: DUR.base, delay: 60 + i * STAGGER, easing: EASE.standard }));
+    await Promise.all(anims.map(a => a.finished.catch(() => {})));
+    anims.forEach(a => a.cancel());
   }
 
   function handleSubmit(form) {
@@ -822,7 +1370,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const ok = /linkedin\.com\/in\/[\w\-%.]{2,}/i.test(input.value.trim());
       setError(input.closest('.field'), !ok);
       if (!ok) return input.focus();
-      runFlow(form, id);
+      startCreation(form, id, { url: input.value.trim() });
     } else if (id === 'ai') {
       let firstBad = null;
       form.querySelectorAll('.field').forEach(fl => {
@@ -830,15 +1378,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         setError(fl, bad); if (bad && !firstBad) firstBad = inp;
       });
       if (firstBad) return firstBad.focus();
-      runFlow(form, id, { name: form.querySelector('[name="name"]').value.trim() });
+      startCreation(form, id, { name: form.querySelector('[name="name"]').value.trim(), title: form.querySelector('[name="title"]').value.trim() });
     } else if (id === 'upload') {
-      if (form._file) runFlow(form, id);
+      if (form._file) startCreation(form, id);
     } else if (id === 'paste') {
       const ta = form.querySelector('textarea');
       const bad = ta.value.trim().length < 80;
       setError(ta.closest('.field'), bad);
       if (bad) return ta.focus();
-      runFlow(form, id);
+      startCreation(form, id);
     }
   }
 
@@ -909,12 +1457,22 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const ta = form.querySelector('textarea'); ta.value = SAMPLE_TEXT;
       ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus();
     }
-    else if (a === 'redo') {
-      const body = el.closest('.mbody');
-      body.querySelector('.status').remove();
-      const f = body.querySelector('form'); f.hidden = false;
-      f.querySelector('.input, .textarea, [data-action="browse"]')?.focus();
+    else if (a === 'pane') setPane(el.dataset.pane);
+    else if (a === 'ecard') toggleEcard(el.closest('.ecard'));
+    else if (a === 'premium') {
+      const box = el.closest('.premium'), open = !box.classList.contains('is-open');
+      box.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open));
+      box.querySelector('.acc').inert = !open;
+      box.querySelector('.acc').style.gridTemplateRows = open ? '1fr' : '';
     }
+    else if (a === 'more-toggle') {
+      const more = el.previousElementSibling, hide = !more.classList.contains('is-hidden');
+      more.classList.toggle('is-hidden', hide); more.inert = hide;
+      el.textContent = hide ? 'Show Additional Fields' : 'Hide Additional Fields';
+      el.setAttribute('aria-expanded', String(!hide));
+    }
+    else if (a === 'chip-remove') { person[el.dataset.list].splice(+el.dataset.i, 1); refreshChips(el.dataset.list); }
+    else if (a === 'rv-sec') editSection(el.dataset.sec);
   });
 
   document.addEventListener('submit', e => {
@@ -923,7 +1481,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     handleSubmit(e.target);
   });
 
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.matches('[data-add]')) {
+      e.preventDefault();
+      const v = e.target.value.trim();
+      if (v) { person[e.target.dataset.add].push(v); e.target.value = ''; refreshChips(e.target.dataset.add); }
+    }
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.rv-sec')) { e.preventDefault(); editSection(e.target.dataset.sec); }
+  });
+
   document.addEventListener('input', e => {
+    if (e.target.matches('#screen-editor [data-k]')) { person[e.target.dataset.k] = e.target.value; syncEditor(); return; }
     const fl = e.target.closest('.field');
     if (fl && fl.classList.contains('has-error') && e.target.value.trim()) setError(fl, false);
     if (e.target.matches('.textarea')) {
@@ -958,5 +1526,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
   setVariant(hv ? hv[1].toUpperCase() : (savedV || 'A'));
   setView(hm ? hm[0] : (savedView || 'desktop'));
+  if (/editor/.test(hash)) {
+    screens.intent.hidden = true; screens.loading.hidden = false; current = 'loading';
+    openEditor();
+  }
 })();
 </script>
