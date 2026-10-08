@@ -1,0 +1,777 @@
+<title>Resume Start Flow</title>
+<style>
+@font-face { font-family: "Graphik Web"; src: url("__GRAPHIK_400__") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Graphik Web"; src: url("__GRAPHIK_500__") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Henk-Work"; src: url("__HENK_400__") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+
+/* Layout: one centered 950px content column; creation cards are a 400px stack inside it.
+   Single light theme on purpose — it mirrors the Kickresume product surface. */
+:root {
+  color-scheme: light;
+  /* Kickresume design-system tokens */
+  --kr-primary: #ff5e59;
+  --kr-primary-hover: #ff736e;
+  --kr-primary-active: #cd2927;
+  --kr-primary-light: #f8aca7;
+  --kr-primary-tint: #fff4f3;
+  --kr-blue: #514eea;
+  --kr-blue-tint: #f3f2fd;
+  --kr-blue-dark: #081430;
+  --kr-grey-100: #3f3f3f;
+  --kr-grey-80: #8c8c8c;
+  --kr-grey-60: #e9e9e9;
+  --kr-grey-40: #f2f2f2;
+  --kr-grey-20: #fafafa;
+  --kr-white: #fff;
+  --kr-background: #f4f7f8;
+  --kr-mint: #1da36e;
+  --kr-mint-tint: #edf8f4;
+  --kr-beige: #fbefda;
+  --kr-yellow: #ffc107;
+  --kr-premium-gradient: linear-gradient(315deg, #a066ff 0%, #666cff 100%);
+  --kr-grad-hover: linear-gradient(315deg, #b07dff 0%, #7a80ff 100%);
+  --kr-grad-press: linear-gradient(315deg, #8f4fee 0%, #5359e6 100%);
+  --kr-grad-disabled: #b9b6f5;
+
+  --kr-shadow-dropdown: 1px 2px 10px 0 rgba(0, 0, 0, 0.1);
+  --kr-shadow-modal: 1px 2px 20px 0 rgba(0, 0, 0, 0.1);
+  --kr-shadow-cv: 0 8px 20px 0 rgba(140, 140, 140, 0.18);
+  --kr-focus-ring: 0 0 0 3px rgba(63, 63, 63, 0.35);
+
+  --font-sans: "Graphik Web", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Henk-Work", Georgia, "Times New Roman", serif;
+
+  --content-w: 950px;
+  --card-w: 400px;
+  --radius: 6px;
+  --radius-btn: 10px;
+  --radius-card: 16px;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.06px;
+  color: var(--kr-grey-100);
+  background-color: var(--kr-white);
+  background-image: linear-gradient(180deg, var(--kr-background) 0%, var(--kr-background) 50%, var(--kr-white) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  padding-inline: 16px;
+}
+button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Top bar ---------- */
+.topbar { display: flex; align-items: center; padding-block: 24px; max-width: 1400px; margin-inline: auto; }
+.logo { display: inline-flex; border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--radius); }
+.logo svg { width: 140px; height: auto; display: block; }
+.logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+
+/* ---------- Page ---------- */
+.page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 160px; }
+.page-head { text-align: center; display: grid; gap: 12px; }
+.page-head h1 {
+  font-family: var(--font-display); font-weight: 400; font-size: 48px; line-height: 56px;
+  letter-spacing: -1.4px; margin: 0; text-wrap: balance;
+}
+.page-head p { margin: 0; text-wrap: balance; }
+
+.screen[hidden] { display: none !important; }
+
+/* ---------- Intent screen ---------- */
+.intent-grid { margin-top: 56px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.intent {
+  position: relative; display: flex; flex-direction: column; gap: 16px; text-align: left;
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
+  padding: 12px 12px 20px; cursor: pointer;
+  transition: box-shadow .25s ease-in-out, border-color .25s ease-in-out;
+}
+.intent:hover { box-shadow: var(--kr-shadow-dropdown); }
+.intent:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.intent:disabled { cursor: not-allowed; }
+.intent:disabled:hover { box-shadow: none; }
+.intent:disabled .scene, .intent:disabled .intent-text { opacity: .5; }
+.intent-text { display: grid; gap: 4px; padding-inline: 4px; }
+.intent-title { font-size: 18px; line-height: 24px; font-weight: 500; }
+.intent-desc { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; }
+.badge-soon {
+  position: absolute; top: 20px; right: 20px; z-index: 1;
+  font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16px;
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); color: var(--kr-grey-100);
+  padding: 3px 8px; border-radius: 999px;
+}
+.text-link {
+  display: inline-block; margin-top: 40px; background: none; border: 0; padding: 4px 2px; cursor: pointer;
+  color: var(--kr-grey-80); text-decoration: underline; text-underline-offset: 3px; font-size: 16px;
+  border-radius: var(--radius); transition: color .2s;
+}
+.text-link:hover { color: var(--kr-grey-100); }
+.text-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.center { text-align: center; }
+
+/* Mini scenes inside intent cards */
+.scene { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; overflow: hidden; display: grid; place-items: center; }
+.scene.t-coral { background: var(--kr-primary-tint); }
+.scene.t-violet { background: var(--kr-blue-tint); }
+.scene.t-mint { background: var(--kr-mint-tint); }
+.scene.t-beige { background: var(--kr-beige); }
+.paper {
+  width: 54%; aspect-ratio: 3 / 4; background: var(--kr-white); border-radius: 4px; box-shadow: var(--kr-shadow-cv);
+  padding: 9%; display: flex; flex-direction: column; gap: 6%;
+}
+.paper .row { display: flex; align-items: center; gap: 8%; }
+.paper .av { width: 22%; aspect-ratio: 1; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.ln { height: 4px; border-radius: 2px; background: var(--kr-grey-60); }
+.ln.dk { background: #cfcfcf; }
+.ln.w90 { width: 90%; } .ln.w80 { width: 80%; } .ln.w70 { width: 70%; } .ln.w60 { width: 60%; } .ln.w50 { width: 50%; } .ln.w40 { width: 40%; } .ln.w30 { width: 30%; }
+.stack { display: grid; gap: 5px; flex: 1; }
+.ai-chip {
+  position: absolute; right: 16%; bottom: 16%; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--kr-premium-gradient); color: var(--kr-white); display: grid; place-items: center;
+  box-shadow: 1px 2px 6px 0 rgba(160, 102, 255, 0.3), 1px 2px 16px 0 rgba(102, 108, 255, 0.3);
+}
+.ai-chip svg.i { width: 16px; height: 16px; }
+.scene-tailor .paper { transform: translateX(-14%); }
+.job-card {
+  position: absolute; right: 10%; bottom: 18%; width: 46%; background: var(--kr-white); border-radius: 6px;
+  box-shadow: var(--kr-shadow-dropdown); padding: 8%; display: grid; gap: 6px;
+}
+.pill { justify-self: start; font-size: 10px; line-height: 14px; font-weight: 500; padding: 1px 6px; border-radius: 999px; background: var(--kr-blue-tint); color: var(--kr-blue); white-space: nowrap; }
+.jobs { width: 74%; display: grid; gap: 8px; }
+.job-row { background: var(--kr-white); border-radius: 6px; padding: 8px; display: flex; gap: 8px; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.job-logo { width: 20px; height: 20px; border-radius: 5px; flex: none; }
+.board { width: 80%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.col { display: grid; gap: 5px; align-content: start; }
+.mini { background: var(--kr-white); border-radius: 4px; padding: 6px; display: grid; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.mini .ln { height: 3px; }
+
+/* ---------- Creation screen ---------- */
+.methods { width: 100%; max-width: var(--card-w); margin: 48px auto 0; }
+.method-list { display: grid; gap: 12px; }
+
+.mcard {
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
+  transition: box-shadow .25s ease-in-out;
+}
+.mcard:hover, .mcard.is-open { box-shadow: var(--kr-shadow-dropdown); }
+.mhead {
+  width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; text-align: left;
+  background: none; border: 0; border-radius: var(--radius-card); cursor: pointer;
+}
+.mhead:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+div.mhead { cursor: default; }
+.mtile { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.mtile svg.i { width: 24px; height: 24px; }
+.tone-linkedin { background: var(--kr-blue-tint); color: var(--kr-blue); }
+.tone-ai { background: var(--kr-blue-tint); color: #8a5cff; }
+.tone-upload { background: var(--kr-primary-tint); color: var(--kr-primary); }
+.tone-paste { background: var(--kr-mint-tint); color: var(--kr-mint); }
+.mtext { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.mtitle { font-size: 18px; line-height: 24px; font-weight: 500; }
+.msub { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
+.chev { color: var(--kr-grey-100); transition: transform .3s var(--ease); }
+.mcard.is-open .chev { transform: rotate(90deg); }
+
+/* Variant A — accordion */
+.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s var(--ease); }
+.mcard.is-open .acc { grid-template-rows: 1fr; }
+.acc-inner { overflow: hidden; min-height: 0; }
+.acc-inner > .mbody { opacity: 0; transition: opacity .2s ease-in-out; }
+.mcard.is-open .acc-inner > .mbody { opacity: 1; transition-delay: .08s; }
+
+/* Variant B — separate screens */
+.back {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 6px 8px 6px 4px;
+  background: none; border: 0; cursor: pointer; color: var(--kr-grey-80); font-size: 16px; border-radius: var(--radius);
+  transition: color .2s;
+}
+.back:hover { color: var(--kr-grey-100); }
+.back:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.detail .mcard { box-shadow: var(--kr-shadow-dropdown); }
+
+/* ---------- Method bodies ---------- */
+.mbody { padding: 4px 16px 20px; display: grid; gap: 16px; }
+.mbody p { margin: 0; font-size: 14px; line-height: 20px; letter-spacing: 0.16px; }
+.mform { display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; }
+.label { font-size: 14px; line-height: 20px; font-weight: 500; }
+.input, .textarea {
+  width: 100%; min-height: 48px; padding: 12px 16px; background: var(--kr-white); color: var(--kr-grey-100);
+  border: 1px solid var(--kr-grey-60); border-radius: var(--radius-btn); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.input::placeholder, .textarea::placeholder { color: var(--kr-grey-80); }
+.input:hover, .textarea:hover { border-color: var(--kr-grey-80); }
+.input:focus, .textarea:focus { border-color: var(--kr-blue); }
+.has-error .input, .has-error .textarea { border-color: var(--kr-primary); }
+.textarea { resize: vertical; min-height: 168px; line-height: 22px; font-size: 14px; }
+.input-wrap { position: relative; }
+.input-wrap .input { padding-right: 52px; }
+.icon-btn {
+  position: absolute; right: 4px; top: 4px; width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; background: none; border-radius: 8px; cursor: pointer; color: var(--kr-grey-100);
+  transition: background .2s;
+}
+.icon-btn:hover { background: var(--kr-grey-40); }
+.icon-btn:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.error { display: none; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-primary); }
+.has-error .error { display: block; }
+.hint-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-grey-80); font-variant-numeric: tabular-nums; }
+.inline-link { background: none; border: 0; padding: 0; cursor: pointer; color: var(--kr-blue); font-size: inherit; text-decoration: underline; text-underline-offset: 2px; border-radius: 3px; }
+.inline-link:hover { color: var(--kr-grey-100); }
+.inline-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+
+/* Buttons (Kickresume: 10px radius, 500 weight, same size in every state) */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 31px; border: 1px solid transparent; border-radius: var(--radius-btn);
+  font-size: 16px; line-height: 22px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: background .2s, box-shadow .3s, color .2s, border-color .2s;
+}
+.btn:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.btn:disabled { cursor: not-allowed; }
+.btn-coral { background: var(--kr-primary); color: var(--kr-white); }
+.btn-coral:hover:not(:disabled) { background: var(--kr-primary-hover); }
+.btn-coral:active:not(:disabled) { background: var(--kr-primary-active); }
+.btn-coral:disabled { background: var(--kr-primary-light); }
+.btn-gradient { background: var(--kr-premium-gradient); color: var(--kr-white); }
+.btn-gradient:hover:not(:disabled) { background: var(--kr-grad-hover); }
+.btn-gradient:active:not(:disabled) { background: var(--kr-grad-press); }
+.btn-gradient:disabled { background: var(--kr-grad-disabled); }
+.btn-white { background: var(--kr-white); color: var(--kr-grey-100); border-color: var(--kr-grey-60); }
+.btn-white:hover { background: var(--kr-grey-40); }
+.btn-white:active { background: var(--kr-grey-60); }
+.btn-block { width: 100%; }
+
+/* Dropzone (matches the provided upload mock) */
+.dropzone {
+  display: grid; justify-items: center; gap: 8px; text-align: center; padding: 32px 16px;
+  border: 2px dashed var(--kr-primary); border-radius: 12px; background: var(--kr-white);
+  transition: background .2s, border-color .2s;
+}
+.dropzone.is-over { background: var(--kr-primary-tint); }
+.dropzone .cloud { color: var(--kr-primary); }
+.dropzone .cloud svg.i { width: 40px; height: 40px; stroke-width: 1.75; }
+.dz-title { font-size: 16px; line-height: 24px; }
+.dz-meta { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
+.file-row {
+  display: flex; align-items: center; gap: 12px; padding: 8px 4px 8px 12px; border: 1px solid var(--kr-grey-60);
+  border-radius: var(--radius-btn); background: var(--kr-grey-20);
+}
+.file-row .ftext { flex: 1; min-width: 0; display: grid; }
+.file-row .fname { font-size: 14px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-row .fsize { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); }
+.file-row .icon-btn { position: static; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Progress + success states */
+.status { display: grid; gap: 16px; padding-block: 4px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.step { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 20px; color: var(--kr-grey-80); transition: color .2s; }
+.step .dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 1.5px solid var(--kr-grey-60); color: var(--kr-white); transition: background .2s, border-color .2s; }
+.step .dot svg.i { width: 12px; height: 12px; stroke-width: 3; opacity: 0; }
+.step.is-active { color: var(--kr-grey-100); }
+.step.is-active .dot { border-color: var(--kr-blue); border-top-color: transparent; animation: spin .8s linear infinite; }
+.step.is-done { color: var(--kr-grey-100); }
+.step.is-done .dot { background: var(--kr-mint); border-color: var(--kr-mint); }
+.step.is-done .dot svg.i { opacity: 1; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.success-head { display: flex; gap: 12px; align-items: flex-start; }
+.ok { width: 40px; height: 40px; border-radius: 50%; background: var(--kr-mint-tint); color: var(--kr-mint); display: grid; place-items: center; flex: none; }
+.success-head h3 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fact { background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); border-radius: var(--radius); padding: 10px 8px; text-align: center; }
+.fact b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 32px; font-variant-numeric: tabular-nums; }
+.fact span { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
+.success-actions { display: grid; gap: 8px; justify-items: center; }
+
+/* ---------- Prototype controls (not part of the product UI) ---------- */
+.proto {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+  display: flex; align-items: center; gap: 8px; padding: 6px; max-width: calc(100% - 32px);
+  background: var(--kr-blue-dark); color: var(--kr-white); border-radius: 14px; box-shadow: var(--kr-shadow-modal);
+}
+.proto-label { font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: #b5bccb; padding-inline: 8px 2px; white-space: nowrap; }
+.seg { display: flex; background: #1b2747; border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button {
+  border: 0; background: none; color: #d6dae4; padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; line-height: 18px; font-weight: 500; white-space: nowrap; transition: background .2s, color .2s;
+}
+.seg button:hover { color: var(--kr-white); }
+.seg button[aria-pressed="true"] { background: var(--kr-blue); color: var(--kr-white); }
+.seg button:focus-visible, .proto-reset:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
+.seg .long { opacity: .8; font-weight: 400; }
+.proto-reset {
+  width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: #d6dae4; cursor: pointer;
+  display: grid; place-items: center; transition: background .2s, color .2s;
+}
+.proto-reset:hover { background: #1b2747; color: var(--kr-white); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 21;
+  transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
+  background: var(--kr-white); color: var(--kr-grey-100); border: 1px solid var(--kr-grey-60); box-shadow: var(--kr-shadow-modal);
+  padding: 10px 16px; border-radius: 10px; font-size: 14px; line-height: 20px; max-width: calc(100% - 32px); text-align: center;
+  transition: opacity .25s ease-in-out, transform .25s ease-in-out;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .intent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .page { padding-block: 24px 160px; }
+  .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
+  .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
+  .intent { flex-direction: row; align-items: center; padding: 12px; }
+  .intent .scene { width: 96px; flex: none; }
+  .badge-soon { top: 12px; right: 12px; }
+  .methods { margin-top: 32px; }
+  .proto-label, .seg .long { display: none; }
+  .btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; }
+}
+</style>
+
+<header class="topbar">
+  <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">__LOGO_SVG__</button>
+</header>
+
+<main class="page">
+  <!-- Screen 1: intent -->
+  <section class="screen" id="screen-intent" aria-labelledby="intent-h">
+    <div class="page-head">
+      <h1 id="intent-h">What do you want to get done first?</h1>
+      <p>Pick your main goal and we’ll set things up around it.</p>
+    </div>
+    <div class="intent-grid" id="intent-grid"></div>
+    <div class="center"><button class="text-link" type="button" data-action="toast" data-msg="Skipping takes you straight to your dashboard.">Skip personalization</button></div>
+  </section>
+
+  <!-- Screen 2: resume creation -->
+  <section class="screen" id="screen-create" aria-labelledby="create-h" hidden>
+    <div class="page-head">
+      <h1 id="create-h" tabindex="-1">How do you want to start?</h1>
+      <p>Pick the method that works for you. It’s completely free, no need to worry.</p>
+    </div>
+    <div class="methods" id="methods"></div>
+    <div class="center"><button class="text-link" type="button" data-action="toast" data-msg="You’d land on an empty resume with sample content.">I’m just looking around</button></div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="proto" role="group" aria-label="Prototype controls">
+  <span class="proto-label">Variant</span>
+  <div class="seg">
+    <button type="button" data-variant="A" aria-pressed="true">A <span class="long">· Expand in place</span></button>
+    <button type="button" data-variant="B" aria-pressed="false">B <span class="long">· Separate screens</span></button>
+  </div>
+  <button class="proto-reset" type="button" data-action="restart" aria-label="Restart prototype" title="Restart prototype">
+    <svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+  </button>
+</div>
+
+<script>
+(function () {
+  const ICON = {
+    linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
+    sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+    upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+    paste: '<path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/>',
+    clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+    chevron: '<path d="m9 18 6-6-6-6"/>',
+    arrowLeft: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+    cloud: '<path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/>',
+    file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'
+  };
+  const icon = (n, cls) => `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+
+  /* ---------- Intent cards ---------- */
+  const INTENTS = [
+    { id: 'create', title: 'Create a resume', desc: 'Start from LinkedIn, an old file, or let AI draft it.', tone: 't-coral', enabled: true,
+      scene: `<div class="paper"><div class="row"><div class="av"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="ln w90"></div><div class="ln w70"></div><div class="ln w80"></div><div class="ln w40"></div><div class="ln w70"></div></div><div class="ai-chip">${icon('sparkles')}</div>` },
+    { id: 'tailor', title: 'Tailor my resume', desc: 'Match the resume you already have to a job ad.', tone: 't-violet',
+      scene: `<div class="paper"><div class="row"><div class="av"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="ln w90"></div><div class="ln w70"></div><div class="ln w80"></div><div class="ln w40"></div></div><div class="job-card"><div class="ln dk w80"></div><div class="ln w60"></div><span class="pill">92% match</span></div>` },
+    { id: 'jobs', title: 'Find jobs that fit me', desc: 'See open roles matched to your skills.', tone: 't-mint',
+      scene: `<div class="jobs"><div class="job-row"><div class="job-logo" style="background:var(--kr-beige)"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-blue-tint)"></div><div class="stack"><div class="ln dk w70"></div><div class="ln w40"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-mint-tint)"></div><div class="stack"><div class="ln dk w90"></div><div class="ln w60"></div></div></div></div>` },
+    { id: 'track', title: 'Track my job apps', desc: 'Keep every job you’re applying to, and its status, in one place.', tone: 't-beige',
+      scene: `<div class="board"><div class="col"><div class="ln dk w60"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w70"></div><div class="ln w40"></div></div><div class="mini"><div class="ln dk w90"></div><div class="ln w60"></div></div></div><div class="col"><div class="ln dk w70"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w60"></div><div class="ln w40"></div></div></div><div class="col"><div class="ln dk w40"></div><div class="mini"><div class="ln dk w70"></div><div class="ln w50"></div></div></div></div>` }
+  ];
+
+  document.getElementById('intent-grid').innerHTML = INTENTS.map(it => `
+    <button class="intent" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}${it.enabled ? '' : ', coming soon'}">
+      ${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}
+      <div class="scene ${it.tone}${it.id === 'tailor' ? ' scene-tailor' : ''}" aria-hidden="true">${it.scene}</div>
+      <div class="intent-text"><span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
+    </button>`).join('');
+
+  /* ---------- Creation methods ---------- */
+  const METHODS = [
+    { id: 'linkedin', title: 'Import my LinkedIn profile', sub: 'Just paste the URL', icon: 'linkedin' },
+    { id: 'ai', title: 'Write it with AI', sub: 'Answer a few questions', icon: 'sparkles' },
+    { id: 'upload', title: 'Upload my resume', sub: 'PDF or Word', icon: 'upload' },
+    { id: 'paste', title: 'Paste any text', sub: 'Any written text you have', icon: 'paste' }
+  ];
+  const byId = id => METHODS.find(m => m.id === id);
+
+  const SAMPLE_TEXT = `Jana Novák — Product Designer, Bratislava
+
+2021–now: Senior Product Designer at Lumen Health. Led the redesign of the patient booking flow; cut drop-off by 23%. Built the first shared component library with two engineers.
+2018–2021: UX Designer at Pixelfield. Designed mobile banking features used by 400k people.
+
+Education: MA Visual Communication, Academy of Fine Arts and Design, Bratislava.
+Skills: Figma, user research, prototyping, design systems, accessibility, workshop facilitation. Languages: Slovak, English, German.`;
+
+  function bodyHTML(id, p) {
+    const f = `${p}-${id}`;
+    if (id === 'linkedin') return `
+      <form class="mform" data-method="linkedin" novalidate>
+        <p>Paste your profile URL and we’ll build a resume from it.</p>
+        <div class="field">
+          <label class="sr-only" for="${f}-url">LinkedIn profile URL</label>
+          <div class="input-wrap">
+            <input class="input" id="${f}-url" name="url" type="url" inputmode="url" autocomplete="url" placeholder="linkedin.com/in/your-name">
+            <button class="icon-btn" type="button" data-action="paste-example" aria-label="Paste example URL" title="Paste">${icon('clipboard')}</button>
+          </div>
+          <span class="error">Enter a LinkedIn profile URL, like linkedin.com/in/your-name.</span>
+        </div>
+        <div class="actions"><button class="btn btn-coral" type="submit">Import</button></div>
+      </form>`;
+    if (id === 'ai') return `
+      <form class="mform" data-method="ai" novalidate>
+        <p>Give us your name and your most recent job title, and the AI will generate a tailored resume for you in seconds.</p>
+        <div class="field">
+          <label class="label" for="${f}-name">Your name</label>
+          <input class="input" id="${f}-name" name="name" autocomplete="name" placeholder="Jana Novák">
+          <span class="error">Add your name so we can put it on the resume.</span>
+        </div>
+        <div class="field">
+          <label class="label" for="${f}-title">Job title</label>
+          <input class="input" id="${f}-title" name="title" autocomplete="organization-title" placeholder="Product Designer">
+          <span class="error">Add a job title. Your most recent one works best.</span>
+        </div>
+        <div class="actions"><button class="btn btn-gradient" type="submit">${icon('sparkles')}Continue</button></div>
+      </form>`;
+    if (id === 'upload') return `
+      <form class="mform" data-method="upload" novalidate>
+        <div class="dropzone">
+          <span class="cloud">${icon('cloud')}</span>
+          <span class="dz-title">Drop your resume file here</span>
+          <span class="dz-meta">or <button class="inline-link" type="button" data-action="browse">browse your files</button> · PDF or DOCX, up to 10 MB</span>
+          <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-label="Choose resume file">
+        </div>
+        <div class="file-slot field"><span class="error">That file type won’t work. Upload a PDF or a Word document.</span></div>
+        <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
+      </form>`;
+    if (id === 'paste') return `
+      <form class="mform" data-method="paste" novalidate>
+        <p>An old resume, a bio, notes, a job post you wrote. We’ll sort it into resume sections.</p>
+        <div class="field">
+          <label class="sr-only" for="${f}-text">Your text</label>
+          <textarea class="textarea" id="${f}-text" name="text" maxlength="5000" placeholder="Paste your text here…"></textarea>
+          <span class="error">Add a bit more text. We need at least 80 characters to work with.</span>
+          <div class="hint-row"><button class="inline-link" type="button" data-action="paste-sample">Use sample text</button><span class="count">0 / 5,000</span></div>
+        </div>
+        <div class="actions"><button class="btn btn-coral" type="submit">Continue</button></div>
+      </form>`;
+  }
+
+  const headHTML = (m, tag, attrs) => `
+    <${tag} class="mhead" ${attrs}>
+      <span class="mtile tone-${m.id}">${icon(m.icon)}</span>
+      <span class="mtext"><span class="mtitle">${m.title}</span><span class="msub">${m.sub}</span></span>
+      ${tag === 'button' ? `<span class="chev">${icon('chevron')}</span>` : ''}
+    </${tag}>`;
+
+  /* ---------- State ---------- */
+  let variant = 'A';
+  const methodsEl = document.getElementById('methods');
+  const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create') };
+  let current = 'intent';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const timers = new Set();
+  const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
+  const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
+
+  function renderCreate() {
+    clearTimers();
+    if (variant === 'A') {
+      methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => `
+        <div class="mcard" data-id="${m.id}">
+          ${headHTML(m, 'button', `type="button" data-action="toggle" aria-expanded="false" aria-controls="a-${m.id}-panel"`)}
+          <div class="acc" id="a-${m.id}-panel" role="region" aria-label="${m.title}" inert>
+            <div class="acc-inner"><div class="mbody">${bodyHTML(m.id, 'a')}</div></div>
+          </div>
+        </div>`).join('')}</div>`;
+    } else {
+      methodsEl.innerHTML = `
+        <div class="view list"><div class="method-list">${METHODS.map(m => `
+          <div class="mcard" data-id="${m.id}">${headHTML(m, 'button', `type="button" data-action="open" aria-label="${m.title}. ${m.sub}"`)}</div>`).join('')}</div></div>
+        <div class="view detail" hidden></div>`;
+    }
+  }
+
+  /* Slide/fade swap used for screen changes and variant B's page change */
+  function swap(from, to, dir, axis, after) {
+    if (reduce) { from.hidden = true; to.hidden = false; after && after(); return; }
+    const d = 28 * dir, t = v => axis === 'y' ? `translateY(${v}px)` : `translateX(${v}px)`;
+    from.style.transition = 'opacity .2s ease-in, transform .2s ease-in';
+    from.style.opacity = '0'; from.style.transform = t(-d);
+    later(() => {
+      from.hidden = true; from.style.cssText = '';
+      to.style.transition = 'none'; to.style.opacity = '0'; to.style.transform = t(d); to.hidden = false;
+      void to.offsetHeight;
+      to.style.transition = 'opacity .32s cubic-bezier(.2,0,0,1), transform .32s cubic-bezier(.2,0,0,1)';
+      to.style.opacity = '1'; to.style.transform = 'none';
+      later(() => { to.style.cssText = ''; }, 340);
+      after && after();
+    }, 200);
+  }
+
+  function go(screen) {
+    if (screen === current) return;
+    const from = screens[current], to = screens[screen];
+    if (screen === 'create') renderCreate();
+    current = screen;
+    swap(from, to, screen === 'create' ? 1 : -1, 'y', () => {
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* Variant A: one card open at a time */
+  function toggleA(card) {
+    const opening = !card.classList.contains('is-open');
+    methodsEl.querySelectorAll('.mcard.is-open').forEach(c => setOpen(c, false));
+    if (opening) setOpen(card, true);
+  }
+  function setOpen(card, open) {
+    card.classList.toggle('is-open', open);
+    card.querySelector('.mhead').setAttribute('aria-expanded', String(open));
+    const acc = card.querySelector('.acc');
+    if (open) {
+      acc.removeAttribute('inert');
+      later(() => {
+        const r = card.getBoundingClientRect();
+        if (r.bottom > window.innerHeight - 90) window.scrollBy({ top: r.bottom - window.innerHeight + 110, behavior: reduce ? 'auto' : 'smooth' });
+        const first = card.querySelector('.input, .textarea');
+        if (first) first.focus({ preventScroll: true });
+      }, 340);
+    } else acc.setAttribute('inert', '');
+  }
+
+  /* Variant B: open a method on its own screen */
+  function openB(id) {
+    const m = byId(id);
+    const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
+    detail.innerHTML = `
+      <button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button>
+      <div class="mcard" data-id="${m.id}">${headHTML(m, 'div', '')}<div class="mbody">${bodyHTML(m.id, 'b')}</div></div>`;
+    swap(list, detail, 1, 'x', () => {
+      const first = detail.querySelector('.input, .textarea');
+      later(() => (first || detail.querySelector('.back')).focus({ preventScroll: true }), 340);
+    });
+  }
+  function backB() {
+    const list = methodsEl.querySelector('.list'), detail = methodsEl.querySelector('.detail');
+    const id = detail.querySelector('.mcard')?.dataset.id;
+    swap(detail, list, -1, 'x', () => {
+      later(() => { detail.innerHTML = ''; list.querySelector(`.mcard[data-id="${id}"] .mhead`)?.focus({ preventScroll: true }); }, 340);
+    });
+  }
+
+  /* ---------- Method behaviour ---------- */
+  const setError = (field, on) => field.classList.toggle('has-error', on);
+
+  const RESULTS = {
+    linkedin: { steps: ['Reading your public profile', 'Pulling work history and education', 'Laying it out on a template'],
+      title: 'Your LinkedIn profile is in', text: 'We filled your resume with what we found. Check the details before you send it anywhere.',
+      facts: [['4', 'positions'], ['2', 'schools'], ['14', 'skills']] },
+    ai: { steps: ['Writing your profile summary', 'Drafting work experience bullets', 'Picking skills for the role'],
+      title: 'Your AI draft is ready', text: 'Edit anything that doesn’t sound like you. The AI writer stays available in the editor.',
+      facts: [['1', 'summary'], ['6', 'bullet points'], ['10', 'skills']] },
+    upload: { steps: ['Uploading your file', 'Reading sections and dates', 'Moving everything to a template'],
+      title: 'We read your resume', text: 'Everything is on a fresh template now. Your original file stays untouched.',
+      facts: [['3', 'positions'], ['1', 'school'], ['11', 'skills']] },
+    paste: { steps: ['Reading your text', 'Sorting it into resume sections', 'Laying it out on a template'],
+      title: 'Your text is now a resume', text: 'We sorted what you pasted into sections. Anything we couldn’t place is under Additional info.',
+      facts: [['2', 'positions'], ['1', 'school'], ['9', 'skills']] }
+  };
+
+  function runFlow(form, id, opts) {
+    const body = form.closest('.mbody');
+    const r = RESULTS[id];
+    const name = opts && opts.name ? opts.name.split(' ')[0] : '';
+    const status = document.createElement('div');
+    status.className = 'status';
+    status.setAttribute('role', 'status');
+    status.innerHTML = `<ol class="steps">${r.steps.map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('')}</ol>`;
+    form.hidden = true;
+    body.appendChild(status);
+    const steps = status.querySelectorAll('.step');
+    steps.forEach((s, i) => {
+      later(() => { if (i) steps[i - 1].classList.replace('is-active', 'is-done'); s.classList.add('is-active'); }, i * 750);
+    });
+    later(() => {
+      steps[steps.length - 1].classList.replace('is-active', 'is-done');
+      later(() => {
+        status.innerHTML = `
+          <div class="success-head"><span class="ok">${icon('check')}</span>
+            <div><h3>${name && id === 'ai' ? `${name}, your AI draft is ready` : r.title}</h3><p>${r.text}</p></div></div>
+          <div class="facts">${r.facts.map(([n, l]) => `<div class="fact"><b>${n}</b><span>${l}</span></div>`).join('')}</div>
+          <div class="success-actions">
+            <button class="btn btn-coral btn-block" type="button" data-action="toast" data-msg="End of prototype. The resume editor opens here.">Open my resume</button>
+            <button class="inline-link" type="button" data-action="redo">Try a different input</button>
+          </div>`;
+        status.querySelector('.btn').focus({ preventScroll: true });
+      }, 400);
+    }, steps.length * 750);
+  }
+
+  function handleSubmit(form) {
+    const id = form.dataset.method;
+    if (id === 'linkedin') {
+      const input = form.querySelector('input');
+      const ok = /linkedin\.com\/in\/[\w\-%.]{2,}/i.test(input.value.trim());
+      setError(input.closest('.field'), !ok);
+      if (!ok) return input.focus();
+      runFlow(form, id);
+    } else if (id === 'ai') {
+      let firstBad = null;
+      form.querySelectorAll('.field').forEach(fl => {
+        const inp = fl.querySelector('input'); const bad = !inp.value.trim();
+        setError(fl, bad); if (bad && !firstBad) firstBad = inp;
+      });
+      if (firstBad) return firstBad.focus();
+      runFlow(form, id, { name: form.querySelector('[name="name"]').value.trim() });
+    } else if (id === 'upload') {
+      if (form._file) runFlow(form, id);
+    } else if (id === 'paste') {
+      const ta = form.querySelector('textarea');
+      const bad = ta.value.trim().length < 80;
+      setError(ta.closest('.field'), bad);
+      if (bad) return ta.focus();
+      runFlow(form, id);
+    }
+  }
+
+  function setFile(form, file) {
+    const slot = form.querySelector('.file-slot');
+    const okType = file && /\.(pdf|docx?)$/i.test(file.name);
+    slot.querySelector('.file-row')?.remove();
+    form._file = okType ? file : null;
+    setError(slot, !!file && !okType);
+    form.querySelector('[type="submit"]').disabled = !okType;
+    if (!okType) return;
+    const kb = file.size / 1024;
+    const size = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.max(1, Math.round(kb)) + ' KB';
+    slot.insertAdjacentHTML('afterbegin', `
+      <div class="file-row">${icon('file')}
+        <span class="ftext"><span class="fname">${file.name.replace(/[<>&"]/g, '')}</span><span class="fsize">${size}</span></span>
+        <button class="icon-btn" type="button" data-action="remove-file" aria-label="Remove file">${icon('x')}</button>
+      </div>`);
+  }
+
+  /* ---------- Events ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function setVariant(v) {
+    if (v !== 'A' && v !== 'B') return;
+    variant = v;
+    document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
+    try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
+    if (current === 'create') renderCreate();
+  }
+
+  document.addEventListener('click', e => {
+    const vb = e.target.closest('[data-variant]');
+    if (vb) return setVariant(vb.dataset.variant);
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const a = el.dataset.action;
+    const form = el.closest('form');
+    if (a === 'pick-intent') go('create');
+    else if (a === 'restart') { clearTimers(); if (current === 'create') go('intent'); }
+    else if (a === 'toggle') toggleA(el.closest('.mcard'));
+    else if (a === 'open') openB(el.closest('.mcard').dataset.id);
+    else if (a === 'back') backB();
+    else if (a === 'toast') toast(el.dataset.msg);
+    else if (a === 'paste-example') {
+      const inp = form.querySelector('input');
+      inp.value = 'linkedin.com/in/jana-novak-design';
+      setError(inp.closest('.field'), false); inp.focus();
+    }
+    else if (a === 'browse') form.querySelector('input[type="file"]').click();
+    else if (a === 'remove-file') { setFile(form, null); form.querySelector('input[type="file"]').value = ''; }
+    else if (a === 'paste-sample') {
+      const ta = form.querySelector('textarea'); ta.value = SAMPLE_TEXT;
+      ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus();
+    }
+    else if (a === 'redo') {
+      const body = el.closest('.mbody');
+      body.querySelector('.status').remove();
+      const f = body.querySelector('form'); f.hidden = false;
+      f.querySelector('.input, .textarea, [data-action="browse"]')?.focus();
+    }
+  });
+
+  document.addEventListener('submit', e => {
+    if (!e.target.matches('form[data-method]')) return;
+    e.preventDefault();
+    handleSubmit(e.target);
+  });
+
+  document.addEventListener('input', e => {
+    const fl = e.target.closest('.field');
+    if (fl && fl.classList.contains('has-error') && e.target.value.trim()) setError(fl, false);
+    if (e.target.matches('.textarea')) {
+      fl.querySelector('.count').textContent = `${e.target.value.length.toLocaleString('en-US')} / 5,000`;
+    }
+  });
+
+  document.addEventListener('change', e => {
+    if (e.target.matches('input[type="file"]')) setFile(e.target.closest('form'), e.target.files[0] || null);
+  });
+
+  ['dragenter', 'dragover'].forEach(t => document.addEventListener(t, e => {
+    const dz = e.target.closest && e.target.closest('.dropzone');
+    if (!dz) return;
+    e.preventDefault(); dz.classList.add('is-over');
+  }));
+  document.addEventListener('dragleave', e => {
+    const dz = e.target.closest && e.target.closest('.dropzone');
+    if (dz && !dz.contains(e.relatedTarget)) dz.classList.remove('is-over');
+  });
+  document.addEventListener('drop', e => {
+    const dz = e.target.closest && e.target.closest('.dropzone');
+    if (!dz) return;
+    e.preventDefault(); dz.classList.remove('is-over');
+    if (e.dataTransfer.files[0]) setFile(dz.closest('form'), e.dataTransfer.files[0]);
+  });
+
+  /* Start: #a / #b deep-links a variant; otherwise remember the last one */
+  const fromHash = (location.hash || '').replace('#', '').toUpperCase();
+  let saved = null;
+  try { saved = localStorage.getItem('kr-start-variant'); } catch (e) {}
+  setVariant(fromHash === 'A' || fromHash === 'B' ? fromHash : (saved || 'A'));
+})();
+</script>
