@@ -118,23 +118,6 @@ body.is-mobile .statusbar {
 .page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 160px; }
 .page { position: relative; }
 .page-head { position: relative; text-align: center; display: grid; gap: 12px; }
-.goal-chip {
-  position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
-  padding: 4px 12px 4px 4px; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 999px;
-  font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
-}
-.goal-chip:hover { background: var(--kr-grey-40); }
-.goal-chip:active { background: var(--kr-grey-60); }
-.goal-chip:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.goal-chip .gc-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--kr-primary-tint); color: var(--kr-grey-100); display: grid; place-items: center; }
-.goal-chip .gc-icon svg.i { width: 16px; height: 16px; }
-.goal-chip .gc-change { font-weight: 400; color: var(--kr-grey-80); padding-left: 8px; border-left: 1px solid var(--kr-grey-60); }
-.ghost {
-  position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none; transform-origin: 0 0;
-  background: var(--kr-white); border: 1px solid var(--kr-grey-60); box-shadow: var(--kr-shadow-dropdown);
-}
 .page-head h1 {
   font-family: var(--font-display); font-weight: 400; font-size: 48px; line-height: 56px;
   letter-spacing: -1.4px; margin: 0; text-wrap: balance;
@@ -412,7 +395,7 @@ div.mhead { cursor: default; }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; }
   .logo svg { width: 120px; }
-  .page { padding-block: 56px 128px; }
+  .page { padding-block: 16px 128px; }
   .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
   .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
   .intent { flex-direction: row; align-items: center; padding: 12px; }
@@ -454,10 +437,6 @@ body.is-mobile .page { padding-bottom: 48px; }
   <!-- Screen 2: resume creation -->
   <section class="screen" id="screen-create" aria-labelledby="create-h" hidden>
     <div class="page-head">
-      <button class="goal-chip" type="button" data-action="restart" aria-label="Goal: Create a resume. Change goal">
-        <span class="gc-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
-        Create a resume<span class="gc-change">Change</span>
-      </button>
       <h1 id="create-h" tabindex="-1">How do you want to start?</h1>
       <p>Pick the method that works for you. It’s completely free, no need to worry.</p>
     </div>
@@ -659,8 +638,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      - The two screens overlap; total ≈ 450ms.
      - The headline changes in place (cross-fade, no movement): same flow, next question.
      - Content moves along one axis: forward = from the right, back = from the left.
-     - The picked goal card shrinks into the "Create a resume" chip above the headline,
-       and grows back out of it when you change the goal.
+     - The picked card leaves last, so the eye follows the choice into the next step.
      Clicking mid-way fast-forwards the running change and starts the new one, so no click is lost. */
   let screenRun = null;
   async function go(screen, picked) {
@@ -672,59 +650,35 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     await scrollToTop();
     if (current !== screen) return; // another change started while scrolling
 
-    const chip = screens.create.querySelector('.goal-chip');
-    const goalCard = screens.intent.querySelector('[data-action="pick-intent"]');
-    const fromRect = dir > 0 ? (picked || goalCard).getBoundingClientRect() : chip.getBoundingClientRect();
     const fromOffset = from.offsetTop;
     if (screen === 'create') renderCreate();
 
     // Overlap: pin the outgoing screen where it is while the new one lays out in flow.
     Object.assign(from.style, { position: 'absolute', top: fromOffset + 'px', left: '0', right: '0', pointerEvents: 'none' });
     to.hidden = false;
-    const toRect = dir > 0 ? chip.getBoundingClientRect() : goalCard.getBoundingClientRect();
 
     const anims = [];
     const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
     const outItems = [...from.querySelectorAll('.intent, .mcard, :scope > .center')].filter(shown);
     const inItems = [...to.querySelectorAll('.intent, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
-    const morphFrom = dir > 0 ? picked || goalCard : chip;   // element that becomes the ghost
-    const morphTo = dir > 0 ? chip : goalCard;              // element the ghost becomes
 
     if (reduce) {
       anims.push(play(from, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }));
       anims.push(play(to, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 60, easing: EASE.standard }));
     } else {
       // Headline: cross-fade in place
-      [...outHead.children].forEach(el => { if (el !== chip) anims.push(play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit })); });
-      [...inHead.children].forEach(el => { if (el !== chip) anims.push(play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 100, easing: EASE.standard })); });
+      [...outHead.children].forEach(el => anims.push(play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit })));
+      [...inHead.children].forEach(el => anims.push(play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 100, easing: EASE.standard })));
       // Content: leave toward the side we came from, enter from the side we're heading to
-      outItems.forEach((el, i) => {
-        if (el === morphFrom) return;
+      const order = picked ? outItems.filter(el => el !== picked).concat(picked) : outItems;
+      order.forEach((el, i) => {
         anims.push(play(el, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }],
           { duration: DUR.fast, delay: i * (STAGGER / 2), easing: EASE.exit }));
       });
       inItems.forEach((el, i) => {
-        if (el === morphTo) return;
         anims.push(play(el, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }],
           { duration: DUR.base, delay: 120 + i * STAGGER, easing: EASE.standard }));
       });
-      // Shared element: a plain card-coloured box travels from the picked card to the chip (or back)
-      const ghost = document.createElement('div');
-      ghost.className = 'ghost';
-      document.body.appendChild(ghost);
-      const box = r => ({ transform: `translate(${r.left}px, ${r.top}px)`, width: r.width + 'px', height: r.height + 'px' });
-      const rFrom = dir > 0 ? 16 : 999, rTo = dir > 0 ? 999 : 16;
-      const g = play(ghost, [
-        Object.assign(box(fromRect), { borderRadius: rFrom + 'px', opacity: 1 }),
-        Object.assign(box(toRect), { borderRadius: rTo + 'px', opacity: 1, offset: .82 }),
-        Object.assign(box(toRect), { borderRadius: rTo + 'px', opacity: 0 })
-      ], { duration: DUR.slow + 120, easing: EASE.standard });
-      anims.push(g);
-      // The source's contents go immediately (instant acknowledgement); the target's contents arrive as the box lands
-      anims.push(play(morphFrom, [{ opacity: 1 }, { opacity: 0 }], { duration: 90, easing: 'linear' }));
-      anims.push(play(morphTo, [{ opacity: 0 }, { opacity: 0, offset: .7 }, { opacity: 1 }], { duration: DUR.slow + 60, easing: 'linear' }));
-      g.finished.catch(() => {}).then(() => ghost.remove());
-      anims.ghost = ghost;
     }
 
     let finished = false;
@@ -732,7 +686,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (finished) return; finished = true;
       from.hidden = true; from.removeAttribute('style');
       anims.forEach(a => a.cancel());
-      anims.ghost && anims.ghost.remove();
       if (screenRun === run) screenRun = null;
     };
     const run = { finish() { anims.forEach(a => { try { a.finish(); } catch (e) {} }); cleanup(); } };
