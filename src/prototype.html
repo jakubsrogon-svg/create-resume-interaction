@@ -318,7 +318,7 @@ div.mhead { cursor: default; }
 .mbody { padding: 4px 16px calc(var(--card-pad) + 4px); display: grid; gap: var(--form-gap); }
 .mbody p { margin: 0; font-size: 14px; line-height: 20px; letter-spacing: 0.16px; }
 .mform { display: grid; gap: var(--form-gap); }
-.fpair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fpair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--form-gap); }  /* AI form: name above job title */
 .field { display: grid; gap: 6px; }
 .label { font-size: 14px; line-height: 20px; font-weight: 500; }
 .input, .textarea {
@@ -1072,7 +1072,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </form>`;
     if (id === 'ai') return `
       <form class="mform" data-method="ai" novalidate>
-        <p>Give us your name and your most recent job title, and the AI will generate a tailored resume for you in seconds.</p>
+        <p>Give us your name and latest job title. The AI drafts a tailored resume in seconds.</p>
         <div class="fpair"><div class="field">
           <label class="label" for="${f}-name">Your name</label>
           <input class="input" id="${f}-name" name="name" autocomplete="name" placeholder="Jana Novák">
