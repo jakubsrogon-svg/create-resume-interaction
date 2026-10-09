@@ -60,11 +60,12 @@
 
   /* Height-aware spacing for the onboarding screens.
      --vh is 1% of the usable height (the window, or the phone screen in mobile view; set from JS).
-     Short screens tighten every gap so the default state of each step fits without scrolling;
-     tall screens keep the full spacing and anchor the content a little above centre. */
+     Short screens tighten every gap so the default state of each step fits without scrolling.
+     Content is top-aligned so the headline stays put between steps; the gap under the navbar
+     scales with height (12px on small laptops, 160px max on big displays). */
   --vh: 1vh;
   --sp-topbar: clamp(10px, calc(var(--vh) * 2.2), 24px);
-  --sp-page-top: clamp(8px, calc((var(--vh) * 100 - 640px) * .35), 300px);
+  --sp-page-top: clamp(12px, calc((var(--vh) * 100 - 600px) * .25), 160px);  /* top-aligned: grows with height, stops at 160px */
   --sp-page-bottom: clamp(16px, calc(var(--vh) * 4), 48px);
   --sp-head-gap: clamp(6px, calc(var(--vh) * 1.2), 12px);
   --sp-section: clamp(16px, calc(var(--vh) * 4.5), 56px);
