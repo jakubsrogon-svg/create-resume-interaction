@@ -285,6 +285,12 @@ div.mhead { cursor: default; }
   .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .msub { display: none; }
 }
 
+/* Variant B: once a method is open, the "I'm just looking around" skip link folds away */
+#screen-create > .center { display: grid; grid-template-rows: 1fr; padding-top: var(--sp-link); transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 120ms; }
+#screen-create > .center > .text-link { min-height: 0; overflow: hidden; justify-self: center; margin-top: 0; }
+#screen-create:has(.b-wrap.has-focus) > .center > .text-link { padding-block: 0; }
+#screen-create:has(.b-wrap.has-focus) > .center { grid-template-rows: 0fr; padding-top: 0; opacity: 0; transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-fast) var(--ease-exit); }
+
 /* Variant B — the picked card becomes the screen: the others fold away, Back slides in */
 .b-list { display: grid; }
 .slot { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 60ms; }
@@ -1153,6 +1159,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function renderCreate() {
     clearTimers();
+    screens.create.querySelector(':scope > .center').inert = false;
     const card = (m, p, action) => `
       <div class="mcard" data-id="${m.id}">
         ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
@@ -1295,6 +1302,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!wrap || wrap.classList.contains('has-focus')) return;
     wrap.classList.add('has-focus');
     wrap.querySelector('.b-back-inner').inert = false;
+    screens.create.querySelector(':scope > .center').inert = true;
     wrap.querySelectorAll('.slot').forEach(slot => {
       const mine = slot.dataset.id === id, card = slot.querySelector('.mcard'), head = card.querySelector('.mhead');
       slot.classList.toggle('is-focus', mine);
@@ -1313,6 +1321,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const focus = wrap.querySelector('.slot.is-focus');
     wrap.classList.remove('has-focus');
     wrap.querySelector('.b-back-inner').inert = true;
+    screens.create.querySelector(':scope > .center').inert = false;
     wrap.querySelectorAll('.slot').forEach(slot => {
       const card = slot.querySelector('.mcard'), head = card.querySelector('.mhead');
       slot.classList.remove('is-focus'); slot.inert = false;
