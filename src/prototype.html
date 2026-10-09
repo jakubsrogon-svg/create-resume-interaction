@@ -129,6 +129,24 @@ body.is-mobile .statusbar {
 
 /* ---------- Intent screen ---------- */
 .intent-grid { margin-top: 56px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+/* List layout of the first screen: same 400px card stack as "How do you want to start?" */
+.intent-grid.is-list { grid-template-columns: minmax(0, 1fr); gap: 12px; width: 100%; max-width: var(--card-w); margin: 48px auto 0; }
+.irow {
+  width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; text-align: left; cursor: pointer;
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
+  transition: box-shadow var(--dur-base) var(--ease-standard), background 60ms linear;
+}
+.irow:hover:not(:disabled) { box-shadow: var(--kr-shadow-dropdown); }
+.irow:active:not(:disabled) { background: var(--kr-grey-20); }
+.irow:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.irow:disabled { cursor: not-allowed; }
+.irow:disabled .mtile, .irow:disabled .mtext { opacity: .5; }
+.irow .badge-soon { position: static; flex: none; }
+.irow .badge-soon.in-text { display: none; justify-self: start; margin-bottom: 4px; }
+.tone-create { background: var(--kr-primary-tint); color: var(--kr-primary); }
+.tone-tailor { background: var(--kr-blue-tint); color: var(--kr-blue); }
+.tone-jobs { background: var(--kr-mint-tint); color: var(--kr-mint); }
+.tone-track { background: var(--kr-beige); color: #b7791f; }
 .intent {
   position: relative; display: flex; flex-direction: column; gap: 16px; text-align: left;
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
@@ -788,7 +806,7 @@ body.is-mobile .dash { min-height: 100%; }
 
 /* ---------- Responsive ---------- */
 @container (max-width: 860px) {
-  .intent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .intent-grid:not(.is-list) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; }
@@ -796,6 +814,9 @@ body.is-mobile .dash { min-height: 100%; }
   .page { padding-block: 16px 128px; }
   .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
   .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
+  .irow { padding: 14px; gap: 14px; }
+  .irow .badge-soon.in-text { display: inline-block; }
+  .irow .badge-soon.at-end { display: none; }
   .intent { flex-direction: row; align-items: center; padding: 12px; }
   .intent .scene { width: 96px; flex: none; }
   .badge-soon { position: static; justify-self: start; margin-bottom: 4px; }
@@ -884,6 +905,11 @@ body.is-mobile .page { padding-bottom: 48px; }
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
+    <button type="button" data-layout="grid" aria-pressed="true" aria-label="Goals screen as grid" data-tip="Goals: grid"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></button>
+    <button type="button" data-layout="list" aria-pressed="false" aria-label="Goals screen as list" data-tip="Goals: list"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="5" x="3" y="3" rx="1.5"/><rect width="18" height="5" x="3" y="10" rx="1.5"/><rect width="18" height="5" x="3" y="17" rx="1.5"/></svg></button>
+  </div>
+  <span class="proto-sep" aria-hidden="true"></span>
+  <div class="seg">
     <button type="button" data-view="desktop" aria-pressed="true" aria-label="Desktop view" data-tip="Desktop view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></button>
     <button type="button" data-view="mobile" aria-pressed="false" aria-label="Mobile view" data-tip="Mobile view"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></button>
   </div>
@@ -958,11 +984,25 @@ body.is-mobile .page { padding-bottom: 48px; }
       scene: `<div class="board"><div class="col"><div class="ln dk w60"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w70"></div><div class="ln w40"></div></div><div class="mini"><div class="ln dk w90"></div><div class="ln w60"></div></div></div><div class="col"><div class="ln dk w70"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w60"></div><div class="ln w40"></div></div></div><div class="col"><div class="ln dk w40"></div><div class="mini"><div class="ln dk w70"></div><div class="ln w50"></div></div></div></div>` }
   ];
 
-  document.getElementById('intent-grid').innerHTML = INTENTS.map(it => `
-    <button class="intent" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}${it.enabled ? '' : ', coming soon'}">
-      <div class="scene ${it.tone}${it.id === 'tailor' ? ' scene-tailor' : ''}" aria-hidden="true">${it.scene}</div>
-      <div class="intent-text">${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}<span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
-    </button>`).join('');
+  const INTENT_ICON = { create: 'file', tailor: 'target', jobs: 'search', track: 'list' };
+  let intentLayout = 'grid';
+  function renderIntents() {
+    const grid = document.getElementById('intent-grid');
+    grid.classList.toggle('is-list', intentLayout === 'list');
+    grid.innerHTML = intentLayout === 'list'
+      ? INTENTS.map(it => `
+        <button class="irow" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}. ${it.desc}${it.enabled ? '' : ' Coming soon.'}">
+          <span class="mtile tone-${it.id}">${icon(INTENT_ICON[it.id])}</span>
+          <span class="mtext">${it.enabled ? '' : '<span class="badge-soon in-text">Coming soon</span>'}<span class="mtitle">${it.title}</span><span class="msub">${it.desc}</span></span>
+          ${it.enabled ? `<span class="chev">${icon('chevron')}</span>` : '<span class="badge-soon at-end">Coming soon</span>'}
+        </button>`).join('')
+      : INTENTS.map(it => `
+        <button class="intent" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}${it.enabled ? '' : ', coming soon'}">
+          <div class="scene ${it.tone}${it.id === 'tailor' ? ' scene-tailor' : ''}" aria-hidden="true">${it.scene}</div>
+          <div class="intent-text">${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}<span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
+        </button>`).join('');
+  }
+  renderIntents();
 
   /* ---------- Creation methods ---------- */
   const METHODS = [
@@ -1123,8 +1163,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     const anims = [];
     const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
-    const outItems = [...from.querySelectorAll('.intent, .mcard, .ld-item, :scope > .center')].filter(shown);
-    const inItems = [...to.querySelectorAll('.intent, .method-list > .mcard, .slot, .ld-item, :scope > .center')].filter(shown);
+    const outItems = [...from.querySelectorAll('.intent, .irow, .mcard, .ld-item, :scope > .center')].filter(shown);
+    const inItems = [...to.querySelectorAll('.intent, .irow, .method-list > .mcard, .slot, .ld-item, :scope > .center')].filter(shown);
 
     if (reduce) {
       anims.push(play(from, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }));
@@ -1629,7 +1669,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     current = screen;
     scroller().scrollTo({ top: 0 });
     if (screen === 'create') renderCreate();
-    const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
+    const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .irow, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
     const anims = inItems.map((el, i) => play(el, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-32px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base, delay: 60 + i * STAGGER, easing: EASE.standard }));
     await Promise.all(anims.map(a => a.finished.catch(() => {})));
@@ -1832,6 +1872,21 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current === 'create') renderCreate();
   }
 
+  function setLayout(v) {
+    if (v !== 'grid' && v !== 'list') return;
+    const changed = v !== intentLayout;
+    intentLayout = v;
+    document.querySelectorAll('[data-layout]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.layout === v)));
+    try { localStorage.setItem('kr-start-layout', v); } catch (e) {}
+    if (!changed) return;
+    renderIntents();
+    if (current === 'intent' && !reduce) {
+      const items = [...screens.intent.querySelectorAll('.intent, .irow')];
+      items.forEach((el, i) => play(el, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, delay: i * STAGGER, easing: EASE.standard })
+        .finished.catch(() => {}).then(a => el.getAnimations().forEach(x => x.cancel())));
+    }
+  }
+
   function setView(v) {
     if (v !== 'desktop' && v !== 'mobile') return;
     document.body.classList.toggle('is-mobile', v === 'mobile');
@@ -1843,6 +1898,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   document.addEventListener('click', e => {
     const vb = e.target.closest('[data-variant]');
     if (vb) return setVariant(vb.dataset.variant);
+    const lb = e.target.closest('[data-layout]');
+    if (lb) return setLayout(lb.dataset.layout);
     const vw = e.target.closest('[data-view]');
     if (vw) return setView(vw.dataset.view);
     const el = e.target.closest('[data-action]');
@@ -1939,6 +1996,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
   setVariant(hv ? hv[1].toUpperCase() : (savedV || 'A'));
   setView(hm ? hm[0] : (savedView || 'desktop'));
+  let savedLayout = null;
+  try { savedLayout = localStorage.getItem('kr-start-layout'); } catch (e) {}
+  const hl = hash.match(/list|grid/);
+  setLayout(hl ? hl[0] : (savedLayout || 'grid'));
   if (/dashboard/.test(hash)) openDashboard();
   if (/editor/.test(hash)) {
     screens.intent.hidden = true; screens.loading.hidden = false; current = 'loading';
