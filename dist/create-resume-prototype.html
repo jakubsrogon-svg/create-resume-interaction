@@ -57,6 +57,24 @@
   --ease-standard: cubic-bezier(.2, 0, 0, 1);  /* enters, moves */
   --ease-exit: cubic-bezier(.4, 0, 1, 1);      /* leaving */
   --ease-inout: cubic-bezier(.4, 0, .2, 1);    /* size changes */
+
+  /* Height-aware spacing for the onboarding screens.
+     --vh is 1% of the usable height (the window, or the phone screen in mobile view; set from JS).
+     Short screens tighten every gap so the default state of each step fits without scrolling;
+     tall screens keep the full spacing and anchor the content a little above centre. */
+  --vh: 1vh;
+  --sp-topbar: clamp(10px, calc(var(--vh) * 2.2), 24px);
+  --sp-page-top: clamp(8px, calc((var(--vh) * 100 - 640px) * .35), 300px);
+  --sp-page-bottom: clamp(16px, calc(var(--vh) * 4), 48px);
+  --sp-head-gap: clamp(6px, calc(var(--vh) * 1.2), 12px);
+  --sp-section: clamp(16px, calc(var(--vh) * 4.5), 56px);
+  --sp-link: clamp(8px, calc(var(--vh) * 3), 40px);
+  --h1: clamp(30px, calc(var(--vh) * 4 + 12px), 48px);
+  --list-gap: clamp(8px, calc(var(--vh) * 1.4), 12px);
+  --card-pad: clamp(10px, calc(var(--vh) * 2), 16px);
+  --tile: clamp(40px, calc(var(--vh) * 6.4), 52px);
+  --form-gap: clamp(10px, calc(var(--vh) * 2), 16px);
+  --field-h: clamp(40px, calc(var(--vh) * 5.6), 48px);
 }
 
 * { box-sizing: border-box; }
@@ -110,17 +128,17 @@ body.is-mobile .statusbar {
 }
 
 /* ---------- Top bar ---------- */
-.topbar { display: flex; align-items: center; padding-block: 24px; max-width: 1400px; margin-inline: auto; }
+.topbar { display: flex; align-items: center; padding-block: var(--sp-topbar); }
 .logo { display: inline-flex; border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--radius); }
 .logo svg { width: 140px; height: auto; display: block; }
 .logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 
 /* ---------- Page ---------- */
-.page { width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: 56px 96px; }
+.page { --anchor-cut: 0px; width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: calc(var(--sp-page-top) - var(--anchor-cut)) var(--sp-page-bottom); transition: padding-top var(--dur-slow) var(--ease-inout); }
 .page { position: relative; }
-.page-head { position: relative; text-align: center; display: grid; gap: 12px; }
+.page-head { position: relative; text-align: center; display: grid; gap: var(--sp-head-gap); }
 .page-head h1 {
-  font-family: var(--font-display); font-weight: 400; font-size: 48px; line-height: 56px;
+  font-family: var(--font-display); font-weight: 400; font-size: var(--h1); line-height: 1.17;
   letter-spacing: -1.4px; margin: 0; text-wrap: balance;
 }
 .page-head p { margin: 0; text-wrap: balance; }
@@ -128,11 +146,11 @@ body.is-mobile .statusbar {
 .screen[hidden] { display: none !important; }
 
 /* ---------- Intent screen ---------- */
-.intent-grid { margin-top: 56px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.intent-grid { margin-top: var(--sp-section); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 /* List layout of the first screen: same 400px card stack as "How do you want to start?" */
-.intent-grid.is-list { grid-template-columns: minmax(0, 1fr); gap: 12px; width: 100%; max-width: var(--card-w); margin: 48px auto 0; }
+.intent-grid.is-list { grid-template-columns: minmax(0, 1fr); gap: var(--list-gap); width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
 .irow {
-  width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; text-align: left; cursor: pointer;
+  width: 100%; display: flex; align-items: center; gap: 16px; padding: var(--card-pad) 16px; text-align: left; cursor: pointer;
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
   transition: box-shadow var(--dur-base) var(--ease-standard), background 60ms linear;
 }
@@ -169,7 +187,7 @@ body.is-mobile .statusbar {
   padding: 3px 8px; border-radius: 999px;
 }
 .text-link {
-  display: inline-block; margin-top: 40px; background: none; border: 0; padding: 4px 2px; cursor: pointer;
+  display: inline-block; margin-top: var(--sp-link); background: none; border: 0; padding: 4px 2px; cursor: pointer;
   color: var(--kr-grey-80); text-decoration: underline; text-underline-offset: 3px; font-size: 16px;
   border-radius: var(--radius); transition: color .2s;
 }
@@ -217,8 +235,8 @@ body.is-mobile .statusbar {
 .mini .ln { height: 1.4cqw; }
 
 /* ---------- Creation screen ---------- */
-.methods { width: 100%; max-width: var(--card-w); margin: 48px auto 0; }
-.method-list { display: grid; gap: 12px; }
+.methods { width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
+.method-list { display: grid; gap: var(--list-gap); }
 
 .mcard {
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
@@ -227,7 +245,7 @@ body.is-mobile .statusbar {
 }
 .mcard:hover, .mcard.is-open { box-shadow: var(--kr-shadow-dropdown); }
 .mhead {
-  width: 100%; display: flex; align-items: center; gap: 16px; padding: 16px; text-align: left;
+  width: 100%; display: flex; align-items: center; gap: 16px; padding: var(--card-pad) 16px; text-align: left;
   background: none; border: 0; border-radius: var(--radius-card); cursor: pointer;
 }
 .mhead:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
@@ -236,7 +254,7 @@ button.mhead:active { background: var(--kr-grey-20); }
 .mhead[aria-disabled="true"] { cursor: default; }
 .mhead[aria-disabled="true"]:active { background: none; }
 div.mhead { cursor: default; }
-.mtile { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.mtile { width: var(--tile); height: var(--tile); border-radius: 10px; display: grid; place-items: center; flex: none; }
 .mtile svg.i { width: 24px; height: 24px; }
 .tone-linkedin { background: var(--kr-blue-tint); color: var(--kr-blue); }
 .tone-ai { background: var(--kr-blue-tint); color: #8a5cff; }
@@ -257,10 +275,20 @@ div.mhead { cursor: default; }
 .acc-inner > .mbody { opacity: 0; transform: translateY(-6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
 .mcard.is-open .acc-inner > .mbody { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 80ms, transform var(--dur-slow) var(--ease-standard) 40ms; }
 
+/* Variant A on short windows: while one option is open, the others shrink to a single line */
+@media (max-height: 1000px) {
+  .method-list > .mcard .mhead .mtile, .method-list > .mcard .mhead .msub, .method-list > .mcard .mhead { transition: width var(--dur-slow) var(--ease-inout), height var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-fast), background 60ms linear; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mhead { padding-block: 8px; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtile { width: 32px; height: 32px; border-radius: 8px; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtile svg.i { width: 18px; height: 18px; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtitle { font-size: 16px; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .msub { display: none; }
+}
+
 /* Variant B — the picked card becomes the screen: the others fold away, Back slides in */
 .b-list { display: grid; }
 .slot { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 60ms; }
-.slot-inner { min-height: 0; overflow: hidden; margin: -10px -14px 0; padding: 10px 14px 12px; }
+.slot-inner { min-height: 0; overflow: hidden; margin: -10px -14px 0; padding: 10px 14px var(--list-gap); }
 .slot > .slot-inner > .mcard { transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard) 40ms; }
 .b-wrap.has-focus .slot:not(.is-focus) { grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 40ms, opacity var(--dur-fast) var(--ease-exit); }
 .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard { transform: scale(.97); transition: box-shadow var(--dur-base), transform var(--dur-fast) var(--ease-exit); }
@@ -280,13 +308,14 @@ div.mhead { cursor: default; }
 .back:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 
 /* ---------- Method bodies ---------- */
-.mbody { padding: 4px 16px 20px; display: grid; gap: 16px; }
+.mbody { padding: 4px 16px calc(var(--card-pad) + 4px); display: grid; gap: var(--form-gap); }
 .mbody p { margin: 0; font-size: 14px; line-height: 20px; letter-spacing: 0.16px; }
-.mform { display: grid; gap: 16px; }
+.mform { display: grid; gap: var(--form-gap); }
+.fpair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .field { display: grid; gap: 6px; }
 .label { font-size: 14px; line-height: 20px; font-weight: 500; }
 .input, .textarea {
-  width: 100%; min-height: 48px; padding: 12px 16px; background: var(--kr-white); color: var(--kr-grey-100);
+  width: 100%; min-height: var(--field-h); padding: calc((var(--field-h) - 26px) / 2) 16px; background: var(--kr-white); color: var(--kr-grey-100);
   border: 1px solid var(--kr-grey-60); border-radius: var(--radius-btn); outline: none;
   transition: border-color .15s, box-shadow .15s;
 }
@@ -294,7 +323,7 @@ div.mhead { cursor: default; }
 .input:hover, .textarea:hover { border-color: var(--kr-grey-80); }
 .input:focus, .textarea:focus { border-color: var(--kr-blue); }
 .has-error .input, .has-error .textarea { border-color: var(--kr-primary); }
-.textarea { resize: vertical; min-height: 168px; line-height: 22px; font-size: 14px; }
+.textarea { resize: vertical; min-height: clamp(84px, calc(var(--vh) * 14), 150px); line-height: 22px; font-size: 14px; }
 .input-wrap { position: relative; }
 .input-wrap .input { padding-right: 52px; }
 .icon-btn {
@@ -336,7 +365,7 @@ div.mhead { cursor: default; }
 
 /* Dropzone (matches the provided upload mock) */
 .dropzone {
-  display: grid; justify-items: center; gap: 8px; text-align: center; padding: 32px 16px; cursor: pointer;
+  display: grid; justify-items: center; gap: 8px; text-align: center; padding: clamp(12px, calc(var(--vh) * 3), 32px) 16px; cursor: pointer;
   border: 2px dashed var(--kr-primary); border-radius: 12px; background: var(--kr-white);
   transition: background var(--dur-fast) var(--ease-standard), border-color var(--dur-fast);
 }
@@ -346,7 +375,7 @@ div.mhead { cursor: default; }
 .dropzone.is-over { background: var(--kr-primary-tint); }
 .dz-link { color: var(--kr-blue); text-decoration: underline; text-underline-offset: 2px; }
 .dropzone .cloud { color: var(--kr-primary); }
-.dropzone .cloud svg.i { width: 40px; height: 40px; stroke-width: 1.75; }
+.dropzone .cloud svg.i { width: clamp(28px, calc(var(--vh) * 4.4), 40px); height: clamp(28px, calc(var(--vh) * 4.4), 40px); stroke-width: 1.75; }
 .dz-title { font-size: 16px; line-height: 24px; }
 .dz-meta { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
 .file-row {
@@ -360,7 +389,7 @@ div.mhead { cursor: default; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Progress steps (building screen) */
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(6px, calc(var(--vh) * 1.4), 12px); }
 .step { display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 20px; color: var(--kr-grey-80); transition: color var(--dur-base) var(--ease-standard); }
 .step .dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 1.5px solid var(--kr-grey-60); color: var(--kr-white); transition: background var(--dur-base), border-color var(--dur-base); }
 .step .dot svg.i { width: 12px; height: 12px; stroke-width: 3; opacity: 0; transform: scale(.6); transition: opacity var(--dur-fast), transform var(--dur-base) var(--ease-standard); }
@@ -373,9 +402,9 @@ div.mhead { cursor: default; }
 .btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
 
 /* ---------- Building screen ---------- */
-.ld-stage { margin: 40px auto 0; width: 100%; max-width: var(--card-w); display: grid; gap: 28px; justify-items: center; }
+.ld-stage { margin: var(--sp-section) auto 0; width: 100%; max-width: var(--card-w); display: grid; gap: clamp(14px, calc(var(--vh) * 3.4), 28px); justify-items: center; }
 .ld-paper {
-  position: relative; width: 220px; max-width: 100%; aspect-ratio: 1 / 1.414; background: var(--kr-white); border-radius: 4px;
+  position: relative; width: clamp(140px, calc(var(--vh) * 26), 220px); max-width: 100%; aspect-ratio: 1 / 1.414; background: var(--kr-white); border-radius: 4px;
   box-shadow: var(--kr-shadow-cv); padding: 22px 20px; display: grid; align-content: start; gap: 16px; overflow: hidden;
 }
 .ld-paper::after {
@@ -394,7 +423,7 @@ div.mhead { cursor: default; }
 .ld-icons { display: flex; gap: 12px; }
 .ld-icons i { width: 16px; height: 16px; border-radius: 50%; background: var(--kr-grey-40); transition: background var(--dur-slow) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
 .ld-group.is-filled .ld-icons i { background: #cfe9cd; }
-.ld-steps { width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card); padding: 20px; }
+.ld-steps { width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card); padding: clamp(12px, calc(var(--vh) * 2.4), 20px); }
 
 /* ---------- Celebration ----------
    The one deliberately bouncy moment in the product: finishing a resume.
@@ -811,19 +840,17 @@ body.is-mobile .dash { min-height: 100%; }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; }
   .logo svg { width: 120px; }
-  .page { padding-block: 16px 128px; }
-  .page-head h1 { font-size: 34px; line-height: 40px; letter-spacing: -1px; }
-  .intent-grid { grid-template-columns: 1fr; margin-top: 32px; }
+  .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
+  .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
+  .intent-grid { grid-template-columns: 1fr; }
   .irow { padding: 14px; gap: 14px; }
   .irow .badge-soon.in-text { display: inline-block; }
   .irow .badge-soon.at-end { display: none; }
   .intent { flex-direction: row; align-items: center; padding: 12px; }
   .intent .scene { width: 96px; flex: none; }
   .badge-soon { position: static; justify-self: start; margin-bottom: 4px; }
-  .methods { margin-top: 32px; }
   .btn { min-height: 44px; }
 }
-body.is-mobile .page { padding-bottom: 48px; }
 /* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
 @media (prefers-reduced-motion: reduce) {
   .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard { transition-property: opacity, box-shadow !important; }
@@ -980,7 +1007,7 @@ body.is-mobile .page { padding-bottom: 48px; }
       scene: `<div class="paper"><div class="row"><div class="av"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="ln w90"></div><div class="ln w70"></div><div class="ln w80"></div><div class="ln w40"></div></div><div class="job-card"><div class="ln dk w80"></div><div class="ln w60"></div><span class="pill">92% match</span></div>` },
     { id: 'jobs', title: 'Find jobs that fit me', desc: 'See open roles matched to your skills.', tone: 't-mint',
       scene: `<div class="jobs"><div class="job-row"><div class="job-logo" style="background:var(--kr-beige)"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-blue-tint)"></div><div class="stack"><div class="ln dk w70"></div><div class="ln w40"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-mint-tint)"></div><div class="stack"><div class="ln dk w90"></div><div class="ln w60"></div></div></div></div>` },
-    { id: 'track', title: 'Track my job apps', desc: 'Keep every job you’re applying to, and its status, in one place.', tone: 't-beige',
+    { id: 'track', title: 'Track my job apps', desc: 'Keep every application and its status in one place.', tone: 't-beige',
       scene: `<div class="board"><div class="col"><div class="ln dk w60"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w70"></div><div class="ln w40"></div></div><div class="mini"><div class="ln dk w90"></div><div class="ln w60"></div></div></div><div class="col"><div class="ln dk w70"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w60"></div><div class="ln w40"></div></div></div><div class="col"><div class="ln dk w40"></div><div class="mini"><div class="ln dk w70"></div><div class="ln w50"></div></div></div></div>` }
   ];
 
@@ -1039,7 +1066,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (id === 'ai') return `
       <form class="mform" data-method="ai" novalidate>
         <p>Give us your name and your most recent job title, and the AI will generate a tailored resume for you in seconds.</p>
-        <div class="field">
+        <div class="fpair"><div class="field">
           <label class="label" for="${f}-name">Your name</label>
           <input class="input" id="${f}-name" name="name" autocomplete="name" placeholder="Jana Novák">
           <span class="error">Add your name so we can put it on the resume.</span>
@@ -1048,7 +1075,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <label class="label" for="${f}-title">Job title</label>
           <input class="input" id="${f}-title" name="title" autocomplete="organization-title" placeholder="Product Designer">
           <span class="error">Add a job title. Your most recent one works best.</span>
-        </div>
+        </div></div>
         <div class="actions"><button class="btn btn-gradient" type="submit">${icon('sparkles')}Continue</button></div>
       </form>`;
     if (id === 'upload') return `
@@ -1093,6 +1120,32 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const device = document.getElementById('device');
   const framed = () => getComputedStyle(device).overflowY === 'auto';
   const scroller = () => framed() ? device : window;
+  function setVh() {
+    const h = framed() ? device.clientHeight - 44 : innerHeight;  // 44 = phone status bar
+    document.documentElement.style.setProperty('--vh', (h / 100) + 'px');
+  }
+  window.addEventListener('resize', setVh);
+
+  /* If an opened form would push past the bottom of the screen, ease the top gap
+     down by just enough to fit (never below 8px); give it back when the form closes. */
+  let anchorCut = 0, settleT = 0;
+  function setCut(px, instant) {
+    anchorCut = px;
+    if (instant) pageEl.style.transition = 'none';
+    pageEl.style.setProperty('--anchor-cut', px + 'px');
+    if (instant) { void pageEl.offsetHeight; pageEl.style.transition = ''; }
+  }
+  function settleAnchor(cb) {
+    if (APPS[current]) { if (cb) cb(); return; }
+    const over = framed() ? device.scrollHeight - device.clientHeight : document.documentElement.scrollHeight - innerHeight;
+    const full = parseFloat(getComputedStyle(pageEl).paddingTop) + anchorCut;
+    const next = Math.round(Math.max(0, Math.min(full - 8, anchorCut + over)));
+    if (Math.abs(next - anchorCut) < 1) { if (cb) cb(); return; }
+    setCut(next, reduce);
+    if (cb) setTimeout(cb, reduce ? 0 : DUR.slow + 20);
+  }
+  const settleSoon = (cb, ms = DUR.slow + 40) => { clearTimeout(settleT); settleT = setTimeout(() => settleAnchor(cb), ms); };
+  window.addEventListener('resize', () => settleSoon(null, 120));
   const viewBottom = () => framed() ? device.getBoundingClientRect().bottom : window.innerHeight;
   const timers = new Set();
   const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
@@ -1154,6 +1207,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     await scrollToTop();
     if (current !== screen) return; // another change started while scrolling
 
+    setCut(0, true);
     const fromOffset = from.offsetTop;
     if (screen === 'create') renderCreate();
 
@@ -1228,7 +1282,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Variant A: one card open at a time; the card you clicked stays put under the cursor. */
   function toggleA(card) {
     const opening = !card.classList.contains('is-open');
-    holdInPlace(card.querySelector('.mhead'), DUR.slow + 60, () => opening && revealBottom(card));
+    holdInPlace(card.querySelector('.mhead'), DUR.slow + 60, () => settleAnchor(() => opening && revealBottom(card)));
     methodsEl.querySelectorAll('.mcard.is-open').forEach(c => { if (c !== card) setOpen(c, false); });
     setOpen(card, opening);
     focusLater(opening ? card.querySelector('.input, .textarea, .dropzone') : null, DUR.slow);
@@ -1250,6 +1304,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
     const top = wrap.getBoundingClientRect().top, minTop = framed() ? device.getBoundingClientRect().top + 52 : 16;
     if (top < minTop) scroller().scrollBy({ top: top - minTop, behavior: reduce ? 'auto' : 'smooth' });
+    settleSoon();
     focusLater(wrap.querySelector('.slot.is-focus .input, .slot.is-focus .textarea, .slot.is-focus .dropzone') || wrap.querySelector('.back'), DUR.slow);
   }
   function backB() {
@@ -1264,6 +1319,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setOpen(card, false);
       head.removeAttribute('aria-disabled'); head.removeAttribute('tabindex');
     });
+    settleSoon();
     focusLater(focus && focus.querySelector('.mhead'), 0);
   }
 
@@ -1664,6 +1720,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!reduce) await appEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
     appEl.getAnimations().forEach(a => a.cancel());
     appEl.hidden = true; appEl.innerHTML = '';
+    setCut(0, true);
     topbarEl.hidden = false; pageEl.hidden = false;
     Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== screen; });
     current = screen;
@@ -1890,6 +1947,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setView(v) {
     if (v !== 'desktop' && v !== 'mobile') return;
     document.body.classList.toggle('is-mobile', v === 'mobile');
+    setVh();
     document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     try { localStorage.setItem('kr-start-view', v); } catch (e) {}
     window.scrollTo(0, 0); device.scrollTop = 0;
