@@ -276,6 +276,13 @@ div.mhead { cursor: default; }
 .acc-inner > .mbody { opacity: 0; transform: translateY(-6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
 .mcard.is-open .acc-inner > .mbody { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 80ms, transform var(--dur-slow) var(--ease-standard) 40ms; }
 
+/* Variant A: while one option is open, the others step back so the open one stands out.
+   They come forward again on hover or keyboard focus, so they still read as clickable. */
+.method-list > .mcard { transition: box-shadow var(--dur-base) var(--ease-standard), opacity var(--dur-base) var(--ease-standard), background var(--dur-base) var(--ease-standard), border-color var(--dur-base) var(--ease-standard); }
+.method-list:has(> .mcard.is-open) > .mcard:not(.is-open) { opacity: .7; background: var(--kr-grey-20); border-color: var(--kr-grey-40); }
+.method-list:has(> .mcard.is-open) > .mcard:not(.is-open):hover,
+.method-list:has(> .mcard.is-open) > .mcard:not(.is-open):focus-within { opacity: 1; background: var(--kr-white); border-color: var(--kr-grey-60); }
+
 /* Variant A on short windows: while one option is open, the others shrink to a single line */
 @media (max-height: 1000px) {
   .method-list > .mcard .mhead .mtile, .method-list > .mcard .mhead .msub, .method-list > .mcard .mhead { transition: width var(--dur-slow) var(--ease-inout), height var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-fast), background 60ms linear; }
