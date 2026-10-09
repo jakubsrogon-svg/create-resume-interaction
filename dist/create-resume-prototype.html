@@ -856,7 +856,7 @@ body.is-mobile .dash { min-height: 100%; }
   .logo svg { width: 120px; }
   .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
   .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
-  .intent-grid { grid-template-columns: 1fr; }
+  .intent-grid, .intent-grid:not(.is-list) { grid-template-columns: 1fr; }
   .irow { padding: 14px; gap: 14px; }
   .irow .badge-soon.in-text { display: inline-block; }
   .irow .badge-soon.at-end { display: none; }
