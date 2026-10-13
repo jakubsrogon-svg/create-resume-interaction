@@ -938,6 +938,12 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   background: var(--kr-blue-dark); color: var(--kr-white); font-size: 12px; line-height: 16px; font-weight: 500; padding: 6px 10px; border-radius: 8px; box-shadow: var(--kr-shadow-dropdown);
 }
 [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+/* Version tag, bottom left: same dark chrome as the rail so it reads as part of the prototype, not the product */
+.proto-ver {
+  position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; pointer-events: none;
+  padding: 4px 8px; border-radius: 8px; background: var(--kr-blue-dark); color: #d6dae4; box-shadow: var(--kr-shadow-dropdown);
+  font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.2px; font-variant-numeric: tabular-nums;
+}
 /* Keep the rail clear of content on wide screens */
 @media (min-width: 481px) { body:not(.is-mobile) .stage { padding-right: 52px; } }
 /* On a real phone: tuck it into the bottom-right corner */
@@ -1048,6 +1054,8 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
+<div class="proto-ver" aria-label="Prototype version 1.3">v1.3</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1337,7 +1345,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const APPS = { editor: editorEl, dashboard: dashEl };
   let current = 'intent';
   /* The prototype rail dims the settings that don't affect the screen you're on */
-  function setCurrent(s) { current = s; document.body.dataset.screen = s; }
+  function setCurrent(s) { current = s; document.body.dataset.screen = s; placeVer(); }
+  /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
+     Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
+  const verEl = document.querySelector('.proto-ver');
+  function placeVer() {
+    const side = [...document.querySelectorAll('.dash-rail, .ed-side')].find(el => el.getClientRects().length && el.offsetParent);
+    verEl.style.left = side ? Math.round(side.offsetParent.getBoundingClientRect().left + side.offsetLeft + side.offsetWidth + 12) + 'px' : '';
+  }
+  window.addEventListener('resize', placeVer);
   setCurrent('intent');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const device = document.getElementById('device');
@@ -2304,7 +2320,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     try { localStorage.setItem('kr-start-view', v); } catch (e) {}
     window.scrollTo(0, 0); device.scrollTop = 0;
-    syncCreateMode();
+    syncCreateMode(); placeVer();
   }
 
   document.addEventListener('click', e => {
