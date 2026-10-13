@@ -314,13 +314,15 @@ div.mhead { cursor: default; }
 /* Variant B — reassurance row under the open card. Three short answers to the doubts
    that stop people right before they act: how long, is my data safe, can I fix it later.
    No paragraphs, no FAQs: reading should never feel like part of the task. */
+/* The tray sits inside the open card's slot, so it travels with the card as one object and
+   only ever unfolds downward from under it. Its tuck-under margin switches instantly (it has
+   no height at that moment) and is released only after the tray has folded away. */
 .b-aside {
   position: relative; z-index: 0; display: grid; grid-template-rows: 0fr; margin-top: 0;
-  transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top var(--dur-slow) var(--ease-inout);
+  transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top 0s linear var(--dur-slow);
 }
-/* the tray tucks 16px under the card's bottom edge, so it reads as part of it */
-.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: calc(-16px - var(--list-gap)); }
-.slot.is-focus { position: relative; z-index: 1; }
+.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: -16px; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 60ms, margin-top 0s; }
+.slot.is-focus .mcard { position: relative; z-index: 1; }
 .b-aside-inner { min-height: 0; overflow: hidden; padding-inline: 12px; }
 .assure {
   list-style: none; margin: 0; padding: 26px 16px 11px; display: flex; justify-content: center; align-items: center; gap: 18px;
@@ -349,7 +351,7 @@ div.mhead { cursor: default; }
 }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
-.b-back .back { opacity: 0; transform: translateX(12px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit), color .2s; }
+.b-back .back { opacity: 0; transform: translateY(-6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit), color .2s; }
 .b-wrap.has-focus .b-back .back { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard) 140ms, transform var(--dur-slow) var(--ease-standard) 120ms, color .2s; }
 
 .back {
@@ -1236,6 +1238,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const STAGGER = 30;
   const play = (el, kf, o) => el.animate(kf, Object.assign({ fill: 'both' }, o));
   const shown = el => el.getClientRects().length > 0;
+  const onScreen = el => { const r = el.getBoundingClientRect(); return r.height > 0 && r.width > 0; };  // skips folded-away items so they don't delay the stagger
   const scrollPos = () => framed() ? device.scrollTop : window.scrollY;
 
   function scrollToTop() {
@@ -1275,7 +1278,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     const anims = [];
     const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
-    const outItems = [...from.querySelectorAll('.intent, .irow, .mcard, .ld-item, :scope > .center')].filter(shown);
+    const outItems = [...from.querySelectorAll('.intent, .irow, .b-back, .mcard, .b-aside, .ld-item, :scope > .center')].filter(onScreen);
     const inItems = [...to.querySelectorAll('.intent, .irow, .method-list > .mcard, .slot, .ld-item, :scope > .center')].filter(shown);
 
     if (reduce) {
@@ -1362,6 +1365,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!wrap || wrap.classList.contains('has-focus')) return;
     const aside = wrap.querySelector('.b-aside');
     aside.querySelector('.b-aside-inner').innerHTML = asideHTML(id);
+    wrap.querySelector(`.slot[data-id="${id}"] > .slot-inner`).appendChild(aside);  // travels with the card
+    void aside.getBoundingClientRect();  // register the folded state so the unfold animates
     aside.inert = false;
     wrap.classList.add('has-focus');
     wrap.querySelector('.b-back-inner').inert = false;
