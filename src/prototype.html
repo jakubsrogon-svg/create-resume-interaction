@@ -469,27 +469,27 @@ div.mhead { cursor: default; }
 .disc-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
 .disc-panel.is-open { grid-template-rows: 1fr; }
 .disc-inner { min-height: 0; overflow: hidden; }
-.howto { margin: 0; padding: 6px 0 0 18px; display: grid; gap: 6px; font-size: 13px; line-height: 18px; color: var(--kr-grey-100); }
-.shot-ph {
-  margin-top: 10px; height: 88px; display: grid; place-items: center; border: 1px dashed var(--kr-grey-60); border-radius: var(--radius);
-  background: var(--kr-grey-20); font-size: 12px; line-height: 16px; color: var(--kr-grey-80);
+.li-help { display: grid; gap: 6px; justify-items: start; padding-top: 2px; }
+.howto-box {
+  margin-top: 10px; padding: 14px 16px; display: grid; gap: 12px;
+  background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-btn);
 }
-.c-fail, .c-error { display: grid; gap: 2px; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-primary); }
+.howto { margin: 0; display: grid; gap: 10px; }
+.howto dt { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--kr-grey-100); }
+.howto dd { margin: 2px 0 0; font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
+.shot-ph {
+  height: 76px; display: grid; place-items: center; border: 1px dashed var(--kr-grey-60); border-radius: var(--radius);
+  background: var(--kr-white); font-size: 12px; line-height: 16px; color: var(--kr-grey-80);
+}
+.c-fail, .c-error { display: grid; gap: 4px; padding-top: 2px; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-primary); }
 .c-fail[hidden], .c-error[hidden] { display: none; }
 .c-recover { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 .c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
-.xlinks {
-  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 6px; row-gap: 2px;
-  margin: 0; padding: 12px 0 0; border-top: 1px solid var(--kr-grey-60);
-  font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-80);
-}
-.mbody .xlinks { margin: 0; font-size: 13px; line-height: 18px; }
-.xlinks .inline-link { color: var(--kr-grey-100); }
-.xlinks .sep { color: var(--kr-grey-60); }
 .ai-grid { display: grid; grid-template-columns: minmax(0, 1fr) 124px; gap: 16px; align-items: start; }
 .ai-ex-toggle { display: none; }
 .ai-ex-panel { grid-template-rows: 1fr; }            /* desktop: always shown in the side column */
-.ex { margin: 0; display: grid; gap: 6px; }
+.ex { margin: 0; display: grid; gap: 8px; }
+.ex figcaption { text-align: center; }
 .ex-paper {
   aspect-ratio: 1 / 1.414; max-width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 4px;
   box-shadow: var(--kr-shadow-cv); padding: 10px 9px; display: grid; align-content: start; gap: 4px;
@@ -505,10 +505,7 @@ div.mhead { cursor: default; }
   .ai-ex-panel { grid-template-rows: 0fr; }
   .ai-ex-panel.is-open { grid-template-rows: 1fr; }
   .ai-ex-panel .ex { width: 140px; padding-top: 8px; }
-  .disclose, .xlinks .inline-link, .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
-  .xlinks { column-gap: 14px; row-gap: 0; }
-  .xlinks .lead { flex-basis: 100%; padding-bottom: 2px; }
-  .xlinks .sep { display: none; }
+  .disclose, .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
   .actions:has(.cta-helper) { flex-wrap: wrap; }
 }
 .no-anim, .no-anim * { transition: none !important; }
@@ -1220,13 +1217,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- Variant C detail screens ----------
      Same list and navigation as B; the detail content helps people finish the step
-     (find the link, avoid a failed upload, see what they'll get) and offers direct
-     paths to the other methods. */
-  const XL = { linkedin: 'Import from LinkedIn', ai: 'Write it with AI', upload: 'Upload a resume', paste: 'Paste text' };
-  const xlinksHTML = id => `
-    <p class="xlinks"><span class="lead">Or start another way:</span>${METHODS.filter(m => m.id !== id)
-      .map(m => `<button class="inline-link" type="button" data-action="switch-method" data-to="${m.id}">${XL[m.id]}</button>`)
-      .join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
+     (find the link, avoid a failed upload, see what they'll get). */
 
   function bodyHTML_C(id, p) {
     const f = `${p}-${id}`;
@@ -1249,19 +1240,23 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
               </span>
             </div>
           </div>
-          <p class="helper" id="${f}-help">We only read your public profile. No LinkedIn login needed.</p>
-          <button class="disclose" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-how">Where do I find my profile link?<span class="chev-d">${icon('down')}</span></button>
+          <div class="li-help">
+            <p class="helper" id="${f}-help">We only read your public profile. No LinkedIn login needed.</p>
+            <button class="disclose" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-how">Where do I find my profile link?<span class="chev-d">${icon('down')}</span></button>
+          </div>
           <div class="disc-panel" id="${f}-how" inert><div class="disc-inner">
-            <ul class="howto">
-              <li>On a computer: open your LinkedIn profile and copy the address from your browser’s address bar.</li>
-              <li>In the LinkedIn app: go to your profile, tap ⋯ (More), then Share profile → Copy link.</li>
-              <li>Your profile needs to be public for the import to work.</li>
-            </ul>
-            <div class="shot-ph" role="img" aria-label="Screenshot placeholder">Screenshot placeholder</div>
+            <div class="howto-box">
+              <dl class="howto">
+                <div><dt>On a computer</dt><dd>Open your LinkedIn profile and copy the address from your browser’s address bar.</dd></div>
+                <div><dt>In the LinkedIn app</dt><dd>Go to your profile, tap ⋯ (More), then Share profile → Copy link.</dd></div>
+              </dl>
+              <div class="shot-ph" role="img" aria-label="Screenshot placeholder">Screenshot placeholder</div>
+              <p class="helper">Your profile needs to be public for the import to work.</p>
+            </div>
           </div></div>
         </div>
         <div class="actions"><button class="btn btn-coral" type="submit">Import</button></div>
-      </form>${xlinksHTML(id)}`;
+      </form>`;
     if (id === 'ai') return `
       <form class="mform" data-method="ai" data-c novalidate>
         <p>Give us your name and latest job title. The AI drafts a tailored resume in seconds.</p>
@@ -1293,7 +1288,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         </div>
         <!-- TODO(live-preview): out of scope for C. A preview that updates with the job title would replace the static example. -->
         <div class="actions"><p class="helper cta-helper" id="${f}-edit">You can edit everything afterwards.</p><button class="btn btn-gradient" type="submit" aria-describedby="${f}-edit">${icon('sparkles')}Continue</button></div>
-      </form>${xlinksHTML(id)}`;
+      </form>`;
     if (id === 'upload') return `
       <form class="mform" data-method="upload" data-c novalidate>
         <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file" aria-describedby="${f}-hint ${f}-err">
@@ -1306,8 +1301,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <div class="c-error" id="${f}-err" hidden><span class="c-msg"></span><span class="c-recover"><button class="inline-link" type="button" data-action="switch-method" data-to="paste">Paste the text instead</button></span></div>
         </div>
         <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
-      </form>${xlinksHTML(id)}`;
-    if (id === 'paste') return bodyHTML(id, p) + xlinksHTML(id);
+      </form>`;
+    if (id === 'paste') return bodyHTML(id, p);  // unchanged from B
   }
 
   const headHTML = (m, tag, attrs) => `
