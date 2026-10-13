@@ -310,6 +310,62 @@ div.mhead { cursor: default; }
 .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard { transform: scale(.97); transition: box-shadow var(--dur-base), transform var(--dur-fast) var(--ease-exit); }
 .b-wrap .mcard.is-open .chev { transform: translateX(8px); opacity: 0; }
 .b-back { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+
+/* Variant B — "What to expect": answers the questions people have at this exact moment
+   (how long, is it safe, can I change it). Below the card on narrow screens;
+   beside it on wide ones, using the empty space so the step gets no taller. */
+.b-wrap { --aside-w: 300px; --aside-gap: 32px; }
+.b-aside { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; }
+.b-aside-inner { min-height: 0; overflow: hidden; display: grid; gap: 14px; align-content: start; padding: 8px 2px 4px; }
+.b-aside-inner > * { opacity: 0; transform: translateY(8px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
+.b-wrap.has-focus .b-aside-inner > * { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
+.b-wrap.has-focus .b-aside-inner > :nth-child(1) { transition-delay: 160ms; }
+.b-wrap.has-focus .b-aside-inner > :nth-child(2) { transition-delay: 200ms; }
+.b-wrap.has-focus .b-aside-inner > :nth-child(3) { transition-delay: 240ms; }
+.b-wrap.has-focus .b-aside-inner > :nth-child(4) { transition-delay: 280ms; }
+.ax-title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 500; }
+.ax-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.ax-fact { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: start; }
+.ax-ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; }
+.ax-ic svg.i { width: 16px; height: 16px; }
+.ax-text { display: grid; min-width: 0; }
+.ax-text b { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--kr-grey-100); }
+.ax-desc { font-size: 13px; line-height: 18px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
+.ax-faq { border-top: 1px solid var(--kr-grey-60); }
+.faq-item { border-bottom: 1px solid var(--kr-grey-60); }
+.faq-q {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 2px; border: 0; background: none;
+  font-size: 14px; line-height: 20px; font-weight: 500; text-align: left; cursor: pointer; color: var(--kr-grey-100); border-radius: 6px;
+}
+.faq-q:hover { color: var(--kr-hover); }
+.faq-q:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(63, 63, 63, .35); }
+.faq-q .chev-d svg.i { width: 16px; height: 16px; color: var(--kr-grey-80); }
+.faq-item.is-open .faq-q .chev-d { transform: rotate(180deg); }
+.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.faq-item.is-open .faq-a { grid-template-rows: 1fr; }
+.faq-a > p { min-height: 0; overflow: hidden; margin: 0; font-size: 13px; line-height: 18px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
+.faq-item.is-open .faq-a > p { padding: 0 2px 12px; }
+.ax-trust { display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
+.ax-trust svg.i { width: 16px; height: 16px; flex: none; }
+
+/* Wide screens: the card glides left and the panel opens beside it (no extra height) */
+@container (min-width: 880px) {
+  .methods:has(> .b-wrap) { max-width: calc(var(--card-w) + var(--aside-gap) + var(--aside-w)); }
+  .b-wrap {
+    display: grid; justify-content: center; grid-template-columns: minmax(0, var(--card-w)) 0px; column-gap: 0px;
+    grid-template-areas: "back back" "list aside";
+    transition: grid-template-columns var(--dur-slow) var(--ease-inout), column-gap var(--dur-slow) var(--ease-inout);
+  }
+  .b-wrap.has-focus { grid-template-columns: minmax(0, var(--card-w)) var(--aside-w); column-gap: var(--aside-gap); }
+  .b-back { grid-area: back; }
+  .b-list { grid-area: list; min-width: 0; }
+  .b-aside { grid-area: aside; align-self: start; min-width: 0; overflow: hidden; }
+  .b-aside-inner { width: var(--aside-w); padding-top: 10px; }
+  .b-aside-inner > * { transform: translateX(12px); }
+}
+/* Short windows: keep the essentials (facts + trust), drop the questions */
+@media (max-height: 720px) { .ax-faq { display: none; } }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
 .b-back .back { opacity: 0; transform: translateX(12px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit), color .2s; }
@@ -869,7 +925,8 @@ body.is-mobile .dash { min-height: 100%; }
 }
 /* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
 @media (prefers-reduced-motion: reduce) {
-  .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard { transition-property: opacity, box-shadow !important; }
+  .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard, .b-aside, .faq-a, .b-wrap { transition-property: opacity, box-shadow !important; }
+  .b-aside-inner > * { transform: none !important; }
   .acc-inner > .mbody, .b-back .back, .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard, .b-wrap .mcard.is-open .chev { transform: none !important; }
   .step.is-active .dot { animation-duration: 1.6s; }
   .ld-paper::after { animation: none; opacity: 0; }
@@ -1011,6 +1068,9 @@ body.is-mobile .dash { min-height: 100%; }
     mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
     globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
     chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+    layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
     bike: '<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>'
   };
   const icon = (n, cls) => `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
@@ -1184,6 +1244,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="b-wrap">
           <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
           <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'b', 'open')}</div></div>`).join('')}</div>
+          <aside class="b-aside" aria-label="What to expect" inert><div class="b-aside-inner"></div></aside>
         </div>`;
     }
   }
@@ -1307,9 +1368,59 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* Variant B: other options fold away and the picked one becomes the screen.
      Pure CSS state, so Back mid-way simply reverses it. */
+  /* What people want to know right after picking a method: how long, is it safe, can I change it */
+  const ASSURE = {
+    linkedin: {
+      facts: [['clock', 'About 30 seconds', 'Quicker than typing in even one job by hand.'],
+               ['shield', 'No LinkedIn login', 'We only read your public profile. Nothing is posted or shared.'],
+               ['pen', 'Everything stays editable', 'Every line lands in the editor, ready for you to change.']],
+      faq: [['What if my profile is private?', 'Make it public for a moment, or save your profile as a PDF from LinkedIn and use Upload instead.'],
+            ['Will my contacts get notified?', 'No. We never connect to your account, so nobody sees a thing.']]
+    },
+    ai: {
+      facts: [['clock', 'About 1 minute', 'Two fields now, a full first draft right after.'],
+              ['sparkles', 'Written for your role', 'Summary, bullet points and skills that fit your job title.'],
+              ['pen', 'You stay in charge', 'Rewrite, delete or regenerate any line in the editor.']],
+      faq: [['Will it sound generic?', 'It writes around your exact job title, and you can ask it to rewrite any line in your own tone.'],
+            ['Does this cost anything?', 'No. Creating your first resume with AI is free.']]
+    },
+    upload: {
+      facts: [['clock', 'About 20 seconds', 'We read your file and move it onto a clean template.'],
+              ['shield', 'Your original stays untouched', 'We copy the content. Your file is never changed or shared.'],
+              ['layers', 'Any layout works', 'Columns, tables and designed templates are all fine.']],
+      faq: [['Which files can I upload?', 'PDF and Word documents (.doc, .docx) up to 10 MB.'],
+            ['What if something lands in the wrong section?', 'Move it where it belongs in the editor. Nothing gets deleted.']]
+    },
+    paste: {
+      facts: [['clock', 'About 30 seconds', 'Paste, press Continue, and we take it from there.'],
+              ['file', 'Messy is fine', 'Old resumes, LinkedIn About text, notes or bullet lists all work.'],
+              ['shield', 'Nothing gets lost', 'Anything we can’t place goes into an Additional info section.']],
+      faq: [['How much text do I need?', 'A few lines about your jobs is enough. More detail gives you a better first draft.'],
+            ['Can I paste from LinkedIn?', 'Yes. Copy your About and Experience sections and paste them in together.']]
+    }
+  };
+  function asideHTML(id) {
+    const a = ASSURE[id];
+    return `
+      <h3 class="ax-title">What to expect</h3>
+      <ul class="ax-facts">${a.facts.map(([ic, t, d]) => `
+        <li class="ax-fact"><span class="ax-ic tone-${id}">${icon(ic)}</span><span class="ax-text"><b>${t}</b><span class="ax-desc">${d}</span></span></li>`).join('')}
+      </ul>
+      <div class="ax-faq">${a.faq.map(([q, ans], i) => `
+        <div class="faq-item">
+          <button class="faq-q" type="button" data-action="faq" aria-expanded="false" aria-controls="faq-${id}-${i}">${q}<span class="chev-d">${icon('down')}</span></button>
+          <div class="faq-a" id="faq-${id}-${i}" inert><p>${ans}</p></div>
+        </div>`).join('')}
+      </div>
+      <p class="ax-trust">${icon('users')}Trusted by 8+ million job seekers.</p>`;
+  }
+
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
     if (!wrap || wrap.classList.contains('has-focus')) return;
+    const aside = wrap.querySelector('.b-aside');
+    aside.querySelector('.b-aside-inner').innerHTML = asideHTML(id);
+    aside.inert = false;
     wrap.classList.add('has-focus');
     wrap.querySelector('.b-back-inner').inert = false;
     screens.create.querySelector(':scope > .center').inert = true;
@@ -1330,6 +1441,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!wrap || !wrap.classList.contains('has-focus')) return;
     const focus = wrap.querySelector('.slot.is-focus');
     wrap.classList.remove('has-focus');
+    wrap.querySelector('.b-aside').inert = true;
     wrap.querySelector('.b-back-inner').inert = true;
     screens.create.querySelector(':scope > .center').inert = false;
     wrap.querySelectorAll('.slot').forEach(slot => {
@@ -2003,6 +2115,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
+    else if (a === 'faq') {
+      const item = el.closest('.faq-item'), open = !item.classList.contains('is-open');
+      item.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open));
+      item.querySelector('.faq-a').inert = !open;
+      settleSoon();
+    }
     else if (a === 'pane') setPane(el.dataset.pane);
     else if (a === 'ecard') toggleEcard(el.closest('.ecard'));
     else if (a === 'premium') {
