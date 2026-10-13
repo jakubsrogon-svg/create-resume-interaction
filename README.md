@@ -18,5 +18,5 @@ The side rail lists its settings in flow order: goal-screen layout (grid/list), 
 
 - Source: `src/prototype.html`
 - Build (inlines brand fonts + logo): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
-- Version: shown bottom left (v1.3, …); the minor number goes up with every update, the major only on request (see `CLAUDE.md`).
+- Version: shown bottom left (v1.3, v1.3.1, …); small changes bump the patch number, bigger ones the minor, the major only on request (see `CLAUDE.md`).
 - Deep links: `#a` / `#b` / `#c` open a variant, add `-mobile` for the phone view and `-list` for the list layout, `#editor` / `#dashboard` jump straight to those screens.

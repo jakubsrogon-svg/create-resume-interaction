@@ -2,8 +2,14 @@
 
 ## Prototype version number
 
-The prototype shows its version in the bottom-left corner: the `.proto-ver` element in `src/prototype.html` (its text and its `aria-label`).
+The prototype shows its version in the bottom-left corner: the `.proto-ver` element in `src/prototype.html` (its text and its `aria-label`). Format: `vMAJOR.MINOR` or `vMAJOR.MINOR.PATCH`.
 
-- Every update the user asks for bumps the minor number by one before it is committed and published: v1.3 → v1.4 → … → v1.9 → v1.10.
-- The major number changes only when the user explicitly says so (e.g. "increase to v2"); the minor number then resets: v2.0.
-- Start the commit subject with the new version (e.g. `v1.4: …`) and mention it in the reply.
+Every update the user asks for bumps the version before it is committed and published. Claude decides whether the update is small or bigger:
+
+- **Small → patch** (v1.3 → v1.3.1 → v1.3.2): tweaks and fixes to what already exists, such as copy edits, spacing, sizes, colours, alignment, a bug fix, or polishing one element.
+- **Bigger → minor** (v1.3.2 → v1.4): new or reworked behaviour or layout, such as a new screen, state, variant, feature or interaction, a restructured layout, or a change that spans several screens. The patch number is dropped: v1.4, not v1.4.0. After v1.9 comes v1.10.
+- **Major** (v1.x → v2.0): only when the user explicitly says so (e.g. "increase to v2"). Minor and patch reset: v2.0.
+
+Changes that don't touch the prototype itself (README, these notes) don't bump the version.
+
+Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention it in the reply.
