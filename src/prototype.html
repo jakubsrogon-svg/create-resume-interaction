@@ -456,6 +456,63 @@ div.mhead { cursor: default; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
 
+/* ---------- Variant C: task-support content on the detail screens ---------- */
+.helper, .mbody .helper { margin: 0; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
+.disclose {
+  justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer;
+  font-size: 13px; line-height: 18px; color: var(--kr-blue); border-radius: 4px; text-align: left;
+}
+.disclose:hover { color: var(--kr-grey-100); }
+.disclose:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.disclose .chev-d svg.i { width: 16px; height: 16px; }
+.disclose[aria-expanded="true"] .chev-d { transform: rotate(180deg); }
+.disc-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
+.disc-panel.is-open { grid-template-rows: 1fr; }
+.disc-inner { min-height: 0; overflow: hidden; }
+.howto { margin: 0; padding: 6px 0 0 18px; display: grid; gap: 6px; font-size: 13px; line-height: 18px; color: var(--kr-grey-100); }
+.shot-ph {
+  margin-top: 10px; height: 88px; display: grid; place-items: center; border: 1px dashed var(--kr-grey-60); border-radius: var(--radius);
+  background: var(--kr-grey-20); font-size: 12px; line-height: 16px; color: var(--kr-grey-80);
+}
+.c-fail, .c-error { display: grid; gap: 2px; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-primary); }
+.c-fail[hidden], .c-error[hidden] { display: none; }
+.c-recover { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
+.xlinks {
+  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 6px; row-gap: 2px;
+  margin: 0; padding: 12px 0 0; border-top: 1px solid var(--kr-grey-60);
+  font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-80);
+}
+.mbody .xlinks { margin: 0; font-size: 13px; line-height: 18px; }
+.xlinks .inline-link { color: var(--kr-grey-100); }
+.xlinks .sep { color: var(--kr-grey-60); }
+.ai-grid { display: grid; grid-template-columns: minmax(0, 1fr) 124px; gap: 16px; align-items: start; }
+.ai-ex-toggle { display: none; }
+.ai-ex-panel { grid-template-rows: 1fr; }            /* desktop: always shown in the side column */
+.ex { margin: 0; display: grid; gap: 6px; }
+.ex-paper {
+  aspect-ratio: 1 / 1.414; max-width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 4px;
+  box-shadow: var(--kr-shadow-cv); padding: 10px 9px; display: grid; align-content: start; gap: 4px;
+}
+.ex-paper .ln { height: 3px; border-radius: 2px; }
+.ex-paper .ln.h { height: 6px; width: 62%; background: var(--kr-grey-100); margin-bottom: 2px; }
+.ex-paper .ln.s { height: 4px; width: 34%; background: #cfcfcf; margin-top: 4px; }
+.actions .cta-helper { margin-right: auto; }
+/* phones: the example moves behind a disclosure; text links get a 44px hit area */
+@container (max-width: 560px) {
+  .ai-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .ai-ex-toggle { display: inline-flex; }
+  .ai-ex-panel { grid-template-rows: 0fr; }
+  .ai-ex-panel.is-open { grid-template-rows: 1fr; }
+  .ai-ex-panel .ex { width: 140px; padding-top: 8px; }
+  .disclose, .xlinks .inline-link, .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
+  .xlinks { column-gap: 14px; row-gap: 0; }
+  .xlinks .lead { flex-basis: 100%; padding-bottom: 2px; }
+  .xlinks .sep { display: none; }
+  .actions:has(.cta-helper) { flex-wrap: wrap; }
+}
+.no-anim, .no-anim * { transition: none !important; }
+
 /* ---------- Building screen ---------- */
 .ld-stage { margin: var(--sp-section) auto 0; width: 100%; max-width: var(--card-w); display: grid; gap: clamp(14px, calc(var(--vh) * 3.4), 28px); justify-items: center; }
 .ld-paper {
@@ -985,6 +1042,7 @@ body.is-mobile .dash { min-height: 100%; }
   <div class="seg">
     <button type="button" data-variant="A" aria-pressed="true" aria-label="Variant A, expand in place" data-tip="A · Expand in place">A</button>
     <button type="button" data-variant="B" aria-pressed="false" aria-label="Variant B, separate screens" data-tip="B · Separate screens">B</button>
+    <button type="button" data-variant="C" aria-pressed="false" aria-label="Variant C, separate screens with task support" data-tip="C · Task support">C</button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
@@ -1160,6 +1218,98 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </form>`;
   }
 
+  /* ---------- Variant C detail screens ----------
+     Same list and navigation as B; the detail content helps people finish the step
+     (find the link, avoid a failed upload, see what they'll get) and offers direct
+     paths to the other methods. */
+  const XL = { linkedin: 'Import from LinkedIn', ai: 'Write it with AI', upload: 'Upload a resume', paste: 'Paste text' };
+  const xlinksHTML = id => `
+    <p class="xlinks"><span class="lead">Or start another way:</span>${METHODS.filter(m => m.id !== id)
+      .map(m => `<button class="inline-link" type="button" data-action="switch-method" data-to="${m.id}">${XL[m.id]}</button>`)
+      .join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
+
+  function bodyHTML_C(id, p) {
+    const f = `${p}-${id}`;
+    if (id === 'linkedin') return `
+      <form class="mform" data-method="linkedin" data-c novalidate>
+        <p>Paste your profile URL and we’ll build a resume from it.</p>
+        <div class="field">
+          <label class="sr-only" for="${f}-url">LinkedIn profile URL</label>
+          <div class="input-wrap">
+            <input class="input" id="${f}-url" name="url" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="linkedin.com/in/your-name" aria-describedby="${f}-err ${f}-help">
+            <button class="icon-btn" type="button" data-action="paste-example" aria-label="Paste example URL" title="Paste">${icon('clipboard')}</button>
+          </div>
+          <div aria-live="polite">
+            <span class="error" id="${f}-err">That doesn’t look like a LinkedIn profile link. It should contain linkedin.com/in/</span>
+            <div class="c-fail" hidden>
+              <span>We couldn’t read this profile. It may be private.</span>
+              <span class="c-recover">
+                <button class="inline-link" type="button" data-action="switch-method" data-to="upload">Upload your resume instead</button>
+                <button class="inline-link" type="button" data-action="switch-method" data-to="paste">Paste the text instead</button>
+              </span>
+            </div>
+          </div>
+          <p class="helper" id="${f}-help">We only read your public profile. No LinkedIn login needed.</p>
+          <button class="disclose" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-how">Where do I find my profile link?<span class="chev-d">${icon('down')}</span></button>
+          <div class="disc-panel" id="${f}-how" inert><div class="disc-inner">
+            <ul class="howto">
+              <li>On a computer: open your LinkedIn profile and copy the address from your browser’s address bar.</li>
+              <li>In the LinkedIn app: go to your profile, tap ⋯ (More), then Share profile → Copy link.</li>
+              <li>Your profile needs to be public for the import to work.</li>
+            </ul>
+            <div class="shot-ph" role="img" aria-label="Screenshot placeholder">Screenshot placeholder</div>
+          </div></div>
+        </div>
+        <div class="actions"><button class="btn btn-coral" type="submit">Import</button></div>
+      </form>${xlinksHTML(id)}`;
+    if (id === 'ai') return `
+      <form class="mform" data-method="ai" data-c novalidate>
+        <p>Give us your name and latest job title. The AI drafts a tailored resume in seconds.</p>
+        <div class="ai-grid">
+          <div class="fpair"><div class="field">
+            <label class="label" for="${f}-name">Your name</label>
+            <input class="input" id="${f}-name" name="name" autocomplete="name" placeholder="Jana Novák" aria-describedby="${f}-name-err">
+            <span class="error" id="${f}-name-err" aria-live="polite">Add your name so we can put it on the resume.</span>
+          </div>
+          <div class="field">
+            <label class="label" for="${f}-title">Job title</label>
+            <input class="input" id="${f}-title" name="title" autocomplete="organization-title" placeholder="Product Designer" aria-describedby="${f}-title-err">
+            <span class="error" id="${f}-title-err" aria-live="polite">Add a job title. Your most recent one works best.</span>
+          </div></div>
+          <div class="ai-ex">
+            <button class="disclose ai-ex-toggle" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-ex">See an example resume<span class="chev-d">${icon('down')}</span></button>
+            <div class="disc-panel ai-ex-panel" id="${f}-ex"><div class="disc-inner">
+              <figure class="ex">
+                <div class="ex-paper" role="img" aria-label="Example resume (placeholder)">
+                  <i class="ln h"></i><i class="ln" style="width:40%"></i>
+                  <i class="ln s"></i><i class="ln" style="width:92%"></i><i class="ln" style="width:80%"></i>
+                  <i class="ln s"></i><i class="ln" style="width:70%"></i><i class="ln" style="width:88%"></i><i class="ln" style="width:60%"></i>
+                  <i class="ln s"></i><i class="ln" style="width:76%"></i><i class="ln" style="width:52%"></i>
+                </div>
+                <figcaption class="helper">Example of what you’ll get</figcaption>
+              </figure>
+            </div></div>
+          </div>
+        </div>
+        <!-- TODO(live-preview): out of scope for C. A preview that updates with the job title would replace the static example. -->
+        <div class="actions"><p class="helper cta-helper" id="${f}-edit">You can edit everything afterwards.</p><button class="btn btn-gradient" type="submit" aria-describedby="${f}-edit">${icon('sparkles')}Continue</button></div>
+      </form>${xlinksHTML(id)}`;
+    if (id === 'upload') return `
+      <form class="mform" data-method="upload" data-c novalidate>
+        <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file" aria-describedby="${f}-hint ${f}-err">
+          <span class="cloud">${icon('cloud')}</span>
+          <span class="dz-title">Drop your resume here or <span class="dz-link">browse your files</span></span>
+          <span class="dz-meta" id="${f}-hint">PDF or DOCX, up to 10 MB. Text-based files import best; scanned documents may not.</span>
+        </div>
+        <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
+        <div class="file-slot field" aria-live="polite">
+          <div class="c-error" id="${f}-err" hidden><span class="c-msg"></span><span class="c-recover"><button class="inline-link" type="button" data-action="switch-method" data-to="paste">Paste the text instead</button></span></div>
+        </div>
+        <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
+      </form>${xlinksHTML(id)}`;
+    if (id === 'paste') return bodyHTML(id, p) + xlinksHTML(id);
+  }
+
   const headHTML = (m, tag, attrs) => `
     <${tag} class="mhead" ${attrs}>
       <span class="mtile tone-${m.id}">${icon(m.icon)}</span>
@@ -1216,17 +1366,24 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <div class="mcard" data-id="${m.id}">
         ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
         <div class="acc" id="${p}-${m.id}-panel" role="region" aria-label="${m.title}" inert>
-          <div class="acc-inner"><div class="mbody">${bodyHTML(m.id, p)}</div></div>
+          <div class="acc-inner"><div class="mbody">${(p === 'c' ? bodyHTML_C : bodyHTML)(m.id, p)}</div></div>
         </div>
       </div>`;
     if (variant === 'A') {
       methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle')).join('')}</div>`;
-    } else {
+    } else if (variant === 'B') {
       methodsEl.innerHTML = `
         <div class="b-wrap">
           <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
           <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'b', 'open')}</div></div>`).join('')}</div>
           <aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner"></div></aside>
+        </div>`;
+    } else {
+      // Variant C: B's list and navigation, without the chip tray
+      methodsEl.innerHTML = `
+        <div class="b-wrap is-c">
+          <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
+          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'c', 'open')}</div></div>`).join('')}</div>
         </div>`;
     }
   }
@@ -1364,10 +1521,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const wrap = methodsEl.querySelector('.b-wrap');
     if (!wrap || wrap.classList.contains('has-focus')) return;
     const aside = wrap.querySelector('.b-aside');
-    aside.querySelector('.b-aside-inner').innerHTML = asideHTML(id);
-    wrap.querySelector(`.slot[data-id="${id}"] > .slot-inner`).appendChild(aside);  // travels with the card
-    void aside.getBoundingClientRect();  // register the folded state so the unfold animates
-    aside.inert = false;
+    if (aside) {
+      aside.querySelector('.b-aside-inner').innerHTML = asideHTML(id);
+      wrap.querySelector(`.slot[data-id="${id}"] > .slot-inner`).appendChild(aside);  // travels with the card
+      void aside.getBoundingClientRect();  // register the folded state so the unfold animates
+      aside.inert = false;
+    }
     wrap.classList.add('has-focus');
     wrap.querySelector('.b-back-inner').inert = false;
     screens.create.querySelector(':scope > .center').inert = true;
@@ -1383,12 +1542,36 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     settleSoon();
     focusLater(wrap.querySelector('.slot.is-focus .input, .slot.is-focus .textarea, .slot.is-focus .dropzone') || wrap.querySelector('.back'), DUR.slow);
   }
+  async function switchMethod(to) {
+    const wrap = methodsEl.querySelector('.b-wrap.has-focus');
+    if (!wrap) return;
+    const list = wrap.querySelector('.b-list');
+    if (!reduce) await list.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(-16px)' }],
+      { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+    wrap.classList.add('no-anim');
+    wrap.querySelectorAll('.slot').forEach(slot => {
+      const mine = slot.dataset.id === to, card = slot.querySelector('.mcard'), head = card.querySelector('.mhead');
+      slot.classList.toggle('is-focus', mine);
+      slot.inert = !mine;
+      setOpen(card, mine);
+      if (mine) { head.setAttribute('aria-disabled', 'true'); head.tabIndex = -1; }
+      else { head.removeAttribute('aria-disabled'); head.removeAttribute('tabindex'); }
+    });
+    void wrap.offsetHeight;
+    wrap.classList.remove('no-anim');
+    list.getAnimations().forEach(a => a.cancel());
+    if (!reduce) list.animate([{ opacity: 0, transform: 'translateX(16px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
+    wrap.querySelector('.slot.is-focus .mhead').focus({ preventScroll: true });  // the new screen's heading
+    settleSoon();
+  }
+
   function backB() {
     const wrap = methodsEl.querySelector('.b-wrap');
     if (!wrap || !wrap.classList.contains('has-focus')) return;
     const focus = wrap.querySelector('.slot.is-focus');
     wrap.classList.remove('has-focus');
-    wrap.querySelector('.b-aside').inert = true;
+    const aside = wrap.querySelector('.b-aside');
+    if (aside) aside.inert = true;
     wrap.querySelector('.b-back-inner').inert = true;
     screens.create.querySelector(':scope > .center').inert = false;
     wrap.querySelectorAll('.slot').forEach(slot => {
@@ -1947,8 +2130,73 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else openB(method);
   }
 
+  /* Accepts links with or without https:// and www., mobile (m.) and country subdomains,
+     trailing slashes and query/tracking params (e.g. app share links ending in ?utm_…). */
+  function normLinkedIn(v) {
+    const s = v.trim().replace(/^https?:\/\//i, '').replace(/^(www\.|m\.|[a-z]{2}\.)/i, '');
+    const m = s.match(/^linkedin\.com\/in\/([^/?#\s]+)/i);
+    return m ? `https://www.linkedin.com/in/${decodeURIComponent(m[1])}` : null;
+  }
+  function checkLinkedInC(form) {
+    const input = form.querySelector('[name="url"]'), url = normLinkedIn(input.value);
+    setError(input.closest('.field'), !url);
+    input.setAttribute('aria-invalid', String(!url));
+    form.querySelector('.c-fail').hidden = true;
+    return url;
+  }
+  function busy(btn, label, ms, done) {
+    const html = btn.innerHTML, w = btn.offsetWidth;
+    btn.style.minWidth = w + 'px'; btn.disabled = true;
+    btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${label}`;
+    later(() => { btn.innerHTML = html; btn.disabled = false; btn.style.minWidth = ''; done(); }, ms);
+  }
+  function showUploadErrorC(form, msg) {
+    const box = form.querySelector('.c-error');
+    box.querySelector('.c-msg').textContent = msg;
+    box.hidden = !msg;
+  }
+  function submitC(form, id) {
+    if (id === 'linkedin') {
+      const url = checkLinkedInC(form);
+      if (!url) return form.querySelector('[name="url"]').focus();
+      form.querySelector('[name="url"]').value = url.replace(/^https:\/\/www\./, '');
+      // Prototype stand-in for a failed import: any profile link containing "private"
+      if (/private/i.test(url)) return busy(form.querySelector('[type="submit"]'), 'Importing…', 1000, () => { form.querySelector('.c-fail').hidden = false; });
+      return startCreation(form, id, { url });
+    }
+    if (id === 'upload') {
+      if (!form._file) return;
+      // Prototype stand-in for a file with no readable text: any file name containing "scan"
+      if (/scan/i.test(form._file.name)) return busy(form.querySelector('[type="submit"]'), 'Uploading…', 1100, () => {
+        setFile(form, null); form.querySelector('input[type="file"]').value = '';
+        showUploadErrorC(form, 'We couldn’t read the text in this file. It may be a scan.');
+      });
+      return startCreation(form, id);
+    }
+  }
+  function setFileC(form, file) {
+    const slot = form.querySelector('.file-slot');
+    slot.querySelector('.file-row')?.remove();
+    form._file = null;
+    form.querySelector('[type="submit"]').disabled = true;
+    if (!file) return showUploadErrorC(form, '');
+    if (!/\.(pdf|docx?)$/i.test(file.name)) return showUploadErrorC(form, 'This file type isn’t supported. Use a PDF or DOCX.');
+    if (file.size > 10 * 1024 * 1024) return showUploadErrorC(form, 'This file is over 10 MB. Try a smaller file or paste the text instead.');
+    showUploadErrorC(form, '');
+    form._file = file;
+    form.querySelector('[type="submit"]').disabled = false;
+    const kb = file.size / 1024;
+    const size = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.max(1, Math.round(kb)) + ' KB';
+    slot.insertAdjacentHTML('afterbegin', `
+      <div class="file-row">${icon('file')}
+        <span class="ftext"><span class="fname">${file.name.replace(/[<>&"]/g, '')}</span><span class="fsize">${size}</span></span>
+        <button class="icon-btn" type="button" data-action="remove-file" aria-label="Remove file">${icon('x')}</button>
+      </div>`);
+  }
+
   function handleSubmit(form) {
     const id = form.dataset.method;
+    if (form.hasAttribute('data-c') && (id === 'linkedin' || id === 'upload')) return submitC(form, id);
     if (id === 'linkedin') {
       const input = form.querySelector('input');
       const ok = /linkedin\.com\/in\/[\w\-%.]{2,}/i.test(input.value.trim());
@@ -1975,6 +2223,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function setFile(form, file) {
+    if (form.hasAttribute('data-c')) return setFileC(form, file);
     const slot = form.querySelector('.file-slot');
     const okType = file && /\.(pdf|docx?)$/i.test(file.name);
     slot.querySelector('.file-row')?.remove();
@@ -2000,7 +2249,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function setVariant(v) {
-    if (v !== 'A' && v !== 'B') return;
+    if (v !== 'A' && v !== 'B' && v !== 'C') return;
     variant = v;
     document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
     try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
@@ -2062,6 +2311,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
+    else if (a === 'disclose') {
+      const panel = document.getElementById(el.getAttribute('aria-controls')), open = el.getAttribute('aria-expanded') !== 'true';
+      el.setAttribute('aria-expanded', String(open)); panel.classList.toggle('is-open', open); panel.inert = !open;
+      settleSoon();
+    }
+    else if (a === 'switch-method') switchMethod(el.dataset.to);
     else if (a === 'pane') setPane(el.dataset.pane);
     else if (a === 'ecard') toggleEcard(el.closest('.ecard'));
     else if (a === 'premium') {
@@ -2078,6 +2333,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     }
     else if (a === 'chip-remove') { person[el.dataset.list].splice(+el.dataset.i, 1); refreshChips(el.dataset.list); }
     else if (a === 'rv-sec') editSection(el.dataset.sec);
+  });
+
+  // C: check the LinkedIn link when the field loses focus (never on each keystroke)
+  document.addEventListener('focusout', e => {
+    if (e.target.matches('form[data-c][data-method="linkedin"] [name="url"]') && e.target.value.trim()) checkLinkedInC(e.target.form);
   });
 
   document.addEventListener('submit', e => {
@@ -2127,7 +2387,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* Start: #a, #b, #a-mobile, #b-mobile deep-link a state; otherwise remember the last one */
   const hash = (location.hash || '').replace('#', '').toLowerCase();
-  const hv = hash.match(/^(a|b)\b/), hm = hash.match(/mobile|desktop/);
+  const hv = hash.match(/^(a|b|c)\b/), hm = hash.match(/mobile|desktop/);
   let savedV = null, savedView = null;
   try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
   setVariant(hv ? hv[1].toUpperCase() : (savedV || 'A'));

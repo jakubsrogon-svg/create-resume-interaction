@@ -6,6 +6,7 @@ Interactive prototype of the Kickresume onboarding start flow, built on the Kick
 2. **Creation screen** – "How do you want to start?" with four methods (LinkedIn, AI, Upload, Paste text), in two variants switchable from the floating bar:
    - **A · Expand in place** – all methods stay on one screen; clicking a card expands it (accordion, one open at a time).
    - **B · Separate screens** – clicking a card slides to its own screen with a Back button; the other options are hidden. A quiet row of three short reassurances sits under the open card: how long it takes, the one risk people worry about for that method, and that everything stays editable.
+   - **C · Task support** – B's list and navigation, with detail screens that help people finish the step instead of reassurance chips: LinkedIn helper + "Where do I find my profile link?", tolerant link checking and a failure state with recovery links; an example resume beside the AI form (behind a disclosure on phones) and "You can edit everything afterwards" by the CTA; clearer upload hint and inline type/size/unreadable-file errors; and an "Or start another way" row that switches straight to another method (Back still returns to the list). Prototype triggers: a LinkedIn link containing `private` fails the import; a file name containing `scan` can't be read.
 
 3. **Building screen** – after you submit a method, the resume visibly takes shape step by step.
 4. **Editor** – the built page travels into the preview pane of the resume editor (sidebar, Fill In form, live preview). Editing fields updates the preview; clicking a preview section opens it in the form.
@@ -15,4 +16,4 @@ Content column is 950px, method cards are 500px.
 
 - Source: `src/prototype.html`
 - Build (inlines brand fonts + logo): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
-- Deep links: `#a` / `#b` open a variant, add `-mobile` for the phone view and `-list` for the list layout, `#editor` / `#dashboard` jump straight to those screens.
+- Deep links: `#a` / `#b` / `#c` open a variant, add `-mobile` for the phone view and `-list` for the list layout, `#editor` / `#dashboard` jump straight to those screens.
