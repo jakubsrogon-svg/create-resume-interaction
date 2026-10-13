@@ -344,10 +344,12 @@ div.mhead { cursor: default; }
 @media (max-height: 700px) {
   .assure { padding: 22px 16px 8px; }
 }
-/* phones: the three items as a short list */
+/* phones: the same row, as three even columns: icon over a short centred label */
 @container (max-width: 560px) {
-  .assure { flex-direction: column; align-items: flex-start; gap: 8px; padding: 26px 16px 12px; }
-  .assure li + li { padding-left: 0; border-left: 0; }
+  .assure { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 0; padding: 30px 4px 14px; }
+  .assure li { flex-direction: column; justify-content: flex-start; gap: 6px; padding-inline: 6px; white-space: normal; text-align: center; text-wrap: balance; }
+  .assure li + li { padding-left: 6px; }
+  .assure li svg.i { width: 18px; height: 18px; }
 }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
@@ -1201,7 +1203,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file, PDF or DOCX up to 10 MB">
           <span class="cloud">${icon('cloud')}</span>
           <span class="dz-title">Drop your resume file here</span>
-          <span class="dz-meta">or <span class="dz-link">browse your files</span> · PDF or DOCX, up to 10 MB</span>
+          <span class="dz-meta">or <span class="dz-link">browse your files</span> · PDF or DOCX, up to&nbsp;10&nbsp;MB</span>
         </div>
         <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
         <div class="file-slot field"><span class="error">That file type won’t work. Upload a PDF or a Word document.</span></div>
@@ -1299,7 +1301,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file" aria-describedby="${f}-hint ${f}-err">
           <span class="cloud">${icon('cloud')}</span>
           <span class="dz-title">Drop your resume here or <span class="dz-link">browse your files</span></span>
-          <span class="dz-meta" id="${f}-hint">PDF or DOCX, up to 10 MB. Text-based files import best; scanned documents may not.</span>
+          <span class="dz-meta" id="${f}-hint">PDF or DOCX, up to&nbsp;10&nbsp;MB. Text-based files import best; scanned documents may not.</span>
         </div>
         <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
         <div class="file-slot field" aria-live="polite">
