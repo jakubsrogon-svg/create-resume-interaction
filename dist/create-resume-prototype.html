@@ -344,12 +344,22 @@ div.mhead { cursor: default; }
 @media (max-height: 700px) {
   .assure { padding: 22px 16px 8px; }
 }
-/* phones: the same row, as three even columns: icon over a short centred label */
+.assure .t-short { display: none; }
+/* phones: the same row, icon over a one-line label; columns share the spare width
+   equally so each divider sits midway between two labels */
 @container (max-width: 560px) {
-  .assure { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 0; padding: 30px 4px 14px; }
-  .assure li { flex-direction: column; justify-content: flex-start; gap: 6px; padding-inline: 6px; white-space: normal; text-align: center; text-wrap: balance; }
+  .assure { align-items: stretch; gap: 0; padding: 30px 4px 14px; }
+  .assure li { flex: 1 1 auto; flex-direction: column; justify-content: flex-start; gap: 6px; padding-inline: 6px; }
   .assure li + li { padding-left: 6px; }
   .assure li svg.i { width: 18px; height: 18px; }
+  .assure .t-long { display: none; }
+  .assure .t-short { display: inline; }
+}
+/* the narrowest phones: a touch smaller so the labels still fit on one line */
+@container (max-width: 330px) {
+  .assure { padding-inline: 0; }
+  .assure li { font-size: 12px; letter-spacing: 0; padding-inline: 4px; }
+  .assure li + li { padding-left: 4px; }
 }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
@@ -1374,7 +1384,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <div class="acc-inner"><div class="mbody">${(p === 'c' ? bodyHTML_C : bodyHTML)(m.id, p)}</div></div>
         </div>
       </div>`;
-    if (variant === 'A') {
+    methodsEl.dataset.mode = createMode();
+    if (methodsEl.dataset.mode === 'accordion') {
       methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle')).join('')}</div>`;
     } else if (variant === 'B') {
       methodsEl.innerHTML = `
@@ -1384,14 +1395,21 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner"></div></aside>
         </div>`;
     } else {
-      // Variant C: B's list and navigation, without the chip tray
+      // Variant C, and A on phones: B's list and navigation, without the chip tray
+      const p = variant === 'C' ? 'c' : 'a';
       methodsEl.innerHTML = `
-        <div class="b-wrap is-c">
+        <div class="b-wrap is-${p}">
           <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
-          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'c', 'open')}</div></div>`).join('')}</div>
+          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, p, 'open')}</div></div>`).join('')}</div>
         </div>`;
     }
   }
+  /* Phones always get two steps (list → the method on its own screen, with Back);
+     A's expand-in-place accordion is for wider screens only. Same width as the phone layout's container query. */
+  const phone = () => { const cs = getComputedStyle(device); return device.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) <= 560; };
+  const createMode = () => variant === 'A' && !phone() ? 'accordion' : 'steps';
+  const syncCreateMode = () => { if (current === 'create' && methodsEl.dataset.mode !== createMode()) renderCreate(); };
+  window.addEventListener('resize', syncCreateMode);
 
   /* ---------- Motion ---------- */
   // Mirrors the CSS motion tokens so JS-driven and CSS-driven motion share one scale.
@@ -1516,12 +1534,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Pure CSS state, so Back mid-way simply reverses it. */
   /* Must-haves only: effort, the one risk people worry about for this method, and reversibility */
   const ASSURE = {
-    linkedin: [['clock', '30 seconds'], ['shield', 'No LinkedIn login'],     ['pen', 'Fully editable']],
-    ai:       [['clock', '1 minute'],   ['sparkles', 'Tailored to your role'], ['pen', 'Fully editable']],
-    upload:   [['clock', '20 seconds'], ['shield', 'Original untouched'],    ['pen', 'Fully editable']],
-    paste:    [['clock', '30 seconds'], ['file', 'Messy text is fine'],      ['pen', 'Fully editable']]
+    linkedin: [['clock', '30 seconds', '30 sec'], ['shield', 'No LinkedIn login'],     ['pen', 'Fully editable']],
+    ai:       [['clock', '1 minute', '1 min'],    ['sparkles', 'Tailored to your role'], ['pen', 'Fully editable']],
+    upload:   [['clock', '20 seconds', '20 sec'], ['shield', 'Original untouched'],    ['pen', 'Fully editable']],
+    paste:    [['clock', '30 seconds', '30 sec'], ['file', 'Messy text is fine'],      ['pen', 'Fully editable']]
   };
-  const asideHTML = id => `<ul class="assure">${ASSURE[id].map(([ic, t]) => `<li>${icon(ic)}<span>${t}</span></li>`).join('')}</ul>`;
+  // a short form (phones) keeps every label on one line
+  const asideHTML = id => `<ul class="assure">${ASSURE[id].map(([ic, t, short]) =>
+    `<li>${icon(ic)}${short ? `<span class="t-long">${t}</span><span class="t-short">${short}</span>` : `<span>${t}</span>`}</li>`).join('')}</ul>`;
 
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
@@ -2132,7 +2152,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   async function startFromDashboard(method) {
     await go('create');
     if (!method) return;
-    if (variant === 'A') { const card = methodsEl.querySelector(`.mcard[data-id="${method}"]`); if (card) toggleA(card); }
+    if (methodsEl.dataset.mode === 'accordion') { const card = methodsEl.querySelector(`.mcard[data-id="${method}"]`); if (card) toggleA(card); }
     else openB(method);
   }
 
@@ -2284,6 +2304,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     try { localStorage.setItem('kr-start-view', v); } catch (e) {}
     window.scrollTo(0, 0); device.scrollTop = 0;
+    syncCreateMode();
   }
 
   document.addEventListener('click', e => {
