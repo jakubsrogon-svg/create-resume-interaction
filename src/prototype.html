@@ -468,57 +468,90 @@ div.mhead { cursor: default; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
 
-/* ---------- Variant C: task-support content on the detail screens ---------- */
-.helper, .mbody .helper { margin: 0; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
-.disclose {
-  justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer;
-  font-size: 13px; line-height: 18px; color: var(--kr-blue); border-radius: 4px; text-align: left;
+/* ---------- Variant C: a picture on top of each method screen ----------
+   Same language as the goal-screen scenes, told as "what you give → what you get".
+   Drawn in HTML and sized in cqh (1% of the banner's height), so it scales down
+   with the banner on shorter screens instead of getting cropped. */
+.c-scene {
+  height: clamp(120px, calc(var(--vh) * 100 - 740px), 176px); container-type: size;
+  border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--cs-bg);
 }
-.disclose:hover { color: var(--kr-grey-100); }
-.disclose:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.disclose .chev-d svg.i { width: 16px; height: 16px; }
-.disclose[aria-expanded="true"] .chev-d { transform: rotate(180deg); }
-.disc-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
-.disc-panel.is-open { grid-template-rows: 1fr; }
-.disc-inner { min-height: 0; overflow: hidden; }
-.li-help { display: grid; gap: 6px; justify-items: start; padding-top: 2px; }
-.howto-box {
-  margin-top: 10px; padding: 14px 16px; display: grid; gap: 12px;
-  background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-btn);
+.c-scene.cs-linkedin { --cs-bg: var(--kr-blue-tint); --cs-tone: var(--kr-blue); }
+.c-scene.cs-ai { --cs-bg: #f5f1fe; --cs-tone: #8a5cff; background: linear-gradient(120deg, var(--kr-blue-tint), #f8f0ff); }
+.c-scene.cs-upload { --cs-bg: var(--kr-primary-tint); --cs-tone: var(--kr-primary); }
+.c-scene.cs-paste { --cs-bg: var(--kr-mint-tint); --cs-tone: var(--kr-mint); }
+.cs-row { display: flex; align-items: center; gap: 7cqh; }
+.c-scene .ln { height: 3cqh; border-radius: 2cqh; }
+.cs-card { flex: none; background: var(--kr-white); border-radius: 3cqh; box-shadow: 0 2cqh 6cqh rgba(140, 140, 140, .2); }
+.cs-step {
+  width: 18cqh; height: 18cqh; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--kr-white); color: var(--cs-tone); box-shadow: 0 1cqh 3cqh rgba(0, 0, 0, .08);
 }
-.howto { margin: 0; display: grid; gap: 10px; }
-.howto dt { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--kr-grey-100); }
-.howto dd { margin: 2px 0 0; font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
-.shot-ph {
-  height: 76px; display: grid; place-items: center; border: 1px dashed var(--kr-grey-60); border-radius: var(--radius);
-  background: var(--kr-white); font-size: 12px; line-height: 16px; color: var(--kr-grey-80);
+.cs-step svg.i { width: 9cqh; height: 9cqh; }
+.cs-step.is-ai { background: var(--kr-premium-gradient); color: var(--kr-white); box-shadow: 0 1cqh 4cqh rgba(160, 102, 255, .35); }
+/* the resume you get */
+.cs-paper { width: 58cqh; height: 78cqh; padding: 7cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
+.cs-head { display: flex; align-items: center; gap: 3.5cqh; margin-bottom: 1cqh; }
+.cs-av { display: block; width: 11cqh; height: 11cqh; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.cs-stack { display: grid; gap: 2.4cqh; flex: 1; min-width: 0; }
+.c-scene .ln.cs-h { width: 38%; background: var(--cs-tone); opacity: .5; margin-top: 1.2cqh; }
+.c-scene .ln.is-ai { background: var(--kr-premium-gradient); opacity: .55; }
+.cs-paper.is-tpl { padding: 0; flex-direction: row; gap: 0; overflow: hidden; }
+.cs-tpl-side { width: 38%; padding: 7cqh 4cqh; display: flex; flex-direction: column; align-items: center; gap: 3.4cqh; background: color-mix(in srgb, var(--cs-tone) 16%, var(--kr-white)); }
+.cs-tpl-side .cs-av { width: 13cqh; height: 13cqh; background: var(--kr-white); margin-bottom: 1cqh; }
+.cs-tpl-side .ln { background: var(--kr-white); }
+.cs-tpl-main { flex: 1; min-width: 0; padding: 7cqh 5cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
+/* LinkedIn: a profile card */
+.cs-profile { width: 72cqh; overflow: hidden; padding-bottom: 7cqh; }
+.cs-cover { height: 17cqh; background: color-mix(in srgb, var(--kr-blue) 16%, var(--kr-white)); }
+.cs-profile .cs-av { width: 20cqh; height: 20cqh; margin: -10cqh 0 0 6cqh; border: 1.4cqh solid var(--kr-white); background: #d9d8f8; }
+.cs-pbody { padding: 3cqh 6cqh 0; display: grid; gap: 3cqh; }
+.cs-in-row { display: flex; align-items: center; gap: 3cqh; margin-top: 1.4cqh; }
+.cs-in { width: 11cqh; height: 11cqh; border-radius: 2.4cqh; flex: none; display: grid; place-items: center; background: var(--kr-blue); color: var(--kr-white); }
+.cs-in svg.i { width: 6.5cqh; height: 6.5cqh; }
+.cs-in-row .ln { flex: 1; }
+/* AI: the two answers */
+.cs-fields { width: 68cqh; flex: none; display: grid; gap: 6cqh; }
+.cs-field { display: grid; gap: 2.6cqh; }
+.cs-input {
+  height: 16cqh; padding-inline: 4.5cqh; display: flex; align-items: center; gap: 1.6cqh;
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 3cqh;
 }
+.cs-input .ln { flex: none; }
+.cs-input.is-focus { border-color: var(--cs-tone); box-shadow: 0 0 0 1.2cqh rgba(138, 92, 255, .14); }
+.cs-caret { width: 1px; height: 7cqh; background: var(--cs-tone); flex: none; }
+/* Upload: your old files */
+.cs-files { position: relative; width: 72cqh; height: 76cqh; flex: none; }
+.cs-file { position: absolute; width: 44cqh; height: 58cqh; padding: 9cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
+.cs-file::before {
+  content: ""; position: absolute; top: 0; right: 0; width: 11cqh; height: 11cqh; border-bottom-left-radius: 2.4cqh;
+  background: linear-gradient(to bottom left, var(--cs-bg) 50%, var(--kr-grey-40) 50%);
+}
+.cs-file.is-back { left: 0; top: 0; rotate: -8deg; }
+.cs-file.is-front { right: 0; bottom: 0; rotate: 5deg; }
+.cs-tag {
+  position: absolute; left: 5cqh; bottom: 6cqh; padding: 1.6cqh 2.6cqh; border-radius: 1.6cqh;
+  font-size: 6.4cqh; line-height: 1; font-weight: 600; letter-spacing: .3cqh; color: var(--kr-white); background: var(--kr-primary);
+}
+.cs-tag.is-doc { background: var(--kr-blue); }
+/* Paste: a messy note */
+.cs-note { width: 58cqh; height: 68cqh; padding: 8cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; rotate: -3deg; }
+.cs-note .ln { flex: none; }
+/* The three parts settle in one after another as the screen opens */
+.cs-row > * { opacity: 0; transform: translateY(3cqh); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
+.mcard.is-open .cs-row > * { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
+.mcard.is-open .cs-row > :nth-child(1) { transition-delay: 160ms; }
+.mcard.is-open .cs-row > :nth-child(2) { transition-delay: 230ms; }
+.mcard.is-open .cs-row > :nth-child(3) { transition-delay: 300ms; }
+/* error and failure messages, with links to another method */
 .c-fail, .c-error { display: grid; gap: 4px; padding-top: 2px; font-size: 12px; line-height: 16px; letter-spacing: 0.16px; color: var(--kr-primary); }
 .c-fail[hidden], .c-error[hidden] { display: none; }
 .c-recover { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 .c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
-.ai-grid { display: grid; grid-template-columns: minmax(0, 1fr) 124px; gap: 16px; align-items: start; }
-.ai-ex-toggle { display: none; }
-.ai-ex-panel { grid-template-rows: 1fr; }            /* desktop: always shown in the side column */
-.ex { margin: 0; display: grid; gap: 8px; }
-.ex figcaption { text-align: center; }
-.ex-paper {
-  aspect-ratio: 1 / 1.414; max-width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 4px;
-  box-shadow: var(--kr-shadow-cv); padding: 10px 9px; display: grid; align-content: start; gap: 4px;
-}
-.ex-paper .ln { height: 3px; border-radius: 2px; }
-.ex-paper .ln.h { height: 6px; width: 62%; background: var(--kr-grey-100); margin-bottom: 2px; }
-.ex-paper .ln.s { height: 4px; width: 34%; background: #cfcfcf; margin-top: 4px; }
-.actions .cta-helper { margin-right: auto; }
-/* phones: the example moves behind a disclosure; text links get a 44px hit area */
+/* phones: a shorter picture; text links get a 44px hit area */
 @container (max-width: 560px) {
-  .ai-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .ai-ex-toggle { display: inline-flex; }
-  .ai-ex-panel { grid-template-rows: 0fr; }
-  .ai-ex-panel.is-open { grid-template-rows: 1fr; }
-  .ai-ex-panel .ex { width: 140px; padding-top: 8px; }
-  .disclose, .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
-  .actions:has(.cta-helper) { flex-wrap: wrap; }
+  .c-scene { height: clamp(104px, calc(var(--vh) * 100 - 700px), 140px); }
+  .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
 }
 .no-anim, .no-anim * { transition: none !important; }
 
@@ -987,6 +1020,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 @media (prefers-reduced-motion: reduce) {
   .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard, .b-aside { transition-property: opacity, box-shadow !important; }
   .assure { transform: none !important; }
+  .cs-row > * { transform: none !important; }
   .acc-inner > .mbody, .b-back .back, .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard, .b-wrap .mcard.is-open .chev { transform: none !important; }
   .step.is-active .dot { animation-duration: 1.6s; }
   .ld-paper::after { animation: none; opacity: 0; }
@@ -1055,7 +1089,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.3">v1.3</div>
+<div class="proto-ver" aria-label="Prototype version 1.4">v1.4</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1069,7 +1103,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   <div class="seg" data-screen-for="create">
     <button type="button" data-variant="A" aria-pressed="true" aria-label="Method screen: variant A, expand in place" data-tip="Method screen · A, expand in place">A</button>
     <button type="button" data-variant="B" aria-pressed="false" aria-label="Method screen: variant B, separate screens" data-tip="Method screen · B, separate screens">B</button>
-    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, task support" data-tip="Method screen · C, task support">C</button>
+    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
@@ -1092,6 +1126,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
     clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
     chevron: '<path d="m9 18 6-6-6-6"/>',
     arrowLeft: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+    arrowRight: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
     cloud: '<path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/>',
     file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
@@ -1252,7 +1287,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="field">
           <label class="sr-only" for="${f}-url">LinkedIn profile URL</label>
           <div class="input-wrap">
-            <input class="input" id="${f}-url" name="url" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="linkedin.com/in/your-name" aria-describedby="${f}-err ${f}-help">
+            <input class="input" id="${f}-url" name="url" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="linkedin.com/in/your-name" aria-describedby="${f}-err">
             <button class="icon-btn" type="button" data-action="paste-example" aria-label="Paste example URL" title="Paste">${icon('clipboard')}</button>
           </div>
           <div aria-live="polite">
@@ -1265,61 +1300,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
               </span>
             </div>
           </div>
-          <div class="li-help">
-            <p class="helper" id="${f}-help">We only read your public profile. No LinkedIn login needed.</p>
-            <button class="disclose" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-how">Where do I find my profile link?<span class="chev-d">${icon('down')}</span></button>
-          </div>
-          <div class="disc-panel" id="${f}-how" inert><div class="disc-inner">
-            <div class="howto-box">
-              <dl class="howto">
-                <div><dt>On a computer</dt><dd>Open your LinkedIn profile and copy the address from your browser’s address bar.</dd></div>
-                <div><dt>In the LinkedIn app</dt><dd>Go to your profile, tap ⋯ (More), then Share profile → Copy link.</dd></div>
-              </dl>
-              <div class="shot-ph" role="img" aria-label="Screenshot placeholder">Screenshot placeholder</div>
-              <p class="helper">Your profile needs to be public for the import to work.</p>
-            </div>
-          </div></div>
         </div>
         <div class="actions"><button class="btn btn-coral" type="submit">Import</button></div>
       </form>`;
-    if (id === 'ai') return `
-      <form class="mform" data-method="ai" data-c novalidate>
-        <p>Give us your name and latest job title. The AI drafts a tailored resume in seconds.</p>
-        <div class="ai-grid">
-          <div class="fpair"><div class="field">
-            <label class="label" for="${f}-name">Your name</label>
-            <input class="input" id="${f}-name" name="name" autocomplete="name" placeholder="Jana Novák" aria-describedby="${f}-name-err">
-            <span class="error" id="${f}-name-err" aria-live="polite">Add your name so we can put it on the resume.</span>
-          </div>
-          <div class="field">
-            <label class="label" for="${f}-title">Job title</label>
-            <input class="input" id="${f}-title" name="title" autocomplete="organization-title" placeholder="Product Designer" aria-describedby="${f}-title-err">
-            <span class="error" id="${f}-title-err" aria-live="polite">Add a job title. Your most recent one works best.</span>
-          </div></div>
-          <div class="ai-ex">
-            <button class="disclose ai-ex-toggle" type="button" data-action="disclose" aria-expanded="false" aria-controls="${f}-ex">See an example resume<span class="chev-d">${icon('down')}</span></button>
-            <div class="disc-panel ai-ex-panel" id="${f}-ex"><div class="disc-inner">
-              <figure class="ex">
-                <div class="ex-paper" role="img" aria-label="Example resume (placeholder)">
-                  <i class="ln h"></i><i class="ln" style="width:40%"></i>
-                  <i class="ln s"></i><i class="ln" style="width:92%"></i><i class="ln" style="width:80%"></i>
-                  <i class="ln s"></i><i class="ln" style="width:70%"></i><i class="ln" style="width:88%"></i><i class="ln" style="width:60%"></i>
-                  <i class="ln s"></i><i class="ln" style="width:76%"></i><i class="ln" style="width:52%"></i>
-                </div>
-                <figcaption class="helper">Example of what you’ll get</figcaption>
-              </figure>
-            </div></div>
-          </div>
-        </div>
-        <!-- TODO(live-preview): out of scope for C. A preview that updates with the job title would replace the static example. -->
-        <div class="actions"><p class="helper cta-helper" id="${f}-edit">You can edit everything afterwards.</p><button class="btn btn-gradient" type="submit" aria-describedby="${f}-edit">${icon('sparkles')}Continue</button></div>
-      </form>`;
+    if (id === 'ai') return bodyHTML(id, p);     // same form as B; the picture shows what you'll get
     if (id === 'upload') return `
       <form class="mform" data-method="upload" data-c novalidate>
         <div class="dropzone" role="button" tabindex="0" data-action="browse" aria-label="Choose your resume file" aria-describedby="${f}-hint ${f}-err">
           <span class="cloud">${icon('cloud')}</span>
           <span class="dz-title">Drop your resume here or <span class="dz-link">browse your files</span></span>
-          <span class="dz-meta" id="${f}-hint">PDF or DOCX, up to&nbsp;10&nbsp;MB. Text-based files import best; scanned documents may not.</span>
+          <span class="dz-meta" id="${f}-hint">PDF or DOCX, up to&nbsp;10&nbsp;MB</span>
         </div>
         <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
         <div class="file-slot field" aria-live="polite">
@@ -1327,8 +1317,43 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         </div>
         <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
       </form>`;
-    if (id === 'paste') return bodyHTML(id, p);  // unchanged from B
+    if (id === 'paste') return bodyHTML(id, p);   // same form as B
   }
+
+  /* Variant C: the picture on top of each method screen (decorative; the text says it all) */
+  const L = (...ws) => ws.map(w => `<i class="ln ${w}"></i>`).join('');
+  const csResume = (extra = '') => `<div class="cs-card cs-paper"><div class="cs-head"><i class="cs-av"></i><div class="cs-stack">${L('dk w80', 'w50')}</div></div>${extra}</div>`;
+  const SCENE_C = {
+    linkedin: `
+      <div class="cs-card cs-profile"><div class="cs-cover"></div><i class="cs-av"></i>
+        <div class="cs-pbody">${L('dk w60', 'w80')}<div class="cs-in-row"><span class="cs-in">${icon('linkedin')}</span>${L('w50')}</div></div></div>
+      <div class="cs-step">${icon('arrowRight')}</div>
+      ${csResume(L('cs-h', 'w90', 'w70', 'cs-h', 'w80', 'w60'))}`,
+    ai: `
+      <div class="cs-fields">
+        <div class="cs-field">${L('dk w30')}<div class="cs-input">${L('dk w60')}</div></div>
+        <div class="cs-field">${L('dk w40')}<div class="cs-input is-focus">${L('dk w50')}<i class="cs-caret"></i></div></div>
+      </div>
+      <div class="cs-step is-ai">${icon('sparkles')}</div>
+      ${csResume(L('cs-h', 'w90', 'w70', 'cs-h', 'is-ai w80', 'is-ai w60'))}`,
+    upload: `
+      <div class="cs-files">
+        <div class="cs-card cs-file is-back">${L('dk w70', 'w90', 'w60')}<span class="cs-tag is-doc">DOC</span></div>
+        <div class="cs-card cs-file is-front">${L('dk w60', 'w90', 'w80', 'w50')}<span class="cs-tag">PDF</span></div>
+      </div>
+      <div class="cs-step">${icon('arrowRight')}</div>
+      <div class="cs-card cs-paper is-tpl">
+        <div class="cs-tpl-side"><i class="cs-av"></i>${L('w80', 'w60', 'w70')}</div>
+        <div class="cs-tpl-main">${L('dk w80', 'w50', 'cs-h', 'w90', 'w70', 'cs-h', 'w80')}</div>
+      </div>`,
+    paste: `
+      <div class="cs-card cs-note">
+        <i class="ln dk w70"></i><i class="ln w40" style="margin-left:8%"></i><i class="ln w90"></i><i class="ln w30" style="margin-left:30%"></i><i class="ln w80"></i><i class="ln w60" style="margin-left:12%"></i><i class="ln w50"></i>
+      </div>
+      <div class="cs-step">${icon('arrowRight')}</div>
+      ${csResume(L('cs-h', 'w90', 'w70', 'cs-h', 'w80', 'w60'))}`
+  };
+  const sceneC = id => `<div class="c-scene cs-${id}" aria-hidden="true"><div class="cs-row">${SCENE_C[id]}</div></div>`;
 
   const headHTML = (m, tag, attrs) => `
     <${tag} class="mhead" ${attrs}>
@@ -1397,7 +1422,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <div class="mcard" data-id="${m.id}">
         ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
         <div class="acc" id="${p}-${m.id}-panel" role="region" aria-label="${m.title}" inert>
-          <div class="acc-inner"><div class="mbody">${(p === 'c' ? bodyHTML_C : bodyHTML)(m.id, p)}</div></div>
+          <div class="acc-inner"><div class="mbody">${p === 'c' ? sceneC(m.id) + bodyHTML_C(m.id, p) : bodyHTML(m.id, p)}</div></div>
         </div>
       </div>`;
     methodsEl.dataset.mode = createMode();
@@ -2362,11 +2387,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
-    else if (a === 'disclose') {
-      const panel = document.getElementById(el.getAttribute('aria-controls')), open = el.getAttribute('aria-expanded') !== 'true';
-      el.setAttribute('aria-expanded', String(open)); panel.classList.toggle('is-open', open); panel.inert = !open;
-      settleSoon();
-    }
     else if (a === 'switch-method') switchMethod(el.dataset.to);
     else if (a === 'pane') setPane(el.dataset.pane);
     else if (a === 'ecard') toggleEcard(el.closest('.ecard'));
