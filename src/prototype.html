@@ -915,6 +915,11 @@ body.is-mobile .dash { min-height: 100%; }
 .seg button:focus-visible, .proto-reset:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
 .seg svg.i, .proto-reset svg.i { width: 16px; height: 16px; }
 .proto-sep { width: 20px; height: 1px; background: #2c3a5c; margin-block: 2px; }
+/* A setting that doesn't affect the current screen fades back; clicking it takes you to the screen it changes */
+.seg[data-screen-for] { transition: opacity var(--dur-base) var(--ease-standard); }
+body:not([data-screen="intent"]) .seg[data-screen-for="intent"],
+body:not([data-screen="create"]) .seg[data-screen-for="create"] { opacity: .4; }
+body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opacity: 1; }
 [data-tip]::after {
   content: attr(data-tip); position: absolute; right: calc(100% + 12px); top: 50%; transform: translate(4px, -50%);
   white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
@@ -1036,15 +1041,15 @@ body.is-mobile .dash { min-height: 100%; }
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
     <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
   </button>
-  <div class="seg">
-    <button type="button" data-variant="A" aria-pressed="true" aria-label="Variant A, expand in place" data-tip="A · Expand in place">A</button>
-    <button type="button" data-variant="B" aria-pressed="false" aria-label="Variant B, separate screens" data-tip="B · Separate screens">B</button>
-    <button type="button" data-variant="C" aria-pressed="false" aria-label="Variant C, separate screens with task support" data-tip="C · Task support">C</button>
+  <div class="seg" data-screen-for="intent">
+    <button type="button" data-layout="grid" aria-pressed="true" aria-label="Goal screen: grid" data-tip="Goal screen · Grid"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></button>
+    <button type="button" data-layout="list" aria-pressed="false" aria-label="Goal screen: list" data-tip="Goal screen · List"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="5" x="3" y="3" rx="1.5"/><rect width="18" height="5" x="3" y="10" rx="1.5"/><rect width="18" height="5" x="3" y="17" rx="1.5"/></svg></button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
-  <div class="seg">
-    <button type="button" data-layout="grid" aria-pressed="true" aria-label="Goals screen as grid" data-tip="Goals: grid"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></button>
-    <button type="button" data-layout="list" aria-pressed="false" aria-label="Goals screen as list" data-tip="Goals: list"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="5" x="3" y="3" rx="1.5"/><rect width="18" height="5" x="3" y="10" rx="1.5"/><rect width="18" height="5" x="3" y="17" rx="1.5"/></svg></button>
+  <div class="seg" data-screen-for="create">
+    <button type="button" data-variant="A" aria-pressed="true" aria-label="Method screen: variant A, expand in place" data-tip="Method screen · A, expand in place">A</button>
+    <button type="button" data-variant="B" aria-pressed="false" aria-label="Method screen: variant B, separate screens" data-tip="Method screen · B, separate screens">B</button>
+    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, task support" data-tip="Method screen · C, task support">C</button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
@@ -1319,6 +1324,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
   let current = 'intent';
+  /* The prototype rail dims the settings that don't affect the screen you're on */
+  function setCurrent(s) { current = s; document.body.dataset.screen = s; }
+  setCurrent('intent');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const device = document.getElementById('device');
   const framed = () => getComputedStyle(device).overflowY === 'auto';
@@ -1410,13 +1418,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      - The picked card leaves last, so the eye follows the choice into the next step.
      Clicking mid-way fast-forwards the running change and starts the new one, so no click is lost. */
   let screenRun = null;
+  const FLOW = ['intent', 'create', 'loading'];
   async function go(screen, picked) {
     if (screenRun) screenRun.finish();
     if (screen === current) return;
     if (APPS[current]) return leaveApp(screen);
     const from = screens[current], to = screens[screen];
-    const dir = screen === 'intent' ? -1 : 1;
-    current = screen;
+    const dir = FLOW.indexOf(screen) < FLOW.indexOf(current) ? -1 : 1;
+    setCurrent(screen);
     await scrollToTop();
     if (current !== screen) return; // another change started while scrolling
 
@@ -1953,7 +1962,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setPane('preview');
     topbarEl.hidden = true; pageEl.hidden = true; editorEl.hidden = false;
     Object.values(screens).forEach(sc => { sc.hidden = true; });
-    current = 'editor';
+    setCurrent('editor');
     scroller().scrollTo({ top: 0 });
     if (reduce) { editorEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); return; }
     const paper = editorEl.querySelector('#rv'), pv = editorEl.querySelector('.ed-preview');
@@ -1979,7 +1988,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setCut(0, true);
     topbarEl.hidden = false; pageEl.hidden = false;
     Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== screen; });
-    current = screen;
+    setCurrent(screen);
     scroller().scrollTo({ top: 0 });
     if (screen === 'create') renderCreate();
     const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .irow, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
@@ -2107,7 +2116,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     topbarEl.hidden = true; pageEl.hidden = true;
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
-    current = 'dashboard';
+    setCurrent('dashboard');
     window.scrollTo(0, 0); device.scrollTop = 0;
     const items = [...dashEl.querySelectorAll('.dash-mbar, .dash-rail, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(shown);
     const anims = items.map((el, i) => play(el,
@@ -2277,9 +2286,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   document.addEventListener('click', e => {
     const vb = e.target.closest('[data-variant]');
-    if (vb) return setVariant(vb.dataset.variant);
+    if (vb) {
+      setVariant(vb.dataset.variant);
+      if (current !== 'create') { clearTimers(); go('create', current === 'intent' ? screens.intent.querySelector('[data-action="pick-intent"]') : null); }
+      return;
+    }
     const lb = e.target.closest('[data-layout]');
-    if (lb) return setLayout(lb.dataset.layout);
+    if (lb) {
+      setLayout(lb.dataset.layout);
+      if (current !== 'intent') { clearTimers(); go('intent'); }
+      return;
+    }
     const vw = e.target.closest('[data-view]');
     if (vw) return setView(vw.dataset.view);
     const el = e.target.closest('[data-action]');
@@ -2393,7 +2410,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   setLayout(hl ? hl[0] : (savedLayout || 'grid'));
   if (/dashboard/.test(hash)) openDashboard();
   if (/editor/.test(hash)) {
-    screens.intent.hidden = true; screens.loading.hidden = false; current = 'loading';
+    screens.intent.hidden = true; screens.loading.hidden = false; setCurrent('loading');
     openEditor();
   }
 })();

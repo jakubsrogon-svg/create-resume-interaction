@@ -3,7 +3,7 @@
 Interactive prototype of the Kickresume onboarding start flow, built on the Kickresume design system.
 
 1. **Intent screen** – "What do you want to get done first?" Only *Create a resume* is active; the rest are marked *Coming soon*. Two layouts, switchable from the side rail: **Grid** (illustrated cards in a row) and **List** (500px cards stacked like the second screen).
-2. **Creation screen** – "How do you want to start?" with four methods (LinkedIn, AI, Upload, Paste text), in two variants switchable from the floating bar:
+2. **Creation screen** – "How do you want to start?" with four methods (LinkedIn, AI, Upload, Paste text), in three variants switchable from the side rail:
    - **A · Expand in place** – all methods stay on one screen; clicking a card expands it (accordion, one open at a time).
    - **B · Separate screens** – clicking a card slides to its own screen with a Back button; the other options are hidden. A quiet row of three short reassurances sits under the open card: how long it takes, the one risk people worry about for that method, and that everything stays editable.
    - **C · Task support** – B's list and navigation, with detail screens that help people finish the step instead of reassurance chips: LinkedIn helper + "Where do I find my profile link?", tolerant link checking and a failure state with recovery links; an example resume beside the AI form (behind a disclosure on phones) and "You can edit everything afterwards" by the CTA; clearer upload hint and inline type/size/unreadable-file errors whose recovery links switch straight to another method (Back always returns to the list). Prototype triggers: a LinkedIn link containing `private` fails the import; a file name containing `scan` can't be read.
@@ -13,6 +13,8 @@ Interactive prototype of the Kickresume onboarding start flow, built on the Kick
 5. **Dashboard** – where people land if they skip personalization (“Skip personalization” or “I’m just looking around”). Its LinkedIn, PDF import and resume builder shortcuts drop you into the creation flow with that method already open.
 
 Content column is 950px, method cards are 500px.
+
+The side rail lists its settings in flow order: goal-screen layout (grid/list), method-screen variant (A/B/C), desktop/mobile, restart. A setting that doesn't affect the current screen is dimmed; clicking it applies it and takes you to the screen it changes.
 
 - Source: `src/prototype.html`
 - Build (inlines brand fonts + logo): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
