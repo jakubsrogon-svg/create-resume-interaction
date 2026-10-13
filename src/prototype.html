@@ -314,23 +314,43 @@ div.mhead { cursor: default; }
 /* Variant B — reassurance row under the open card. Three short answers to the doubts
    that stop people right before they act: how long, is my data safe, can I fix it later.
    No paragraphs, no FAQs: reading should never feel like part of the task. */
-.b-aside { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-slow) var(--ease-inout); }
-.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; }
-.b-aside-inner { min-height: 0; overflow: hidden; }
-.assure { list-style: none; margin: 0; padding: 4px 4px 2px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.assure li {
-  display: grid; justify-items: center; gap: 4px; text-align: center; font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-80);
-  opacity: 0; transform: translateY(6px); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit);
+.b-aside {
+  position: relative; z-index: 0; display: grid; grid-template-rows: 0fr; margin-top: 0;
+  transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top var(--dur-slow) var(--ease-inout);
 }
-.assure li svg.i { width: 18px; height: 18px; color: var(--kr-mint); }
-.b-wrap.has-focus .assure li { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
-.b-wrap.has-focus .assure li:nth-child(1) { transition-delay: 160ms; }
-.b-wrap.has-focus .assure li:nth-child(2) { transition-delay: 210ms; }
-.b-wrap.has-focus .assure li:nth-child(3) { transition-delay: 260ms; }
-/* short desktop windows: icon beside label, one line */
-@media (max-height: 700px) and (min-width: 560px) {
-  .assure li { grid-auto-flow: column; justify-content: center; align-items: center; gap: 6px; }
-  .assure li svg.i { width: 16px; height: 16px; }
+/* the tray tucks 16px under the card's bottom edge, so it reads as part of it */
+.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: calc(-16px - var(--list-gap)); }
+.slot.is-focus { position: relative; z-index: 1; }
+.b-aside-inner { min-height: 0; overflow: hidden; padding-inline: 12px; }
+.assure {
+  list-style: none; margin: 0; padding: 28px 16px 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+  background: var(--kr-mint-tint); border: 1px solid rgba(29, 163, 110, .16); border-top: 0; border-radius: 0 0 14px 14px;
+  transform: translateY(-14px); opacity: 0; transition: transform var(--dur-fast) var(--ease-exit), opacity var(--dur-fast) var(--ease-exit);
+}
+.b-wrap.has-focus .assure { transform: none; opacity: 1; transition: transform var(--dur-slow) var(--ease-standard) 140ms, opacity var(--dur-base) var(--ease-standard) 140ms; }
+.assure li {
+  display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; line-height: 17px; font-weight: 500; color: var(--kr-grey-100);
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-exit);
+}
+.assure .ax-badge {
+  width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--kr-white); color: var(--kr-mint); box-shadow: 0 1px 2px rgba(29, 163, 110, .18);
+}
+.assure .ax-badge svg.i { width: 14px; height: 14px; }
+.b-wrap.has-focus .assure li { opacity: 1; transition: opacity var(--dur-base) var(--ease-standard); }
+.b-wrap.has-focus .assure li:nth-child(1) { transition-delay: 220ms; }
+.b-wrap.has-focus .assure li:nth-child(2) { transition-delay: 270ms; }
+.b-wrap.has-focus .assure li:nth-child(3) { transition-delay: 320ms; }
+/* short desktop windows: a slimmer tray */
+@media (max-height: 700px) {
+  .assure { padding: 20px 14px 6px; gap: 8px; }
+  .assure li { font-size: 12px; line-height: 15px; gap: 6px; }
+  .assure .ax-badge { width: 22px; height: 22px; }
+  .assure .ax-badge svg.i { width: 12px; height: 12px; }
+}
+/* phones: a short vertical list inside the tray */
+@container (max-width: 560px) {
+  .assure { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 26px 14px 12px; }
 }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
@@ -892,7 +912,7 @@ body.is-mobile .dash { min-height: 100%; }
 /* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
 @media (prefers-reduced-motion: reduce) {
   .acc, .slot, .b-back, .chev, .mcard, .slot > .slot-inner > .mcard, .b-aside { transition-property: opacity, box-shadow !important; }
-  .assure li { transform: none !important; }
+  .assure { transform: none !important; }
   .acc-inner > .mbody, .b-back .back, .b-wrap.has-focus .slot:not(.is-focus) > .slot-inner > .mcard, .b-wrap .mcard.is-open .chev { transform: none !important; }
   .step.is-active .dot { animation-duration: 1.6s; }
   .ld-paper::after { animation: none; opacity: 0; }
@@ -1340,7 +1360,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     upload:   [['clock', 'About 20 seconds'], ['shield', 'Your file stays untouched'], ['pen', 'Edit everything later']],
     paste:    [['clock', 'About 30 seconds'], ['file', 'Messy text is fine'],      ['pen', 'Edit everything later']]
   };
-  const asideHTML = id => `<ul class="assure">${ASSURE[id].map(([ic, t]) => `<li>${icon(ic)}<span>${t}</span></li>`).join('')}</ul>`;
+  const asideHTML = id => `<ul class="assure">${ASSURE[id].map(([ic, t]) => `<li><span class="ax-badge">${icon(ic)}</span><span>${t}</span></li>`).join('')}</ul>`;
 
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
