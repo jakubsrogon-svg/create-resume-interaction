@@ -315,13 +315,13 @@ div.mhead { cursor: default; }
    that stop people right before they act: how long, is my data safe, can I fix it later.
    No paragraphs, no FAQs: reading should never feel like part of the task. */
 /* The tray sits inside the open card's slot, so it travels with the card as one object and
-   only ever unfolds downward from under it. Its tuck-under margin switches instantly (it has
-   no height at that moment) and is released only after the tray has folded away. */
+   only ever unfolds downward from under it. Its tuck-under margin eases together with the
+   fold, in both directions, so the list's height changes continuously (no snap on Back). */
 .b-aside {
   position: relative; z-index: 0; display: grid; grid-template-rows: 0fr; margin-top: 0;
-  transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top 0s linear var(--dur-slow);
+  transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top var(--dur-slow) var(--ease-inout);
 }
-.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: -16px; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 60ms, margin-top 0s; }
+.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: -16px; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 60ms, margin-top var(--dur-slow) var(--ease-inout) 60ms; }
 .slot.is-focus .mcard { position: relative; z-index: 1; }
 .b-aside-inner { min-height: 0; overflow: hidden; padding-inline: 12px; }
 .assure {
