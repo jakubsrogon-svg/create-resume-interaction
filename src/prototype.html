@@ -352,9 +352,10 @@ div.mhead { cursor: default; }
 }
 .assure .t-short { display: none; }
 /* Variant A: the same three items as small print under the button: grey, no box, no dividers,
-   right-aligned with the button and set close to it so they read as part of the call to action. */
+   right-aligned with the button so they read as part of the call to action. 28px under the button:
+   this 12px plus the form's 16px bottom margin (the grid gap is cancelled out). */
 .assure.is-note {
-  justify-content: flex-end; gap: 14px; margin-top: calc(6px - var(--form-gap)); padding: 0;
+  justify-content: flex-end; gap: 14px; margin-top: calc(12px - var(--form-gap)); padding: 0;
   background: none; border: 0; border-radius: 0; transform: none; opacity: 1; transition: none;
 }
 .assure.is-note li { opacity: 1; transition: none; gap: 4px; font-size: 12px; line-height: 16px; color: var(--kr-grey-80); }
@@ -1118,7 +1119,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.6.3">v1.6.3</div>
+<div class="proto-ver" aria-label="Prototype version 1.6.4">v1.6.4</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
