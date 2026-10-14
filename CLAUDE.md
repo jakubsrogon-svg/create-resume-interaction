@@ -13,3 +13,7 @@ Every update the user asks for bumps the version before it is committed and publ
 Changes that don't touch the prototype itself (README, these notes) don't bump the version.
 
 Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention it in the reply.
+
+## Hidden variant C
+
+Variant C ("picture on top") is hidden, not removed. `SHOW_C = false` in `src/prototype.html` hides its rail button and sends `#c` links and a remembered C choice to A; all of C's markup, styles and logic stay in place. When the user asks to bring C back, set `SHOW_C = true` (and drop the "hidden for now" note in the README); nothing else needs to change.

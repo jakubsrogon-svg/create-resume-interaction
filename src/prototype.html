@@ -1100,7 +1100,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.6.6">v1.6.6</div>
+<div class="proto-ver" aria-label="Prototype version 1.6.7">v1.6.7</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1375,6 +1375,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- State ---------- */
   let variant = 'A';
+  /* Variant C is hidden for now but kept in full: no rail button, and #c links or a remembered C
+     open A instead. To show it again, set SHOW_C back to true. */
+  const SHOW_C = false;
+  const VARIANTS = SHOW_C ? ['A', 'B', 'C'] : ['A', 'B'];
+  document.querySelector('.proto [data-variant="C"]').hidden = !SHOW_C;
   const methodsEl = document.getElementById('methods');
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
@@ -2348,7 +2353,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function setVariant(v) {
-    if (v !== 'A' && v !== 'B' && v !== 'C') return;
+    if (!VARIANTS.includes(v)) return;
     variant = v;
     document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
     try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
@@ -2493,7 +2498,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const hv = hash.match(/^(a|b|c)\b/), hm = hash.match(/mobile|desktop/);
   let savedV = null, savedView = null;
   try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
-  setVariant(hv ? hv[1].toUpperCase() : (savedV || 'A'));
+  const wantV = hv ? hv[1].toUpperCase() : (savedV || 'A');
+  setVariant(VARIANTS.includes(wantV) ? wantV : 'A');
   setView(hm ? hm[0] : (savedView || 'desktop'));
   let savedLayout = null;
   try { savedLayout = localStorage.getItem('kr-start-layout'); } catch (e) {}
