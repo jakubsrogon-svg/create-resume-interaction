@@ -484,9 +484,10 @@ div.mhead { cursor: default; }
    Drawn in HTML and sized in cqh (1% of the banner's height), so it scales down
    with the banner on shorter screens instead of getting cropped. */
 .c-scene {
-  height: 300px; container-type: size;
-  /* drawing unit: 1% of the picture's height, but never so big that the drawing outgrows the card's width */
-  --u: min(1cqh, .56cqw);
+  height: 250px; container-type: size;
+  /* drawing unit: 0.8% of the picture's height (the drawing takes ~60% of it, with air around), never so
+     big that the drawing outgrows the card's width */
+  --u: min(.8cqh, .45cqw);
   border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--cs-bg);
 }
 .c-scene.cs-linkedin { --cs-bg: var(--kr-blue-tint); --cs-tone: var(--kr-blue); }
@@ -576,7 +577,7 @@ div.mhead { cursor: default; }
 .c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
 /* phones: a shorter picture; text links get a 44px hit area */
 @container (max-width: 560px) {
-  .c-scene { height: 220px; }  /* phones: as tall as the card's width can fill */
+  .c-scene { height: 180px; }  /* phones: the drawing is limited by the card's width, so a shorter picture keeps the same balance */
   .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
 }
 /* ---------- Variant D: B's flow with a lighter, more modern surface ----------
@@ -1244,7 +1245,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.9.2">v1.9.2</div>
+<div class="proto-ver" aria-label="Prototype version 1.9.3">v1.9.3</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
