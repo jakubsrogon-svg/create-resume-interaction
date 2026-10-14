@@ -17,3 +17,7 @@ Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention i
 ## Hidden variant C
 
 Variant C ("picture on top") is hidden, not removed. `SHOW_C = false` in `src/prototype.html` hides its rail button and sends `#c` links and a remembered C choice to A; all of C's markup, styles and logic stay in place. When the user asks to bring C back, set `SHOW_C = true` (and drop the "hidden for now" note in the README); nothing else needs to change.
+
+## Hidden decorations in variant D
+
+D's resume fragments (the four faded pages in the side margins) are hidden, not removed. `SHOW_D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_D_PAPERS = true` (and update the README's D description); nothing else needs to change.
