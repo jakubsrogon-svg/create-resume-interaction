@@ -299,7 +299,7 @@ div.mhead { cursor: default; }
   .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .msub { max-height: 0; margin-top: -2px; opacity: 0; }
 }
 
-/* Variant B: once a method is open, the "I'm just looking around" skip link folds away */
+/* Variant B: once a method is open, the "Skip personalization" link folds away */
 #screen-create > .center { display: grid; grid-template-rows: 1fr; padding-top: var(--sp-link); transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 120ms; }
 #screen-create > .center > .text-link { min-height: 0; overflow: hidden; justify-self: center; margin-top: 0; }
 #screen-create:has(.b-wrap.has-focus) > .center > .text-link { padding-block: 0; }
@@ -1084,7 +1084,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
       <p>Pick the method that works for you. It’s completely free, no need to worry.</p>
     </div>
     <div class="methods" id="methods"></div>
-    <div class="center"><button class="text-link" type="button" data-action="dashboard">I’m just looking around</button></div>
+    <div class="center"><button class="text-link" type="button" data-action="dashboard">Skip personalization</button></div>
   </section>
 
   <!-- Screen 3: building the resume -->
@@ -1119,7 +1119,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.6.4">v1.6.4</div>
+<div class="proto-ver" aria-label="Prototype version 1.6.5">v1.6.5</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
