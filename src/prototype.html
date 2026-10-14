@@ -351,13 +351,11 @@ div.mhead { cursor: default; }
   .assure { padding: 22px 16px 8px; }
 }
 .assure .t-short { display: none; }
-/* Variant A: the same row as the open card's footer, folding in and out with the card's content */
-.assure.is-foot {
-  margin: 0 -16px calc(-1 * (var(--card-pad) + 4px)); padding: 10px 16px; border: 0; border-top: 1px solid var(--kr-grey-40);
-  border-radius: 0 0 calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px); background: var(--kr-grey-20);
-  transform: none; opacity: 1; transition: none;
-}
-.assure.is-foot li { opacity: 1; transition: none; }
+/* Variant A: the same three items as a quiet line at the top of the open card, read before acting.
+   No box: just the icons, the labels and thin dividers, aligned with the card's text. */
+.assure.is-meta { justify-content: flex-start; gap: 14px; padding: 0; background: none; border: 0; border-radius: 0; transform: none; opacity: 1; transition: none; }
+.assure.is-meta li { opacity: 1; transition: none; }
+.assure.is-meta li + li { padding-left: 14px; }
 /* phones: the same row, icon over a one-line label; columns share the spare width
    equally so each divider sits midway between two labels */
 @container (max-width: 560px) {
@@ -367,13 +365,21 @@ div.mhead { cursor: default; }
   .assure li svg.i { width: 18px; height: 18px; }
   .assure .t-long { display: none; }
   .assure .t-short { display: inline; }
-  .assure.is-foot { padding: 12px 4px; }
+  /* A's line stays a line on phones, a size smaller */
+  .assure.is-meta { padding: 0; gap: 6px; }
+  .assure.is-meta li { flex: 0 1 auto; flex-direction: row; gap: 4px; padding-inline: 0; font-size: 12px; letter-spacing: 0; }
+  .assure.is-meta li + li { padding-left: 6px; }
+  .assure.is-meta li svg.i { width: 14px; height: 14px; }
 }
 /* the narrowest phones: a touch smaller so the labels still fit on one line */
 @container (max-width: 330px) {
   .assure { padding-inline: 0; }
   .assure li { font-size: 12px; letter-spacing: 0; padding-inline: 4px; }
   .assure li + li { padding-left: 4px; }
+  /* too narrow for A's line: the same icon-over-label columns as B */
+  .assure.is-meta li { flex: 1 1 auto; flex-direction: column; gap: 6px; padding-inline: 4px; }
+  .assure.is-meta li + li { padding-left: 4px; }
+  .assure.is-meta li svg.i { width: 18px; height: 18px; }
 }
 .b-back-inner { min-height: 0; overflow: hidden; margin-inline: -6px; padding-inline: 6px; }
 .b-wrap.has-focus .b-back { grid-template-rows: 1fr; }
@@ -1108,7 +1114,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.6.1">v1.6.1</div>
+<div class="proto-ver" aria-label="Prototype version 1.6.2">v1.6.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1452,7 +1458,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <div class="mcard" data-id="${m.id}">
         ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
         <div class="acc" id="${p}-${m.id}-panel" role="region" aria-label="${m.title}" inert>
-          <div class="acc-inner"><div class="mbody">${p === 'c' ? sceneC(m.id) + bodyHTML_C(m.id, p) : bodyHTML(m.id, p)}${p === 'a' ? footHTML(m.id) : ''}</div></div>
+          <div class="acc-inner"><div class="mbody">${p === 'a' ? metaHTML(m.id) : ''}${p === 'c' ? sceneC(m.id) + bodyHTML_C(m.id, p) : bodyHTML(m.id, p)}</div></div>
         </div>
       </div>`;
     methodsEl.dataset.mode = createMode();
@@ -1624,7 +1630,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const assureItems = id => ASSURE[id].map(([ic, t, short]) =>
     `<li>${icon(ic)}${short ? `<span class="t-long">${t}</span><span class="t-short">${short}</span>` : `<span>${t}</span>`}</li>`).join('');
   const asideHTML = id => `<ul class="assure">${assureItems(id)}</ul>`;                                   // B: a tray under the card
-  const footHTML = id => `<ul class="assure is-foot" aria-label="Good to know">${assureItems(id)}</ul>`;  // A: the open card's footer
+  const metaHTML = id => `<ul class="assure is-meta" aria-label="Good to know">${assureItems(id)}</ul>`;  // A: a line at the top of the open card
 
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
