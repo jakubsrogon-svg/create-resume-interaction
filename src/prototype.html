@@ -399,6 +399,8 @@ div.mhead { cursor: default; }
 .textarea { resize: vertical; min-height: clamp(84px, calc(var(--vh) * 14), 150px); line-height: 22px; font-size: 14px; }
 .input-wrap { position: relative; }
 .input-wrap .input { padding-right: 52px; }
+/* the field's height follows the window (40-48px), so the button inside stretches between 4px insets and stays centred */
+.input-wrap .icon-btn { bottom: 4px; height: auto; }
 .icon-btn {
   position: absolute; right: 4px; top: 4px; width: 40px; height: 40px; display: grid; place-items: center;
   border: 0; background: none; border-radius: 8px; cursor: pointer; color: var(--kr-grey-100);
@@ -1224,7 +1226,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.8.4">v1.8.4</div>
+<div class="proto-ver" aria-label="Prototype version 1.8.5">v1.8.5</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
