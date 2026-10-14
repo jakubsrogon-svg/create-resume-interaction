@@ -237,7 +237,7 @@ body.is-mobile .statusbar {
 
 /* ---------- Creation screen ---------- */
 .methods { width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
-.method-list { display: grid; gap: var(--list-gap); }
+.method-list { display: flex; flex-direction: column; gap: var(--list-gap); }  /* flex, so a folded tray's negative margin can cancel its gap */
 
 .mcard {
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
@@ -321,25 +321,31 @@ div.mhead { cursor: default; }
   position: relative; z-index: 0; display: grid; grid-template-rows: 0fr; margin-top: 0;
   transition: grid-template-rows var(--dur-slow) var(--ease-inout), margin-top var(--dur-slow) var(--ease-inout);
 }
-.b-wrap.has-focus .b-aside { grid-template-rows: 1fr; margin-top: -16px; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 60ms, margin-top var(--dur-slow) var(--ease-inout) 60ms; }
+.b-wrap.has-focus .b-aside, .mcard.is-open + .b-aside { grid-template-rows: 1fr; margin-top: -16px; transition: grid-template-rows var(--dur-slow) var(--ease-inout) 60ms, margin-top var(--dur-slow) var(--ease-inout) 60ms; }
 .slot.is-focus .mcard { position: relative; z-index: 1; }
+/* Variant A: each card carries its own tray, folded away until the card opens. A folded tray
+   cancels its grid gap, so closed cards keep their spacing; the cards stay above their trays
+   so a tray folding away never shows over the card it leaves. */
+.method-list > .b-aside { margin-top: calc(var(--list-gap) * -1); }
+.method-list > .mcard.is-open + .b-aside { margin-top: calc(var(--list-gap) * -1 - 16px); }
+.method-list > .mcard { position: relative; z-index: 1; }
 .b-aside-inner { min-height: 0; overflow: hidden; padding-inline: 12px; }
 .assure {
   list-style: none; margin: 0; padding: 26px 16px 11px; display: flex; justify-content: center; align-items: center; gap: 18px;
   background: var(--kr-grey-20); border: 1px solid var(--kr-grey-60); border-top: 0; border-radius: 0 0 14px 14px;
   transform: translateY(-12px); opacity: 0; transition: transform var(--dur-fast) var(--ease-exit), opacity var(--dur-fast) var(--ease-exit);
 }
-.b-wrap.has-focus .assure { transform: none; opacity: 1; transition: transform var(--dur-slow) var(--ease-standard) 140ms, opacity var(--dur-base) var(--ease-standard) 140ms; }
+.b-wrap.has-focus .assure, .mcard.is-open + .b-aside .assure { transform: none; opacity: 1; transition: transform var(--dur-slow) var(--ease-standard) 140ms, opacity var(--dur-base) var(--ease-standard) 140ms; }
 .assure li {
   display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; line-height: 18px; letter-spacing: 0.16px; color: var(--kr-grey-100);
   opacity: 0; transition: opacity var(--dur-fast) var(--ease-exit);
 }
 .assure li + li { padding-left: 18px; border-left: 1px solid var(--kr-grey-60); }
 .assure li svg.i { width: 16px; height: 16px; flex: none; color: var(--kr-mint); }
-.b-wrap.has-focus .assure li { opacity: 1; transition: opacity var(--dur-base) var(--ease-standard); }
-.b-wrap.has-focus .assure li:nth-child(1) { transition-delay: 220ms; }
-.b-wrap.has-focus .assure li:nth-child(2) { transition-delay: 270ms; }
-.b-wrap.has-focus .assure li:nth-child(3) { transition-delay: 320ms; }
+.b-wrap.has-focus .assure li, .mcard.is-open + .b-aside .assure li { opacity: 1; transition: opacity var(--dur-base) var(--ease-standard); }
+.b-wrap.has-focus .assure li:nth-child(1), .mcard.is-open + .b-aside .assure li:nth-child(1) { transition-delay: 220ms; }
+.b-wrap.has-focus .assure li:nth-child(2), .mcard.is-open + .b-aside .assure li:nth-child(2) { transition-delay: 270ms; }
+.b-wrap.has-focus .assure li:nth-child(3), .mcard.is-open + .b-aside .assure li:nth-child(3) { transition-delay: 320ms; }
 /* short desktop windows: a slimmer tray */
 @media (max-height: 700px) {
   .assure { padding: 22px 16px 8px; }
@@ -1089,7 +1095,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.4">v1.4</div>
+<div class="proto-ver" aria-label="Prototype version 1.5">v1.5</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1427,7 +1433,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </div>`;
     methodsEl.dataset.mode = createMode();
     if (methodsEl.dataset.mode === 'accordion') {
-      methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle')).join('')}</div>`;
+      methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle') +
+        `<aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner">${asideHTML(m.id)}</div></aside>`).join('')}</div>`;
     } else if (variant === 'B') {
       methodsEl.innerHTML = `
         <div class="b-wrap">
@@ -1436,12 +1443,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner"></div></aside>
         </div>`;
     } else {
-      // Variant C, and A on phones: B's list and navigation, without the chip tray
+      // Variant C, and A on phones: B's list and navigation (C without the tray)
       const p = variant === 'C' ? 'c' : 'a';
       methodsEl.innerHTML = `
         <div class="b-wrap is-${p}">
           <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
           <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, p, 'open')}</div></div>`).join('')}</div>
+          ${p === 'a' ? '<aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner"></div></aside>' : ''}
         </div>`;
     }
   }
@@ -1568,6 +1576,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     holdInPlace(card.querySelector('.mhead'), DUR.slow + 60, () => settleAnchor(() => opening && revealBottom(card)));
     methodsEl.querySelectorAll('.mcard.is-open').forEach(c => { if (c !== card) setOpen(c, false); });
     setOpen(card, opening);
+    methodsEl.querySelectorAll('.method-list > .b-aside').forEach(a => { a.inert = !a.previousElementSibling.classList.contains('is-open'); });
     focusLater(opening ? card.querySelector('.input, .textarea, .dropzone') : null, DUR.slow);
   }
 
