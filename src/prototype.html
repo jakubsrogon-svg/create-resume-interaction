@@ -590,9 +590,14 @@ body[data-screen="create"]:has(.b-wrap.is-d) .device::before { opacity: 1; }
   -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
   box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--kr-blue-dark) 30%, transparent), 0 1px 3px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
 }
-.b-wrap.is-d .mcard:hover, .b-wrap.is-d .mcard.is-open {
+.b-wrap.is-d .mcard:hover:not(.is-open) {
   --edge: linear-gradient(160deg, color-mix(in srgb, var(--tone) 40%, var(--kr-white)), color-mix(in srgb, var(--kr-white) 45%, transparent) 70%);
   box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--tone) 45%, transparent), 0 1px 3px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
+}
+/* The open method is a plain white card: no glass, no colour picked up from the light, a neutral edge */
+.b-wrap.is-d .mcard.is-open {
+  --glass: var(--kr-white); --edge: linear-gradient(var(--kr-grey-60), var(--kr-grey-60));
+  -webkit-backdrop-filter: none; backdrop-filter: none;
 }
 .b-wrap.is-d .mtile {
   color: var(--tone);
@@ -1174,7 +1179,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.7.1">v1.7.1</div>
+<div class="proto-ver" aria-label="Prototype version 1.7.2">v1.7.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
