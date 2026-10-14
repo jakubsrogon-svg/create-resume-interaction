@@ -580,11 +580,12 @@ div.mhead { cursor: default; }
   .c-scene { height: 180px; }  /* phones: the drawing is limited by the card's width, so a shorter picture keeps the same balance */
   .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
 }
-/* ---------- Variant D: B's flow with a lighter, more modern surface ----------
-   Same markup and motion as B; only the surface changes, built from brand tokens: soft brand
-   light behind the list, frosted cards with a hairline highlight edge, gradient icon tiles (the
-   premium gradient on AI), glass pills for Back and the chevrons, a frosted tray and a faint glow
-   under the call to action. Shadows stay inside the space B's fold leaves around each card. */
+/* ---------- 3D look (rail toggle: Flat / 3D) ----------
+   A lighter, more modern surface for the method screen in any variant, built from brand tokens:
+   a faint dot grid behind the page, frosted cards with a hairline edge that takes the method's colour
+   on hover (the open method is a plain white card), gradient icon tiles, glass pills for Back and the
+   chevrons, a frosted reassurance tray and a faint glow under the call to action. Markup and motion
+   are the variant's own; only the surface changes. Shadows stay inside the space B's fold leaves. */
 /* D's backdrop sits behind the whole page and fades in while D's method screen is on: a faint dot
    grid that fades out toward the edges (a builder's canvas), and, where there's room beside the
    list, four resume fragments in the far margins, one per method, drawn like the goal-screen
@@ -593,13 +594,13 @@ div.mhead { cursor: default; }
    muted, so the method cards stay the most prominent thing on the screen. On phones only the grid
    shows, inside the phone screen. */
 .d-backdrop { display: none; }
-body:has(.b-wrap.is-d) .device { isolation: isolate; }
-body:has(.b-wrap.is-d) .d-backdrop {
+body.look-3d .device { isolation: isolate; }
+body.look-3d .d-backdrop {
   display: block; position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   opacity: 0; transition: opacity var(--dur-slow) var(--ease-standard);
 }
-body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 1; }
-@starting-style { body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 0; } }
+body.look-3d[data-screen="create"] .d-backdrop { opacity: 1; }
+@starting-style { body.look-3d[data-screen="create"] .d-backdrop { opacity: 0; } }
 .d-backdrop::before {
   content: ""; position: absolute; inset: 0;
   background-image: radial-gradient(circle, color-mix(in srgb, var(--kr-blue-dark) 12%, transparent) 1px, transparent 1.6px);
@@ -640,11 +641,11 @@ body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 1; }
 .d-p4 { right: calc(50% - 520px); top: 60%; width: 120px; --r: -5deg; }
 @container (max-width: 1180px) { .d-paper { display: none; } }
 .d-backdrop.no-papers .d-paper { display: none; }
-.b-wrap.is-d .mcard[data-id="linkedin"] { --tone: var(--kr-blue); }
-.b-wrap.is-d .mcard[data-id="ai"] { --tone: #8a5cff; }   /* the AI violet, as in .tone-ai */
-.b-wrap.is-d .mcard[data-id="upload"] { --tone: var(--kr-primary); }
-.b-wrap.is-d .mcard[data-id="paste"] { --tone: var(--kr-mint); }
-.b-wrap.is-d .mcard {
+.look-3d #methods .mcard[data-id="linkedin"] { --tone: var(--kr-blue); }
+.look-3d #methods .mcard[data-id="ai"] { --tone: #8a5cff; }   /* the AI violet, as in .tone-ai */
+.look-3d #methods .mcard[data-id="upload"] { --tone: var(--kr-primary); }
+.look-3d #methods .mcard[data-id="paste"] { --tone: var(--kr-mint); }
+.look-3d #methods .mcard {
   --glass: color-mix(in srgb, var(--kr-white) 90%, transparent);
   --edge: linear-gradient(160deg, var(--kr-white), color-mix(in srgb, var(--kr-white) 35%, transparent));
   border: 1px solid transparent;
@@ -652,56 +653,56 @@ body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 1; }
   -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
   box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--kr-blue-dark) 18%, transparent), 0 1px 2px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
 }
-.b-wrap.is-d .mcard:hover:not(.is-open) {
+.look-3d #methods .mcard:hover:not(.is-open) {
   --edge: linear-gradient(340deg, color-mix(in srgb, var(--tone) 40%, var(--kr-white)), color-mix(in srgb, var(--kr-white) 45%, transparent) 70%);  /* colour on the chevron side */
   box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--tone) 30%, transparent), 0 1px 2px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
 }
 /* The open method is a plain white card: no glass, no colour picked up from the light, a neutral edge */
-.b-wrap.is-d .mcard.is-open {
+.look-3d #methods .mcard.is-open {
   --glass: var(--kr-white); --edge: linear-gradient(var(--kr-grey-60), var(--kr-grey-60));
   -webkit-backdrop-filter: none; backdrop-filter: none;
 }
-.b-wrap.is-d .mtile {
+.look-3d #methods .mtile {
   color: var(--tone);
   background: linear-gradient(140deg, color-mix(in srgb, var(--tone) 16%, var(--kr-white)), color-mix(in srgb, var(--tone) 6%, var(--kr-white)));
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 12%, transparent);
 }
-.b-wrap.is-d .chev {
+.look-3d #methods .chev {
   width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; color: var(--kr-grey-100);
   background: color-mix(in srgb, var(--kr-white) 70%, transparent); box-shadow: inset 0 0 0 1px var(--kr-grey-60);
 }
-.b-wrap.is-d .chev svg.i { width: 18px; height: 18px; }
-.b-wrap.is-d .mcard:hover .chev { color: var(--tone); background: color-mix(in srgb, var(--tone) 10%, var(--kr-white)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent); }
-.b-wrap.is-d .back {
+.look-3d #methods .chev svg.i { width: 18px; height: 18px; }
+.look-3d #methods .mcard:hover .chev { color: var(--tone); background: color-mix(in srgb, var(--tone) 10%, var(--kr-white)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent); }
+.look-3d #methods .back {
   padding: 7px 14px 7px 10px; border-radius: 999px; color: var(--kr-grey-100); font-size: 15px;
   background: color-mix(in srgb, var(--kr-white) 62%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   box-shadow: inset 0 0 0 1px var(--kr-white), 0 2px 6px -3px color-mix(in srgb, var(--kr-blue-dark) 15%, transparent);
 }
-.b-wrap.is-d .back svg.i { width: 18px; height: 18px; }
-.b-wrap.is-d .back:hover { background: var(--kr-white); }
-.b-wrap.is-d .back:focus-visible { box-shadow: var(--kr-focus-ring); }
-.b-wrap.is-d .assure {
+.look-3d #methods .back svg.i { width: 18px; height: 18px; }
+.look-3d #methods .back:hover { background: var(--kr-white); }
+.look-3d #methods .back:focus-visible { box-shadow: var(--kr-focus-ring); }
+.look-3d #methods .assure {
   background: color-mix(in srgb, var(--kr-white) 55%, transparent); border-color: var(--kr-white);
   -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%);
 }
-.b-wrap.is-d .assure li + li { border-left-color: color-mix(in srgb, var(--kr-grey-80) 25%, transparent); }
+.look-3d #methods .assure li + li { border-left-color: color-mix(in srgb, var(--kr-grey-80) 25%, transparent); }
 /* more air between the card's edge and the row: 16px visible above the text (B has 10px) */
-.b-wrap.is-d .assure { padding: 32px 16px 13px; }
-@media (max-height: 700px) { .b-wrap.is-d .assure { padding: 28px 16px 10px; } }
-@container (max-width: 560px) { .b-wrap.is-d .assure { padding: 34px 4px 14px; } }
-.b-wrap.is-d .input, .b-wrap.is-d .textarea { background: color-mix(in srgb, var(--kr-white) 88%, transparent); }
-.b-wrap.is-d .input:focus, .b-wrap.is-d .textarea:focus { box-shadow: 0 0 0 4px color-mix(in srgb, var(--kr-blue) 12%, transparent); }
-.b-wrap.is-d .dropzone { background: color-mix(in srgb, var(--kr-primary-tint) 55%, transparent); }
-.b-wrap.is-d .dropzone:hover, .b-wrap.is-d .dropzone.is-over { background: var(--kr-primary-tint); }
-.b-wrap.is-d .btn-coral:not(:disabled) { box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--kr-primary) 40%, transparent); }
-.b-wrap.is-d .btn-gradient:not(:disabled) { box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--kr-blue) 35%, transparent); }
-.b-wrap.is-d .btn:focus-visible { box-shadow: var(--kr-focus-ring); }
+.look-3d #methods .assure { padding: 32px 16px 13px; }
+@media (max-height: 700px) { .look-3d #methods .assure { padding: 28px 16px 10px; } }
+@container (max-width: 560px) { .look-3d #methods .assure { padding: 34px 4px 14px; } }
+.look-3d #methods .input, .look-3d #methods .textarea { background: color-mix(in srgb, var(--kr-white) 88%, transparent); }
+.look-3d #methods .input:focus, .look-3d #methods .textarea:focus { box-shadow: 0 0 0 4px color-mix(in srgb, var(--kr-blue) 12%, transparent); }
+.look-3d #methods .dropzone { background: color-mix(in srgb, var(--kr-primary-tint) 55%, transparent); }
+.look-3d #methods .dropzone:hover, .look-3d #methods .dropzone.is-over { background: var(--kr-primary-tint); }
+.look-3d #methods .btn-coral:not(:disabled) { box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--kr-primary) 40%, transparent); }
+.look-3d #methods .btn-gradient:not(:disabled) { box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--kr-blue) 35%, transparent); }
+.look-3d #methods .btn:focus-visible { box-shadow: var(--kr-focus-ring); }
 /* People who ask their system for less transparency get solid white surfaces */
 @media (prefers-reduced-transparency: reduce) {
-  .b-wrap.is-d .mcard { --glass: var(--kr-white); }
-  .b-wrap.is-d .mcard, .b-wrap.is-d .assure, .b-wrap.is-d .back { -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .b-wrap.is-d .assure, .b-wrap.is-d .back { background: var(--kr-white); }
+  .look-3d #methods .mcard { --glass: var(--kr-white); }
+  .look-3d #methods .mcard, .look-3d #methods .assure, .look-3d #methods .back { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .look-3d #methods .assure, .look-3d #methods .back { background: var(--kr-white); }
 }
 
 .no-anim, .no-anim * { transition: none !important; }
@@ -1245,7 +1246,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.9.3">v1.9.3</div>
+<div class="proto-ver" aria-label="Prototype version 1.10">v1.10</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1260,7 +1261,11 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
     <button type="button" data-variant="A" aria-pressed="true" aria-label="Method screen: variant A, expand in place" data-tip="Method screen · A, expand in place">A</button>
     <button type="button" data-variant="B" aria-pressed="false" aria-label="Method screen: variant B, separate screens" data-tip="Method screen · B, separate screens">B</button>
     <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
-    <button type="button" data-variant="D" aria-pressed="false" aria-label="Method screen: variant D, refreshed look" data-tip="Method screen · D, refreshed look">D</button>
+  </div>
+  <span class="proto-sep" aria-hidden="true"></span>
+  <div class="seg" data-screen-for="create">
+    <button type="button" data-look="flat" aria-pressed="true" aria-label="Method screen: flat look" data-tip="Method screen · Flat look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/></svg></button>
+    <button type="button" data-look="3d" aria-pressed="false" aria-label="Method screen: 3D look" data-tip="Method screen · 3D look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
@@ -1524,12 +1529,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Variant C is hidden for now but kept in full: no rail button, and #c links or a remembered C
      open A instead. To show it again, set SHOW_C back to true. */
   const SHOW_C = true;
-  const VARIANTS = SHOW_C ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'D'];
+  const VARIANTS = SHOW_C ? ['A', 'B', 'C'] : ['A', 'B'];
   document.querySelector('.proto [data-variant="C"]').hidden = !SHOW_C;
-  // Variant D's backdrop (only shown while D's method screen is on; see .d-backdrop). The resume
-  // fragments in the margins are hidden for now but kept in full: set SHOW_D_PAPERS to true to show them.
-  const SHOW_D_PAPERS = false;
-  document.getElementById('device').insertAdjacentHTML('afterbegin', `<div class="d-backdrop${SHOW_D_PAPERS ? '' : ' no-papers'}" aria-hidden="true">
+  // The 3D look's backdrop (only shown on the method screen in 3D; see .d-backdrop). The resume
+  // fragments in the margins are hidden for now but kept in full: set SHOW_3D_PAPERS to true to show them.
+  const SHOW_3D_PAPERS = false;
+  document.getElementById('device').insertAdjacentHTML('afterbegin', `<div class="d-backdrop${SHOW_3D_PAPERS ? '' : ' no-papers'}" aria-hidden="true">
     <div class="d-paper d-p1"><div class="d-row"><i class="d-av"></i><div class="d-stack"><i class="d-ln dk w70"></i><i class="d-ln w45"></i></div></div>
       <i class="d-ln hd" style="--c: var(--kr-blue)"></i><i class="d-ln w90"></i><i class="d-ln w70"></i><i class="d-ln hd" style="--c: var(--kr-blue)"></i><i class="d-ln w80"></i><i class="d-ln w60"></i>
       <span class="d-badge is-in">${icon('linkedin')}</span></div>
@@ -1614,13 +1619,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     methodsEl.dataset.mode = createMode();
     if (methodsEl.dataset.mode === 'accordion') {
       methodsEl.innerHTML = `<div class="method-list">${METHODS.map(m => card(m, 'a', 'toggle')).join('')}</div>`;
-    } else if (variant === 'B' || variant === 'D') {
-      // D: B's markup and motion with a refreshed surface (all its styling hangs off .is-d)
-      const p = variant === 'D' ? 'd' : 'b';
+    } else if (variant === 'B') {
       methodsEl.innerHTML = `
-        <div class="b-wrap${p === 'd' ? ' is-d' : ''}">
+        <div class="b-wrap">
           <div class="b-back"><div class="b-back-inner" inert><button class="back" type="button" data-action="back">${icon('arrowLeft')}Back</button></div></div>
-          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, p, 'open')}</div></div>`).join('')}</div>
+          <div class="b-list">${METHODS.map(m => `<div class="slot" data-id="${m.id}"><div class="slot-inner">${card(m, 'b', 'open')}</div></div>`).join('')}</div>
           <aside class="b-aside" aria-label="Good to know" inert><div class="b-aside-inner"></div></aside>
         </div>`;
     } else {
@@ -2573,6 +2576,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current === 'create') renderCreate();
   }
 
+  /* Flat or 3D look for the method screen, in any variant (a class on <body>; see "3D look" in the CSS) */
+  function setLook(v) {
+    if (v !== 'flat' && v !== '3d') return;
+    document.body.classList.toggle('look-3d', v === '3d');
+    document.querySelectorAll('[data-look]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.look === v)));
+    try { localStorage.setItem('kr-start-look', v); } catch (e) {}
+  }
+
   function setLayout(v) {
     if (v !== 'grid' && v !== 'list') return;
     const changed = v !== intentLayout;
@@ -2602,6 +2613,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const vb = e.target.closest('[data-variant]');
     if (vb) {
       setVariant(vb.dataset.variant);
+      if (current !== 'create') { clearTimers(); go('create', current === 'intent' ? screens.intent.querySelector('[data-action="pick-intent"]') : null); }
+      return;
+    }
+    const lk = e.target.closest('[data-look]');
+    if (lk) {
+      setLook(lk.dataset.look);
       if (current !== 'create') { clearTimers(); go('create', current === 'intent' ? screens.intent.querySelector('[data-action="pick-intent"]') : null); }
       return;
     }
@@ -2711,8 +2728,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const hv = hash.match(/^(a|b|c|d)\b/), hm = hash.match(/mobile|desktop/);
   let savedV = null, savedView = null;
   try { savedV = localStorage.getItem('kr-start-variant'); savedView = localStorage.getItem('kr-start-view'); } catch (e) {}
-  const wantV = hv ? hv[1].toUpperCase() : (savedV || 'A');
+  let wantV = hv ? hv[1].toUpperCase() : (savedV || 'A');
+  let savedLook = null;
+  try { savedLook = localStorage.getItem('kr-start-look'); } catch (e) {}
+  const hk = hash.match(/3d|flat/);
+  let wantLook = hk ? hk[0] : (savedLook || 'flat');
+  if (wantV === 'D') { wantV = 'B'; if (!hk) wantLook = '3d'; }  // D became B in the 3D look
   setVariant(VARIANTS.includes(wantV) ? wantV : 'A');
+  setLook(wantLook);
   setView(hm ? hm[0] : (savedView || 'desktop'));
   let savedLayout = null;
   try { savedLayout = localStorage.getItem('kr-start-layout'); } catch (e) {}

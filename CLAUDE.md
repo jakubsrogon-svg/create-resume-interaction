@@ -18,6 +18,6 @@ Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention i
 
 Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src/prototype.html` controls it: `true` shows its rail button and lets `#c` open it (current state); `false` hides the button and sends `#c` links and a remembered C choice to A, while all of C's markup, styles and logic stay in place. When hiding it, also add a "hidden for now" note to C in the README; when showing it, remove that note.
 
-## Hidden decorations in variant D
+## Hidden decorations in the 3D look
 
-D's resume fragments (the four faded pages in the side margins) are hidden, not removed. `SHOW_D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_D_PAPERS = true` (and update the README's D description); nothing else needs to change.
+The 3D look's resume fragments (the four faded pages in the side margins of the method screen) are hidden, not removed. `SHOW_3D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_3D_PAPERS = true` (and update the README's look description); nothing else needs to change.
