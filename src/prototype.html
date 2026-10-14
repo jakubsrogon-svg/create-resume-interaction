@@ -481,7 +481,7 @@ div.mhead { cursor: default; }
    Drawn in HTML and sized in cqh (1% of the banner's height), so it scales down
    with the banner on shorter screens instead of getting cropped. */
 .c-scene {
-  height: clamp(120px, calc(var(--vh) * 100 - 740px), 176px); container-type: size;
+  height: clamp(100px, calc(var(--vh) * 70 - 386px), 244px); container-type: size;  /* as tall as the tallest method (AI) allows */
   border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--cs-bg);
 }
 .c-scene.cs-linkedin { --cs-bg: var(--kr-blue-tint); --cs-tone: var(--kr-blue); }
@@ -545,6 +545,19 @@ div.mhead { cursor: default; }
 /* Paste: a messy note */
 .cs-note { width: 58cqh; height: 68cqh; padding: 8cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; rotate: -3deg; }
 .cs-note .ln { flex: none; }
+/* Once a method is open, its title and subtitle take over the page headline (setHead), so the card
+   folds its own header away (icon tile, title, subtitle, chevron) in the same motion as the rest of
+   the screen change, and the picture gets that room. Back brings the header back. */
+.b-wrap.is-c .slot .mhead {
+  max-height: 110px; overflow: hidden;
+  transition: max-height var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 80ms, visibility 0s, background 60ms linear;
+}
+.b-wrap.is-c.has-focus .slot.is-focus .mhead {
+  max-height: 0; padding-block: 0; opacity: 0; visibility: hidden;
+  transition: max-height var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-fast) var(--ease-exit), visibility 0s var(--dur-slow), background 60ms linear;
+}
+.b-wrap.is-c .c-scene { transition: margin-top var(--dur-slow) var(--ease-inout); }
+.b-wrap.is-c.has-focus .slot.is-focus .c-scene { margin-top: 12px; }
 /* The three parts settle in one after another as the screen opens */
 .cs-row > * { opacity: 0; transform: translateY(3cqh); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
 .mcard.is-open .cs-row > * { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
@@ -558,7 +571,7 @@ div.mhead { cursor: default; }
 .c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
 /* phones: a shorter picture; text links get a 44px hit area */
 @container (max-width: 560px) {
-  .c-scene { height: clamp(104px, calc(var(--vh) * 100 - 700px), 140px); }
+  .c-scene { height: clamp(140px, calc(var(--vh) * 100 - 620px), 200px); }
   .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
 }
 /* ---------- Variant D: B's flow with a lighter, more modern surface ----------
@@ -1226,7 +1239,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.8.6">v1.8.6</div>
+<div class="proto-ver" aria-label="Prototype version 1.9">v1.9</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1583,6 +1596,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function renderCreate() {
     clearTimers();
+    setHead(HEAD0.h, HEAD0.p, false);
     screens.create.querySelector(':scope > .center').inert = false;
     const card = (m, p, action) => `
       <div class="mcard" data-id="${m.id}">
@@ -1762,6 +1776,28 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const asideHTML = id => `<ul class="assure">${ASSURE[id].map(([ic, t, short]) =>
     `<li>${icon(ic)}${short ? `<span class="t-long">${t}</span><span class="t-short">${short}</span>` : `<span>${t}</span>`}</li>`).join('')}</ul>`;
 
+  /* Variant C: the open method's title and subtitle take over the page headline, cross-fading in
+     place like the headline does between screens; Back (or leaving) puts the original back. */
+  const createHead = screens.create.querySelector(':scope > .page-head');
+  const HEAD0 = { h: createHead.querySelector('h1').textContent, p: createHead.querySelector('p').textContent };
+  let headTok = 0;
+  function setHead(h, p, animate = true) {
+    const els = [createHead.querySelector('h1'), createHead.querySelector('p')], tok = ++headTok;
+    if (els[0].textContent === h && els[1].textContent === p) return;
+    const swap = () => { els[0].textContent = h; els[1].textContent = p; };
+    els.forEach(el => el.getAnimations().forEach(a => a.cancel()));
+    if (!animate || reduce) return swap();
+    Promise.all(els.map(el => play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}))).then(() => {
+      if (tok !== headTok) return;
+      const from = createHead.offsetHeight;
+      swap();
+      els.forEach(el => { el.getAnimations().forEach(a => a.cancel()); play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); });
+      // a different number of lines (phones) eases the space below instead of jumping it
+      const to = createHead.offsetHeight;
+      if (from !== to) createHead.animate([{ height: from + 'px' }, { height: to + 'px' }], { duration: DUR.base, easing: EASE.standard });
+    });
+  }
+
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
     if (!wrap || wrap.classList.contains('has-focus')) return;
@@ -1782,6 +1818,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setOpen(card, mine);
       if (mine) { head.setAttribute('aria-disabled', 'true'); head.tabIndex = -1; }
     });
+    if (wrap.classList.contains('is-c')) setHead(byId(id).title, byId(id).sub);
     const top = wrap.getBoundingClientRect().top, minTop = framed() ? device.getBoundingClientRect().top + 52 : 16;
     if (top < minTop) scroller().scrollBy({ top: top - minTop, behavior: reduce ? 'auto' : 'smooth' });
     settleSoon();
@@ -1806,7 +1843,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     wrap.classList.remove('no-anim');
     list.getAnimations().forEach(a => a.cancel());
     if (!reduce) list.animate([{ opacity: 0, transform: 'translateX(16px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
-    wrap.querySelector('.slot.is-focus .mhead').focus({ preventScroll: true });  // the new screen's heading
+    const isC = wrap.classList.contains('is-c');
+    if (isC) setHead(byId(to).title, byId(to).sub);
+    (isC ? createHead.querySelector('h1') : wrap.querySelector('.slot.is-focus .mhead')).focus({ preventScroll: true });  // the new screen's heading
     settleSoon();
   }
 
@@ -1825,8 +1864,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setOpen(card, false);
       head.removeAttribute('aria-disabled'); head.removeAttribute('tabindex');
     });
+    if (wrap.classList.contains('is-c')) setHead(HEAD0.h, HEAD0.p);
     settleSoon();
-    focusLater(focus && focus.querySelector('.mhead'), 0);
+    focusLater(focus && focus.querySelector('.mhead'), wrap.classList.contains('is-c') ? DUR.slow : 0);  // C: once its header is back
   }
 
   /* ---------- Method behaviour ---------- */
