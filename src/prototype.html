@@ -564,20 +564,59 @@ div.mhead { cursor: default; }
    light behind the list, frosted cards with a hairline highlight edge, gradient icon tiles (the
    premium gradient on AI), glass pills for Back and the chevrons, a frosted tray and a faint glow
    under the call to action. Shadows stay inside the space B's fold leaves around each card. */
-/* The light sits behind the whole page (the logo bar too) and fades in while D's method screen is
-   on. Each glow fades out completely before it reaches the edge of the page area, so the three
-   overlap into one soft wash with no visible border; on phones it sits inside the phone screen. */
+/* D's backdrop sits behind the whole page and fades in while D's method screen is on: a faint dot
+   grid that fades out toward the edges (a builder's canvas), and, where there's room beside the
+   list, four resume fragments drifting slowly in the margins, one per method, drawn like the
+   goal-screen illustrations: a resume with a LinkedIn badge, an old PDF, a page being written by AI
+   and a page sorted into sections. On phones only the grid shows, inside the phone screen. */
+.d-backdrop { display: none; }
 body:has(.b-wrap.is-d) .device { isolation: isolate; }
-body:has(.b-wrap.is-d) .device::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+body:has(.b-wrap.is-d) .d-backdrop {
+  display: block; position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   opacity: 0; transition: opacity var(--dur-slow) var(--ease-standard);
-  background:
-    radial-gradient(40% 50% at 30% 52%, color-mix(in srgb, var(--kr-blue) 16%, transparent), transparent 70%),
-    radial-gradient(36% 46% at 70% 42%, color-mix(in srgb, var(--kr-primary) 12%, transparent), transparent 70%),
-    radial-gradient(42% 34% at 56% 74%, color-mix(in srgb, var(--kr-mint) 13%, transparent), transparent 70%);
-  filter: blur(40px);
 }
-body[data-screen="create"]:has(.b-wrap.is-d) .device::before { opacity: 1; }
+body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 1; }
+@starting-style { body[data-screen="create"]:has(.b-wrap.is-d) .d-backdrop { opacity: 0; } }
+.d-backdrop::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--kr-blue-dark) 16%, transparent) 1px, transparent 1.6px);
+  background-size: 22px 22px; background-position: center top;
+  -webkit-mask-image: radial-gradient(58% 52% at 50% 46%, black 20%, transparent 78%); mask-image: radial-gradient(58% 52% at 50% 46%, black 20%, transparent 78%);
+}
+.d-paper {
+  position: absolute; width: 132px; padding: 14px 12px; display: flex; flex-direction: column; gap: 7px;
+  background: var(--kr-white); border-radius: 8px; box-shadow: var(--kr-shadow-cv);
+  rotate: var(--r); animation: d-float 8s var(--ease-inout) infinite;
+}
+@keyframes d-float { 50% { translate: 0 -7px; } }
+.d-ln { display: block; height: 5px; border-radius: 3px; background: var(--kr-grey-60); flex: none; }
+.d-ln.dk { background: color-mix(in srgb, var(--kr-grey-80) 45%, var(--kr-white)); }
+.d-ln.hd { width: 36%; height: 6px; margin-top: 4px; background: color-mix(in srgb, var(--c) 50%, var(--kr-white)); }
+.d-ln.ai { background: var(--kr-premium-gradient); opacity: .5; }
+.d-ln.w45 { width: 45%; } .d-ln.w55 { width: 55%; } .d-ln.w60 { width: 60%; } .d-ln.w70 { width: 70%; } .d-ln.w80 { width: 80%; } .d-ln.w90 { width: 90%; }
+.d-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.d-av { display: block; width: 22px; height: 22px; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.d-stack { display: grid; gap: 5px; flex: 1; }
+.d-badge {
+  position: absolute; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: var(--kr-white);
+  box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--kr-blue-dark) 40%, transparent);
+}
+.d-badge svg.i { width: 16px; height: 16px; }
+.d-badge.is-in { right: -12px; top: -12px; background: var(--kr-blue); }
+.d-badge.is-ai { right: -14px; bottom: -14px; border-radius: 50%; background: var(--kr-premium-gradient); }
+.d-badge.is-ok { left: -12px; bottom: -12px; border-radius: 50%; background: var(--kr-mint); }
+.d-file { padding-top: 22px; }
+.d-file::before {
+  content: ""; position: absolute; top: 0; right: 0; width: 18px; height: 18px; border-radius: 0 8px 0 4px;
+  background: linear-gradient(to bottom left, var(--kr-background) 50%, var(--kr-grey-40) 50%);
+}
+.d-tag { align-self: flex-start; margin-top: 6px; padding: 3px 6px; border-radius: 4px; font-size: 10px; line-height: 1; font-weight: 600; letter-spacing: .5px; color: var(--kr-white); background: var(--kr-primary); }
+.d-p1 { left: calc(50% - 480px); top: 25%; --r: -7deg; }
+.d-p2 { left: calc(50% - 392px); top: 60%; width: 96px; --r: 8deg; animation-delay: -3s; }
+.d-p3 { right: calc(50% - 476px); top: 23%; width: 140px; --r: 6deg; animation-delay: -5s; }
+.d-p4 { right: calc(50% - 440px); top: 58%; width: 120px; --r: -5deg; animation-delay: -1.5s; }
+@container (max-width: 1060px) { .d-paper { display: none; } }
+@media (prefers-reduced-motion: reduce) { .d-paper { animation: none; } }
 .b-wrap.is-d .mcard[data-id="linkedin"] { --tone: var(--kr-blue); }
 .b-wrap.is-d .mcard[data-id="ai"] { --tone: #8a5cff; }   /* the AI violet, as in .tone-ai */
 .b-wrap.is-d .mcard[data-id="upload"] { --tone: var(--kr-primary); }
@@ -1179,7 +1218,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.7.3">v1.7.3</div>
+<div class="proto-ver" aria-label="Prototype version 1.8">v1.8</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1460,6 +1499,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const SHOW_C = false;
   const VARIANTS = SHOW_C ? ['A', 'B', 'C', 'D'] : ['A', 'B', 'D'];
   document.querySelector('.proto [data-variant="C"]').hidden = !SHOW_C;
+  // Variant D's backdrop (only shown while D's method screen is on; see .d-backdrop)
+  document.getElementById('device').insertAdjacentHTML('afterbegin', `<div class="d-backdrop" aria-hidden="true">
+    <div class="d-paper d-p1"><div class="d-row"><i class="d-av"></i><div class="d-stack"><i class="d-ln dk w70"></i><i class="d-ln w45"></i></div></div>
+      <i class="d-ln hd" style="--c: var(--kr-blue)"></i><i class="d-ln w90"></i><i class="d-ln w70"></i><i class="d-ln hd" style="--c: var(--kr-blue)"></i><i class="d-ln w80"></i><i class="d-ln w60"></i>
+      <span class="d-badge is-in">${icon('linkedin')}</span></div>
+    <div class="d-paper d-file d-p2"><i class="d-ln dk w70"></i><i class="d-ln w90"></i><i class="d-ln w80"></i><i class="d-ln w55"></i><span class="d-tag">PDF</span></div>
+    <div class="d-paper d-p3"><i class="d-ln dk w60"></i><i class="d-ln ai w90"></i><i class="d-ln ai w80"></i><i class="d-ln ai w45"></i><span class="d-badge is-ai">${icon('sparkles')}</span></div>
+    <div class="d-paper d-p4"><i class="d-ln hd" style="--c: var(--kr-mint)"></i><i class="d-ln w90"></i><i class="d-ln w70"></i><i class="d-ln hd" style="--c: var(--kr-mint)"></i><i class="d-ln w80"></i><i class="d-ln w55"></i>
+      <span class="d-badge is-ok">${icon('check')}</span></div>
+  </div>`);
   const methodsEl = document.getElementById('methods');
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
