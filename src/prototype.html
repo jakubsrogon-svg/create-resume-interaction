@@ -564,16 +564,22 @@ div.mhead { cursor: default; }
    light behind the list, frosted cards with a hairline highlight edge, gradient icon tiles (the
    premium gradient on AI), glass pills for Back and the chevrons, a frosted tray and a faint glow
    under the call to action. Shadows stay inside the space B's fold leaves around each card. */
-#screen-create:has(.b-wrap.is-d) { position: relative; isolation: isolate; }
-#screen-create:has(.b-wrap.is-d)::before {
+/* The light sits behind the whole page (the logo bar too) and fades in while D's method screen is
+   on. Each glow fades out completely before it reaches the edge of the page area, so the three
+   overlap into one soft wash with no visible border; on phones it sits inside the phone screen. */
+body:has(.b-wrap.is-d) .device { isolation: isolate; }
+body:has(.b-wrap.is-d) .device::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  opacity: 0; transition: opacity var(--dur-slow) var(--ease-standard);
   background:
-    radial-gradient(36% 30% at 12% 48%, color-mix(in srgb, var(--kr-blue) 18%, transparent), transparent 72%),
-    radial-gradient(30% 26% at 90% 32%, color-mix(in srgb, var(--kr-primary) 13%, transparent), transparent 72%),
-    radial-gradient(40% 26% at 66% 94%, color-mix(in srgb, var(--kr-mint) 13%, transparent), transparent 72%);
-  filter: blur(28px);
+    radial-gradient(40% 50% at 30% 52%, color-mix(in srgb, var(--kr-blue) 16%, transparent), transparent 70%),
+    radial-gradient(36% 46% at 70% 42%, color-mix(in srgb, var(--kr-primary) 12%, transparent), transparent 70%),
+    radial-gradient(42% 34% at 56% 74%, color-mix(in srgb, var(--kr-mint) 13%, transparent), transparent 70%);
+  filter: blur(40px);
 }
-.b-wrap.is-d .mcard[data-id="linkedin"], .b-wrap.is-d .mcard[data-id="ai"] { --tone: var(--kr-blue); }
+body[data-screen="create"]:has(.b-wrap.is-d) .device::before { opacity: 1; }
+.b-wrap.is-d .mcard[data-id="linkedin"] { --tone: var(--kr-blue); }
+.b-wrap.is-d .mcard[data-id="ai"] { --tone: #8a5cff; }   /* the AI violet, as in .tone-ai */
 .b-wrap.is-d .mcard[data-id="upload"] { --tone: var(--kr-primary); }
 .b-wrap.is-d .mcard[data-id="paste"] { --tone: var(--kr-mint); }
 .b-wrap.is-d .mcard {
@@ -590,10 +596,9 @@ div.mhead { cursor: default; }
 }
 .b-wrap.is-d .mtile {
   color: var(--tone);
-  background: linear-gradient(140deg, color-mix(in srgb, var(--tone) 18%, var(--kr-white)), color-mix(in srgb, var(--tone) 5%, var(--kr-white)));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 12%, transparent), 0 6px 14px -8px color-mix(in srgb, var(--tone) 55%, transparent);
+  background: linear-gradient(140deg, color-mix(in srgb, var(--tone) 16%, var(--kr-white)), color-mix(in srgb, var(--tone) 6%, var(--kr-white)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 12%, transparent), 0 6px 14px -8px color-mix(in srgb, var(--tone) 45%, transparent);
 }
-.b-wrap.is-d .mcard[data-id="ai"] .mtile { background: var(--kr-premium-gradient); color: var(--kr-white); box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--kr-blue) 50%, transparent); }
 .b-wrap.is-d .chev {
   width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; color: var(--kr-grey-100);
   background: color-mix(in srgb, var(--kr-white) 70%, transparent); box-shadow: inset 0 0 0 1px var(--kr-grey-60);
@@ -1169,7 +1174,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.7">v1.7</div>
+<div class="proto-ver" aria-label="Prototype version 1.7.1">v1.7.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
