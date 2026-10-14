@@ -481,69 +481,71 @@ div.mhead { cursor: default; }
    Drawn in HTML and sized in cqh (1% of the banner's height), so it scales down
    with the banner on shorter screens instead of getting cropped. */
 .c-scene {
-  height: clamp(100px, calc(var(--vh) * 70 - 386px), 244px); container-type: size;  /* as tall as the tallest method (AI) allows */
+  height: clamp(350px, calc(var(--vh) * 100 - 700px), 420px); container-type: size;
+  /* drawing unit: 1% of the picture's height, but never so big that the drawing outgrows the card's width */
+  --u: min(1cqh, .56cqw);
   border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--cs-bg);
 }
 .c-scene.cs-linkedin { --cs-bg: var(--kr-blue-tint); --cs-tone: var(--kr-blue); }
 .c-scene.cs-ai { --cs-bg: #f5f1fe; --cs-tone: #8a5cff; background: linear-gradient(120deg, var(--kr-blue-tint), #f8f0ff); }
 .c-scene.cs-upload { --cs-bg: var(--kr-primary-tint); --cs-tone: var(--kr-primary); }
 .c-scene.cs-paste { --cs-bg: var(--kr-mint-tint); --cs-tone: var(--kr-mint); }
-.cs-row { display: flex; align-items: center; gap: 7cqh; }
-.c-scene .ln { height: 3cqh; border-radius: 2cqh; }
-.cs-card { flex: none; background: var(--kr-white); border-radius: 3cqh; box-shadow: 0 2cqh 6cqh rgba(140, 140, 140, .2); }
+.cs-row { display: flex; align-items: center; gap: calc(var(--u) * 7); }
+.c-scene .ln { height: calc(var(--u) * 3); border-radius: calc(var(--u) * 2); }
+.cs-card { flex: none; background: var(--kr-white); border-radius: calc(var(--u) * 3); box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(140, 140, 140, .2); }
 .cs-step {
-  width: 18cqh; height: 18cqh; border-radius: 50%; flex: none; display: grid; place-items: center;
-  background: var(--kr-white); color: var(--cs-tone); box-shadow: 0 1cqh 3cqh rgba(0, 0, 0, .08);
+  width: calc(var(--u) * 18); height: calc(var(--u) * 18); border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--kr-white); color: var(--cs-tone); box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 3) rgba(0, 0, 0, .08);
 }
-.cs-step svg.i { width: 9cqh; height: 9cqh; }
-.cs-step.is-ai { background: var(--kr-premium-gradient); color: var(--kr-white); box-shadow: 0 1cqh 4cqh rgba(160, 102, 255, .35); }
+.cs-step svg.i { width: calc(var(--u) * 9); height: calc(var(--u) * 9); }
+.cs-step.is-ai { background: var(--kr-premium-gradient); color: var(--kr-white); box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 4) rgba(160, 102, 255, .35); }
 /* the resume you get */
-.cs-paper { width: 58cqh; height: 78cqh; padding: 7cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
-.cs-head { display: flex; align-items: center; gap: 3.5cqh; margin-bottom: 1cqh; }
-.cs-av { display: block; width: 11cqh; height: 11cqh; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
-.cs-stack { display: grid; gap: 2.4cqh; flex: 1; min-width: 0; }
-.c-scene .ln.cs-h { width: 38%; background: var(--cs-tone); opacity: .5; margin-top: 1.2cqh; }
+.cs-paper { width: calc(var(--u) * 58); height: calc(var(--u) * 78); padding: calc(var(--u) * 7) calc(var(--u) * 6); display: flex; flex-direction: column; gap: calc(var(--u) * 3.4); }
+.cs-head { display: flex; align-items: center; gap: calc(var(--u) * 3.5); margin-bottom: calc(var(--u) * 1); }
+.cs-av { display: block; width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.cs-stack { display: grid; gap: calc(var(--u) * 2.4); flex: 1; min-width: 0; }
+.c-scene .ln.cs-h { width: 38%; background: var(--cs-tone); opacity: .5; margin-top: calc(var(--u) * 1.2); }
 .c-scene .ln.is-ai { background: var(--kr-premium-gradient); opacity: .55; }
 .cs-paper.is-tpl { padding: 0; flex-direction: row; gap: 0; overflow: hidden; }
-.cs-tpl-side { width: 38%; padding: 7cqh 4cqh; display: flex; flex-direction: column; align-items: center; gap: 3.4cqh; background: color-mix(in srgb, var(--cs-tone) 16%, var(--kr-white)); }
-.cs-tpl-side .cs-av { width: 13cqh; height: 13cqh; background: var(--kr-white); margin-bottom: 1cqh; }
+.cs-tpl-side { width: 38%; padding: calc(var(--u) * 7) calc(var(--u) * 4); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 3.4); background: color-mix(in srgb, var(--cs-tone) 16%, var(--kr-white)); }
+.cs-tpl-side .cs-av { width: calc(var(--u) * 13); height: calc(var(--u) * 13); background: var(--kr-white); margin-bottom: calc(var(--u) * 1); }
 .cs-tpl-side .ln { background: var(--kr-white); }
-.cs-tpl-main { flex: 1; min-width: 0; padding: 7cqh 5cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
+.cs-tpl-main { flex: 1; min-width: 0; padding: calc(var(--u) * 7) calc(var(--u) * 5); display: flex; flex-direction: column; gap: calc(var(--u) * 3.4); }
 /* LinkedIn: a profile card */
-.cs-profile { width: 72cqh; overflow: hidden; padding-bottom: 7cqh; }
-.cs-cover { height: 17cqh; background: color-mix(in srgb, var(--kr-blue) 16%, var(--kr-white)); }
-.cs-profile .cs-av { width: 20cqh; height: 20cqh; margin: -10cqh 0 0 6cqh; border: 1.4cqh solid var(--kr-white); background: #d9d8f8; }
-.cs-pbody { padding: 3cqh 6cqh 0; display: grid; gap: 3cqh; }
-.cs-in-row { display: flex; align-items: center; gap: 3cqh; margin-top: 1.4cqh; }
-.cs-in { width: 11cqh; height: 11cqh; border-radius: 2.4cqh; flex: none; display: grid; place-items: center; background: var(--kr-blue); color: var(--kr-white); }
-.cs-in svg.i { width: 6.5cqh; height: 6.5cqh; }
+.cs-profile { width: calc(var(--u) * 72); overflow: hidden; padding-bottom: calc(var(--u) * 7); }
+.cs-cover { height: calc(var(--u) * 17); background: color-mix(in srgb, var(--kr-blue) 16%, var(--kr-white)); }
+.cs-profile .cs-av { width: calc(var(--u) * 20); height: calc(var(--u) * 20); margin: -calc(var(--u) * 10) 0 0 calc(var(--u) * 6); border: calc(var(--u) * 1.4) solid var(--kr-white); background: #d9d8f8; }
+.cs-pbody { padding: calc(var(--u) * 3) calc(var(--u) * 6) 0; display: grid; gap: calc(var(--u) * 3); }
+.cs-in-row { display: flex; align-items: center; gap: calc(var(--u) * 3); margin-top: calc(var(--u) * 1.4); }
+.cs-in { width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-radius: calc(var(--u) * 2.4); flex: none; display: grid; place-items: center; background: var(--kr-blue); color: var(--kr-white); }
+.cs-in svg.i { width: calc(var(--u) * 6.5); height: calc(var(--u) * 6.5); }
 .cs-in-row .ln { flex: 1; }
 /* AI: the two answers */
-.cs-fields { width: 68cqh; flex: none; display: grid; gap: 6cqh; }
-.cs-field { display: grid; gap: 2.6cqh; }
+.cs-fields { width: calc(var(--u) * 68); flex: none; display: grid; gap: calc(var(--u) * 6); }
+.cs-field { display: grid; gap: calc(var(--u) * 2.6); }
 .cs-input {
-  height: 16cqh; padding-inline: 4.5cqh; display: flex; align-items: center; gap: 1.6cqh;
-  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 3cqh;
+  height: calc(var(--u) * 16); padding-inline: calc(var(--u) * 4.5); display: flex; align-items: center; gap: calc(var(--u) * 1.6);
+  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: calc(var(--u) * 3);
 }
 .cs-input .ln { flex: none; }
-.cs-input.is-focus { border-color: var(--cs-tone); box-shadow: 0 0 0 1.2cqh rgba(138, 92, 255, .14); }
-.cs-caret { width: 1px; height: 7cqh; background: var(--cs-tone); flex: none; }
+.cs-input.is-focus { border-color: var(--cs-tone); box-shadow: 0 0 0 calc(var(--u) * 1.2) rgba(138, 92, 255, .14); }
+.cs-caret { width: 1px; height: calc(var(--u) * 7); background: var(--cs-tone); flex: none; }
 /* Upload: your old files */
-.cs-files { position: relative; width: 72cqh; height: 76cqh; flex: none; }
-.cs-file { position: absolute; width: 44cqh; height: 58cqh; padding: 9cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; }
+.cs-files { position: relative; width: calc(var(--u) * 72); height: calc(var(--u) * 76); flex: none; }
+.cs-file { position: absolute; width: calc(var(--u) * 44); height: calc(var(--u) * 58); padding: calc(var(--u) * 9) calc(var(--u) * 6); display: flex; flex-direction: column; gap: calc(var(--u) * 3.4); }
 .cs-file::before {
-  content: ""; position: absolute; top: 0; right: 0; width: 11cqh; height: 11cqh; border-bottom-left-radius: 2.4cqh;
+  content: ""; position: absolute; top: 0; right: 0; width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-bottom-left-radius: calc(var(--u) * 2.4);
   background: linear-gradient(to bottom left, var(--cs-bg) 50%, var(--kr-grey-40) 50%);
 }
 .cs-file.is-back { left: 0; top: 0; rotate: -8deg; }
 .cs-file.is-front { right: 0; bottom: 0; rotate: 5deg; }
 .cs-tag {
-  position: absolute; left: 5cqh; bottom: 6cqh; padding: 1.6cqh 2.6cqh; border-radius: 1.6cqh;
-  font-size: 6.4cqh; line-height: 1; font-weight: 600; letter-spacing: .3cqh; color: var(--kr-white); background: var(--kr-primary);
+  position: absolute; left: calc(var(--u) * 5); bottom: calc(var(--u) * 6); padding: calc(var(--u) * 1.6) calc(var(--u) * 2.6); border-radius: calc(var(--u) * 1.6);
+  font-size: calc(var(--u) * 6.4); line-height: 1; font-weight: 600; letter-spacing: .calc(var(--u) * 3); color: var(--kr-white); background: var(--kr-primary);
 }
 .cs-tag.is-doc { background: var(--kr-blue); }
 /* Paste: a messy note */
-.cs-note { width: 58cqh; height: 68cqh; padding: 8cqh 6cqh; display: flex; flex-direction: column; gap: 3.4cqh; rotate: -3deg; }
+.cs-note { width: calc(var(--u) * 58); height: calc(var(--u) * 68); padding: calc(var(--u) * 8) calc(var(--u) * 6); display: flex; flex-direction: column; gap: calc(var(--u) * 3.4); rotate: -3deg; }
 .cs-note .ln { flex: none; }
 /* Once a method is open, its title and subtitle take over the page headline (setHead), so the card
    folds its own header away (icon tile, title, subtitle, chevron) in the same motion as the rest of
@@ -559,7 +561,7 @@ div.mhead { cursor: default; }
 .b-wrap.is-c .c-scene { transition: margin-top var(--dur-slow) var(--ease-inout); }
 .b-wrap.is-c.has-focus .slot.is-focus .c-scene { margin-top: 12px; }
 /* The three parts settle in one after another as the screen opens */
-.cs-row > * { opacity: 0; transform: translateY(3cqh); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
+.cs-row > * { opacity: 0; transform: translateY(calc(var(--u) * 3)); transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit); }
 .mcard.is-open .cs-row > * { opacity: 1; transform: none; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard); }
 .mcard.is-open .cs-row > :nth-child(1) { transition-delay: 160ms; }
 .mcard.is-open .cs-row > :nth-child(2) { transition-delay: 230ms; }
@@ -571,7 +573,7 @@ div.mhead { cursor: default; }
 .c-recover .inline-link, .c-error .inline-link { color: var(--kr-grey-100); }
 /* phones: a shorter picture; text links get a 44px hit area */
 @container (max-width: 560px) {
-  .c-scene { height: clamp(140px, calc(var(--vh) * 100 - 620px), 200px); }
+  .c-scene { height: 220px; }  /* phones: as tall as the card's width can fill */
   .c-recover .inline-link, .c-error .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
 }
 /* ---------- Variant D: B's flow with a lighter, more modern surface ----------
@@ -1239,7 +1241,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol"><svg viewBox="0 0 71 77" width="71" height="77" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M71 22.001C71 9.227 62.07 0 47.235 0c-9.001 0-18.796 3.974-24.196 10.646l3.745 5.038a33.322 33.322 0 003.773 4.202 12.865 12.865 0 00-4.92-.937C10.945 18.949 0 30.724 0 46.838 0 63.87 13.678 77 31.397 77c14.62 0 25.925-10.36 25.925-23.774 0-6.013-2.308-11.43-6.492-14.549h15.637C69.558 32.788 71 27.111 71 22.001zm-39.608 49.75c-8.721 0-16.261-3.866-20.927-9.968l11.948-11.832c-.01 5.962 4.717 10.87 11.33 10.87 5.544 0 9.602-3.833 9.602-9.012 0-2.981-1.872-6.175-4.61-7.24l-3.458 3.41c1.583.638 2.592 2.342 2.592 3.833 0 2.198-1.73 3.76-4.177 3.76-3.817 0-6.193-2.91-6.193-6.955 0-5.677 4.608-10.218 11.09-10.218 7.561 0 13.25 6.315 13.25 14.832.005 10.429-8.925 18.52-20.447 18.52zm31.541-38.325H41.114c-8.354 0-12.027 2.414-16.13 6.458L7.657 57.096A24.712 24.712 0 015.468 46.84c0-13.27 9.073-22.924 21.171-22.924 4.465 0 7.704 1.776 10.443 4.117l2.952-2.907-9.722-13.696c4.968-4.26 10.917-6.174 16.923-6.174 11.522 0 18.29 6.817 18.29 16.677 0 3.474-.79 7.377-2.592 11.493z" fill="#FF5E59"></path><path d="M51.465 13C47.235 13 44 16.014 44 19.966 44 23.986 47.231 27 51.465 27 55.77 27 59 23.986 59 19.966 59 16.014 55.775 13 51.465 13zm0 9.579c-1.58 0-2.728-1.14-2.728-2.613 0-1.475 1.148-2.545 2.728-2.545 1.58 0 2.798 1.072 2.798 2.545.006.344-.063.686-.201 1.006a2.57 2.57 0 01-.606.853 2.78 2.78 0 01-.914.566 2.92 2.92 0 01-1.077.188z" fill="#FF5E59"></path></svg></template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.9">v1.9</div>
+<div class="proto-ver" aria-label="Prototype version 1.9.1">v1.9.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1786,21 +1788,44 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (els[0].textContent === h && els[1].textContent === p) return;
     const swap = () => { els[0].textContent = h; els[1].textContent = p; };
     els.forEach(el => el.getAnimations().forEach(a => a.cancel()));
+    createHead.getAnimations().forEach(a => a.cancel());
     if (!animate || reduce) return swap();
+    // A different number of lines (phones) eases the headline's height from the click, with the same
+    // duration and easing as the rest of the screen change, so everything below moves in one motion.
+    const from = createHead.getBoundingClientRect().height, to = headHeightFor(h, p);
+    if (Math.abs(from - to) > .5) createHead.animate([{ height: from + 'px' }, { height: to + 'px' }], { duration: DUR.slow, easing: EASE.inout });
     Promise.all(els.map(el => play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}))).then(() => {
       if (tok !== headTok) return;
-      const from = createHead.offsetHeight;
       swap();
       els.forEach(el => { el.getAnimations().forEach(a => a.cancel()); play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); });
-      // a different number of lines (phones) eases the space below instead of jumping it
-      const to = createHead.offsetHeight;
-      if (from !== to) createHead.animate([{ height: from + 'px' }, { height: to + 'px' }], { duration: DUR.base, easing: EASE.standard });
     });
+  }
+
+  // How tall the page headline would be with other text (measured on an invisible copy)
+  function headHeightFor(h, p) {
+    const g = createHead.cloneNode(true);
+    g.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+    g.querySelector('h1').textContent = h; g.querySelector('p').textContent = p;
+    Object.assign(g.style, { position: 'absolute', visibility: 'hidden', top: '0', width: createHead.getBoundingClientRect().width + 'px' });
+    createHead.after(g);
+    const hh = g.getBoundingClientRect().height;
+    g.remove();
+    return hh;
   }
 
   function openB(id) {
     const wrap = methodsEl.querySelector('.b-wrap');
     if (!wrap || wrap.classList.contains('has-focus')) return;
+    if (wrap.classList.contains('is-c')) {
+      /* C: work out how tall the page will be once the method is open (card, new headline, skip link
+         folded away) and ease the top gap in the same motion, so nothing shifts again afterwards */
+      const m = byId(id), center = screens.create.querySelector(':scope > .center');
+      const after = settledLayout(wrap, g => {
+        g.classList.add('has-focus');
+        g.querySelectorAll('.slot').forEach(sl => { const mine = sl.dataset.id === id; sl.classList.toggle('is-focus', mine); sl.querySelector('.mcard').classList.toggle('is-open', mine); });
+      });
+      fitCut(after.height - wrap.getBoundingClientRect().height + headHeightFor(m.title, m.sub) - createHead.getBoundingClientRect().height - center.getBoundingClientRect().height, true);
+    }
     const aside = wrap.querySelector('.b-aside');
     if (aside) {
       aside.querySelector('.b-aside-inner').innerHTML = asideHTML(id);
@@ -1841,9 +1866,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
     void wrap.offsetHeight;
     wrap.classList.remove('no-anim');
+    const isC = wrap.classList.contains('is-c');
+    // C: the new method's height is already laid out (instantly, while the list is faded out); fit the
+    // top gap now, together with the headline, so nothing shifts again after the fade-in
+    if (isC) fitCut(headHeightFor(byId(to).title, byId(to).sub) - createHead.getBoundingClientRect().height, true);
     list.getAnimations().forEach(a => a.cancel());
     if (!reduce) list.animate([{ opacity: 0, transform: 'translateX(16px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
-    const isC = wrap.classList.contains('is-c');
     if (isC) setHead(byId(to).title, byId(to).sub);
     (isC ? createHead.querySelector('h1') : wrap.querySelector('.slot.is-focus .mhead')).focus({ preventScroll: true });  // the new screen's heading
     settleSoon();
