@@ -81,6 +81,9 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { min-height: 100%; overflow-anchor: none; }
+/* Always keep the scrollbar's space, so the page doesn't jump sideways whenever a screen change
+   makes it start or stop scrolling (in browsers that show a scrollbar) */
+html { scrollbar-gutter: stable; }
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -481,7 +484,7 @@ div.mhead { cursor: default; }
    Drawn in HTML and sized in cqh (1% of the banner's height), so it scales down
    with the banner on shorter screens instead of getting cropped. */
 .c-scene {
-  height: clamp(350px, calc(var(--vh) * 100 - 700px), 420px); container-type: size;
+  height: 300px; container-type: size;
   /* drawing unit: 1% of the picture's height, but never so big that the drawing outgrows the card's width */
   --u: min(1cqh, .56cqw);
   border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--cs-bg);
@@ -1241,7 +1244,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.9.1">v1.9.1</div>
+<div class="proto-ver" aria-label="Prototype version 1.9.2">v1.9.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
