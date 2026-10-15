@@ -26,8 +26,9 @@ The 3D look's resume fragments (the four faded pages in the side margins of the 
 
 The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/prototype.html`:
 
-- Register each one in `ROUTES` (`path`, `title`, `base` = the screen it opens over, `html` = its markup function, `init` = its behaviour). That alone adds its link under More options › Screens and makes `#<path>` open it (also on `hashchange`).
-- Modals render into `#rt-layer` (dimmed backdrop, Esc or a backdrop click closes, scroll locked, fits inside the phone frame in mobile view). Give each screen its own class prefix (the AI modal uses `.aim-*`) and its own CSS block under "Route screens".
+- Register each one in `ROUTES` (`path`, `title`, `html` = its markup function, `init` = its behaviour). That alone adds its link under More options › Screens and makes `#<path>` open it (also on `hashchange`).
+- They are full screens, never pop-ups with an overlay (the user asked for this to keep the flow unified): `openRoute` fills `#screen-route` inside the page and moves there with `go('route')`, so they get the logo bar, page background, top line and slide transitions of the other screens. A modal's card keeps its inside exactly as in the screenshot, but its surface matches the goal and method cards (1px `--kr-grey-60` outline, `--radius-card` corners, no drop shadow; reduce the padding by 1px for the outline). Wrap animated content in `.rt-item`.
+- Give each screen its own class prefix (the AI screen uses `.aim-*`) and its own CSS block under "Route screens".
 - Match the screenshots exactly: measure them (they are usually 2x), use the product's sizes rather than the onboarding's height-aware spacing, and compare a 2x render against the screenshot pixel by pixel before publishing.
 - Later the user will say which buttons (goal screen, method screen, dashboard) lead to which route; wire those with `openRoute(findRoute(path))`.
 

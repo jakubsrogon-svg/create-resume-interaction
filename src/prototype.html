@@ -127,7 +127,7 @@ body.is-mobile .statusbar {
 /* On a real phone the frame would not fit, so mobile view just fills the screen */
 @media (max-width: 480px) {
   body.is-mobile .stage { padding-block: 0; }
-  body.is-mobile .device { width: 100%; height: auto; min-height: 0; overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
+  body.is-mobile .device { width: 100%; height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
   body.is-mobile .statusbar { display: none; }
 }
 
@@ -1211,24 +1211,22 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 /* ---------- Route screens ----------
    Product screens recreated from screenshots. Each has its own URL (#/dashboard/create-ai-resume/)
-   and a link under More options › Screens. They open in a layer over the dashboard.
-   Sizes and colours are measured from the 2x screenshots, so they don't follow the onboarding's
-   height-aware spacing. */
-.rt-layer {
-  position: fixed; inset: 0; z-index: 15; display: grid; grid-template-columns: minmax(0, 1fr); overflow-y: auto; overscroll-behavior: contain;
-  padding: 24px 16px; background: rgba(8, 20, 48, .45); container-type: inline-size;
-}
-.rt-layer > * { margin: auto; }
-.rt-layer.in-frame { border-radius: 38px; }  /* inside the phone frame (placed from JS) */
+   and a link under More options › Screens. They are full screens like the rest of the flow (logo bar,
+   page background, content from the same top line), never pop-ups over another screen.
+   Sizes and colours inside them are measured from the 2x screenshots, so they don't follow the
+   onboarding's height-aware spacing. */
+.rt-item { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
 
 /* Create Resume with AI (/dashboard/create-ai-resume/) */
 .aim {
   --aim-grad: linear-gradient(to bottom right, #4d44f7, #8d44f8);
-  width: 454px; max-width: 100%; padding: 32px 48px; border-radius: 20px; background: var(--kr-white);
-  box-shadow: 0 60px 80px rgba(0, 0, 0, .23); color: var(--kr-grey-100);
+  /* same surface as the goal and method cards (thin grey outline, 16px corners, no resting shadow);
+     the padding takes the 1px outline into account, so everything inside sits where the screenshot has it */
+  width: 454px; max-width: 100%; padding: 31px 47px; border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
+  background: var(--kr-white); color: var(--kr-grey-100);
   font-size: 14px; line-height: 20px; letter-spacing: 0; outline: none;
 }
-.aim h2 { margin: 0 0 16px; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+.aim h1 { margin: 0 0 16px; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
 .aim-ic { flex: none; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 /* Basic / Personalized: one grey outline; the chosen half gets a gradient outline on top of it */
 .aim-tabs { display: grid; grid-template-columns: 1fr 1fr; height: 34px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--kr-grey-60); }
@@ -1288,7 +1286,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .aim-go:focus-visible, .aim-lang:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 /* Narrow screens (phone): tighter padding; language and button share the full width */
 @container (max-width: 520px) {
-  .aim { padding: 28px 20px 24px; border-radius: 16px; }
+  .aim { padding: 27px 19px 23px; }
   .aim-foot { flex-direction: column; align-items: stretch; gap: 12px; }
   .aim-lang, .aim-go { width: 100%; }
 }
@@ -1388,6 +1386,9 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
       <div class="ld-steps"><ol class="steps" id="loading-steps" role="status" aria-live="polite"></ol></div>
     </div>
   </section>
+
+  <!-- Route screens: product screens recreated from screenshots, filled in from ROUTES -->
+  <section class="screen rt-screen" id="screen-route" hidden></section>
 </main>
 
 <!-- Screen 4: the editor -->
@@ -1395,16 +1396,13 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 <!-- Screen 5: dashboard (where people land when they skip onboarding) -->
 <div class="dash" id="screen-dash" hidden></div>
-
-<!-- Route screens (product modals recreated from screenshots) open in this layer; see ROUTES -->
-<div class="rt-layer" id="rt-layer" hidden></div>
 </div>
 </div>
 
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.13">v1.13</div>
+<div class="proto-ver" aria-label="Prototype version 1.14">v1.14</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1721,14 +1719,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <span class="d-badge is-ok">${icon('check')}</span></div>
   </div>`);
   const methodsEl = document.getElementById('methods');
-  const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading') };
+  const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading'), route: document.getElementById('screen-route') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
   let current = 'intent', routesReady = false;
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (routesReady && s !== 'dashboard' && location.hash.startsWith('#/')) setHash('');  // a route URL only while it's on screen
+    if (routesReady && s !== 'route' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
   }
   /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
@@ -1850,7 +1848,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      - The picked card leaves last, so the eye follows the choice into the next step.
      Clicking mid-way fast-forwards the running change and starts the new one, so no click is lost. */
   let screenRun = null;
-  const FLOW = ['intent', 'create', 'loading'];
+  const FLOW = ['intent', 'create', 'route', 'loading'];
   async function go(screen, picked) {
     if (screenRun) screenRun.finish();
     if (screen === current) return;
@@ -1871,16 +1869,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     const anims = [];
     const outHead = from.querySelector(':scope > .page-head'), inHead = to.querySelector(':scope > .page-head');
-    const outItems = [...from.querySelectorAll('.intent, .irow, .b-back, .mcard, .b-aside, .ld-item, :scope > .center')].filter(onScreen);
-    const inItems = [...to.querySelectorAll('.intent, .irow, .method-list > .mcard, .slot, .ld-item, :scope > .center')].filter(shown);
+    const outItems = [...from.querySelectorAll('.intent, .irow, .b-back, .mcard, .b-aside, .ld-item, .rt-item, :scope > .center')].filter(onScreen);
+    const inItems = [...to.querySelectorAll('.intent, .irow, .method-list > .mcard, .slot, .ld-item, .rt-item, :scope > .center')].filter(shown);
 
     if (reduce) {
       anims.push(play(from, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }));
       anims.push(play(to, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 60, easing: EASE.standard }));
     } else {
       // Headline: cross-fade in place
-      [...outHead.children].forEach(el => anims.push(play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit })));
-      [...inHead.children].forEach(el => anims.push(play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 100, easing: EASE.standard })));
+      [...(outHead ? outHead.children : [])].forEach(el => anims.push(play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit })));
+      [...(inHead ? inHead.children : [])].forEach(el => anims.push(play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 100, easing: EASE.standard })));
       // Content: leave toward the side we came from, enter from the side we're heading to
       const order = picked ? outItems.filter(el => el !== picked).concat(picked) : outItems;
       order.forEach((el, i) => {
@@ -2478,9 +2476,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   async function leaveApp(screen) {
     const appEl = APPS[current];
-    const closing = closeModal();
     if (!reduce) await appEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
-    await closing;
     appEl.getAnimations().forEach(a => a.cancel());
     appEl.hidden = true; appEl.innerHTML = '';
     setCut(0, true);
@@ -2489,7 +2485,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setCurrent(screen);
     scroller().scrollTo({ top: 0 });
     if (screen === 'create') renderCreate();
-    const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .irow, .method-list > .mcard, .slot, :scope > .center')].filter(shown);
+    const inItems = [...screens[screen].querySelectorAll('.page-head, .intent, .irow, .method-list > .mcard, .slot, .rt-item, :scope > .center')].filter(shown);
     const anims = inItems.map((el, i) => play(el, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-32px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base, delay: 60 + i * STAGGER, easing: EASE.standard }));
     await Promise.all(anims.map(a => a.finished.catch(() => {})));
@@ -2601,7 +2597,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   /* Open a full-screen app view (dashboard) from any screen */
-  async function openDashboard(onDrawn) {
+  async function openDashboard() {
     if (screenRun) screenRun.finish();
     clearTimers();
     const fromEl = APPS[current] || screens[current];
@@ -2616,7 +2612,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
     setCurrent('dashboard');
     window.scrollTo(0, 0); device.scrollTop = 0;
-    if (onDrawn) onDrawn();
     const items = [...dashEl.querySelectorAll('.dash-mbar, .dash-rail, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(shown);
     const anims = items.map((el, i) => play(el,
       reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: el.classList.contains('dash-rail') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
@@ -2635,13 +2630,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- Route screens ----------
      Product screens recreated from screenshots, each at its own URL and listed under More options › Screens.
-     To add one: write its markup function (and an init for its behaviour), then add a ROUTES entry.
-     base = the screen it opens over. */
+     They are full screens in the flow (same logo bar, background and top line as the goal and method
+     screens), not pop-ups. To add one: write its markup function (and an init for its behaviour),
+     then add a ROUTES entry. */
   const ROUTES = [
-    { path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', base: 'dashboard', html: aiModalHTML, init: initAiModal },
+    { path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
   ];
-  const layerEl = document.getElementById('rt-layer');
-  let modalRoute = null, modalTok = 0, downOnLayer = false;
+  let routeNow = null;
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
   const findRoute = h => ROUTES.find(r => r.path === normPath(h)) || null;
   function setHash(path) {
@@ -2649,72 +2644,38 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   document.getElementById('pm-routes').innerHTML = ROUTES.map(r =>
     `<button class="pm-route" type="button" data-route="${r.path}"><b>${r.title}</b><code>${r.path}</code></button>`).join('');
-  const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!modalRoute && b.dataset.route === modalRoute.path)));
+  const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
-  function openRoute(r) {
+  function fillRoute(r) {
+    const el = screens.route;
+    el.innerHTML = `<div class="rt-item">${r.html()}</div>`;
+    el.setAttribute('aria-label', r.title);
+    if (r.init) r.init(el.querySelector('.rt-item').firstElementChild);
+  }
+  /* Open a route screen the way every other screen opens (go), or straight away on page load */
+  async function openRoute(r, instant) {
     setMore(false); clearTimers();
-    setHash(r.path);
-    if (current === r.base) { closeModal(true); openModal(r); }
-    else if (r.base === 'dashboard') openDashboard(() => openModal(r, 120));
-  }
-
-  /* The layer covers the window; in the framed phone view it covers just the phone's screen */
-  function placeLayer() {
-    if (layerEl.hidden) return;
-    const inFrame = framed();
-    layerEl.classList.toggle('in-frame', inFrame);
-    if (!inFrame) { layerEl.removeAttribute('style'); return; }
-    const r = device.getBoundingClientRect();
-    Object.assign(layerEl.style, { inset: 'auto', left: r.left + device.clientLeft + 'px', top: r.top + device.clientTop + 'px', width: device.clientWidth + 'px', height: device.clientHeight + 'px' });
-  }
-  window.addEventListener('resize', placeLayer);
-  window.addEventListener('scroll', placeLayer, { passive: true });
-  function lockScroll(on) {
-    document.documentElement.style.overflow = on && !framed() ? 'hidden' : '';
-    device.style.overflowY = on && framed() ? 'hidden' : '';
-  }
-
-  function openModal(r, delay = 0) {
-    const tok = ++modalTok;
-    layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
-    layerEl.innerHTML = r.html();
-    layerEl.hidden = false; dashEl.inert = true;
-    modalRoute = r; markRoutes(); lockScroll(true); placeLayer();
-    const box = layerEl.firstElementChild;
-    if (r.init) r.init(box);
-    box.focus({ preventScroll: true });
-    if (reduce) { play(layerEl, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay, easing: EASE.standard }); }
-    else {
-      play(layerEl, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay, easing: EASE.standard });
-      play(box, [{ opacity: 0, transform: 'translateY(16px) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base + 60, delay: delay + 40, easing: EASE.standard });
+    if (current === 'route') {
+      // already on a route screen: swap its content in place
+      if (screenRun) screenRun.finish();
+      fillRoute(r); routeNow = r; markRoutes(); setHash(r.path);
+      scroller().scrollTo({ top: 0 });
+      if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
+        .finished.catch(() => {}).then(a => a && a.cancel());
+      return;
     }
-    setTimeout(() => { if (tok === modalTok) layerEl.getAnimations({ subtree: true }).forEach(a => { if (a.playState === 'finished') a.cancel(); }); }, DUR.base + 140 + delay);
+    fillRoute(r);
+    if (instant) {
+      Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'route'; });
+      setCurrent('route');
+    } else await go('route');
+    if (current !== 'route') return;
+    routeNow = r; markRoutes(); setHash(r.path);
   }
-  async function closeModal(instant) {
-    if (!modalRoute) return;
-    const tok = ++modalTok;
-    modalRoute = null; markRoutes();
-    if (!instant && !reduce) {
-      layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
-      await layerEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
-      if (tok !== modalTok) return;  // another one opened meanwhile
-    }
-    layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
-    layerEl.hidden = true; layerEl.innerHTML = ''; layerEl.removeAttribute('style');
-    dashEl.inert = false; lockScroll(false);
-  }
-  /* Esc or a click on the dimmed backdrop closes it, back to the screen underneath */
-  function dismissModal() {
-    const base = modalRoute && modalRoute.base;
-    closeModal();
-    setHash(base === 'dashboard' ? '/dashboard/' : '');
-  }
-  layerEl.addEventListener('pointerdown', e => { downOnLayer = e.target === layerEl; });
-  layerEl.addEventListener('click', e => { if (e.target === layerEl && downOnLayer) dismissModal(); });
   window.addEventListener('hashchange', () => {
     const r = findRoute(location.hash);
     if (r) return openRoute(r);
-    if (normPath(location.hash) === '/dashboard/') { if (modalRoute) closeModal(); else if (current !== 'dashboard') openDashboard(); }
+    if (normPath(location.hash) === '/dashboard/' && current !== 'dashboard') openDashboard();
   });
 
   /* ---------- Create Resume with AI (/dashboard/create-ai-resume/) ---------- */
@@ -2733,8 +2694,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   function aiModalHTML() {
     const name = [person.first, person.last].filter(Boolean).join(' ');
-    return `<form class="aim" role="dialog" aria-modal="true" aria-labelledby="aim-h" tabindex="-1" data-mode="basic" novalidate>
-      <h2 id="aim-h">Create your resume with AI.</h2>
+    return `<form class="aim" aria-labelledby="aim-h" data-mode="basic" novalidate>
+      <h1 id="aim-h">Create your resume with AI.</h1>
       <div class="aim-tabs" role="group" aria-label="AI Writer mode">
         <button class="aim-tab" type="button" data-aim-mode="basic" aria-pressed="true">${aimIcon.clock}<span>Basic</span></button>
         <button class="aim-tab" type="button" data-aim-mode="personalized" aria-pressed="false">${aimIcon.upCircle}<span>Personalized</span></button>
@@ -2801,6 +2762,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       }
       if (!menu.hidden && !e.target.closest('.aim-menu')) setMenu(false);
     });
+    lang.parentElement.addEventListener('focusout', e => { if (!menu.hidden && !lang.parentElement.contains(e.relatedTarget)) setMenu(false); });
     form.addEventListener('input', () => { ta.nextElementSibling.textContent = `${ta.value.length}/${AIM_POST_MAX}`; check(); });
     form.addEventListener('keydown', e => {
       if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); setMenu(false); lang.focus(); }
@@ -2808,12 +2770,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         e.preventDefault();
         const opts = [...menu.querySelectorAll('.aim-opt')], i = opts.indexOf(e.target.closest('.aim-opt'));
         opts[(i + (e.key === 'ArrowDown' ? 1 : opts.length - 1)) % opts.length].focus();
-      }
-      // keep Tab inside the dialog
-      if (e.key === 'Tab') {
-        const f = [...form.querySelectorAll('button, input, textarea')].filter(el => !el.disabled && shown(el));
-        if (e.shiftKey && (document.activeElement === f[0] || document.activeElement === form)) { e.preventDefault(); f[f.length - 1].focus(); }
-        else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
       }
     });
     form.addEventListener('submit', e => {
@@ -3007,7 +2963,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       return;
     }
     const vw = e.target.closest('[data-view]');
-    if (vw) { setView(vw.dataset.view); placeLayer(); lockScroll(!!modalRoute); return; }
+    if (vw) return setView(vw.dataset.view);
     const rt = e.target.closest('[data-route]');
     if (rt) return openRoute(findRoute(rt.dataset.route));
     const el = e.target.closest('[data-action]');
@@ -3067,7 +3023,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && pmWrap.classList.contains('is-open')) { setMore(false); pmBtn.focus(); }
-    else if (e.key === 'Escape' && modalRoute) dismissModal();
     if (e.key === 'Enter' && e.target.matches('[data-add]')) {
       e.preventDefault();
       const v = e.target.value.trim();
@@ -3125,7 +3080,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const hl = hash.match(/list|grid/);
   setLayout(hl ? hl[0] : (savedLayout || 'grid'));
   const startRoute = findRoute(location.hash);
-  if (startRoute) openRoute(startRoute);
+  if (startRoute) openRoute(startRoute, true);
   else if (/dashboard/.test(hash)) openDashboard();
   routesReady = true;
   if (/editor/.test(hash)) {
