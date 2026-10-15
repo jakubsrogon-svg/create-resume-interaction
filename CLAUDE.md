@@ -26,11 +26,16 @@ The 3D look's resume fragments (the four faded pages in the side margins of the 
 
 The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/prototype.html`:
 
-- Register each one in `ROUTES` (`group` = its heading in the Screens list, `path`, `also` = more paths for the same screen, `title`, `html` = its markup function, `init` = its behaviour, `needsCv` = show Upload your resume first when no CV is uploaded, `todo` = no design yet: a dashed "not designed yet" card). That alone adds its link under More options › Screens and makes `#<path>` open it (also on `hashchange`).
+- Register each one in `ROUTES` (`group` = its heading in the Screens list, `path`, `also` = more paths for the same screen, `title`, `html` = its markup function, `init` = its behaviour, `needsCv` = show Upload your resume first when no CV is uploaded, `wire` = no design yet: its `html` returns a Wire wireframe from `WIRE`, `run` = do something instead of showing a screen, e.g. open the editor). That alone adds its link under More options › Screens and makes `#<path>` open it (also on `hashchange`).
 - Steps inside a screen (upload → tool, step 1 → step 2) are `.rt-pane`s switched with `showPane(root, name, dir)`; a height change inside a card uses `morphHeight`. Reuse `uploadHTML`/`initUpload`, `selectHTML`/`refreshSel`, `langHTML`/`initLang`, `needFilled`, `xBtn` and the `.rt-btn` / `.rt-ai` / `.rt-coral` / `.rt-ghost` buttons.
 - The screenshots carry the Mac's display-P3 colour profile: convert sampled colours to sRGB before using them (the coral then reads exactly `#ff5e59`, the AI gradient `#5345ff → #9b3eff`). Check new class names against existing ones (`.mini` and `.lbl` were already taken).
 - They are full screens, never pop-ups with an overlay (the user asked for this to keep the flow unified): `openRoute` fills `#screen-route` inside the page and moves there with `go('route')`, so they get the logo bar, page background, top line and slide transitions of the other screens. A modal's card keeps its inside exactly as in the screenshot, but its surface matches the goal and method cards (1px `--kr-grey-60` outline, `--radius-card` corners, no drop shadow; reduce the padding by 1px for the outline). Wrap animated content in `.rt-item`.
 - Give each screen its own class prefix (the AI screen uses `.aim-*`) and its own CSS block under "Route screens".
 - Match the screenshots exactly: measure them (they are usually 2x), use the product's sizes rather than the onboarding's height-aware spacing, and compare a 2x render against the screenshot pixel by pixel before publishing.
 - Later the user will say which buttons (goal screen, method screen, dashboard) lead to which route; wire those with `openRoute(findRoute(path))`.
+
+## Wireframes and flow templates
+
+- Screens without a design are wireframes built with Wire (the `anthropic-skills:wire-wireframes` skill; its CSS is copied in with tokens scoped to `.wf`). Write them as `WIRE.<id>` markup functions using Wire classes only; buttons carry `data-wire` (they move a running flow on, otherwise do the obvious thing). When the user sends the real design, replace the route's `html` with a recreated screen and drop `wire`.
+- The nine flow templates live in `FLOWS` (steps built with the `S.*` helpers: `wire`, `route`, `wireTool`, `screen`, `build`, `editor`, `dash`). Every URL belongs to one of them; the URL checklist doc maps them.
 

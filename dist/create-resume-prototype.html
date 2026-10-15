@@ -1478,11 +1478,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .rsg .aim-foot { margin-top: 48px; }
 .rsg-go { width: 140px; }
 
-/* Not designed yet: the route works, the screen still needs a design */
-.rt-todo { --w: 454px; padding: 31px 47px 31px; border-style: dashed; }
-.rt-todo h1 { padding-right: 32px; font-size: 24px; line-height: 28px; }
-.rt-todo p { margin: 12px 0 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
-.rt-todo code { display: inline-block; margin-top: 16px; padding: 4px 8px; border-radius: 6px; background: var(--kr-grey-40); font: 13px/20px ui-monospace, SFMono-Regular, Menlo, monospace; }
 
 /* Narrow screens (phone) */
 @container (max-width: 860px) {
@@ -1493,7 +1488,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .aig-opts { gap: 20px; }
 }
 @container (max-width: 520px) {
-  .aiw, .rsg, .rt-todo { padding: 27px 19px 23px; }
+  .aiw, .rsg { padding: 27px 19px 23px; }
   .upl, .lki { padding: 23px 19px; }
   .sel { padding: 27px 0 23px 19px; }
   .sel h1, .sel .rt-step, .sel-foot { padding-right: 20px; }
@@ -1503,6 +1498,187 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .lki-foot .rt-btn, .upl-foot .rt-btn { width: auto; flex: 1; }
   .lki-field { margin-top: 40px; }
 }
+
+/* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in as is; its tokens are scoped
+   to .wf so they can't touch the prototype's own). Used for every screen without a design. ---------- */
+.wf{--paper:#ffffff;--fill:#f2f2f2;--fill-strong:#d9d9d9;--line-soft:#e0e0e0;--line:#8a8a8a;--ink-muted:#616161;--ink:#1f1f1f;--accent:#ff5e59;--on-accent:#1f1f1f;--danger:#c62828;--success:#2e7d32;--note:#fff3b0;--scrim:rgba(31,31,31,0.4);--space-1:4px;--space-2:8px;--space-4:16px;--space-6:24px;--space-8:32px;--radius-0:0px;--radius-sm:4px;--radius-pill:999px;--font-sans:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif}
+.wf .t-display{font-size:32px;line-height:40px;font-weight:700;letter-spacing:normal}
+.wf .t-title{font-size:24px;line-height:32px;font-weight:600;letter-spacing:normal}
+.wf .t-heading{font-size:18px;line-height:26px;font-weight:600;letter-spacing:normal}
+.wf .t-body{font-size:15px;line-height:22px;font-weight:400;letter-spacing:normal}
+.wf .t-small{font-size:13px;line-height:18px;font-weight:400;letter-spacing:normal}
+.wf .t-label{font-size:12px;line-height:16px;font-weight:600;letter-spacing:0.04em}
+.wf{font-family:var(--font-sans);font-size:15px;line-height:22px;color:var(--ink);background:var(--paper)}
+.wf *,.wf *::before,.wf *::after{box-sizing:border-box}
+.wf h1,.wf h2,.wf h3,.wf h4,.wf p{margin:0}
+/* layout */
+.wf-stack{display:flex;flex-direction:column;gap:var(--space-4)}
+.wf-row{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-4)}
+.wf-grid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:var(--space-4)}
+.wf-spread{justify-content:space-between}
+.wf-grow{flex:1}
+.wf-gap-sm{gap:var(--space-2)}
+.wf-gap-lg{gap:var(--space-8)}
+/* frame */
+.wf-frame{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden}
+.wf-frame--desktop,.wf-frame--mobile{display:flex;flex-direction:column;flex:none;height:800px}
+.wf-frame--desktop{width:1440px}
+.wf-frame--mobile{width:375px}
+.wf-frame--long{height:auto;min-height:800px}
+.wf-frame--desktop>.wf-frame-body,.wf-frame--mobile>.wf-frame-body,.wf-frame--desktop>.wf-shell,.wf-frame--mobile>.wf-main{flex:1;min-height:0;overflow:hidden}
+.wf-canvas{overflow:auto;padding:var(--space-6);background:var(--paper)}
+.wf-canvas .wf-frame--desktop,.wf-canvas .wf-frame--mobile{zoom:var(--zoom,1)}
+.wf-frame-bar{display:flex;align-items:center;gap:var(--space-2);height:32px;padding:0 var(--space-4);background:var(--fill);border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--ink-muted)}
+.wf-frame-bar::before{content:"";width:36px;height:8px;border-radius:var(--radius-pill);background:var(--fill-strong)}
+.wf-frame-body{padding:var(--space-6)}
+/* stand-ins */
+.wf-ph{display:flex;align-items:center;justify-content:center;min-height:96px;background-color:var(--fill);border:1px solid var(--line-soft);border-radius:var(--radius-sm);color:var(--ink-muted);font-size:12px;line-height:16px;font-weight:600;
+background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--line-soft) 50%,transparent calc(50% + 1px)),linear-gradient(to top left,transparent calc(50% - 1px),var(--line-soft) 50%,transparent calc(50% + 1px))}
+.wf-ph>*{background:var(--fill);padding:0 var(--space-1)}
+.wf-ph--wide{aspect-ratio:16/9;min-height:0}
+.wf-ph--square{aspect-ratio:1;min-height:0}
+.wf-ph--circle{aspect-ratio:1;min-height:0;border-radius:var(--radius-pill);background-image:none}
+.wf-ph--icon{width:20px;height:20px;min-height:0;flex:none;background-image:none;border-radius:var(--radius-sm)}
+.wf-lines{display:flex;flex-direction:column;gap:var(--space-2);width:100%}
+.wf-line{display:block;height:8px;width:100%;border-radius:var(--radius-pill);background:var(--fill-strong)}
+.wf-lines>.wf-line:last-child:not(:first-child),.wf-line--short{width:60%}
+.wf-line--head{height:16px;width:45%;background:var(--ink-muted)}
+/* actions */
+.wf-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);height:40px;padding:0 var(--space-4);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);color:var(--ink);font:600 14px/20px var(--font-sans);white-space:nowrap;cursor:pointer}
+.wf-btn--primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.wf-btn--ghost{background:transparent;border-color:transparent;text-decoration:underline;padding:0 var(--space-2)}
+.wf-btn--sm{height:32px;padding:0 var(--space-2);font-size:13px}
+.wf-btn:disabled{opacity:.45;cursor:default}
+.wf-btn:focus-visible,.wf-input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wf-link{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--accent);text-underline-offset:3px}
+/* forms */
+.wf-field{display:flex;flex-direction:column;gap:var(--space-1);font-size:13px;line-height:18px;font-weight:600}
+.wf-input{display:flex;align-items:center;width:100%;height:40px;padding:0 var(--space-2);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);color:var(--ink-muted);font:400 14px/20px var(--font-sans)}
+.wf-input--area{height:96px;align-items:flex-start;padding-top:var(--space-2)}
+.wf-input--select{justify-content:space-between}
+.wf-input--select::after{content:"\25BE";color:var(--ink)}
+.wf-hint{font-size:12px;line-height:16px;font-weight:400;color:var(--ink-muted)}
+.wf-field--error .wf-input{border-color:var(--danger)}
+.wf-field--error .wf-hint{color:var(--danger)}
+.wf-check,.wf-radio{display:inline-flex;align-items:center;gap:var(--space-2);font-size:14px;line-height:20px}
+.wf-check::before,.wf-radio::before{content:"";width:16px;height:16px;flex:none;border:1px solid var(--line);border-radius:3px;background:var(--paper)}
+.wf-radio::before{border-radius:var(--radius-pill)}
+.wf-check--on::before,.wf-radio--on::before{background:var(--ink);box-shadow:inset 0 0 0 3px var(--paper)}
+/* containers */
+.wf-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--radius-sm)}
+.wf-badge{display:inline-flex;align-items:center;height:20px;padding:0 var(--space-2);border:1px solid var(--line-soft);border-radius:var(--radius-pill);background:var(--fill);font-size:12px;font-weight:600;line-height:16px;white-space:nowrap}
+.wf-overlay{display:flex;align-items:center;justify-content:center;padding:var(--space-8);background:var(--scrim)}
+.wf-dialog{width:100%;max-width:400px;gap:var(--space-4);padding:var(--space-6);border-color:var(--line)}
+/* navigation */
+.wf-nav{display:flex;align-items:center;gap:var(--space-6);height:56px;padding:0 var(--space-6);border-bottom:1px solid var(--line-soft);background:var(--paper)}
+.wf-logo{font-weight:700}
+.wf-nav-item{font-size:14px;color:var(--ink-muted)}
+.wf-nav-item--active{color:var(--ink);font-weight:600}
+.wf-tabs{display:flex;gap:var(--space-6);border-bottom:1px solid var(--line-soft)}
+.wf-tab{padding:var(--space-2) 0;font-size:14px;color:var(--ink-muted)}
+.wf-tab--active{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink)}
+/* data */
+.wf-table{width:100%;border-collapse:collapse;font-size:14px;line-height:20px}
+.wf-table th{text-align:left;font-size:12px;font-weight:600;color:var(--ink-muted);padding:var(--space-2);border-bottom:1px solid var(--line)}
+.wf-table td{padding:var(--space-2);border-bottom:1px solid var(--line-soft)}
+/* annotation */
+.wf-note{display:block;max-width:320px;padding:var(--space-2) var(--space-4);background:var(--note);color:var(--ink);border-radius:var(--radius-sm);font-size:13px;line-height:18px}
+.wf-pin{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;border-radius:var(--radius-pill);background:var(--ink);color:var(--paper);font:700 12px/1 var(--font-sans)}
+.wf-anchor{position:relative}
+.wf-anchor>.wf-pin{position:absolute;top:-12px;right:-12px;z-index:1}
+/* flow */
+.wf-flow{display:flex;align-items:flex-start;flex-wrap:wrap;gap:var(--space-2)}
+.wf-screen{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.wf-screen-label{align-self:flex-start;padding:2px var(--space-2);background:var(--ink);color:var(--paper);border-radius:var(--radius-sm);font-size:12px;line-height:16px;font-weight:600}
+.wf-arrow{position:relative;align-self:center;min-width:96px;padding:0 var(--space-2) 14px;text-align:center;font-size:12px;line-height:16px;color:var(--ink-muted)}
+.wf-arrow::after{content:"";position:absolute;left:0;right:6px;bottom:4px;height:2px;background:var(--ink)}
+.wf-arrow::before{content:"";position:absolute;right:0;bottom:0;border-left:8px solid var(--ink);border-top:5px solid transparent;border-bottom:5px solid transparent}
+/* feedback */
+.wf-alert{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-2) var(--space-4);background:var(--fill);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:14px;line-height:20px}
+.wf-alert::before{content:"i";flex:none;width:20px;height:20px;border-radius:var(--radius-pill);background:var(--ink);color:var(--paper);font:700 12px/20px var(--font-sans);text-align:center}
+.wf-alert--success{border-color:var(--success)}
+.wf-alert--success::before{content:"\2713";background:var(--success)}
+.wf-alert--error{border-color:var(--danger)}
+.wf-alert--error::before{content:"!";background:var(--danger)}
+.wf-toast{display:inline-flex;align-items:center;gap:var(--space-4);padding:var(--space-2) var(--space-4);background:var(--ink);color:var(--paper);border-radius:var(--radius-sm);font-size:14px;line-height:20px}
+.wf-toast .wf-link{color:var(--paper);font-weight:600}
+.wf-empty{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-8) var(--space-4);border:1px dashed var(--line);border-radius:var(--radius-sm);text-align:center}
+.wf-empty>.wf-ph{width:64px;min-height:64px}
+/* progress */
+.wf-steps{display:flex;gap:var(--space-4);margin:0;padding:0;list-style:none;counter-reset:wfs}
+.wf-step{flex:1;display:flex;align-items:center;gap:var(--space-2);font-size:13px;line-height:18px;color:var(--ink-muted);counter-increment:wfs}
+.wf-step::before{content:counter(wfs);display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--paper);color:var(--ink);font:700 12px/1 var(--font-sans)}
+.wf-step--active{color:var(--ink);font-weight:600}
+.wf-step--active::before{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.wf-step--done::before{content:"\2713";background:var(--fill-strong);border-color:var(--fill-strong)}
+.wf-progress{height:8px;border-radius:var(--radius-pill);background:var(--fill-strong);overflow:hidden}
+.wf-progress::before{content:"";display:block;height:100%;width:var(--value,50%);background:var(--ink)}
+/* overlays */
+.wf-menu{display:flex;flex-direction:column;min-width:180px;padding:var(--space-1) 0;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.wf-menu-item{padding:var(--space-2) var(--space-4);font-size:14px;line-height:20px}
+.wf-menu-item--active{background:var(--fill);font-weight:600}
+.wf-menu-sep{height:1px;margin:var(--space-1) 0;background:var(--line-soft)}
+.wf-tooltip{position:relative;display:inline-block;max-width:220px;padding:var(--space-1) var(--space-2);background:var(--ink);color:var(--paper);border-radius:var(--radius-sm);font-size:12px;line-height:16px}
+.wf-tooltip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink)}
+.wf-sheet{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-2) var(--space-6) var(--space-6);background:var(--paper);border:1px solid var(--line);border-bottom:0;border-radius:calc(var(--radius-sm) * 3) calc(var(--radius-sm) * 3) 0 0}
+.wf-sheet::before{content:"";align-self:center;width:40px;height:4px;border-radius:var(--radius-pill);background:var(--fill-strong)}
+/* app layout */
+.wf-shell{display:grid;grid-template-columns:var(--side,220px) minmax(0,1fr);min-height:320px}
+.wf-sidebar{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);background:var(--fill);border-right:1px solid var(--line-soft)}
+.wf-side-item{padding:var(--space-2);border-radius:var(--radius-sm);font-size:14px;line-height:20px;color:var(--ink-muted)}
+.wf-side-item--active{background:var(--paper);color:var(--ink);font-weight:600}
+.wf-main,.wf-pane{display:flex;flex-direction:column;gap:var(--space-4);min-width:0;padding:var(--space-6)}
+.wf-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.wf-split>*+*{border-left:1px solid var(--line-soft)}
+.wf-pane--muted{background:var(--fill)}
+/* mobile nav */
+.wf-mbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--space-2);height:48px;padding:0 var(--space-4);border-bottom:1px solid var(--line-soft);background:var(--paper)}
+.wf-mbar>:last-child{justify-self:end}
+.wf-mbar-title{text-align:center;font-size:16px;line-height:22px;font-weight:600}
+.wf-back{font-size:14px;font-weight:600}
+.wf-back::before{content:"\2190  "}
+.wf-tabbar{display:flex;border-top:1px solid var(--line-soft);background:var(--paper)}
+.wf-tabbar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--space-2) 0;font-size:12px;line-height:16px;color:var(--ink-muted)}
+.wf-tabbar-item::before{content:"";width:20px;height:20px;border-radius:var(--radius-sm);background:var(--fill-strong)}
+.wf-tabbar-item--active{color:var(--ink);font-weight:600}
+.wf-tabbar-item--active::before{background:var(--ink)}
+/* more controls */
+.wf-switch{display:inline-flex;align-items:center;gap:var(--space-2);font-size:14px;line-height:20px}
+.wf-switch::before{content:"";width:36px;height:20px;flex:none;border-radius:var(--radius-pill);background:radial-gradient(circle at 10px 50%,var(--paper) 6px,var(--line) 7px)}
+.wf-switch--on::before{background:radial-gradient(circle at 26px 50%,var(--paper) 6px,var(--ink) 7px)}
+.wf-search{justify-content:flex-start;gap:var(--space-2);padding:0 var(--space-4);border-radius:var(--radius-pill)}
+.wf-search::before{content:"";width:12px;height:12px;flex:none;border:2px solid var(--ink-muted);border-radius:var(--radius-pill)}
+.wf-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-2);padding:var(--space-6);background:var(--fill);border:2px dashed var(--line);border-radius:var(--radius-sm);text-align:center;font-size:14px;line-height:20px}
+.wf-flow--down{flex-direction:column;flex-wrap:nowrap}
+.wf-flow--down>.wf-arrow{align-self:flex-start;min-width:0;height:64px;margin-left:48px;padding:0 0 0 var(--space-6);display:flex;align-items:center;text-align:left}
+.wf-flow--down>.wf-arrow::after{left:4px;right:auto;top:0;bottom:6px;width:2px;height:auto}
+.wf-flow--down>.wf-arrow::before{left:0;right:auto;border-top:8px solid var(--ink);border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
+.rt-wire { max-width: 100%; }
+
+/* Flow bar (prototype chrome, bottom centre): the running flow template, its steps, wireframe steps hollow */
+.flow-bar {
+  position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 220px); padding: 6px 6px 6px 14px; border-radius: 14px;
+  background: var(--kr-blue-dark); color: var(--kr-white); box-shadow: var(--kr-shadow-modal); font-size: 12px; line-height: 16px; white-space: nowrap;
+}
+.flow-bar[hidden] { display: none; }
+.fb-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.fb-steps { display: flex; gap: 6px; }
+.fb-dot { position: relative; width: 12px; height: 12px; padding: 0; border: 2px solid #8a93ab; border-radius: 50%; background: #8a93ab; cursor: pointer; }
+.fb-dot.is-wire { background: transparent; border-style: dashed; }
+.fb-dot.is-past { opacity: .55; }
+.fb-dot.is-on { border-color: var(--kr-white); background: var(--kr-white); }
+.fb-dot.is-on.is-wire { background: transparent; }
+.fb-now { color: #c9cde0; overflow: hidden; text-overflow: ellipsis; }
+.fb-now i { font-style: normal; color: #8a93ab; }
+.fb-nav { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .08); color: var(--kr-white); cursor: pointer; }
+.fb-nav:disabled { opacity: .35; cursor: default; }
+.fb-nav:hover:not(:disabled) { background: rgba(255, 255, 255, .16); }
+.fb-nav svg { width: 16px; height: 16px; }
+.fb-next svg { transform: rotate(180deg); }
+.flow-bar [data-tip]::after { right: auto; left: 50%; top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 4px); }
+.flow-bar [data-tip]:hover::after { transform: translate(-50%, 0); }
+@media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar { max-width: calc(100vw - 140px); } }
 
 /* More options › Screens: the recreated product screens, each with its URL */
 .pm-sec { display: grid; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
@@ -1515,10 +1691,10 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .pm-route b { font-size: 13px; line-height: 18px; font-weight: 500; }
 .pm-route code { font: 11px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; }
 .pm-route[aria-current="true"] code { color: #c9cde0; }
-.pm-route.is-todo b::after { content: " · not designed yet"; font-weight: 400; color: #8a93ab; }
+.pm-route.is-todo b::after { content: " · wireframe"; font-weight: 400; color: #8a93ab; }
 .pm-sub { margin-top: 6px; font-size: 11px; line-height: 14px; color: #8a93ab; }
 .pm-sub:first-child { margin-top: 2px; }
-#pm-routes { display: grid; gap: 2px; }
+#pm-routes, #pm-flows { display: grid; gap: 2px; }
 .proto-more-panel { max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 
 /* ---------- Responsive ---------- */
@@ -1619,8 +1795,10 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 <template id="logo-symbol"><svg viewBox="0 0 71 77" width="71" height="77" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M71 22.001C71 9.227 62.07 0 47.235 0c-9.001 0-18.796 3.974-24.196 10.646l3.745 5.038a33.322 33.322 0 003.773 4.202 12.865 12.865 0 00-4.92-.937C10.945 18.949 0 30.724 0 46.838 0 63.87 13.678 77 31.397 77c14.62 0 25.925-10.36 25.925-23.774 0-6.013-2.308-11.43-6.492-14.549h15.637C69.558 32.788 71 27.111 71 22.001zm-39.608 49.75c-8.721 0-16.261-3.866-20.927-9.968l11.948-11.832c-.01 5.962 4.717 10.87 11.33 10.87 5.544 0 9.602-3.833 9.602-9.012 0-2.981-1.872-6.175-4.61-7.24l-3.458 3.41c1.583.638 2.592 2.342 2.592 3.833 0 2.198-1.73 3.76-4.177 3.76-3.817 0-6.193-2.91-6.193-6.955 0-5.677 4.608-10.218 11.09-10.218 7.561 0 13.25 6.315 13.25 14.832.005 10.429-8.925 18.52-20.447 18.52zm31.541-38.325H41.114c-8.354 0-12.027 2.414-16.13 6.458L7.657 57.096A24.712 24.712 0 015.468 46.84c0-13.27 9.073-22.924 21.171-22.924 4.465 0 7.704 1.776 10.443 4.117l2.952-2.907-9.722-13.696c4.968-4.26 10.917-6.174 16.923-6.174 11.522 0 18.29 6.817 18.29 16.677 0 3.474-.79 7.377-2.592 11.493z" fill="#FF5E59"></path><path d="M51.465 13C47.235 13 44 16.014 44 19.966 44 23.986 47.231 27 51.465 27 55.77 27 59 23.986 59 19.966 59 16.014 55.775 13 51.465 13zm0 9.579c-1.58 0-2.728-1.14-2.728-2.613 0-1.475 1.148-2.545 2.728-2.545 1.58 0 2.798 1.072 2.798 2.545.006.344-.063.686-.201 1.006a2.57 2.57 0 01-.606.853 2.78 2.78 0 01-.914.566 2.92 2.92 0 01-1.077.188z" fill="#FF5E59"></path></svg></template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!-- The running flow template (see FLOWS) -->
+<div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.15">v1.15</div>
+<div class="proto-ver" aria-label="Prototype version 1.16">v1.16</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1649,6 +1827,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <!-- More options: a quiet corner button that opens the less-used settings -->
 <div class="proto-more" id="proto-more">
   <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
+    <div class="pm-sec"><span class="pm-label">Flows</span><div id="pm-flows"></div></div>
     <div class="pm-sec"><span class="pm-label">Screens</span><div id="pm-routes"></div></div>
     <div class="pm-row"><span class="pm-label">CV</span>
       <div class="seg">
@@ -1951,6 +2130,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
     if (routesReady && s !== 'route' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
+    if (routesReady && s !== 'route') flowSync();
   }
   /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
@@ -2368,17 +2548,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${BUSY_LABEL[id]}`;
     person = buildPerson(id, opts);
     if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
-    later(() => {
-      document.getElementById('loading-h').textContent = 'Building your resume';
-      document.getElementById('loading-sub').textContent = SUBTITLE[id];
-      screens.loading.querySelector('.ld-badge').classList.remove('is-on');
-      document.getElementById('loading-steps').innerHTML = STEPS[id].map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
-      const paper = screens.loading.querySelector('.ld-paper');
-      paper.classList.remove('is-done');
-      paper.querySelectorAll('.ld-group').forEach(g => g.classList.remove('is-filled'));
-      go('loading');
-      runBuilding();
-    }, 450);
+    later(() => showBuilding(id), 450);
+  }
+  function showBuilding(id) {
+    document.getElementById('loading-h').textContent = 'Building your resume';
+    document.getElementById('loading-sub').textContent = SUBTITLE[id];
+    screens.loading.querySelector('.ld-badge').classList.remove('is-on');
+    document.getElementById('loading-steps').innerHTML = STEPS[id].map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
+    const paper = screens.loading.querySelector('.ld-paper');
+    paper.classList.remove('is-done');
+    paper.querySelectorAll('.ld-group').forEach(g => g.classList.remove('is-filled'));
+    go('loading');
+    runBuilding();
   }
 
   /* Each finished step visibly fills part of the page, so progress reads as "your resume taking shape" */
@@ -2476,7 +2657,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     swapText(h, 'Your resume is ready!');
     swapText(sub, `Nice work${person.first ? ', ' + person.first : ''}. That was the hardest part.`);
     badge.classList.add('is-on');
-    if (reduce) { badge.style.opacity = 1; later(() => { badge.style.opacity = ''; openEditor(); }, 900); return; }
+    if (reduce) { badge.style.opacity = 1; later(() => { badge.style.opacity = ''; afterBuild(); }, 900); return; }
     paper.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: .4 }, { transform: 'scale(.99)', offset: .75 }, { transform: 'scale(1)' }], { duration: 520, easing: 'cubic-bezier(.2,0,0,1)' });
     popIn(badge, .2).finished.then(() => { badge.style.opacity = 1; });
     const r = paper.getBoundingClientRect();
@@ -2484,7 +2665,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       confetti(r.left + r.width * .2, r.top + r.height * .35, { angle: -115, spread: 50, power: 13, count: 60 });
       confetti(r.right - r.width * .2, r.top + r.height * .35, { angle: -65, spread: 50, power: 13, count: 60 });
     }, 120);
-    later(() => { badge.style.opacity = ''; openEditor(); }, 1500);
+    later(() => { badge.style.opacity = ''; afterBuild(); }, 1500);
   }
 
 
@@ -2858,32 +3039,41 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      They are full screens in the flow (same logo bar, background and top line as the goal and method
      screens), not pop-ups. To add one: write its markup function (and an init for its behaviour), then
      add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
+  const PLAN_NAMES = ['student', 'monthly', 'quarterly', 'yearly'];
+  const toolWire = t => () => WIRE.tool({ tool: t });
+  const latest = (tool, path) => ({ run: () => cvUploaded ? (tool ? openRoute(findRoute('/dashboard/' + tool + '/')) : jumpEditor()) : openWire(path, 'Latest resume', 'latest-empty') });
   const ROUTES = [
-    { group: 'Features', path: '/dashboard/create-interview/', title: 'Job Interview Questions', html: interviewHTML, init: initWriter },
-    { group: 'Features', path: '/dashboard/rewrite-resume/', title: 'Rewrite resume', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/analyse-resume/', title: 'Analyse resume', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/tailor-resume/', title: 'Tailor resume', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/translate-resume/', title: 'Translate resume', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/recruiter-feedback/', title: 'Recruiter feedback', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/summary-generator/', title: 'Summary generator', needsCv: true, todo: true },
-    { group: 'Features', path: '/dashboard/career-coach/', title: 'Career coach', todo: true },
-    { group: 'AI tools', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
-    { group: 'AI tools', path: '/ai/resume/', title: 'Generate work experience', needsCv: true, html: () => aigHTML('experience'), init: initAig },
-    { group: 'AI tools', path: '/ai/resume/experience/', title: 'Generate work experience', needsCv: true, html: () => aigHTML('experience'), init: initAig },
-    { group: 'AI tools', path: '/ai/resume/general/', title: 'Generate resume objective', needsCv: true, html: () => aigHTML('objective'), init: initAig },
-    { group: 'AI tools', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', html: coverHTML, init: initWriter },
-    { group: 'AI tools', path: '/ai/resignation/', title: 'Resignation letter', html: resignHTML, init: initResign },
-    { group: 'Bring a resume', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true },
-    { group: 'Bring a resume', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
+    { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', wire: true, html: () => WIRE.signup({}) },
+    { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', wire: true, html: () => WIRE.login() },
+    { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
+    { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
+    { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
+    { group: '4 · Generate with AI', path: '/ai/resume/experience/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
+    { group: '4 · Generate with AI', path: '/ai/resume/general/', title: 'Generate resume objective', html: () => aigHTML('objective'), init: initAig },
+    { group: '4 · Generate with AI', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', html: coverHTML, init: initWriter },
+    { group: '4 · Generate with AI', path: '/ai/resignation/', title: 'Resignation letter', html: resignHTML, init: initResign },
+    { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', html: interviewHTML, init: initWriter },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
+    ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
+      ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
+      .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true, wire: true, html: toolWire(t) })),
+    { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume', ...latest('', '/latest-resume/') },
+    { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · analyse', ...latest('analyse-resume', '/latest-resume/analyze/') },
+    { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofread', ...latest('proofreading', '/latest-resume/proofread/') },
+    { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('recruiter-feedback', '/latest-resume/recruiter-feedback/') },
+    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
+    ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: `Upgrade · ${pl}`, wire: true, html: () => WIRE.upgrade({ plan: pl }) }))
   ];
   let routeNow = null, routeBack = 'intent';
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
   const findRoute = h => { const p = normPath(h); return p ? ROUTES.find(r => [r.path, ...(r.also || [])].some(x => normPath(x) === p)) || null : null; };
   function setHash(path) {
+    if (path && findRoute(location.hash) && findRoute(location.hash) === findRoute(path)) return;
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
   document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
-    ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.todo ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
+    ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
   /* A CV counts as uploaded once the person uploads one (the onboarding upload method or the Upload
@@ -2894,38 +3084,42 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
   }
 
-  function fillRoute(r) {
-    const el = screens.route, up = (r.needsCv && !cvUploaded) || r.upload;
-    const main = r.upload ? '' : `<div class="rt-pane" data-pane="main"${up ? ' hidden' : ''}>${r.todo ? todoHTML(r) : r.html()}</div>`;
-    el.innerHTML = `<div class="rt-item rt-panes">${up ? uploadHTML('upload') : ''}${main}</div>`;
+  function fillRoute(r, pane) {
+    // a tool that needs a CV: Add your resume (gate) → Upload your resume → the tool; pane picks where to start
+    const el = screens.route, cv = r.needsCv || r.upload;
+    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : 'main');
+    const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
+    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML('main', r.html())}</div>`;
     el.setAttribute('aria-label', r.title);
     const item = el.firstElementChild;
     if (r.init) r.init(item.querySelector('[data-pane="main"]').firstElementChild);
-    if (up) initUpload(item.querySelector('[data-pane="upload"]'), {
+    if (cv) initUpload(item.querySelector('[data-pane="upload"]'), {
       onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, 'main', 1),
-      onCancel: closeRoute
+      onCancel: r.needsCv ? () => showPane(item, 'gate', -1) : closeRoute
     });
+    if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
   }
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
-  async function openRoute(r, instant) {
+  async function openRoute(r, instant, pane) {
     setMore(false); clearTimers();
+    if (r.run) { setHash(r.path); return r.run(); }
     if (current === 'route') {
       // already on a route screen: swap its content in place
       if (screenRun) screenRun.finish();
-      fillRoute(r); routeNow = r; markRoutes(); setHash(r.path);
+      fillRoute(r, pane); routeNow = r; markRoutes(); setHash(r.path); flowSync();
       scroller().scrollTo({ top: 0 });
       if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
         .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
       return;
     }
     routeBack = current;
-    fillRoute(r);
+    fillRoute(r, pane);
     if (instant) {
       Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'route'; });
       setCurrent('route');
     } else await go('route');
     if (current !== 'route') return;
-    routeNow = r; markRoutes(); setHash(r.path);
+    routeNow = r; markRoutes(); setHash(r.path); flowSync();
   }
   /* Close (×), Cancel: back to where the person came from */
   function closeRoute() {
@@ -2937,12 +3131,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const from = root.querySelector(':scope > .rt-pane:not([hidden])'), to = root.querySelector(`:scope > [data-pane="${name}"]`);
     if (!to || from === to) return;
     scrollToTop();
-    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; return; }
+    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); return; }
     Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
     to.hidden = false;
     const a = play(from, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }], { duration: DUR.fast, easing: EASE.exit });
     const b = play(to, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: DUR.base, delay: 80, easing: EASE.standard });
-    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); });
+    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); flowSync(); });
   }
   /* One motion for a card whose content changes height */
   function morphHeight(el, change) {
@@ -3157,7 +3351,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <button class="aim-tab" type="button" data-aim-mode="basic" aria-pressed="true">${aimIcon.clock}<span>Basic</span></button>
       <button class="aim-tab" type="button" data-aim-mode="personalized" aria-pressed="false">${aimIcon.upCircle}<span>Personalized</span></button>
     </div>`;
-  const stepTwoPanes = kind => `${uploadHTML('upload', true)}<div class="rt-pane" data-pane="s2" hidden>${selectHTML(kind)}</div>`;
+  const stepTwoPanes = kind => `<div class="rt-pane" data-pane="gate" hidden>${WIRE.gate({})}</div>${uploadHTML('upload', true)}<div class="rt-pane" data-pane="s2" hidden>${selectHTML(kind)}</div>`;
   function coverHTML() {
     return `<div class="rt-panes" data-writer="cover">
       <div class="rt-pane" data-pane="s1"><form class="rt-card aiw" data-mode="basic" novalidate aria-labelledby="cov-h">
@@ -3207,14 +3401,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         (navigator.clipboard && navigator.clipboard.readText ? navigator.clipboard.readText() : Promise.reject()).then(t => fill(t.trim() || SAMPLE_AD), () => fill(SAMPLE_AD));
         return;
       }
-      if (e.target.closest('.aiw-next') && needFilled(required())) cvUploaded ? toStepTwo() : showPane(root, 'upload', 1);
+      if (e.target.closest('.aiw-next') && needFilled(required())) cvUploaded ? toStepTwo() : showPane(root, 'gate', 1);
     });
     form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
     form.addEventListener('submit', e => {
       e.preventDefault();
       if (needFilled(required())) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
-    initUpload(root.querySelector('[data-pane="upload"]'), { onDone: toStepTwo, onCancel: () => showPane(root, 's1', -1) });
+    initUpload(root.querySelector('[data-pane="upload"]'), { onDone: toStepTwo, onCancel: () => showPane(root, 'gate', -1) });
     const sel = root.querySelector('.sel');
     sel.addEventListener('click', e => {
       const it = e.target.closest('.sel-item'); if (it) return sel.querySelectorAll('.sel-item').forEach(x => x.setAttribute('aria-checked', String(x === it)));
@@ -3291,6 +3485,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
     };
     // prototype triggers: a file name containing "scan" can't be read; other formats or over 10 MB are refused
+    card._show = file => { card._file = file; setState('progress'); };
     const take = file => { if (!file) return; const ok = UPL_OK.test(file.name) && file.size <= 10 * 1024 * 1024 && !/scan/i.test(file.name); card._file = ok ? file : null; setState(ok ? 'progress' : 'error'); };
     card.addEventListener('click', e => {
       const b = e.target.closest('[data-upl]');
@@ -3351,9 +3546,164 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
   }
 
-  /* ---------- Not designed yet ---------- */
-  function todoHTML(r) {
-    return `<div class="rt-card rt-todo">${xBtn()}<h1>${r.title}</h1><p>This screen isn’t designed yet. Its URL already works, so the flow around it can be tried.</p><code>${r.path}</code></div>`;
+  /* ---------- Wireframes (Wire) for screens that have no design yet ----------
+     Grey, system font, Wire's classes only, so they read as "needs design" next to the recreated screens.
+     Buttons carry data-wire; in a flow they move it on, otherwise they do the obvious thing. */
+  const wLines = (n = 2) => `<div class="wf-lines">${'<i class="wf-line"></i>'.repeat(n)}</div>`;
+  const wField = (label, value = '', kind = '') => `<div class="wf-field">${label}<span class="wf-input${kind ? ' wf-input--' + kind : ''}">${value}</span></div>`;
+  const wShell = (label, body, notes = '', width = 440) => `<div class="wf wf-screen rt-wire" style="width:min(100%,${width}px)"><span class="wf-screen-label">Wireframe · ${label}</span>${body}${notes}</div>`;
+  const wNote = (n, text) => `<p class="wf-note"><b>${n}</b> ${text}</p>`;
+  const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
+  const WIRE_TOOLS = {
+    'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
+    'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
+    'tailor-resume': ['Tailor your resume to a job', [['Resume', 'My Kickresume', 'select'], ['Job post', '', 'area']], 'Tailor resume', 'Result: a copy of the resume tailored to the job post. Not designed yet.'],
+    'translate-resume': ['Translate your resume', [['Resume', 'My Kickresume', 'select'], ['Translate to', 'German', 'select']], 'Translate', 'Result: a translated copy in the editor. Not designed yet.'],
+    'recruiter-feedback': ['Get recruiter feedback', [['Resume', 'My Kickresume', 'select'], ['Job you’re aiming for', '', '']], 'Get feedback', 'Result: written feedback from a recruiter, delivered later. Not designed yet.'],
+    'summary-generator': ['Generate a resume summary', [['Resume', 'My Kickresume', 'select'], ['Job title', '', '']], 'Generate summary', 'Result: 2–3 summary options to pick from. Not designed yet.'],
+    'career-coach': ['Career coach', [], 'Send', 'A chat with an AI coach that knows the resume. Not designed yet.'],
+    'proofreading': ['Proofread your resume', [['Resume', 'My Kickresume', 'select']], 'Check my resume', 'Result: spelling and grammar fixes marked in the resume. Not designed yet.']
+  };
+  const PLANS = PLAN_NAMES;
+  const WIRE = {
+    signup: o => wShell(o.wall ? 'Sign-up wall' : o.cv ? 'Sign up · CV attached' : 'Sign up', `<div class="wf-card wf-stack">
+        <h1 class="t-title">${o.wall ? 'Sign up to see your resume' : 'Create your free account'}</h1>${wLines(2)}
+        ${o.cv ? '<div class="wf-alert wf-alert--success">jana-cv.pdf is attached. We’ll import it right after sign-up.</div>' : ''}
+        ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
+        <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
+        ${o.wall ? '' : '<p class="t-small">Already have an account? <a class="wf-link" href="#/login/">Log in</a></p>'}
+      </div>`, o.wall ? wNote(1, 'Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')
+      : o.cv ? wNote(1, 'Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')
+      : wNote(1, 'After sign-up: the goal screen (Flow 1), or straight to the tool the URL asked for (Flow 3).')),
+    login: () => wShell('Log in', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Log in</h1>${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
+        <a class="wf-link t-small" href="#/login/">Forgot password?</a>
+        <button class="wf-btn wf-btn--primary" type="button" data-wire="login">Log in</button>
+        <p class="t-small">New here? <a class="wf-link" href="#/register/">Create an account</a></p>
+      </div>`, wNote(1, 'Flow 6: straight to the dashboard.')),
+    gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
+        <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
+        <div class="wf-grid" style="--cols:2">
+          <div class="wf-card"><h3 class="t-heading">Upload a resume</h3>${wLines(2)}<button class="wf-btn wf-btn--primary" type="button" data-wire="gate-upload">Upload</button></div>
+          <div class="wf-card"><h3 class="t-heading">Create a new one</h3>${wLines(2)}<button class="wf-btn" type="button" data-wire="gate-create">Create resume</button></div>
+        </div>
+      </div>`, wNote(1, 'Flow 3 and 5: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
+    tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
+      const body = o.tool === 'career-coach'
+        ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
+        : `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
+      return wShell(title, body, wNote(1, note), 520); },
+    'latest-empty': () => wShell('Latest resume · new user', `<div class="wf-card wf-stack">
+        <h1 class="t-title">You don’t have a resume yet</h1>
+        <div class="wf-empty"><span class="wf-ph">[illustration]</span>${wLines(2)}<div class="wf-row"><button class="wf-btn wf-btn--primary" type="button" data-wire="latest-create">Create a resume</button><button class="wf-btn" type="button" data-wire="latest-upload">Upload a resume</button></div></div>
+      </div>`, wNote(1, 'Flow 7: today new users land on an empty /resumes list from /latest-resume/. This needs a better design.'), 520),
+    'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
+        <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
+        <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
+        <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
+      </div>`, wNote(1, 'Flow 8: Career Map has its own onboarding. Design will come later; this is a stand-in.'), 520),
+    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote(1, 'Roles the person’s experience leads to, with a match score.'), 640),
+    upgrade: o => wShell('Upgrade', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Upgrade to Premium</h1>${wLines(2)}
+        <div class="wf-grid" style="--cols:2">${PLANS.map(p => `<div class="wf-card"><span class="wf-radio${p === o.plan ? ' wf-radio--on' : ''}">${p[0].toUpperCase() + p.slice(1)}</span>${wLines(2)}</div>`).join('')}</div>
+        <button class="wf-btn wf-btn--primary" type="button" data-wire="upgrade">Upgrade</button>
+      </div>`, wNote(1, `Flow 9: /upgrade/${o.plan}/ opens this with the ${o.plan} plan already picked.`), 520)
+  };
+  /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
+  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, html: () => WIRE[id](opts) });
+  function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
+  /* Wireframe buttons: the next flow step when a flow is running, else the obvious place */
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-wire]');
+    if (!b) return;
+    const w = b.dataset.wire, root = b.closest('.rt-panes');
+    if (flowNow && w !== 'gate-create' && w !== 'latest-upload' && flowNext()) return;
+    if (w === 'signup') go('intent');
+    else if (w === 'login') openDashboard();
+    else if (w === 'gate-upload') showPane(root, 'upload', 1);
+    else if (w === 'gate-create' || w === 'latest-create') go('create');
+    else if (w === 'latest-upload') openRoute(findRoute('/dashboard/upload-resume/'));
+    else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
+    else if (w === 'tool') notYet(b, 'Working…', 'The result screen isn’t designed yet.');
+    else if (w === 'upgrade') toast('Checkout isn’t part of this prototype.');
+  });
+
+  /* ---------- Flow templates ----------
+     Every URL follows one of these. Run one from More options › Flows; the bar at the bottom shows
+     where you are, which steps are still wireframes, and steps you can jump to. */
+  const S = {
+    wire: (label, path, id, opts) => ({ label, wire: true, match: 'route:' + path, run: () => openWire(path, label, id, opts) }),
+    route: (label, path, pane) => ({ label, match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
+    wireTool: (label, path, pane) => ({ label, wire: pane === 'main' || pane === 'gate', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
+    screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
+    build: label => ({ label: label || 'Building screen', match: 'screen:loading', run: () => showBuilding('ai') }),
+    editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
+    dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard })
+  };
+  const FLOWS = [
+    { n: 1, title: 'Onboarding', steps: [S.wire('Sign up', '/register/', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
+    { n: 2, title: 'CV given on the landing page', steps: [S.wire('Sign up · CV attached', '/register/', 'signup', { cv: true }), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build(), S.editor()] },
+    { n: 3, title: 'Tool needs a CV, none given', steps: [S.wire('Sign up', '/register/', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
+    { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
+    { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
+    { n: 6, title: 'Log in', steps: [S.wire('Log in', '/login/', 'login'), S.dash()] },
+    { n: 7, title: 'Latest resume', steps: [S.wire('New user: no resume yet', '/latest-resume/', 'latest-empty'), S.editor('Returning user: latest resume')] },
+    { n: 8, title: 'Career Map', steps: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding'), S.wire('Career Map', '/career-map/', 'cm')] },
+    { n: 9, title: 'Upgrade', steps: [S.wire('Upgrade', '/upgrade/yearly/', 'upgrade', { plan: 'yearly' })] }
+  ];
+  let flowNow = null, flowAt = 0;
+  document.getElementById('pm-flows').innerHTML = FLOWS.map(f => `<button class="pm-route" type="button" data-flow="${f.n}"><b>Flow ${f.n} · ${f.title}</b><code>${f.steps.length} step${f.steps.length > 1 ? 's' : ''}${f.steps.some(s => s.wire) ? ` · ${f.steps.filter(s => s.wire).length} wireframe` : ''}</code></button>`).join('');
+  const flowBar = document.getElementById('flow-bar');
+  function renderFlowBar() {
+    flowBar.hidden = !flowNow;
+    document.querySelectorAll('[data-flow]').forEach(b => b.setAttribute('aria-current', String(!!flowNow && +b.dataset.flow === flowNow.n)));
+    if (!flowNow) return;
+    const st = flowNow.steps[flowAt];
+    flowBar.innerHTML = `<b class="fb-name">Flow ${flowNow.n} · ${flowNow.title}</b>
+      <span class="fb-steps">${flowNow.steps.map((s, i) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}" aria-label="Step ${i + 1}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${i + 1} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`).join('')}</span>
+      <span class="fb-now">${flowAt + 1}/${flowNow.steps.length} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}</span>
+      <button class="fb-nav" type="button" data-flow-step="${flowAt - 1}" aria-label="Previous step"${flowAt ? '' : ' disabled'}>${icon('arrowLeft')}</button>
+      <button class="fb-nav fb-next" type="button" data-flow-step="${flowAt + 1}" aria-label="Next step"${flowAt < flowNow.steps.length - 1 ? '' : ' disabled'}>${icon('arrowLeft')}</button>
+      <button class="fb-nav" type="button" data-flow-end aria-label="End the flow">${rtIc(RT_IC.x)}</button>`;
+  }
+  function flowGo(i) {
+    if (!flowNow || i < 0 || i >= flowNow.steps.length) return false;
+    flowAt = i; setMore(false); clearTimers(); renderFlowBar();
+    flowNow.steps[i].run();
+    return true;
+  }
+  const flowNext = () => flowGo(flowAt + 1);
+  function startFlow(n) { flowNow = FLOWS.find(f => f.n === n); if ([3, 5, 7].includes(n)) setCv(false); flowGo(0); }
+  function endFlow() { flowNow = null; renderFlowBar(); }
+  /* Keep the bar in step when the person moves on with the screen's own buttons */
+  function flowSync() {
+    if (!flowNow) return;
+    const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : 'screen:' + current;
+    const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
+    if (i > flowAt) { flowAt = i; renderFlowBar(); }
+  }
+  flowBar.addEventListener('click', e => {
+    const b = e.target.closest('[data-flow-step]');
+    if (b && !b.disabled) return flowGo(+b.dataset.flowStep);
+    if (e.target.closest('[data-flow-end]')) endFlow();
+  });
+  /* After the building screen: the editor, unless the running flow has a step in between (a sign-up wall) */
+  function afterBuild() {
+    if (flowNow) {
+      const i = flowNow.steps.findIndex(s => s.match === 'screen:loading'), nx = flowNow.steps[i + 1];
+      if (i >= 0 && nx && nx.match !== 'screen:editor') return flowGo(i + 1);
+    }
+    openEditor();
+  }
+  /* Straight into the editor (a returning user, or a flow step) */
+  function jumpEditor() {
+    if (screenRun) screenRun.finish();
+    clearTimers();
+    if (APPS[current]) { APPS[current].hidden = true; APPS[current].innerHTML = ''; topbarEl.hidden = false; pageEl.hidden = false; }
+    Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'loading'; });
+    setCurrent('loading');
+    openEditor();
   }
 
   /* Accepts links with or without https:// and www., mobile (m.) and country subdomains,
@@ -3543,6 +3893,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (rt) return openRoute(findRoute(rt.dataset.route));
     const cvb = e.target.closest('[data-cv]');
     if (cvb) return setCv(cvb.dataset.cv === 'yes');
+    const fl = e.target.closest('[data-flow]');
+    if (fl) return startFlow(+fl.dataset.flow);
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const a = el.dataset.action;
