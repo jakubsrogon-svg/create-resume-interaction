@@ -15,7 +15,7 @@ Interactive prototype of the Kickresume onboarding start flow, built on the Kick
 
 Content column is 950px, method cards are 500px.
 
-The side rail lists its everyday settings in flow order: goal-screen layout (grid/list), method-screen variant (A/B), desktop/mobile, restart. A setting that doesn't affect the current screen is dimmed; clicking it applies it and takes you to the screen it changes. Less-used settings (variant C and the Flat / 3D look) sit in a small panel behind the quiet More options button in the bottom-right corner, which shows a dot while one of them is on.
+The side rail lists its everyday settings in flow order: goal-screen layout (grid/list), method-screen variant (A/B), desktop/mobile, restart. A setting that doesn't affect the current screen is dimmed; clicking it applies it and takes you to the screen it changes. Less-used settings (variant C and the Flat / 3D look) sit in a small panel behind an almost invisible More options button in the bottom-right corner (just a very light grey flask icon), which shows a faint dot while one of them is on.
 
 - Source: `src/prototype.html`
 - Build (inlines brand fonts + logo): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)

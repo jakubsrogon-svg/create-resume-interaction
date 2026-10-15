@@ -1153,18 +1153,18 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   background: var(--kr-blue-dark); color: var(--kr-white); font-size: 12px; line-height: 16px; font-weight: 500; padding: 6px 10px; border-radius: 8px; box-shadow: var(--kr-shadow-dropdown);
 }
 [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
-/* More options, bottom right: a quiet button (it comes forward on hover) that opens a small panel with
-   the less-used settings, variant C and the Flat / 3D look. A dot shows when one of them is on. */
+/* More options, bottom right: an almost invisible button (just a very light grey icon, no background)
+   that opens a small panel with the less-used settings, variant C and the Flat / 3D look. A faint dot
+   shows when one of them is on. */
 .proto-more { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: grid; justify-items: end; gap: 8px; }
 .pm-btn {
   position: relative; width: 36px; height: 36px; border: 0; border-radius: 12px; cursor: pointer; display: grid; place-items: center;
-  background: var(--kr-blue-dark); color: #d6dae4; box-shadow: var(--kr-shadow-dropdown); opacity: .55;
-  transition: opacity var(--dur-fast) var(--ease-standard), color .2s;
+  background: none; color: color-mix(in srgb, var(--kr-grey-80) 35%, var(--kr-white)); transition: color var(--dur-fast) var(--ease-standard);
 }
-.pm-btn:hover, .pm-btn:focus-visible, .pm-btn[aria-expanded="true"], .pm-btn.has-active { opacity: 1; color: var(--kr-white); }
-.pm-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(8, 20, 48, .3); }
+.pm-btn:hover, .pm-btn:focus-visible, .pm-btn[aria-expanded="true"] { color: var(--kr-grey-80); }
+.pm-btn:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .pm-btn svg.i { width: 16px; height: 16px; }
-.pm-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--kr-blue); box-shadow: 0 0 0 2px var(--kr-blue-dark); opacity: 0; transition: opacity var(--dur-fast); }
+.pm-dot { position: absolute; top: 8px; right: 8px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0; transition: opacity var(--dur-fast); }
 .pm-btn.has-active .pm-dot { opacity: 1; }
 .proto-more-panel {
   display: grid; gap: 8px; padding: 10px 10px 10px 12px; background: var(--kr-blue-dark); color: var(--kr-white); border-radius: 14px; box-shadow: var(--kr-shadow-modal);
@@ -1178,7 +1178,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 /* tooltips open above, right-aligned, so they stay on screen */
 .proto-more [data-tip]::after { right: 0; top: auto; bottom: calc(100% + 10px); transform: translate(0, 4px); }
 .proto-more [data-tip]:hover::after, .proto-more [data-tip]:focus-visible::after { transform: none; }
-.pm-btn[aria-expanded="true"]::after { display: none; }
 /* Version tag, bottom left: same dark chrome as the rail so it reads as part of the prototype, not the product */
 .proto-ver {
   position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; pointer-events: none;
@@ -1303,7 +1302,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.12">v1.12</div>
+<div class="proto-ver" aria-label="Prototype version 1.12.1">v1.12.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1344,7 +1343,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
       </div>
     </div>
   </div>
-  <button class="pm-btn" type="button" data-action="proto-more" aria-expanded="false" aria-controls="proto-more-panel" aria-label="More options" data-tip="More options"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span class="pm-dot" aria-hidden="true"></span></button>
+  <button class="pm-btn" type="button" data-action="proto-more" aria-expanded="false" aria-controls="proto-more-panel" aria-label="More options"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span class="pm-dot" aria-hidden="true"></span></button>
 </div>
 
 <script>
