@@ -1159,7 +1159,8 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 /* More options, bottom right: an almost invisible button (just a very light grey icon, no background)
    that opens a small panel with the less-used settings, variant C and the Flat / 3D look. A faint dot
    shows when one of them is on. */
-.proto-more { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: grid; justify-items: end; gap: 8px; }
+.proto-more { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: grid; justify-items: end; gap: 8px; pointer-events: none; }
+.proto-more > .pm-btn, .proto-more.is-open > .proto-more-panel { pointer-events: auto; }  /* the closed panel still takes room; it must not block the page */
 .pm-btn {
   position: relative; width: 36px; height: 36px; border: 0; border-radius: 12px; cursor: pointer; display: grid; place-items: center;
   background: none; color: color-mix(in srgb, var(--kr-grey-80) 35%, var(--kr-white)); transition: color var(--dur-fast) var(--ease-standard);
@@ -1219,7 +1220,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 /* Create Resume with AI (/dashboard/create-ai-resume/) */
 .aim {
-  --aim-grad: linear-gradient(to bottom right, #4d44f7, #8d44f8);
+  --aim-grad: var(--kr-ai-grad);
   /* same surface as the goal and method cards (thin grey outline, 16px corners, no resting shadow);
      the padding takes the 1px outline into account, so everything inside sits where the screenshot has it */
   width: 454px; max-width: 100%; padding: 31px 47px; border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
@@ -1236,7 +1237,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   font-size: 14px; line-height: 20px; white-space: nowrap;
 }
 .aim-tab[aria-pressed="true"] { background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, var(--aim-grad) border-box; cursor: default; }
-.aim-tab[aria-pressed="true"] .aim-ic { color: #4d45f8; }
+.aim-tab[aria-pressed="true"] .aim-ic { color: #5345ff; }
 .aim-tab[aria-pressed="true"] span { background: var(--aim-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .aim-tab[aria-pressed="false"]:hover { color: var(--kr-grey-80); }
 .aim-tab:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
@@ -1279,9 +1280,10 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   width: 150px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px;
   border: 0; background: var(--kr-blue); color: var(--kr-white); font-weight: 500; white-space: nowrap; transition: background .2s;
 }
-.aim-go:hover:not(:disabled) { background: #6461ee; }
-.aim-go:active:not(:disabled) { background: #3f3cd6; }
-.aim-go:disabled { background: #c0bff4; cursor: not-allowed; }
+.aim-go { background: var(--kr-ai-grad); transition: filter .2s; }
+.aim-go:hover:not(:disabled) { filter: brightness(1.07); }
+.aim-go:active:not(:disabled) { filter: brightness(.93); }
+.aim-go:disabled { background: var(--kr-ai-disabled); cursor: not-allowed; }
 .aim-go .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
 .aim-go:focus-visible, .aim-lang:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 /* Narrow screens (phone): tighter padding; language and button share the full width */
@@ -1289,6 +1291,217 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .aim { padding: 27px 19px 23px; }
   .aim-foot { flex-direction: column; align-items: stretch; gap: 12px; }
   .aim-lang, .aim-go { width: 100%; }
+}
+
+/* Shared pieces of the recreated screens. The AI purple is measured from the screenshots and
+   converted from the Mac's display colours to sRGB (the screenshots carry a display-P3 profile). */
+:root { --kr-ai-grad: linear-gradient(to bottom right, #5345ff, #9b3eff); --kr-ai-disabled: #c1bff7; --kr-ai-badge: #4e4ee3; --aim-grad: var(--kr-ai-grad); }
+.rt-panes, .rt-pane { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; width: 100%; }
+.rt-card {
+  position: relative; width: var(--w, 454px); max-width: 100%; background: var(--kr-white); border: 1px solid var(--kr-grey-60);
+  border-radius: var(--radius-card); color: var(--kr-grey-100); font-size: 14px; line-height: 20px; letter-spacing: 0;
+}
+.rt-card h1 { margin: 0; font-weight: 500; letter-spacing: 0; }
+.rt-ic { flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rt-x {
+  position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; border-radius: 10px; background: none; color: var(--kr-grey-100); cursor: pointer; transition: background-color .15s;
+}
+.rt-x:hover { background: var(--kr-grey-40); }
+.rt-x .rt-ic { width: 24px; height: 24px; }
+.rt-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 0; border-radius: 8px;
+  font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0; white-space: nowrap; cursor: pointer; transition: background-color .2s, filter .2s;
+}
+.rt-ai { background: var(--kr-ai-grad); color: var(--kr-white); }
+.rt-ai:hover:not(:disabled) { filter: brightness(1.07); }
+.rt-ai:active:not(:disabled) { filter: brightness(.93); }
+.rt-ai:disabled { background: var(--kr-ai-disabled); cursor: not-allowed; }
+.rt-coral { background: var(--kr-primary); color: var(--kr-white); }
+.rt-coral:hover:not(:disabled) { background: var(--kr-primary-hover); }
+.rt-coral:active:not(:disabled) { background: var(--kr-primary-active); }
+.rt-coral:disabled { background: var(--kr-primary-light); cursor: not-allowed; }
+.rt-ghost { background: none; color: var(--kr-grey-100); }
+.rt-ghost:hover { background: var(--kr-grey-40); }
+.rt-btn:focus-visible, .rt-x:focus-visible, .aig-chip:focus-visible, .seg3 button:focus-visible, .sel-item:focus-visible, .upl-drop:focus-visible, .aiw-paste:focus-visible, .lki-paste:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.rt-btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
+.rt-step { margin: 16px 0 0; text-align: center; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--kr-grey-80); }
+.rt-info { display: flex; align-items: center; gap: 8px; border-radius: 8px; background: var(--kr-background); font-size: 14px; line-height: 20px; }
+.rt-info .rt-ic { width: 24px; height: 24px; }
+.is-error { border-color: var(--kr-primary) !important; }
+
+/* Generate work experience / resume objective (/ai/resume/…): measured from 2x-ish screenshots at 1.3x */
+.aig { --w: 820px; padding: 55px 46px 45px; }
+.aig .rt-x { top: 12px; right: 12px; }
+.aig-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.aig h1 { font-size: 28px; line-height: 40px; }
+.aig .aim-lang { width: 185px; padding: 0 16px; gap: 9px; border-radius: 10px; font-size: 16px; }
+.aig .aim-lang .aim-ic:first-child { width: 24px; height: 24px; }
+.aig .aim-menu { top: calc(100% + 4px); bottom: auto; }
+.aig-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 19px; margin-top: 28px; }
+.aig-fields.is-one { grid-template-columns: minmax(0, 1fr); }
+.aig-field label, .aig-l { display: block; margin-bottom: 8px; font-size: 14px; line-height: 20px; }
+.aig-input {
+  display: block; width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--kr-grey-60); border-radius: 4px; outline: none;
+  background: var(--kr-white); color: var(--kr-grey-100); font-size: 16px; letter-spacing: 0; transition: border-color .15s;
+}
+.aig-input::placeholder { color: var(--kr-grey-80); }
+.aig-input:hover { border-color: var(--kr-grey-80); }
+.aig-input:focus { border-color: var(--kr-blue); }
+.aig-opts { display: grid; grid-template-columns: minmax(0, 374fr) minmax(0, 335fr); gap: 17px; margin-top: 28px; }
+.aig-chips { display: flex; gap: 8px; }
+.aig-chip {
+  position: relative; flex: 0 0 48px; min-width: 48px; height: 48px; padding: 0; border: 1px solid var(--kr-grey-60); border-radius: 12px;
+  background: var(--kr-white); color: var(--kr-grey-100); cursor: pointer;
+  transition: flex-grow var(--dur-base) var(--ease-standard), background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast);
+}
+.aig-chip:hover:not([aria-checked="true"]) { border-color: var(--kr-grey-80); }
+.aig-in { display: flex; align-items: center; justify-content: center; gap: 8px; height: 100%; overflow: hidden; border-radius: inherit; font-size: 16px; line-height: 20px; font-weight: 500; white-space: nowrap; }
+.aig-chip .rt-ic { width: 28px; height: 28px; }
+.aig-chip .lbl { display: none; }
+.aig-chip[aria-checked="true"] { flex-grow: 1; background: var(--kr-grey-100); border-color: var(--kr-grey-100); color: var(--kr-white); cursor: default; }
+.aig-chip[aria-checked="true"] .lbl { display: inline; }
+.aig-rec {
+  position: absolute; left: 0; top: 34px; display: none; height: 20px; padding: 0 10px; border-radius: 10px;
+  background: var(--kr-ai-badge); color: var(--kr-white); font-size: 14px; line-height: 20px; font-weight: 400; white-space: nowrap; pointer-events: none;
+}
+.aig-chip[aria-checked="true"] .aig-rec { display: block; }
+.aig-foot { display: flex; justify-content: flex-end; margin-top: 27px; }
+.aig-go { height: 48px; padding: 0 34px; border-radius: 12px; font-size: 16px; }
+
+/* AI writers with Basic / Personalized tabs: cover letter (454) and interview questions (424) */
+.aiw { --w: 454px; padding: 27px 47px 31px; }
+.aiw h1 { margin-bottom: 16px; font-size: 24px; line-height: 32px; }
+.aiw .aim-field label, .aiw-l { display: block; font-size: 14px; line-height: 18px; }
+.aiw .aim-input { height: 38px; }
+.aiw .aim-ta { height: 164px; }
+.aiw .aim-count { font-size: 12px; line-height: 14px; }
+.aiw .aim-foot { margin-top: 26px; }
+.aiw .aim-lang { width: 121px; }
+.aiw[data-mode="personalized"] .aim-lang { width: 150px; }
+.aiw-go { width: 144px; }
+.aiw-next { width: 96px; }
+.ivw { --w: 424px; }
+.ivw .aim-foot { justify-content: flex-end; margin-top: 21px; }
+.ivw[data-mode="personalized"] .aim-foot { margin-top: 26px; }
+.ivw-go { width: 176px; }
+.aiw-ta { position: relative; }
+.aiw-ta .aim-ta { padding-bottom: 46px; }
+.aiw-paste {
+  position: absolute; left: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 16px 0 12px;
+  border: 1px solid var(--kr-grey-100); border-radius: 10px; background: var(--kr-white); color: var(--kr-grey-100);
+  font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer;
+}
+.aiw-paste .rt-ic { width: 20px; height: 20px; }
+.aiw-paste:hover { background: var(--kr-grey-40); }
+.seg3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 40px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--kr-grey-60); }
+.seg3 button { border: 2px solid transparent; background: none; color: var(--kr-grey-80); font-size: 14px; line-height: 20px; letter-spacing: 0; cursor: pointer; }
+.seg3 button:first-child { border-radius: 8px 0 0 8px; }
+.seg3 button:last-child { border-radius: 0 8px 8px 0; }
+.seg3 button:hover { color: var(--kr-grey-100); }
+.seg3 button[aria-checked="true"] { border-color: var(--kr-grey-100); color: var(--kr-grey-100); }
+
+/* Select your resume (step 2 of the personalized writers) */
+.sel { padding: 31px 0 31px 47px; overflow: hidden; }
+.sel h1, .sel .rt-step, .sel-foot { padding-right: 48px; }
+.sel h1 { font-size: 24px; line-height: 28px; }
+.sel-sub { margin: 16px 0 0; max-width: 331px; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.sel-row {
+  display: flex; gap: 16px; margin-top: 10px; padding: 6px 48px 10px 0; overflow-x: auto; scroll-snap-type: x proximity;
+  scrollbar-width: thin; scrollbar-color: #8f8f8f transparent;
+}
+.sel-row::-webkit-scrollbar { height: 6px; }
+.sel-row::-webkit-scrollbar-thumb { background: #8f8f8f; border-radius: 3px; }
+.sel-row::-webkit-scrollbar-track { background: transparent; margin: 0 48px 0 2px; }
+.sel-item {
+  flex: none; width: 180px; height: 258px; display: grid; grid-template-rows: minmax(0, 1fr) auto; padding: 0; border: 2px solid transparent;
+  border-radius: 14px; background: var(--kr-white); box-shadow: 0 2px 10px rgba(0, 0, 0, .1); overflow: hidden; cursor: pointer; text-align: left;
+  color: var(--kr-grey-100); scroll-snap-align: start; transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.sel-item[aria-checked="true"] { border-color: var(--kr-primary); box-shadow: none; }
+.sel-name { padding: 6px 8px 10px; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sel .rt-step { margin-top: 16px; }
+.sel-foot { display: flex; justify-content: flex-end; gap: 16px; margin-top: 26px; }
+.sel-back { width: 88px; }
+.sel-go { width: 144px; }
+/* the two resume previews are drawn with boxes and lines (not pictures), sized to the thumbnail */
+.rsm { position: relative; display: block; overflow: hidden; background: var(--kr-white); container-type: inline-size; }
+.rsm i, .rsm b { position: absolute; display: block; }
+.rsm i { border-radius: 99px; }
+.rsm b { font-weight: 600; color: #1f1f1f; white-space: nowrap; line-height: 1; }
+
+/* Upload your resume (start, error, uploading) */
+.upl { padding: 27px 35px 27px; }
+.upl h1 { display: flex; align-items: center; gap: 12px; font-size: 20px; line-height: 28px; }
+.upl h1 .rt-ic { width: 24px; height: 24px; animation: spin 1.6s linear infinite; }
+.upl-drop {
+  margin-top: 28px; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px;
+  border: 2px dashed var(--kr-primary); border-radius: 8px; color: var(--kr-primary); cursor: pointer; transition: background-color var(--dur-fast);
+}
+.upl-drop:hover, .upl-drop.is-over { background: var(--kr-primary-tint); }
+.upl-drop .rt-ic { width: 76px; height: 76px; stroke-width: 1.2; }
+.upl-hint { margin: 28px 0 0; text-align: center; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.upl-drop .upl-hint { margin: 0; }
+.upl-alert { margin-top: 28px; min-height: 60px; padding: 10px 12px 10px 10px; background: var(--kr-primary-light); }
+.upl-info { margin-top: 18px; min-height: 60px; padding: 10px 8px 10px 10px; }
+.upl-wait { margin-top: 28px; height: 200px; border-radius: 9px; background: #d9d9d9; }
+.upl-quote { margin: 28px 0 0; font-size: 16px; line-height: 24px; }
+.upl-foot { display: flex; justify-content: flex-end; gap: 16px; margin-top: 28px; }
+.upl-foot .rt-btn { width: 129px; height: 38px; border-radius: 4px; font-size: 16px; }
+.upl-foot .upl-cont { width: 145px; }
+
+/* LinkedIn import (/dashboard/linkedin-import/) */
+.lki { padding: 25px 35px 25px; }
+.lki h1 { font-size: 20px; line-height: 28px; }
+.lki .rt-info { margin-top: 27px; min-height: 58px; padding: 9px 8px 9px 9px; }
+.lki-field {
+  position: relative; display: flex; align-items: center; height: 42px; margin-top: 69px; padding: 0 5px 0 9px;
+  border: 1px solid var(--kr-grey-60); border-radius: 6px; font-size: 16px; transition: border-color .15s;
+}
+.lki-field:hover { border-color: var(--kr-grey-80); }
+.lki-field:focus-within { border-color: var(--kr-blue); }
+.lki-pre { color: var(--kr-grey-80); white-space: nowrap; }
+.lki-field input { flex: 1; min-width: 0; height: 100%; margin-left: 8px; border: 0; outline: none; background: none; color: var(--kr-grey-100); font-size: 16px; letter-spacing: 0; }
+.lki-paste { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 6px; background: none; color: var(--kr-grey-100); cursor: pointer; }
+.lki-paste:hover { background: var(--kr-grey-40); }
+.lki-paste .rt-ic { width: 24px; height: 24px; stroke-width: 1.75; }
+.lki-err { position: absolute; left: 0; top: calc(100% + 6px); margin: 0; font-size: 12px; line-height: 16px; color: var(--kr-primary); }
+.lki-foot { display: flex; justify-content: flex-end; gap: 16px; margin-top: 28px; }
+.lki-foot .rt-btn { width: 136px; height: 38px; border-radius: 10px; font-size: 16px; }
+
+/* Resignation letter (/ai/resignation/) */
+.rsg { --w: 500px; padding: 31px 47px 31px; }
+.rsg .rt-x { top: 8px; right: 8px; }
+.rsg h1 { font-size: 24px; line-height: 28px; }
+.rsg-sub { margin: 16px 0 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.rsg .aim-field { margin-top: 16px; }
+.rsg .aim-foot { margin-top: 48px; }
+.rsg-go { width: 140px; }
+
+/* Not designed yet: the route works, the screen still needs a design */
+.rt-todo { --w: 454px; padding: 31px 47px 31px; border-style: dashed; }
+.rt-todo h1 { padding-right: 32px; font-size: 24px; line-height: 28px; }
+.rt-todo p { margin: 12px 0 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.rt-todo code { display: inline-block; margin-top: 16px; padding: 4px 8px; border-radius: 6px; background: var(--kr-grey-40); font: 13px/20px ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* Narrow screens (phone) */
+@container (max-width: 860px) {
+  .aig { padding: 27px 19px 23px; }
+  .aig-head { flex-wrap: wrap; padding-right: 36px; }
+  .aig h1 { font-size: 24px; line-height: 32px; }
+  .aig-fields, .aig-opts { grid-template-columns: minmax(0, 1fr); }
+  .aig-opts { gap: 20px; }
+}
+@container (max-width: 520px) {
+  .aiw, .rsg, .rt-todo { padding: 27px 19px 23px; }
+  .upl, .lki { padding: 23px 19px; }
+  .sel { padding: 27px 0 23px 19px; }
+  .sel h1, .sel .rt-step, .sel-foot { padding-right: 20px; }
+  .sel-row { padding-right: 20px; }
+  .aiw .aim-lang, .rsg .aim-lang { width: 100%; }
+  .aiw .rt-btn, .rsg .rt-btn { width: 100%; }
+  .lki-foot .rt-btn, .upl-foot .rt-btn { width: auto; flex: 1; }
+  .lki-field { margin-top: 40px; }
 }
 
 /* More options › Screens: the recreated product screens, each with its URL */
@@ -1302,6 +1515,11 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .pm-route b { font-size: 13px; line-height: 18px; font-weight: 500; }
 .pm-route code { font: 11px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; }
 .pm-route[aria-current="true"] code { color: #c9cde0; }
+.pm-route.is-todo b::after { content: " · not designed yet"; font-weight: 400; color: #8a93ab; }
+.pm-sub { margin-top: 6px; font-size: 11px; line-height: 14px; color: #8a93ab; }
+.pm-sub:first-child { margin-top: 2px; }
+#pm-routes { display: grid; gap: 2px; }
+.proto-more-panel { max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 
 /* ---------- Responsive ---------- */
 @container (max-width: 860px) {
@@ -1402,7 +1620,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.14">v1.14</div>
+<div class="proto-ver" aria-label="Prototype version 1.15">v1.15</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1432,6 +1650,12 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <div class="proto-more" id="proto-more">
   <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
     <div class="pm-sec"><span class="pm-label">Screens</span><div id="pm-routes"></div></div>
+    <div class="pm-row"><span class="pm-label">CV</span>
+      <div class="seg">
+        <button type="button" data-cv="no" aria-pressed="true" aria-label="No CV uploaded yet" data-tip="No CV yet · screens that need one ask for it"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m14.5 12.5-5 5"/><path d="m9.5 12.5 5 5"/></svg></button>
+        <button type="button" data-cv="yes" aria-pressed="false" aria-label="CV uploaded" data-tip="CV uploaded · skip the upload step"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg></button>
+      </div>
+    </div>
     <div class="pm-row"><span class="pm-label">Variant</span>
       <div class="seg" data-screen-for="create">
     <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
@@ -2143,6 +2367,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     btn.disabled = true;
     btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${BUSY_LABEL[id]}`;
     person = buildPerson(id, opts);
+    if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
     later(() => {
       document.getElementById('loading-h').textContent = 'Building your resume';
       document.getElementById('loading-sub').textContent = SUBTITLE[id];
@@ -2631,26 +2856,55 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- Route screens ----------
      Product screens recreated from screenshots, each at its own URL and listed under More options › Screens.
      They are full screens in the flow (same logo bar, background and top line as the goal and method
-     screens), not pop-ups. To add one: write its markup function (and an init for its behaviour),
-     then add a ROUTES entry. */
+     screens), not pop-ups. To add one: write its markup function (and an init for its behaviour), then
+     add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
   const ROUTES = [
-    { path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
+    { group: 'Features', path: '/dashboard/create-interview/', title: 'Job Interview Questions', html: interviewHTML, init: initWriter },
+    { group: 'Features', path: '/dashboard/rewrite-resume/', title: 'Rewrite resume', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/analyse-resume/', title: 'Analyse resume', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/tailor-resume/', title: 'Tailor resume', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/translate-resume/', title: 'Translate resume', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/recruiter-feedback/', title: 'Recruiter feedback', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/summary-generator/', title: 'Summary generator', needsCv: true, todo: true },
+    { group: 'Features', path: '/dashboard/career-coach/', title: 'Career coach', todo: true },
+    { group: 'AI tools', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
+    { group: 'AI tools', path: '/ai/resume/', title: 'Generate work experience', needsCv: true, html: () => aigHTML('experience'), init: initAig },
+    { group: 'AI tools', path: '/ai/resume/experience/', title: 'Generate work experience', needsCv: true, html: () => aigHTML('experience'), init: initAig },
+    { group: 'AI tools', path: '/ai/resume/general/', title: 'Generate resume objective', needsCv: true, html: () => aigHTML('objective'), init: initAig },
+    { group: 'AI tools', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', html: coverHTML, init: initWriter },
+    { group: 'AI tools', path: '/ai/resignation/', title: 'Resignation letter', html: resignHTML, init: initResign },
+    { group: 'Bring a resume', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true },
+    { group: 'Bring a resume', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
   ];
-  let routeNow = null;
+  let routeNow = null, routeBack = 'intent';
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
-  const findRoute = h => ROUTES.find(r => r.path === normPath(h)) || null;
+  const findRoute = h => { const p = normPath(h); return p ? ROUTES.find(r => [r.path, ...(r.also || [])].some(x => normPath(x) === p)) || null : null; };
   function setHash(path) {
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
-  document.getElementById('pm-routes').innerHTML = ROUTES.map(r =>
-    `<button class="pm-route" type="button" data-route="${r.path}"><b>${r.title}</b><code>${r.path}</code></button>`).join('');
+  document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
+    ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.todo ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
+  /* A CV counts as uploaded once the person uploads one (the onboarding upload method or the Upload
+     screen), or when More options › CV says so. Screens that work on a resume ask for one first. */
+  let cvUploaded = false, cvName = '';
+  function setCv(on, name) {
+    cvUploaded = on; cvName = on ? (name || cvName) : '';
+    document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
+  }
+
   function fillRoute(r) {
-    const el = screens.route;
-    el.innerHTML = `<div class="rt-item">${r.html()}</div>`;
+    const el = screens.route, up = (r.needsCv && !cvUploaded) || r.upload;
+    const main = r.upload ? '' : `<div class="rt-pane" data-pane="main"${up ? ' hidden' : ''}>${r.todo ? todoHTML(r) : r.html()}</div>`;
+    el.innerHTML = `<div class="rt-item rt-panes">${up ? uploadHTML('upload') : ''}${main}</div>`;
     el.setAttribute('aria-label', r.title);
-    if (r.init) r.init(el.querySelector('.rt-item').firstElementChild);
+    const item = el.firstElementChild;
+    if (r.init) r.init(item.querySelector('[data-pane="main"]').firstElementChild);
+    if (up) initUpload(item.querySelector('[data-pane="upload"]'), {
+      onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, 'main', 1),
+      onCancel: closeRoute
+    });
   }
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant) {
@@ -2661,9 +2915,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       fillRoute(r); routeNow = r; markRoutes(); setHash(r.path);
       scroller().scrollTo({ top: 0 });
       if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
-        .finished.catch(() => {}).then(a => a && a.cancel());
+        .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
       return;
     }
+    routeBack = current;
     fillRoute(r);
     if (instant) {
       Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'route'; });
@@ -2671,6 +2926,30 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     } else await go('route');
     if (current !== 'route') return;
     routeNow = r; markRoutes(); setHash(r.path);
+  }
+  /* Close (×), Cancel: back to where the person came from */
+  function closeRoute() {
+    if (routeBack === 'dashboard') return openDashboard();
+    go(routeBack === 'create' ? 'create' : 'intent');
+  }
+  /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
+  function showPane(root, name, dir = 1) {
+    const from = root.querySelector(':scope > .rt-pane:not([hidden])'), to = root.querySelector(`:scope > [data-pane="${name}"]`);
+    if (!to || from === to) return;
+    scrollToTop();
+    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; return; }
+    Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
+    to.hidden = false;
+    const a = play(from, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }], { duration: DUR.fast, easing: EASE.exit });
+    const b = play(to, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: DUR.base, delay: 80, easing: EASE.standard });
+    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); });
+  }
+  /* One motion for a card whose content changes height */
+  function morphHeight(el, change) {
+    const h0 = el.offsetHeight; change();
+    if (reduce) return;
+    const h1 = el.offsetHeight;
+    if (h0 !== h1) el.animate([{ height: h0 + 'px', overflow: 'clip' }, { height: h1 + 'px', overflow: 'clip' }], { duration: DUR.slow, easing: EASE.inout });
   }
   window.addEventListener('hashchange', () => {
     const r = findRoute(location.hash);
@@ -2779,6 +3058,302 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       startCreation(form, 'ai', { name: form.elements.name.value, title: form.elements.title.value });
     });
     check();
+  }
+
+  /* ---------- Shared bits of the recreated screens ---------- */
+  const rtIc = p => `<svg class="rt-ic" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  const RT_IC = {
+    x: '<path d="M19 5 5 19"/><path d="m5 5 14 14"/>',
+    info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+    clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+    cloud: '<path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/>',
+    loader: '<path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/>',
+    smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+    scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+    briefcase: '<path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+    goal: '<path d="M12 13V2l8 4-8 4"/><path d="M20.561 10.222a9 9 0 1 1-12.55-5.29"/><path d="M8.002 9.997a5 5 0 1 0 8.9 2.02"/>',
+    list: '<path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>',
+    lines: '<path d="M15 12H3"/><path d="M17 18H3"/><path d="M21 6H3"/>',
+    pen: '<path d="M15 3 8.6 10.4"/><path d="M8.6 10.4 4.2 15.3a2 2 0 0 0-.5 1.3V20H11l4-4z"/><path d="m15 16 5.5-5.5"/>'
+  };
+  const xBtn = () => `<button class="rt-x" type="button" data-action="route-close" aria-label="Close">${rtIc(RT_IC.x)}</button>`;
+  /* Language dropdown (the same component as on Create Resume with AI) */
+  function langHTML(langs) {
+    return `<div class="aim-lang-wrap">
+      <button class="aim-lang" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language: ${langs[0]}">${aimIcon.globe}<span class="val">${langs[0]}</span>${aimIcon.chevron}</button>
+      <ul class="aim-menu" role="listbox" aria-label="Language" hidden>${langs.map((l, i) =>
+        `<li role="presentation"><button class="aim-opt" type="button" role="option" aria-selected="${i === 0}" data-lang="${l}">${l}${aimIcon.check}</button></li>`).join('')}</ul></div>`;
+  }
+  function initLang(wrap) {
+    if (!wrap) return;
+    const btn = wrap.querySelector('.aim-lang'), menu = wrap.querySelector('.aim-menu');
+    const set = open => { menu.hidden = !open; btn.setAttribute('aria-expanded', String(open)); if (open) (menu.querySelector('[aria-selected="true"]') || menu.querySelector('.aim-opt')).focus(); };
+    btn.addEventListener('click', () => set(menu.hidden));
+    menu.addEventListener('click', e => {
+      const o = e.target.closest('.aim-opt'); if (!o) return;
+      menu.querySelectorAll('.aim-opt').forEach(x => x.setAttribute('aria-selected', String(x === o)));
+      btn.querySelector('.val').textContent = o.dataset.lang; btn.setAttribute('aria-label', 'Language: ' + o.dataset.lang);
+      set(false); btn.focus();
+    });
+    wrap.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); set(false); btn.focus(); }
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.target.closest('.aim-menu')) {
+        e.preventDefault();
+        const opts = [...menu.querySelectorAll('.aim-opt')], i = opts.indexOf(e.target.closest('.aim-opt'));
+        opts.at((i + (e.key === 'ArrowDown' ? 1 : -1)) % opts.length).focus();
+      }
+    });
+    wrap.addEventListener('focusout', e => { if (!menu.hidden && !wrap.contains(e.relatedTarget)) set(false); });
+  }
+  /* Required fields: a coral outline until the person types */
+  function needFilled(fields) {
+    const bad = fields.filter(el => !el.value.trim());
+    fields.forEach(el => el.classList.toggle('is-error', bad.includes(el)));
+    if (bad[0]) bad[0].focus();
+    return !bad.length;
+  }
+  document.addEventListener('input', e => { if (e.target.classList && e.target.classList.contains('is-error') && e.target.value.trim()) e.target.classList.remove('is-error'); });
+  /* Where the result would open isn't designed yet: show it's working, then say so */
+  function notYet(btn, label, msg) { busy(btn, label, 1400, () => toast(msg)); }
+
+  /* ---------- Generate work experience / resume objective (/ai/resume/…) ---------- */
+  const TONES = [['friendly', 'Friendly', RT_IC.smile], ['professional', 'Professional', RT_IC.scale], ['formal', 'Formal', RT_IC.briefcase], ['confident', 'Confident', RT_IC.goal]];
+  const FORMS = [['bullets', 'Bullet points', RT_IC.list], ['paragraphs', 'Paragraphs', RT_IC.lines], ['structured', 'Structured', RT_IC.pen]];
+  function aigHTML(kind) {
+    const exp = kind === 'experience', rec = exp ? 'structured' : 'paragraphs';
+    const fields = exp ? [['title', 'Job title'], ['company', 'Company']] : [['title', 'Job you’re applying for']];
+    const chips = (list, sel, recId) => list.map(([id, label, ic]) => `<button class="aig-chip" type="button" role="radio" aria-checked="${id === sel}" aria-label="${label}" data-v="${id}"><span class="aig-in">${rtIc(ic)}<span class="lbl">${label}</span></span>${id === recId ? '<span class="aig-rec">Recommended</span>' : ''}</button>`).join('');
+    return `<form class="rt-card aig" data-kind="${kind}" novalidate aria-labelledby="aig-h">${xBtn()}
+      <div class="aig-head"><h1 id="aig-h">${exp ? 'Generate work experience' : 'Generate resume objective'}</h1>${langHTML(AIM_LANGS)}</div>
+      <div class="aig-fields${exp ? '' : ' is-one'}">${fields.map(([n, l]) => `<div class="aig-field"><label for="aig-${n}">${l}</label><input class="aig-input" id="aig-${n}" name="${n}" placeholder="${l}" autocomplete="off"></div>`).join('')}</div>
+      <div class="aig-opts">
+        <div><span class="aig-l" id="aig-tone">Tone of Voice</span><div class="aig-chips" role="radiogroup" aria-labelledby="aig-tone">${chips(TONES, 'professional')}</div></div>
+        <div><span class="aig-l" id="aig-form">Form</span><div class="aig-chips" role="radiogroup" aria-labelledby="aig-form">${chips(FORMS, rec, rec)}</div></div>
+      </div>
+      <div class="aig-foot"><button class="rt-btn rt-ai aig-go" type="submit">Generate</button></div>
+    </form>`;
+  }
+  function initAig(form) {
+    initLang(form.querySelector('.aim-lang-wrap'));
+    form.addEventListener('click', e => {
+      const chip = e.target.closest('.aig-chip');
+      if (chip) chip.parentElement.querySelectorAll('.aig-chip').forEach(c => c.setAttribute('aria-checked', String(c === chip)));
+    });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!needFilled([form.elements.title])) return;
+      startCreation(form, 'ai', { name: [person.first, person.last].filter(Boolean).join(' '), title: form.elements.title.value });
+    });
+  }
+
+  /* ---------- AI writers with Basic / Personalized: cover letter, interview questions ---------- */
+  const COVER_LANGS = ['English', 'Czech', 'Slovak', 'German', 'French', 'Spanish', 'Italian', 'Polish', 'Portuguese', 'Dutch'];
+  const IVW_DESC = {
+    basic: 'In Basic mode, Kickresume quickly generates a set of interview questions tailored to your desired job position.',
+    personalized: 'In Personalized mode, Kickresume generates interview questions tailored not only to the job you want but also to your previous work experience.'
+  };
+  const SAMPLE_AD = `Product Designer (mid-level), Lumen Health, Bratislava or remote. You will own the patient onboarding flow end to end: research, flows, UI and hand-off. 3+ years designing web or mobile products, a portfolio with shipped work, and comfort running usability tests. Figma, design systems, working closely with engineers.`;
+  const tabsHTML = () => `<div class="aim-tabs" role="group" aria-label="AI Writer mode">
+      <button class="aim-tab" type="button" data-aim-mode="basic" aria-pressed="true">${aimIcon.clock}<span>Basic</span></button>
+      <button class="aim-tab" type="button" data-aim-mode="personalized" aria-pressed="false">${aimIcon.upCircle}<span>Personalized</span></button>
+    </div>`;
+  const stepTwoPanes = kind => `${uploadHTML('upload', true)}<div class="rt-pane" data-pane="s2" hidden>${selectHTML(kind)}</div>`;
+  function coverHTML() {
+    return `<div class="rt-panes" data-writer="cover">
+      <div class="rt-pane" data-pane="s1"><form class="rt-card aiw" data-mode="basic" novalidate aria-labelledby="cov-h">
+        <h1 id="cov-h">AI Cover Letter Writer</h1>${tabsHTML()}
+        <p class="aim-desc">${AIM_DESC.basic}</p>
+        <div class="aim-field"><label for="cov-title">Job title on the application (required)</label><input class="aim-input" id="cov-title" name="title" autocomplete="off"></div>
+        <div class="aim-field"><label for="cov-post">Copy and paste the job post here</label><textarea class="aim-input aim-ta" id="cov-post" name="post" maxlength="6000"></textarea><span class="aim-count">0/6000</span></div>
+        <p class="rt-step" data-only="personalized" hidden>Step 1/2</p>
+        <div class="aim-foot">${langHTML(COVER_LANGS)}<button class="rt-btn rt-ai aiw-go" type="submit" data-only="basic">Generate with AI</button><button class="rt-btn rt-coral aiw-next" type="button" data-only="personalized" hidden>Next</button></div>
+      </form></div>${stepTwoPanes('cover')}</div>`;
+  }
+  function interviewHTML() {
+    return `<div class="rt-panes" data-writer="interview">
+      <div class="rt-pane" data-pane="s1"><form class="rt-card aiw ivw" data-mode="basic" novalidate aria-labelledby="ivw-h">
+        <h1 id="ivw-h">Job Interview Questions</h1>${tabsHTML()}
+        <p class="aim-desc">${IVW_DESC.basic}</p>
+        <div class="aim-field"><label for="ivw-title">Job title from the job ad (required)</label><input class="aim-input" id="ivw-title" name="title" autocomplete="off"></div>
+        <div class="aim-field" data-only="personalized" hidden><label for="ivw-post">Copy-paste the job ad here (required)</label>
+          <div class="aiw-ta"><textarea class="aim-input aim-ta" id="ivw-post" name="post" maxlength="1000"></textarea><button class="aiw-paste" type="button">${rtIc(RT_IC.clipboard)}Paste</button></div><span class="aim-count">0/1000</span></div>
+        <div class="aim-field"><span class="aiw-l" id="ivw-sen">Seniority</span><div class="seg3" role="radiogroup" aria-labelledby="ivw-sen">${['Junior', 'Mid', 'Senior'].map(s => `<button type="button" role="radio" aria-checked="${s === 'Mid'}">${s}</button>`).join('')}</div></div>
+        <p class="rt-step" data-only="personalized" hidden>Step 1/2</p>
+        <div class="aim-foot"><button class="rt-btn rt-ai ivw-go" type="submit" data-only="basic">Generate with AI</button><button class="rt-btn rt-coral aiw-next" type="button" data-only="personalized" hidden>Next</button></div>
+      </form></div>${stepTwoPanes('interview')}</div>`;
+  }
+  function initWriter(root) {
+    const kind = root.dataset.writer, form = root.querySelector('form'), desc = form.querySelector('.aim-desc');
+    const DESC = kind === 'cover' ? AIM_DESC : IVW_DESC, result = kind === 'cover' ? 'cover letter' : 'interview questions';
+    initLang(form.querySelector('.aim-lang-wrap'));
+    function setMode(mode) {
+      if (mode === form.dataset.mode) return;
+      morphHeight(form, () => {
+        form.dataset.mode = mode;
+        form.querySelectorAll('.aim-tab').forEach(t => t.setAttribute('aria-pressed', String(t.dataset.aimMode === mode)));
+        desc.textContent = DESC[mode];
+        form.querySelectorAll('[data-only]').forEach(el => { el.hidden = el.dataset.only !== mode; });
+      });
+      if (!reduce) play(desc, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(a => desc.getAnimations().forEach(x => x.cancel()));
+    }
+    const required = () => [form.elements.title, ...(kind === 'interview' && form.dataset.mode === 'personalized' ? [form.elements.post] : [])];
+    const toStepTwo = () => { refreshSel(root.querySelector('.sel')); showPane(root, 's2', 1); };
+    form.addEventListener('click', e => {
+      const tab = e.target.closest('.aim-tab'); if (tab) return setMode(tab.dataset.aimMode);
+      const seg = e.target.closest('.seg3 button'); if (seg) return seg.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(b === seg)));
+      if (e.target.closest('.aiw-paste')) {
+        const ta = form.elements.post;
+        const fill = t => { ta.value = t.slice(0, +ta.maxLength); ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus(); };
+        (navigator.clipboard && navigator.clipboard.readText ? navigator.clipboard.readText() : Promise.reject()).then(t => fill(t.trim() || SAMPLE_AD), () => fill(SAMPLE_AD));
+        return;
+      }
+      if (e.target.closest('.aiw-next') && needFilled(required())) cvUploaded ? toStepTwo() : showPane(root, 'upload', 1);
+    });
+    form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (needFilled(required())) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
+    });
+    initUpload(root.querySelector('[data-pane="upload"]'), { onDone: toStepTwo, onCancel: () => showPane(root, 's1', -1) });
+    const sel = root.querySelector('.sel');
+    sel.addEventListener('click', e => {
+      const it = e.target.closest('.sel-item'); if (it) return sel.querySelectorAll('.sel-item').forEach(x => x.setAttribute('aria-checked', String(x === it)));
+      if (e.target.closest('.sel-back')) showPane(root, 's1', -1);
+      if (e.target.closest('.sel-go')) notYet(e.target.closest('.sel-go'), 'Writing…', `The personalized ${result} would open here; that screen isn’t part of the prototype yet.`);
+    });
+  }
+
+  /* ---------- Select your resume (step 2) ---------- */
+  function selectHTML(kind) {
+    return `<div class="rt-card sel" data-kind="${kind}" style="--w:${kind === 'interview' ? 424 : 454}px">
+      <h1>Select your resume</h1>
+      <p class="sel-sub">The AI will scan this resume for useful information and use it to personalize your ${kind === 'cover' ? 'cover letter' : 'interview questions'}.</p>
+      <div class="sel-row" role="radiogroup" aria-label="Your resumes"></div>
+      <p class="rt-step">Step 2/2</p>
+      <div class="sel-foot"><button class="rt-btn rt-ghost sel-back" type="button">Back</button><button class="rt-btn rt-ai sel-go" type="button">Generate with AI</button></div>
+    </div>`;
+  }
+  function refreshSel(sel) {
+    const docs = [cvName || 'My Kickresume (copy)', 'My Kickresume (copy)'];
+    sel.querySelector('.sel-row').innerHTML = docs.map((n, i) => `<button class="sel-item" type="button" role="radio" aria-checked="${i === 0}">${i % 2 ? miniB() : miniA()}<span class="sel-name">${esc(n)}</span></button>`).join('');
+  }
+  /* Two resume previews in the style of the screenshot's templates, drawn with boxes and lines.
+     Sizes are in cqw (percent of the thumbnail's width) so they stay crisp at any size. */
+  const mb = (x, y, w, h, c, extra = '') => `<i style="left:${x}cqw;top:${y}cqw;width:${w}cqw;height:${h}cqw;background:${c};${extra}"></i>`;
+  const lineSet = (x, y, ws, gap = 2.6, c = '#c9c9c9', h = 1.1) => ws.map((w, i) => mb(x, y + i * gap, w, h, c)).join('');
+  function miniA() {
+    const pill = (x, y) => mb(x, y, 40, 4, '#a9c2cf') + mb(x + 1.2, y + .6, 2.8, 2.8, '#e8a39c');
+    return `<span class="rsm" aria-hidden="true">
+      ${mb(70, -14, 40, 40, '#eaa7a0')}${mb(58, -5, 9, 9, '#eaa7a0')}${mb(64, 6, 5, 5, '#c8b38e')}${mb(93, 14, 9, 9, '#a9c2cf')}${mb(95, 31, 7, 7, '#c8b38e')}${mb(72, 33, 5, 5, '#c8b38e')}${mb(-5, 26, 9, 9, '#c8b38e')}
+      ${mb(70, 9, 20, 20, '#8e959f', 'border:1.2cqw solid #fff')}${mb(76, 12, 8, 8, '#e6c9b4')}${mb(73.5, 20.5, 13, 9, '#3d4652', 'border-radius:6cqw 6cqw 0 0')}
+      <b style="left:8cqw;top:9cqw;font-size:5.4cqw">James Snow</b>
+      ${lineSet(8, 17, [30, 38, 26, 40, 34], 2.4, '#b9b9b9', .9)}
+      ${pill(7, 38)}${lineSet(9, 44, [36, 34, 37, 30, 24])}
+      ${pill(7, 59)}${lineSet(9, 65, [28, 22], 2.6, '#9a9a9a')}${lineSet(9, 71, [36, 34, 35, 37, 33, 30, 36, 25])}
+      ${lineSet(9, 93, [26, 20], 2.6, '#9a9a9a')}${lineSet(9, 99, [36, 34, 30, 24])}${pill(7, 112)}
+      ${pill(53, 38)}${lineSet(55, 44, [32, 36, 30], 2.6)}${lineSet(55, 53, [22, 30, 26], 2.6, '#9a9a9a')}
+      ${pill(53, 64)}${lineSet(55, 70, [10, 12, 10, 9], 2.6)}${[0, 1, 2, 3].map(i => mb(70, 70.4 + i * 2.6, 22, .5, '#d7a6a2') + mb(70 + [20, 15, 9, 9].at(i), 69.6 + i * 2.6, 2, 2, '#1f1f1f')).join('')}
+      ${pill(53, 84)}${lineSet(55, 90, [16, 14, 12], 2.6)}${lineSet(73, 90, [12, 15, 14], 2.6)}
+      ${pill(53, 101)}${lineSet(55, 107, [12, 26, 24, 32], 2.6)}
+    </span>`;
+  }
+  function miniB() {
+    const label = (y, w) => mb(0, y, w, 3.2, '#d9593d', 'border-radius:0') + mb(0, y + 3.2, 100, .35, '#d9593d', 'border-radius:0');
+    const rows = (y, n) => lineSet(2, y, [11, 12].slice(0, Math.min(2, n)), 2.4, '#9a9a9a', .9) + lineSet(28, y, Array.from({ length: n }, (_, i) => [62, 66, 58, 64, 60, 55].at(i % 6)), 2.4, '#c4c4c4', .9);
+    return `<span class="rsm" aria-hidden="true">
+      ${mb(6, 4, 16, 15, '#8e959f', 'border-radius:0')}${mb(10, 6, 8, 7, '#e6c9b4')}${mb(7.5, 12.5, 13, 6.5, '#3d4652', 'border-radius:4cqw 4cqw 0 0')}
+      <b style="left:28cqw;top:5cqw;font-size:4.8cqw">James Decker</b>${mb(28, 11, 65, .45, '#d9593d', 'border-radius:0')}
+      ${lineSet(28, 14, [54, 40, 30], 2.2, '#9a9a9a', .8)}${lineSet(28, 23, [66, 64, 58, 46], 2.2, '#c4c4c4', .8)}
+      ${label(34, 13)}${rows(40, 5)}${label(55, 18)}${rows(61, 8)}
+      ${label(83, 15)}${[0, 1, 2, 3].map(i => mb(2 + i * 23, 89, 5, 5, '#fff', 'border:.9cqw solid #e2b1a6;border-left-color:#d9593d;border-top-color:#d9593d') + mb(9 + i * 23, 91, 9, .9, '#c4c4c4')).join('')}
+      ${label(98, 9)}${[0, 1].map(r => [0, 1].map(c => mb(3 + c * 50, 105 + r * 7, 14, .8, '#9a9a9a') + mb(3 + c * 50, 108 + r * 7, 42, .6, '#1f1f1f') + mb(3 + c * 50 + [40, 28, 21, 33].at(r * 2 + c), 107.4 + r * 7, 1.8, 1.8, '#d9593d')).join('')).join('')}
+      ${label(121, 22)}
+    </span>`;
+  }
+
+  /* ---------- Upload your resume (start · error · uploading) ---------- */
+  const UPL_OK = /\.(docx|odt|html?|rtf|txt|pdf)$/i;
+  const uplFoot = `<div class="upl-foot"><button class="rt-btn rt-ghost" type="button" data-upl="cancel">Cancel</button><button class="rt-btn rt-coral" type="button" data-upl="pick">Upload</button></div>`;
+  const uplDrop = hint => `<div class="upl-drop" role="button" tabindex="0" aria-label="Choose your resume file">${rtIc(RT_IC.cloud)}${hint ? '<p class="upl-hint">Drop your resume text file here</p>' : ''}</div>`;
+  const UPL = {
+    start: () => `<h1>Upload your resume</h1>${uplDrop(false)}<p class="upl-hint">Drop your resume text file here</p>${uplFoot}`,
+    error: () => `<h1>Please upload a valid file</h1><div class="rt-info upl-alert" role="alert">${rtIc(RT_IC.info)}<span>Upload a DOCX, ODT, HTML, RTF, TXT or PDF file that has at least 200 words and less than 10MB.</span></div>${uplDrop(true)}${uplFoot}`,
+    progress: () => `<h1>${rtIc(RT_IC.loader)}<span>Uploading your resume...</span></h1><div class="rt-info upl-info">${rtIc(RT_IC.info)}<span>If your resume does not get imported correctly, try uploading it in a different file format (e.g. DOCX).</span></div><div class="upl-wait" aria-hidden="true"></div><p class="upl-quote">Use your wand to cast some wicked spells Harry!<br>-Hermiona</p><div class="upl-foot"><button class="rt-btn rt-coral upl-cont" type="submit" data-upl="continue">Continue</button></div>`
+  };
+  const uploadHTML = (name, hidden) => `<div class="rt-pane" data-pane="${name}"${hidden ? ' hidden' : ''}><div class="rt-card upl" data-state="start">${UPL.start()}</div></div>`;
+  function initUpload(pane, { onDone, onCancel }) {
+    if (!pane) return;
+    const card = pane.querySelector('.upl'), input = document.createElement('input');
+    Object.assign(input, { type: 'file', hidden: true, accept: '.docx,.odt,.html,.htm,.rtf,.txt,.pdf' });
+    pane.appendChild(input);
+    const setState = st => {
+      morphHeight(card, () => { card.dataset.state = st; card.innerHTML = UPL[st](); });
+      if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
+    };
+    // prototype triggers: a file name containing "scan" can't be read; other formats or over 10 MB are refused
+    const take = file => { if (!file) return; const ok = UPL_OK.test(file.name) && file.size <= 10 * 1024 * 1024 && !/scan/i.test(file.name); card._file = ok ? file : null; setState(ok ? 'progress' : 'error'); };
+    card.addEventListener('click', e => {
+      const b = e.target.closest('[data-upl]');
+      if (e.target.closest('.upl-drop') || (b && b.dataset.upl === 'pick')) return input.click();
+      if (!b) return;
+      if (b.dataset.upl === 'cancel') onCancel();
+      if (b.dataset.upl === 'continue') { setCv(true, card._file ? card._file.name.replace(/\.[^.]+$/, '') : ''); onDone(); }
+    });
+    card.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.upl-drop')) { e.preventDefault(); input.click(); } });
+    input.addEventListener('change', () => { take(input.files[0]); input.value = ''; });
+    ['dragenter', 'dragover'].forEach(t => card.addEventListener(t, e => { const d = e.target.closest('.upl-drop'); if (d) { e.preventDefault(); d.classList.add('is-over'); } }));
+    card.addEventListener('dragleave', e => { const d = e.target.closest('.upl-drop'); if (d && !d.contains(e.relatedTarget)) d.classList.remove('is-over'); });
+    card.addEventListener('drop', e => { const d = e.target.closest('.upl-drop'); if (!d) return; e.preventDefault(); take(e.dataTransfer.files[0]); });
+  }
+  /* /dashboard/upload-resume/: after the upload, the usual building screen and the editor */
+  function startFromUpload(item) { const card = item.querySelector('.upl'); card._file = card._file || null; startCreation(card, 'upload'); }
+
+  /* ---------- LinkedIn import (/dashboard/linkedin-import/) ---------- */
+  function linkedinHTML() {
+    const slug = [person.first, person.last].filter(Boolean).join('').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    return `<form class="rt-card lki" novalidate aria-labelledby="lki-h">
+      <h1 id="lki-h">Paste a link to your LinkedIn profile.</h1>
+      <div class="rt-info">${rtIc(RT_IC.info)}<span>Recent LinkedIn profile changes may take up to 30 days to update in our system.</span></div>
+      <div class="lki-field"><span class="lki-pre">linkedin.com/in/</span><input name="slug" value="${esc(slug)}" aria-label="Your LinkedIn profile name" autocomplete="off" spellcheck="false"><button class="lki-paste" type="button" aria-label="Paste from clipboard">${rtIc(RT_IC.clipboard)}</button><p class="lki-err" role="alert" hidden>Paste your profile name or the whole link.</p></div>
+      <div class="lki-foot"><button class="rt-btn rt-ghost" type="button" data-action="route-close">Cancel</button><button class="rt-btn rt-coral" type="submit">Import</button></div>
+    </form>`;
+  }
+  function initLinkedin(form) {
+    const input = form.elements.slug, err = form.querySelector('.lki-err');
+    const slugOf = v => { const url = normLinkedIn(v); return (url ? url.split('/in/')[1] : v.trim().replace(/^@/, '')).replace(/\/+$/, ''); };
+    form.querySelector('.lki-paste').addEventListener('click', () => {
+      const fill = t => { input.value = slugOf(t); input.focus(); err.hidden = true; };
+      (navigator.clipboard && navigator.clipboard.readText ? navigator.clipboard.readText() : Promise.reject()).then(t => fill(t || 'jana-novak-design'), () => fill('jana-novak-design'));
+    });
+    input.addEventListener('input', () => { err.hidden = true; });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const slug = slugOf(input.value);
+      if (!/^[\w\-%.]{2,}$/.test(slug)) { err.hidden = false; return input.focus(); }
+      startCreation(form, 'linkedin', { url: 'https://www.linkedin.com/in/' + slug });
+    });
+  }
+
+  /* ---------- Resignation letter (/ai/resignation/) ---------- */
+  function resignHTML() {
+    return `<form class="rt-card rsg" novalidate aria-labelledby="rsg-h">${xBtn()}
+      <h1 id="rsg-h">What is your job title?</h1>
+      <p class="rsg-sub">Enter the job title for which you want to generate a resignation letter.</p>
+      <div class="aim-field"><label for="rsg-title">Job title</label><input class="aim-input" id="rsg-title" name="title" autocomplete="organization-title"></div>
+      <div class="aim-foot">${langHTML(AIM_LANGS)}<button class="rt-btn rt-ai rsg-go" type="submit">Generate with AI</button></div>
+    </form>`;
+  }
+  function initResign(form) {
+    initLang(form.querySelector('.aim-lang-wrap'));
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (needFilled([form.elements.title])) notYet(form.querySelector('.rsg-go'), 'Writing…', 'The resignation letter would open here; that screen isn’t part of the prototype yet.');
+    });
+  }
+
+  /* ---------- Not designed yet ---------- */
+  function todoHTML(r) {
+    return `<div class="rt-card rt-todo">${xBtn()}<h1>${r.title}</h1><p>This screen isn’t designed yet. Its URL already works, so the flow around it can be tried.</p><code>${r.path}</code></div>`;
   }
 
   /* Accepts links with or without https:// and www., mobile (m.) and country subdomains,
@@ -2966,6 +3541,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (vw) return setView(vw.dataset.view);
     const rt = e.target.closest('[data-route]');
     if (rt) return openRoute(findRoute(rt.dataset.route));
+    const cvb = e.target.closest('[data-cv]');
+    if (cvb) return setCv(cvb.dataset.cv === 'yes');
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const a = el.dataset.action;
@@ -2990,6 +3567,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'proto-more') setMore(!pmWrap.classList.contains('is-open'));
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
+    else if (a === 'route-close') closeRoute();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
     else if (a === 'switch-method') switchMethod(el.dataset.to);
     else if (a === 'pane') setPane(el.dataset.pane);
@@ -3042,7 +3620,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
 
   document.addEventListener('change', e => {
-    if (e.target.matches('input[type="file"]')) setFile(e.target.closest('form'), e.target.files[0] || null);
+    if (e.target.matches('input[type="file"]') && e.target.closest('form[data-method]')) setFile(e.target.closest('form'), e.target.files[0] || null);
   });
 
   ['dragenter', 'dragover'].forEach(t => document.addEventListener(t, e => {
