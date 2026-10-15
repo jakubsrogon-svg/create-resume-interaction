@@ -21,3 +21,13 @@ Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src
 ## Hidden decorations in the 3D look
 
 The 3D look's resume fragments (the four faded pages in the side margins of the method screen) are hidden, not removed. `SHOW_3D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_3D_PAPERS = true` (and update the README's look description); nothing else needs to change.
+
+## Route screens (recreated product screens)
+
+The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/prototype.html`:
+
+- Register each one in `ROUTES` (`path`, `title`, `base` = the screen it opens over, `html` = its markup function, `init` = its behaviour). That alone adds its link under More options › Screens and makes `#<path>` open it (also on `hashchange`).
+- Modals render into `#rt-layer` (dimmed backdrop, Esc or a backdrop click closes, scroll locked, fits inside the phone frame in mobile view). Give each screen its own class prefix (the AI modal uses `.aim-*`) and its own CSS block under "Route screens".
+- Match the screenshots exactly: measure them (they are usually 2x), use the product's sizes rather than the onboarding's height-aware spacing, and compare a 2x render against the screenshot pixel by pixel before publishing.
+- Later the user will say which buttons (goal screen, method screen, dashboard) lead to which route; wire those with `openRoute(findRoute(path))`.
+

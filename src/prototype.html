@@ -127,7 +127,7 @@ body.is-mobile .statusbar {
 /* On a real phone the frame would not fit, so mobile view just fills the screen */
 @media (max-width: 480px) {
   body.is-mobile .stage { padding-block: 0; }
-  body.is-mobile .device { width: auto; height: auto; min-height: 0; overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
+  body.is-mobile .device { width: 100%; height: auto; min-height: 0; overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
   body.is-mobile .statusbar { display: none; }
 }
 
@@ -1209,6 +1209,102 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Route screens ----------
+   Product screens recreated from screenshots. Each has its own URL (#/dashboard/create-ai-resume/)
+   and a link under More options › Screens. They open in a layer over the dashboard.
+   Sizes and colours are measured from the 2x screenshots, so they don't follow the onboarding's
+   height-aware spacing. */
+.rt-layer {
+  position: fixed; inset: 0; z-index: 15; display: grid; grid-template-columns: minmax(0, 1fr); overflow-y: auto; overscroll-behavior: contain;
+  padding: 24px 16px; background: rgba(8, 20, 48, .45); container-type: inline-size;
+}
+.rt-layer > * { margin: auto; }
+.rt-layer.in-frame { border-radius: 38px; }  /* inside the phone frame (placed from JS) */
+
+/* Create Resume with AI (/dashboard/create-ai-resume/) */
+.aim {
+  --aim-grad: linear-gradient(to bottom right, #4d44f7, #8d44f8);
+  width: 454px; max-width: 100%; padding: 32px 48px; border-radius: 20px; background: var(--kr-white);
+  box-shadow: 0 60px 80px rgba(0, 0, 0, .23); color: var(--kr-grey-100);
+  font-size: 14px; line-height: 20px; letter-spacing: 0; outline: none;
+}
+.aim h2 { margin: 0 0 16px; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+.aim-ic { flex: none; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+/* Basic / Personalized: one grey outline; the chosen half gets a gradient outline on top of it */
+.aim-tabs { display: grid; grid-template-columns: 1fr 1fr; height: 34px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--kr-grey-60); }
+.aim-tab {
+  display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; padding: 0 8px;
+  border: 1px solid transparent; border-radius: 8px; background: none; color: var(--kr-grey-100); cursor: pointer;
+  font-size: 14px; line-height: 20px; white-space: nowrap;
+}
+.aim-tab[aria-pressed="true"] { background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, var(--aim-grad) border-box; cursor: default; }
+.aim-tab[aria-pressed="true"] .aim-ic { color: #4d45f8; }
+.aim-tab[aria-pressed="true"] span { background: var(--aim-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.aim-tab[aria-pressed="false"]:hover { color: var(--kr-grey-80); }
+.aim-tab:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.aim-desc { margin: 16px 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.aim-field { display: grid; gap: 6px; }
+.aim-field + .aim-field { margin-top: 16px; }
+.aim-field label { font-size: 12px; line-height: 18px; }
+.aim-input {
+  width: 100%; height: 40px; padding: 0 8px; border: 1px solid var(--kr-grey-60); border-radius: 6px; outline: none;
+  background: var(--kr-white); color: var(--kr-grey-100); font-size: 14px; letter-spacing: 0; transition: border-color .15s;
+}
+.aim-input:hover { border-color: var(--kr-grey-80); }
+.aim-input:focus { border-color: var(--kr-blue); }
+.aim-ta { display: block; height: 164px; padding: 8px; line-height: 20px; resize: none; }
+.aim-count { text-align: right; color: var(--kr-grey-80); }
+.aim-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 24px; }
+.aim-lang-wrap { position: relative; }
+.aim-lang, .aim-go { height: 40px; border-radius: 8px; font-size: 14px; line-height: 20px; letter-spacing: 0; cursor: pointer; }
+.aim-lang {
+  width: 160px; display: flex; align-items: center; gap: 8px; padding: 0 13px; text-align: left;
+  border: 1px solid var(--kr-grey-60); background: var(--kr-white); color: var(--kr-grey-100); transition: border-color .15s;
+}
+.aim-lang:hover, .aim-lang[aria-expanded="true"] { border-color: var(--kr-grey-80); }
+.aim-lang .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aim-lang .aim-ic:last-child { transition: transform var(--dur-fast) var(--ease-standard); }
+.aim-lang[aria-expanded="true"] .aim-ic:last-child { transform: rotate(180deg); }
+.aim-menu {
+  position: absolute; left: 0; bottom: calc(100% + 4px); z-index: 1; min-width: 100%; max-height: 244px; overflow-y: auto;
+  margin: 0; padding: 4px; list-style: none; background: var(--kr-white); border-radius: 8px; box-shadow: var(--kr-shadow-dropdown);
+  scrollbar-width: thin; scrollbar-color: var(--kr-grey-60) transparent;
+}
+.aim-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 6px 8px; border: 0; border-radius: 6px;
+  background: none; color: var(--kr-grey-100); font-size: 14px; line-height: 20px; letter-spacing: 0; text-align: left; white-space: nowrap; cursor: pointer;
+}
+.aim-opt:hover, .aim-opt:focus-visible { background: var(--kr-grey-40); outline: none; }
+.aim-opt .aim-ic { visibility: hidden; color: var(--kr-blue); }
+.aim-opt[aria-selected="true"] .aim-ic { visibility: visible; }
+.aim-go {
+  width: 150px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px;
+  border: 0; background: var(--kr-blue); color: var(--kr-white); font-weight: 500; white-space: nowrap; transition: background .2s;
+}
+.aim-go:hover:not(:disabled) { background: #6461ee; }
+.aim-go:active:not(:disabled) { background: #3f3cd6; }
+.aim-go:disabled { background: #c0bff4; cursor: not-allowed; }
+.aim-go .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
+.aim-go:focus-visible, .aim-lang:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+/* Narrow screens (phone): tighter padding; language and button share the full width */
+@container (max-width: 520px) {
+  .aim { padding: 28px 20px 24px; border-radius: 16px; }
+  .aim-foot { flex-direction: column; align-items: stretch; gap: 12px; }
+  .aim-lang, .aim-go { width: 100%; }
+}
+
+/* More options › Screens: the recreated product screens, each with its URL */
+.pm-sec { display: grid; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.pm-route {
+  display: grid; gap: 1px; margin-inline: -6px; padding: 6px; border: 0; border-radius: 8px; background: none;
+  color: var(--kr-white); text-align: left; cursor: pointer; transition: background var(--dur-fast);
+}
+.pm-route:hover { background: rgba(255, 255, 255, .08); }
+.pm-route:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pm-route b { font-size: 13px; line-height: 18px; font-weight: 500; }
+.pm-route code { font: 11px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; }
+.pm-route[aria-current="true"] code { color: #c9cde0; }
+
 /* ---------- Responsive ---------- */
 @container (max-width: 860px) {
   .intent-grid:not(.is-list) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1299,13 +1395,16 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 <!-- Screen 5: dashboard (where people land when they skip onboarding) -->
 <div class="dash" id="screen-dash" hidden></div>
+
+<!-- Route screens (product modals recreated from screenshots) open in this layer; see ROUTES -->
+<div class="rt-layer" id="rt-layer" hidden></div>
 </div>
 </div>
 
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.12.2">v1.12.2</div>
+<div class="proto-ver" aria-label="Prototype version 1.13">v1.13</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1334,6 +1433,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <!-- More options: a quiet corner button that opens the less-used settings -->
 <div class="proto-more" id="proto-more">
   <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
+    <div class="pm-sec"><span class="pm-label">Screens</span><div id="pm-routes"></div></div>
     <div class="pm-row"><span class="pm-label">Variant</span>
       <div class="seg" data-screen-for="create">
     <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
@@ -1624,9 +1724,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
-  let current = 'intent';
+  let current = 'intent', routesReady = false;
   /* The prototype rail dims the settings that don't affect the screen you're on */
-  function setCurrent(s) { current = s; document.body.dataset.screen = s; placeVer(); }
+  function setCurrent(s) {
+    current = s; document.body.dataset.screen = s; placeVer();
+    if (routesReady && s !== 'dashboard' && location.hash.startsWith('#/')) setHash('');  // a route URL only while it's on screen
+  }
   /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
   const verEl = document.querySelector('.proto-ver');
@@ -2375,7 +2478,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   async function leaveApp(screen) {
     const appEl = APPS[current];
+    const closing = closeModal();
     if (!reduce) await appEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+    await closing;
     appEl.getAnimations().forEach(a => a.cancel());
     appEl.hidden = true; appEl.innerHTML = '';
     setCut(0, true);
@@ -2496,7 +2601,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   /* Open a full-screen app view (dashboard) from any screen */
-  async function openDashboard() {
+  async function openDashboard(onDrawn) {
     if (screenRun) screenRun.finish();
     clearTimers();
     const fromEl = APPS[current] || screens[current];
@@ -2511,6 +2616,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
     setCurrent('dashboard');
     window.scrollTo(0, 0); device.scrollTop = 0;
+    if (onDrawn) onDrawn();
     const items = [...dashEl.querySelectorAll('.dash-mbar, .dash-rail, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(shown);
     const anims = items.map((el, i) => play(el,
       reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: el.classList.contains('dash-rail') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
@@ -2525,6 +2631,198 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!method) return;
     if (methodsEl.dataset.mode === 'accordion') { const card = methodsEl.querySelector(`.mcard[data-id="${method}"]`); if (card) toggleA(card); }
     else openB(method);
+  }
+
+  /* ---------- Route screens ----------
+     Product screens recreated from screenshots, each at its own URL and listed under More options › Screens.
+     To add one: write its markup function (and an init for its behaviour), then add a ROUTES entry.
+     base = the screen it opens over. */
+  const ROUTES = [
+    { path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', base: 'dashboard', html: aiModalHTML, init: initAiModal },
+  ];
+  const layerEl = document.getElementById('rt-layer');
+  let modalRoute = null, modalTok = 0, downOnLayer = false;
+  const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
+  const findRoute = h => ROUTES.find(r => r.path === normPath(h)) || null;
+  function setHash(path) {
+    try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
+  }
+  document.getElementById('pm-routes').innerHTML = ROUTES.map(r =>
+    `<button class="pm-route" type="button" data-route="${r.path}"><b>${r.title}</b><code>${r.path}</code></button>`).join('');
+  const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!modalRoute && b.dataset.route === modalRoute.path)));
+
+  function openRoute(r) {
+    setMore(false); clearTimers();
+    setHash(r.path);
+    if (current === r.base) { closeModal(true); openModal(r); }
+    else if (r.base === 'dashboard') openDashboard(() => openModal(r, 120));
+  }
+
+  /* The layer covers the window; in the framed phone view it covers just the phone's screen */
+  function placeLayer() {
+    if (layerEl.hidden) return;
+    const inFrame = framed();
+    layerEl.classList.toggle('in-frame', inFrame);
+    if (!inFrame) { layerEl.removeAttribute('style'); return; }
+    const r = device.getBoundingClientRect();
+    Object.assign(layerEl.style, { inset: 'auto', left: r.left + device.clientLeft + 'px', top: r.top + device.clientTop + 'px', width: device.clientWidth + 'px', height: device.clientHeight + 'px' });
+  }
+  window.addEventListener('resize', placeLayer);
+  window.addEventListener('scroll', placeLayer, { passive: true });
+  function lockScroll(on) {
+    document.documentElement.style.overflow = on && !framed() ? 'hidden' : '';
+    device.style.overflowY = on && framed() ? 'hidden' : '';
+  }
+
+  function openModal(r, delay = 0) {
+    const tok = ++modalTok;
+    layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
+    layerEl.innerHTML = r.html();
+    layerEl.hidden = false; dashEl.inert = true;
+    modalRoute = r; markRoutes(); lockScroll(true); placeLayer();
+    const box = layerEl.firstElementChild;
+    if (r.init) r.init(box);
+    box.focus({ preventScroll: true });
+    if (reduce) { play(layerEl, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay, easing: EASE.standard }); }
+    else {
+      play(layerEl, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay, easing: EASE.standard });
+      play(box, [{ opacity: 0, transform: 'translateY(16px) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base + 60, delay: delay + 40, easing: EASE.standard });
+    }
+    setTimeout(() => { if (tok === modalTok) layerEl.getAnimations({ subtree: true }).forEach(a => { if (a.playState === 'finished') a.cancel(); }); }, DUR.base + 140 + delay);
+  }
+  async function closeModal(instant) {
+    if (!modalRoute) return;
+    const tok = ++modalTok;
+    modalRoute = null; markRoutes();
+    if (!instant && !reduce) {
+      layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
+      await layerEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+      if (tok !== modalTok) return;  // another one opened meanwhile
+    }
+    layerEl.getAnimations({ subtree: true }).forEach(a => a.cancel());
+    layerEl.hidden = true; layerEl.innerHTML = ''; layerEl.removeAttribute('style');
+    dashEl.inert = false; lockScroll(false);
+  }
+  /* Esc or a click on the dimmed backdrop closes it, back to the screen underneath */
+  function dismissModal() {
+    const base = modalRoute && modalRoute.base;
+    closeModal();
+    setHash(base === 'dashboard' ? '/dashboard/' : '');
+  }
+  layerEl.addEventListener('pointerdown', e => { downOnLayer = e.target === layerEl; });
+  layerEl.addEventListener('click', e => { if (e.target === layerEl && downOnLayer) dismissModal(); });
+  window.addEventListener('hashchange', () => {
+    const r = findRoute(location.hash);
+    if (r) return openRoute(r);
+    if (normPath(location.hash) === '/dashboard/') { if (modalRoute) closeModal(); else if (current !== 'dashboard') openDashboard(); }
+  });
+
+  /* ---------- Create Resume with AI (/dashboard/create-ai-resume/) ---------- */
+  const AIM_DESC = {
+    basic: 'In Basic mode, the AI Writer will quickly produce a solid, generic draft of a resume tailored to your desired job position.',
+    personalized: 'In Personalized mode, the AI Writer generates a resume tailored specifically to the job post or description you provide.'
+  };
+  const AIM_LANGS = ['English (US)', 'English (UK)', 'Czech', 'Slovak', 'German', 'French', 'Spanish', 'Italian', 'Polish', 'Portuguese', 'Dutch'];
+  const AIM_POST_MAX = 6000;
+  const aimIcon = {
+    clock: '<svg class="aim-ic" width="16" height="16" viewBox="0 0 16 16" stroke-width="1.25" aria-hidden="true"><circle cx="8" cy="8" r="6.875"/><path d="M8 4.25V8l2.6 1.4"/></svg>',
+    upCircle: '<svg class="aim-ic" width="16" height="16" viewBox="0 0 16 16" stroke-width="1.25" aria-hidden="true"><circle cx="8" cy="8" r="6.875"/><path d="M8 10.75v-5.5M5.25 8 8 5.25 10.75 8"/></svg>',
+    globe: '<svg class="aim-ic" width="20" height="20" viewBox="0 0 20 20" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8.75"/><ellipse cx="10" cy="10" rx="3.4" ry="8.75"/><path d="M1.25 10h17.5"/></svg>',
+    chevron: '<svg class="aim-ic" width="16" height="16" viewBox="0 0 16 16" stroke-width="1.5" aria-hidden="true"><path d="m3.75 6.25 4.25 4 4.25-4"/></svg>',
+    check: '<svg class="aim-ic" width="16" height="16" viewBox="0 0 16 16" stroke-width="1.5" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg>'
+  };
+  function aiModalHTML() {
+    const name = [person.first, person.last].filter(Boolean).join(' ');
+    return `<form class="aim" role="dialog" aria-modal="true" aria-labelledby="aim-h" tabindex="-1" data-mode="basic" novalidate>
+      <h2 id="aim-h">Create your resume with AI.</h2>
+      <div class="aim-tabs" role="group" aria-label="AI Writer mode">
+        <button class="aim-tab" type="button" data-aim-mode="basic" aria-pressed="true">${aimIcon.clock}<span>Basic</span></button>
+        <button class="aim-tab" type="button" data-aim-mode="personalized" aria-pressed="false">${aimIcon.upCircle}<span>Personalized</span></button>
+      </div>
+      <p class="aim-desc" id="aim-desc">${AIM_DESC.basic}</p>
+      <div class="aim-field"><label for="aim-name">Your name</label><input class="aim-input" id="aim-name" name="name" value="${esc(name)}" autocomplete="name"></div>
+      <div class="aim-field"><label for="aim-title">Job title</label><input class="aim-input" id="aim-title" name="title" autocomplete="organization-title"></div>
+      <div class="aim-field aim-post" hidden><label for="aim-post">Paste the job post or job description here</label>
+        <textarea class="aim-input aim-ta" id="aim-post" name="post" maxlength="${AIM_POST_MAX}" aria-describedby="aim-count"></textarea>
+        <span class="aim-count" id="aim-count">0/${AIM_POST_MAX}</span></div>
+      <div class="aim-foot">
+        <div class="aim-lang-wrap">
+          <button class="aim-lang" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Resume language: English (US)">${aimIcon.globe}<span class="val">English (US)</span>${aimIcon.chevron}</button>
+          <ul class="aim-menu" role="listbox" aria-label="Resume language" hidden>${AIM_LANGS.map((l, i) =>
+            `<li role="presentation"><button class="aim-opt" type="button" role="option" aria-selected="${i === 0}" data-lang="${l}">${l}${aimIcon.check}</button></li>`).join('')}</ul>
+        </div>
+        <button class="aim-go" type="submit" disabled>Generate with AI</button>
+      </div>
+    </form>`;
+  }
+  function initAiModal(form) {
+    const go = form.querySelector('.aim-go'), post = form.querySelector('.aim-post'), ta = form.querySelector('textarea');
+    const lang = form.querySelector('.aim-lang'), menu = form.querySelector('.aim-menu');
+    // Generate needs a name and a job title; Personalized also needs the job post
+    const check = () => {
+      const v = n => form.elements[n].value.trim();
+      go.disabled = !(v('name') && v('title') && (form.dataset.mode === 'basic' || v('post')));
+    };
+    function setMode(mode) {
+      if (mode === form.dataset.mode) return;
+      const h0 = form.offsetHeight;
+      form.dataset.mode = mode;
+      form.querySelectorAll('.aim-tab').forEach(t => t.setAttribute('aria-pressed', String(t.dataset.aimMode === mode)));
+      const desc = form.querySelector('.aim-desc');
+      desc.textContent = AIM_DESC[mode];
+      post.hidden = mode !== 'personalized';
+      check();
+      if (reduce) return;
+      // one motion: the card grows or shrinks to its new height while the text and the extra field fade in
+      const h1 = form.offsetHeight;
+      play(desc, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+      if (h0 !== h1) {
+        const a = form.animate([{ height: h0 + 'px', overflow: 'clip' }, { height: h1 + 'px', overflow: 'clip' }], { duration: DUR.slow, easing: EASE.inout });
+        if (!post.hidden) play(post, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, delay: 120, easing: EASE.standard });
+        a.finished.catch(() => {}).then(() => post.getAnimations().forEach(x => x.cancel()));
+      }
+      desc.getAnimations().forEach(x => x.finished.catch(() => {}).then(() => x.cancel()));
+    }
+    function setMenu(open) {
+      menu.hidden = !open; lang.setAttribute('aria-expanded', String(open));
+      if (open) (menu.querySelector('[aria-selected="true"]') || menu.querySelector('.aim-opt')).focus();
+    }
+    form.addEventListener('click', e => {
+      const tab = e.target.closest('.aim-tab');
+      if (tab) return setMode(tab.dataset.aimMode);
+      if (e.target.closest('.aim-lang')) return setMenu(menu.hidden);
+      const opt = e.target.closest('.aim-opt');
+      if (opt) {
+        menu.querySelectorAll('.aim-opt').forEach(o => o.setAttribute('aria-selected', String(o === opt)));
+        lang.querySelector('.val').textContent = opt.dataset.lang;
+        lang.setAttribute('aria-label', 'Resume language: ' + opt.dataset.lang);
+        setMenu(false); lang.focus();
+        return;
+      }
+      if (!menu.hidden && !e.target.closest('.aim-menu')) setMenu(false);
+    });
+    form.addEventListener('input', () => { ta.nextElementSibling.textContent = `${ta.value.length}/${AIM_POST_MAX}`; check(); });
+    form.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); setMenu(false); lang.focus(); }
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.target.closest('.aim-menu')) {
+        e.preventDefault();
+        const opts = [...menu.querySelectorAll('.aim-opt')], i = opts.indexOf(e.target.closest('.aim-opt'));
+        opts[(i + (e.key === 'ArrowDown' ? 1 : opts.length - 1)) % opts.length].focus();
+      }
+      // keep Tab inside the dialog
+      if (e.key === 'Tab') {
+        const f = [...form.querySelectorAll('button, input, textarea')].filter(el => !el.disabled && shown(el));
+        if (e.shiftKey && (document.activeElement === f[0] || document.activeElement === form)) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    form.addEventListener('submit', e => {
+      e.preventDefault(); e.stopPropagation();
+      check();
+      if (go.disabled) return;
+      startCreation(form, 'ai', { name: form.elements.name.value, title: form.elements.title.value });
+    });
+    check();
   }
 
   /* Accepts links with or without https:// and www., mobile (m.) and country subdomains,
@@ -2709,7 +3007,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       return;
     }
     const vw = e.target.closest('[data-view]');
-    if (vw) return setView(vw.dataset.view);
+    if (vw) { setView(vw.dataset.view); placeLayer(); lockScroll(!!modalRoute); return; }
+    const rt = e.target.closest('[data-route]');
+    if (rt) return openRoute(findRoute(rt.dataset.route));
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const a = el.dataset.action;
@@ -2767,6 +3067,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && pmWrap.classList.contains('is-open')) { setMore(false); pmBtn.focus(); }
+    else if (e.key === 'Escape' && modalRoute) dismissModal();
     if (e.key === 'Enter' && e.target.matches('[data-add]')) {
       e.preventDefault();
       const v = e.target.value.trim();
@@ -2823,7 +3124,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   try { savedLayout = localStorage.getItem('kr-start-layout'); } catch (e) {}
   const hl = hash.match(/list|grid/);
   setLayout(hl ? hl[0] : (savedLayout || 'grid'));
-  if (/dashboard/.test(hash)) openDashboard();
+  const startRoute = findRoute(location.hash);
+  if (startRoute) openRoute(startRoute);
+  else if (/dashboard/.test(hash)) openDashboard();
+  routesReady = true;
   if (/editor/.test(hash)) {
     screens.intent.hidden = true; screens.loading.hidden = false; setCurrent('loading');
     openEditor();
