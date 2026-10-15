@@ -1798,7 +1798,7 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 <!-- The running flow template (see FLOWS) -->
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.0">v2.0</div>
+<div class="proto-ver" aria-label="Prototype version 2.0.1">v2.0.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3147,7 +3147,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   window.addEventListener('hashchange', () => {
     const r = findRoute(location.hash);
-    if (r) return openRoute(r);
+    if (r) { if (leavesFlow(r)) endFlow(); return openRoute(r); }
     if (normPath(location.hash) === '/dashboard/' && current !== 'dashboard') openDashboard();
   });
 
@@ -3505,7 +3505,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- LinkedIn import (/dashboard/linkedin-import/) ---------- */
   function linkedinHTML() {
-    const slug = [person.first, person.last].filter(Boolean).join('').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const slug = [person.first, person.last].filter(Boolean).join('').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     return `<form class="rt-card lki" novalidate aria-labelledby="lki-h">
       <h1 id="lki-h">Paste a link to your LinkedIn profile.</h1>
       <div class="rt-info">${rtIc(RT_IC.info)}<span>Recent LinkedIn profile changes may take up to 30 days to update in our system.</span></div>
@@ -3553,7 +3553,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const wField = (label, value = '', kind = '') => `<div class="wf-field">${label}<span class="wf-input${kind ? ' wf-input--' + kind : ''}">${value}</span></div>`;
   const wShell = (label, body, notes = '', width = 440) => `<div class="wf wf-screen rt-wire" style="width:min(100%,${width}px)"><span class="wf-screen-label">Wireframe · ${label}</span>${body}${notes}</div>`;
   const wNote = (n, text) => `<p class="wf-note"><b>${n}</b> ${text}</p>`;
-  const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
+  const wSocial = (w = 'signup') => `<button class="wf-btn" type="button" data-wire="${w}">Continue with Google</button><button class="wf-btn" type="button" data-wire="${w}">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
   const WIRE_TOOLS = {
     'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
     'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
@@ -3564,7 +3564,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     'career-coach': ['Career coach', [], 'Send', 'A chat with an AI coach that knows the resume. Not designed yet.'],
     'proofreading': ['Proofread your resume', [['Resume', 'My Kickresume', 'select']], 'Check my resume', 'Result: spelling and grammar fixes marked in the resume. Not designed yet.']
   };
-  const PLANS = PLAN_NAMES;
   const WIRE = {
     signup: o => wShell(o.wall ? 'Sign-up wall' : o.cv ? 'Sign up · CV attached' : 'Sign up', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.wall ? 'Sign up to see your resume' : 'Create your free account'}</h1>${wLines(2)}
@@ -3576,7 +3575,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       : o.cv ? wNote(1, 'Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')
       : wNote(1, 'After sign-up: the goal screen (Flow 1), or straight to the tool the URL asked for (Flow 3).')),
     login: () => wShell('Log in', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Log in</h1>${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
+        <h1 class="t-title">Log in</h1>${wSocial('login')}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <a class="wf-link t-small" href="#/login/">Forgot password?</a>
         <button class="wf-btn wf-btn--primary" type="button" data-wire="login">Log in</button>
         <p class="t-small">New here? <a class="wf-link" href="#/register/">Create an account</a></p>
@@ -3605,19 +3604,21 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote(1, 'Roles the person’s experience leads to, with a match score.'), 640),
     upgrade: o => wShell('Upgrade', `<div class="wf-card wf-stack">
         <h1 class="t-title">Upgrade to Premium</h1>${wLines(2)}
-        <div class="wf-grid" style="--cols:2">${PLANS.map(p => `<div class="wf-card"><span class="wf-radio${p === o.plan ? ' wf-radio--on' : ''}">${p[0].toUpperCase() + p.slice(1)}</span>${wLines(2)}</div>`).join('')}</div>
+        <div class="wf-grid" style="--cols:2">${PLAN_NAMES.map(p => `<div class="wf-card"><span class="wf-radio${p === o.plan ? ' wf-radio--on' : ''}">${p[0].toUpperCase() + p.slice(1)}</span>${wLines(2)}</div>`).join('')}</div>
         <button class="wf-btn wf-btn--primary" type="button" data-wire="upgrade">Upgrade</button>
       </div>`, wNote(1, `Flow 9: /upgrade/${o.plan}/ opens this with the ${o.plan} plan already picked.`), 520)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
   const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, html: () => WIRE[id](opts) });
   function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
-  /* Wireframe buttons: the next flow step when a flow is running, else the obvious place */
+  /* Wireframe buttons: the next flow step when a flow is running, else the obvious place.
+     OFF_PATH buttons take a side path the flow doesn't model (create a resume instead of uploading one, or upload from Latest resume), so they always do their own thing. */
+  const OFF_PATH = ['gate-create', 'latest-create', 'latest-upload'];
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-wire]');
     if (!b) return;
     const w = b.dataset.wire, root = b.closest('.rt-panes');
-    if (flowNow && w !== 'gate-create' && w !== 'latest-upload' && flowNext()) return;
+    if (flowNow && !OFF_PATH.includes(w) && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
     else if (w === 'gate-upload') showPane(root, 'upload', 1);
@@ -3636,13 +3637,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     route: (label, path, pane) => ({ label, match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
     wireTool: (label, path, pane) => ({ label, wire: pane === 'main' || pane === 'gate', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
-    build: label => ({ label: label || 'Building screen', match: 'screen:loading', run: () => showBuilding('ai') }),
+    build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard })
   };
   const FLOWS = [
     { n: 1, title: 'Onboarding', steps: [S.wire('Sign up', '/register/', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
-    { n: 2, title: 'CV given on the landing page', steps: [S.wire('Sign up · CV attached', '/register/', 'signup', { cv: true }), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build(), S.editor()] },
+    { n: 2, title: 'CV given on the landing page', steps: [S.wire('Sign up · CV attached', '/register/', 'signup', { cv: true }), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload'), S.editor()] },
     { n: 3, title: 'Tool needs a CV, none given', steps: [S.wire('Sign up', '/register/', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
     { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
     { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
@@ -3675,6 +3676,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const flowNext = () => flowGo(flowAt + 1);
   function startFlow(n) { flowNow = FLOWS.find(f => f.n === n); if ([3, 5, 7].includes(n)) setCv(false); flowGo(0); }
   function endFlow() { flowNow = null; renderFlowBar(); }
+  /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
+  function leavesFlow(r) { return !!flowNow && !flowNow.steps.some(s => s.match.split('#')[0] === 'route:' + r.path); }
   /* Keep the bar in step when the person moves on with the screen's own buttons */
   function flowSync() {
     if (!flowNow) return;
@@ -3890,7 +3893,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const vw = e.target.closest('[data-view]');
     if (vw) return setView(vw.dataset.view);
     const rt = e.target.closest('[data-route]');
-    if (rt) return openRoute(findRoute(rt.dataset.route));
+    if (rt) { const r = findRoute(rt.dataset.route); if (leavesFlow(r)) endFlow(); return openRoute(r); }
     const cvb = e.target.closest('[data-cv]');
     if (cvb) return setCv(cvb.dataset.cv === 'yes');
     const fl = e.target.closest('[data-flow]');
@@ -3900,7 +3903,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const a = el.dataset.action;
     const form = el.closest('form');
     if (a === 'pick-intent') go('create', el);
-    else if (a === 'restart') { clearTimers(); go('intent'); }
+    else if (a === 'restart') { clearTimers(); endFlow(); go('intent'); }
     else if (a === 'toggle') toggleA(el.closest('.mcard'));
     else if (a === 'open') { if (el.getAttribute('aria-disabled') !== 'true') openB(el.closest('.mcard').dataset.id); }
     else if (a === 'back') backB();
