@@ -1153,6 +1153,32 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   background: var(--kr-blue-dark); color: var(--kr-white); font-size: 12px; line-height: 16px; font-weight: 500; padding: 6px 10px; border-radius: 8px; box-shadow: var(--kr-shadow-dropdown);
 }
 [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+/* More options, bottom right: a quiet button (it comes forward on hover) that opens a small panel with
+   the less-used settings, variant C and the Flat / 3D look. A dot shows when one of them is on. */
+.proto-more { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: grid; justify-items: end; gap: 8px; }
+.pm-btn {
+  position: relative; width: 36px; height: 36px; border: 0; border-radius: 12px; cursor: pointer; display: grid; place-items: center;
+  background: var(--kr-blue-dark); color: #d6dae4; box-shadow: var(--kr-shadow-dropdown); opacity: .55;
+  transition: opacity var(--dur-fast) var(--ease-standard), color .2s;
+}
+.pm-btn:hover, .pm-btn:focus-visible, .pm-btn[aria-expanded="true"], .pm-btn.has-active { opacity: 1; color: var(--kr-white); }
+.pm-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(8, 20, 48, .3); }
+.pm-btn svg.i { width: 16px; height: 16px; }
+.pm-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--kr-blue); box-shadow: 0 0 0 2px var(--kr-blue-dark); opacity: 0; transition: opacity var(--dur-fast); }
+.pm-btn.has-active .pm-dot { opacity: 1; }
+.proto-more-panel {
+  display: grid; gap: 8px; padding: 10px 10px 10px 12px; background: var(--kr-blue-dark); color: var(--kr-white); border-radius: 14px; box-shadow: var(--kr-shadow-modal);
+  opacity: 0; transform: translateY(6px); visibility: hidden;
+  transition: opacity var(--dur-fast) var(--ease-exit), transform var(--dur-fast) var(--ease-exit), visibility 0s var(--dur-fast);
+}
+.proto-more.is-open .proto-more-panel { opacity: 1; transform: none; visibility: visible; transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard), visibility 0s; }
+.pm-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.pm-label { font-size: 11px; line-height: 14px; font-weight: 500; letter-spacing: .4px; text-transform: uppercase; color: #8a93ab; }
+.proto-more .seg { flex-direction: row; }
+/* tooltips open above, right-aligned, so they stay on screen */
+.proto-more [data-tip]::after { right: 0; top: auto; bottom: calc(100% + 10px); transform: translate(0, 4px); }
+.proto-more [data-tip]:hover::after, .proto-more [data-tip]:focus-visible::after { transform: none; }
+.pm-btn[aria-expanded="true"]::after { display: none; }
 /* Version tag, bottom left: same dark chrome as the rail so it reads as part of the prototype, not the product */
 .proto-ver {
   position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; pointer-events: none;
@@ -1169,6 +1195,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .proto:not(.is-open) > :not(.proto-toggle) { display: none; }
   .proto:not(.is-open) { padding: 4px; border-radius: 12px; }
   [data-tip]::after { display: none; }
+  .proto-more { right: 60px; }  /* left of the folded rail */
 }
 
 .toast {
@@ -1276,7 +1303,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 1.11">v1.11</div>
+<div class="proto-ver" aria-label="Prototype version 1.12">v1.12</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -1290,12 +1317,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   <div class="seg" data-screen-for="create">
     <button type="button" data-variant="A" aria-pressed="true" aria-label="Method screen: variant A, expand in place" data-tip="Method screen · A, expand in place">A</button>
     <button type="button" data-variant="B" aria-pressed="false" aria-label="Method screen: variant B, separate screens" data-tip="Method screen · B, separate screens">B</button>
-    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
-  </div>
-  <span class="proto-sep" aria-hidden="true"></span>
-  <div class="seg" data-screen-for="intent create">
-    <button type="button" data-look="flat" aria-pressed="true" aria-label="Goal and method screens: flat look" data-tip="Goal & method screens · Flat look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/></svg></button>
-    <button type="button" data-look="3d" aria-pressed="false" aria-label="Goal and method screens: 3D look" data-tip="Goal & method screens · 3D look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></button>
   </div>
   <span class="proto-sep" aria-hidden="true"></span>
   <div class="seg">
@@ -1306,6 +1327,24 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   <button class="proto-reset" type="button" data-action="restart" aria-label="Restart prototype" data-tip="Restart">
     <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
   </button>
+</div>
+
+<!-- More options: a quiet corner button that opens the less-used settings -->
+<div class="proto-more" id="proto-more">
+  <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
+    <div class="pm-row"><span class="pm-label">Variant</span>
+      <div class="seg" data-screen-for="create">
+    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
+      </div>
+    </div>
+    <div class="pm-row"><span class="pm-label">Look</span>
+      <div class="seg" data-screen-for="intent create">
+        <button type="button" data-look="flat" aria-pressed="true" aria-label="Goal and method screens: flat look" data-tip="Goal & method screens · Flat look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/></svg></button>
+        <button type="button" data-look="3d" aria-pressed="false" aria-label="Goal and method screens: 3D look" data-tip="Goal & method screens · 3D look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <button class="pm-btn" type="button" data-action="proto-more" aria-expanded="false" aria-controls="proto-more-panel" aria-label="More options" data-tip="More options"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span class="pm-dot" aria-hidden="true"></span></button>
 </div>
 
 <script>
@@ -1560,7 +1599,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      open A instead. To show it again, set SHOW_C back to true. */
   const SHOW_C = true;
   const VARIANTS = SHOW_C ? ['A', 'B', 'C'] : ['A', 'B'];
-  document.querySelector('.proto [data-variant="C"]').hidden = !SHOW_C;
+  document.querySelector('.proto-more [data-variant="C"]').closest('.pm-row').hidden = !SHOW_C;
+  // More options (bottom right): open/close, and a dot on the button while C or the 3D look is on
+  const pmWrap = document.getElementById('proto-more'), pmBtn = pmWrap.querySelector('.pm-btn'), pmPanel = document.getElementById('proto-more-panel');
+  function setMore(open) {
+    pmWrap.classList.toggle('is-open', open); pmBtn.setAttribute('aria-expanded', String(open)); pmPanel.inert = !open;
+  }
+  const markMore = () => pmBtn.classList.toggle('has-active', variant === 'C' || document.body.classList.contains('look-3d'));
   // The 3D look's backdrop (only shown on the method screen in 3D; see .d-backdrop). The resume
   // fragments in the margins are hidden for now but kept in full: set SHOW_3D_PAPERS to true to show them.
   const SHOW_3D_PAPERS = false;
@@ -2603,6 +2648,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     variant = v;
     document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === v)));
     try { localStorage.setItem('kr-start-variant', v); } catch (e) {}
+    markMore();
     if (current === 'create') renderCreate();
   }
 
@@ -2612,6 +2658,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.body.classList.toggle('look-3d', v === '3d');
     document.querySelectorAll('[data-look]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.look === v)));
     try { localStorage.setItem('kr-start-look', v); } catch (e) {}
+    markMore();
   }
 
   function setLayout(v) {
@@ -2640,6 +2687,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   document.addEventListener('click', e => {
+    if (pmWrap.classList.contains('is-open') && !pmWrap.contains(e.target)) setMore(false);
     const vb = e.target.closest('[data-variant]');
     if (vb) {
       setVariant(vb.dataset.variant);
@@ -2681,6 +2729,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const ta = form.querySelector('textarea'); ta.value = SAMPLE_TEXT;
       ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus();
     }
+    else if (a === 'proto-more') setMore(!pmWrap.classList.contains('is-open'));
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
@@ -2715,6 +2764,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
 
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && pmWrap.classList.contains('is-open')) { setMore(false); pmBtn.focus(); }
     if (e.key === 'Enter' && e.target.matches('[data-add]')) {
       e.preventDefault();
       const v = e.target.value.trim();

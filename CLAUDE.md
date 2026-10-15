@@ -16,7 +16,7 @@ Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention i
 
 ## Variant C visibility
 
-Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src/prototype.html` controls it: `true` shows its rail button and lets `#c` open it (current state); `false` hides the button and sends `#c` links and a remembered C choice to A, while all of C's markup, styles and logic stay in place. When hiding it, also add a "hidden for now" note to C in the README; when showing it, remove that note.
+Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src/prototype.html` controls it: `true` shows its button in the More options panel (bottom-right corner) and lets `#c` open it (current state); `false` hides that row and sends `#c` links and a remembered C choice to A, while all of C's markup, styles and logic stay in place. When hiding it, also add a "hidden for now" note to C in the README; when showing it, remove that note.
 
 ## Hidden decorations in the 3D look
 
