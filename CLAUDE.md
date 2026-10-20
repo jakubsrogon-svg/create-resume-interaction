@@ -36,6 +36,6 @@ The user sends screenshots of product screens (mostly modals) to recreate pixel 
 
 ## Wireframes and flow templates
 
-- Screens without a design are wireframes built with Wire (the `anthropic-skills:wire-wireframes` skill; its CSS is copied in with tokens scoped to `.wf`). Write them as `WIRE.<id>` markup functions using Wire classes only; buttons carry `data-wire` (they move a running flow on, otherwise do the obvious thing). When the user sends the real design, replace the route's `html` with a recreated screen and drop `wire`.
+- Screens without a design are wireframes built with Wire (the `anthropic-skills:wire-wireframes` skill; its CSS is copied in with tokens scoped to `.wf`). Write them as `WIRE.<id>` markup functions using Wire classes only; buttons carry `data-wire` (they move a running flow on, otherwise do the obvious thing). Keep them shades of grey only (Wire's accent, status and note tokens are set to greys). A screen's note goes in `wNote(text)`: it is kept out of the screen and shown in the chrome note at the bottom (`syncNote`), so it never reads as part of the design. When the user sends the real design, replace the route's `html` with a recreated screen and drop `wire`.
 - The nine flow templates live in `FLOWS` (steps built with the `S.*` helpers: `wire`, `route`, `wireTool`, `screen`, `build`, `editor`, `dash`). Every URL belongs to one of them; the URL checklist doc maps them.
 

@@ -1499,9 +1499,10 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .lki-field { margin-top: 40px; }
 }
 
-/* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in as is; its tokens are scoped
-   to .wf so they can't touch the prototype's own). Used for every screen without a design. ---------- */
-.wf{--paper:#ffffff;--fill:#f2f2f2;--fill-strong:#d9d9d9;--line-soft:#e0e0e0;--line:#8a8a8a;--ink-muted:#616161;--ink:#1f1f1f;--accent:#ff5e59;--on-accent:#1f1f1f;--danger:#c62828;--success:#2e7d32;--note:#fff3b0;--scrim:rgba(31,31,31,0.4);--space-1:4px;--space-2:8px;--space-4:16px;--space-6:24px;--space-8:32px;--radius-0:0px;--radius-sm:4px;--radius-pill:999px;--font-sans:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif}
+/* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in; its tokens are scoped to .wf so
+   they can't touch the prototype's own, and its accent, status and note colours are greys, so a wireframe
+   is only shades of grey). Used for every screen without a design. ---------- */
+.wf{--paper:#ffffff;--fill:#f2f2f2;--fill-strong:#d9d9d9;--line-soft:#e0e0e0;--line:#8a8a8a;--ink-muted:#616161;--ink:#1f1f1f;--accent:#4d4d4d;--on-accent:#ffffff;--danger:#4d4d4d;--success:#4d4d4d;--note:#f2f2f2;--scrim:rgba(31,31,31,0.4);--space-1:4px;--space-2:8px;--space-4:16px;--space-6:24px;--space-8:32px;--radius-0:0px;--radius-sm:4px;--radius-pill:999px;--font-sans:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif}
 .wf .t-display{font-size:32px;line-height:40px;font-weight:700;letter-spacing:normal}
 .wf .t-title{font-size:24px;line-height:32px;font-weight:600;letter-spacing:normal}
 .wf .t-heading{font-size:18px;line-height:26px;font-weight:600;letter-spacing:normal}
@@ -1662,6 +1663,25 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
   background: var(--kr-blue-dark); color: var(--kr-white); box-shadow: var(--kr-shadow-modal); font-size: 12px; line-height: 16px; white-space: nowrap;
 }
 .flow-bar[hidden] { display: none; }
+/* A wireframe's note (prototype chrome, bottom centre, above the flow bar when one runs): what the screen is for, which flow it belongs to */
+.proto-note {
+  position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; transform: translateX(-50%);
+  display: flex; align-items: baseline; gap: 8px; width: max-content; max-width: min(560px, calc(100vw - 220px)); padding: 8px 14px; border-radius: 12px;
+  background: var(--kr-blue-dark); color: #c9cde0; box-shadow: var(--kr-shadow-modal); font-size: 12px; line-height: 16px;
+}
+.proto-note[hidden] { display: none; }
+.proto-note b { flex: none; color: var(--kr-white); font-weight: 500; }
+.flow-bar:not([hidden]) ~ .proto-note { bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+body.has-note #screen-route { padding-bottom: 96px; }  /* the screen can scroll clear of the note */
+/* Mobile view on a wide window: in the free margin left of the phone frame, above the version tag */
+@media (min-width: 900px) {
+  body.is-mobile .proto-note, body.is-mobile .flow-bar:not([hidden]) ~ .proto-note { left: 12px; transform: none; bottom: calc(48px + env(safe-area-inset-bottom, 0px)); max-width: min(320px, calc(50vw - 240px)); }
+}
+/* On a real phone the bottom row is full (version, flow bar, More options, rail): the note gets its own row above it */
+@media (max-width: 480px) {
+  body .proto-note, .flow-bar:not([hidden]) ~ .proto-note { left: 12px; right: 12px; transform: none; width: auto; max-width: none; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  body.has-note #screen-route { padding-bottom: 150px; }
+}
 .fb-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
 .fb-steps { display: flex; gap: 6px; }
 .fb-dot { position: relative; width: 12px; height: 12px; padding: 0; border: 2px solid #8a93ab; border-radius: 50%; background: #8a93ab; cursor: pointer; }
@@ -1678,7 +1698,7 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 .fb-next svg { transform: rotate(180deg); }
 .flow-bar [data-tip]::after { right: auto; left: 50%; top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 4px); }
 .flow-bar [data-tip]:hover::after { transform: translate(-50%, 0); }
-@media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar { max-width: calc(100vw - 140px); } }
+@media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar, .proto-note { max-width: calc(100vw - 140px); } }
 
 /* More options › Screens: the recreated product screens, each with its URL */
 .pm-sec { display: grid; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
@@ -1797,8 +1817,9 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- The running flow template (see FLOWS) -->
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
+<aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.0.1">v2.0.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.0.2">v2.0.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2130,6 +2151,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
     if (routesReady && s !== 'route' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
+    syncNote();
     if (routesReady && s !== 'route') flowSync();
   }
   /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
@@ -3106,7 +3128,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current === 'route') {
       // already on a route screen: swap its content in place
       if (screenRun) screenRun.finish();
-      fillRoute(r, pane); routeNow = r; markRoutes(); setHash(r.path); flowSync();
+      fillRoute(r, pane); routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
       scroller().scrollTo({ top: 0 });
       if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
         .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
@@ -3119,7 +3141,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setCurrent('route');
     } else await go('route');
     if (current !== 'route') return;
-    routeNow = r; markRoutes(); setHash(r.path); flowSync();
+    routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
   }
   /* Close (×), Cancel: back to where the person came from */
   function closeRoute() {
@@ -3131,12 +3153,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const from = root.querySelector(':scope > .rt-pane:not([hidden])'), to = root.querySelector(`:scope > [data-pane="${name}"]`);
     if (!to || from === to) return;
     scrollToTop();
-    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); return; }
+    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); syncNote(); return; }
     Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
     to.hidden = false;
     const a = play(from, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }], { duration: DUR.fast, easing: EASE.exit });
     const b = play(to, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: DUR.base, delay: 80, easing: EASE.standard });
-    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); flowSync(); });
+    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); flowSync(); syncNote(); });
   }
   /* One motion for a card whose content changes height */
   function morphHeight(el, change) {
@@ -3552,7 +3574,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const wLines = (n = 2) => `<div class="wf-lines">${'<i class="wf-line"></i>'.repeat(n)}</div>`;
   const wField = (label, value = '', kind = '') => `<div class="wf-field">${label}<span class="wf-input${kind ? ' wf-input--' + kind : ''}">${value}</span></div>`;
   const wShell = (label, body, notes = '', width = 440) => `<div class="wf wf-screen rt-wire" style="width:min(100%,${width}px)"><span class="wf-screen-label">Wireframe · ${label}</span>${body}${notes}</div>`;
-  const wNote = (n, text) => `<p class="wf-note"><b>${n}</b> ${text}</p>`;
+  const wNote = text => `<template class="wf-note-src">${text}</template>`;  // shown by syncNote, outside the screen
   const wSocial = (w = 'signup') => `<button class="wf-btn" type="button" data-wire="${w}">Continue with Google</button><button class="wf-btn" type="button" data-wire="${w}">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
   const WIRE_TOOLS = {
     'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
@@ -3571,42 +3593,42 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
         ${o.wall ? '' : '<p class="t-small">Already have an account? <a class="wf-link" href="#/login/">Log in</a></p>'}
-      </div>`, o.wall ? wNote(1, 'Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')
-      : o.cv ? wNote(1, 'Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')
-      : wNote(1, 'After sign-up: the goal screen (Flow 1), or straight to the tool the URL asked for (Flow 3).')),
+      </div>`, o.wall ? wNote('Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')
+      : o.cv ? wNote('Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')
+      : wNote('After sign-up: the goal screen (Flow 1), or straight to the tool the URL asked for (Flow 3).')),
     login: () => wShell('Log in', `<div class="wf-card wf-stack">
         <h1 class="t-title">Log in</h1>${wSocial('login')}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <a class="wf-link t-small" href="#/login/">Forgot password?</a>
         <button class="wf-btn wf-btn--primary" type="button" data-wire="login">Log in</button>
         <p class="t-small">New here? <a class="wf-link" href="#/register/">Create an account</a></p>
-      </div>`, wNote(1, 'Flow 6: straight to the dashboard.')),
+      </div>`, wNote('Flow 6: straight to the dashboard.')),
     gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
         <div class="wf-grid" style="--cols:2">
           <div class="wf-card"><h3 class="t-heading">Upload a resume</h3>${wLines(2)}<button class="wf-btn wf-btn--primary" type="button" data-wire="gate-upload">Upload</button></div>
           <div class="wf-card"><h3 class="t-heading">Create a new one</h3>${wLines(2)}<button class="wf-btn" type="button" data-wire="gate-create">Create resume</button></div>
         </div>
-      </div>`, wNote(1, 'Flow 3 and 5: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
+      </div>`, wNote('Flow 3 and 5: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
       const body = o.tool === 'career-coach'
         ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
         : `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
-      return wShell(title, body, wNote(1, note), 520); },
+      return wShell(title, body, wNote(note), 520); },
     'latest-empty': () => wShell('Latest resume · new user', `<div class="wf-card wf-stack">
         <h1 class="t-title">You don’t have a resume yet</h1>
         <div class="wf-empty"><span class="wf-ph">[illustration]</span>${wLines(2)}<div class="wf-row"><button class="wf-btn wf-btn--primary" type="button" data-wire="latest-create">Create a resume</button><button class="wf-btn" type="button" data-wire="latest-upload">Upload a resume</button></div></div>
-      </div>`, wNote(1, 'Flow 7: today new users land on an empty /resumes list from /latest-resume/. This needs a better design.'), 520),
+      </div>`, wNote('Flow 7: today new users land on an empty /resumes list from /latest-resume/. This needs a better design.'), 520),
     'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
         <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
         <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
-      </div>`, wNote(1, 'Flow 8: Career Map has its own onboarding. Design will come later; this is a stand-in.'), 520),
-    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote(1, 'Roles the person’s experience leads to, with a match score.'), 640),
+      </div>`, wNote('Flow 8: Career Map has its own onboarding. Design will come later; this is a stand-in.'), 520),
+    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640),
     upgrade: o => wShell('Upgrade', `<div class="wf-card wf-stack">
         <h1 class="t-title">Upgrade to Premium</h1>${wLines(2)}
         <div class="wf-grid" style="--cols:2">${PLAN_NAMES.map(p => `<div class="wf-card"><span class="wf-radio${p === o.plan ? ' wf-radio--on' : ''}">${p[0].toUpperCase() + p.slice(1)}</span>${wLines(2)}</div>`).join('')}</div>
         <button class="wf-btn wf-btn--primary" type="button" data-wire="upgrade">Upgrade</button>
-      </div>`, wNote(1, `Flow 9: /upgrade/${o.plan}/ opens this with the ${o.plan} plan already picked.`), 520)
+      </div>`, wNote(`Flow 9: /upgrade/${o.plan}/ opens this with the ${o.plan} plan already picked.`), 520)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
   const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, html: () => WIRE[id](opts) });
@@ -3678,6 +3700,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function endFlow() { flowNow = null; renderFlowBar(); }
   /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
   function leavesFlow(r) { return !!flowNow && !flowNow.steps.some(s => s.match.split('#')[0] === 'route:' + r.path); }
+  /* The wireframe's note (wNote) sits in the chrome at the bottom, never on the screen: the one on screen now, or none */
+  function syncNote() {
+    const note = document.getElementById('proto-note');
+    const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
+    const src = wire && wire.querySelector(':scope > .wf-note-src');
+    note.hidden = !src; document.body.classList.toggle('has-note', !!src);
+    if (src) note.querySelector('.pn-text').innerHTML = src.innerHTML;
+  }
   /* Keep the bar in step when the person moves on with the screen's own buttons */
   function flowSync() {
     if (!flowNow) return;
