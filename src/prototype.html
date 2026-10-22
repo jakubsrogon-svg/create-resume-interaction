@@ -2214,7 +2214,11 @@ body.has-note .au-main { padding-bottom: 96px; }
   body.has-note #screen-route { padding-bottom: 150px; }
 }
 .fb-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
-.fb-steps { display: flex; gap: 6px; }
+.fb-steps { display: flex; gap: 10px; }
+.fb-grp { display: flex; gap: 6px; padding-bottom: 4px; margin-bottom: -6px; border-bottom: 2px solid rgba(255, 255, 255, .22); }
+.fb-grp.st-process, .fb-grp.st-state { background: none; border-color: #f3d9a4; }
+.fb-grp.st-dest { background: none; border-color: #9fe0c4; }
+.fb-grp.st-entry, .fb-grp.st-intent, .fb-grp.st-prep { background: none; }
 .fb-dot { position: relative; width: 12px; height: 12px; padding: 0; border: 2px solid #8a93ab; border-radius: 50%; background: #8a93ab; cursor: pointer; }
 .fb-dot.is-wire { background: transparent; border-style: dashed; }
 .fb-dot.is-past { opacity: .55; }
@@ -2245,8 +2249,41 @@ body.has-note .au-main { padding-bottom: 96px; }
 .pm-route.is-todo b::after { content: " · wireframe"; font-weight: 400; color: #8a93ab; }
 .pm-sub { margin-top: 6px; font-size: 11px; line-height: 14px; color: #8a93ab; }
 .pm-sub:first-child { margin-top: 2px; }
-#pm-routes, #pm-flows { display: grid; gap: 2px; }
-.proto-more-panel { max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#pm-routes { display: grid; gap: 2px; }
+/* The four flow templates: stage chips coloured like the flow board (preparation grey, processing sand,
+   destination green, dashboard blue), a feature (URL) picker and what that feature puts in the stages */
+#pm-flows { display: grid; gap: 8px; }
+.pmf-intro { margin: 0 0 2px; max-width: 300px; font-size: 11px; line-height: 15px; color: #8a93ab; }
+.pmf { display: grid; gap: 7px; margin-inline: -6px; padding: 8px; border-radius: 10px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.pmf[aria-current="true"] { background: rgba(255, 255, 255, .09); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
+.pmf-top { display: flex; align-items: baseline; gap: 6px; font-size: 13px; line-height: 18px; }
+.pmf-top b { font-weight: 500; }
+.pmf-top span { color: #8a93ab; font-size: 12px; }
+.pmf-stages { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 2px; margin: 0; padding: 0; list-style: none; }
+.pmf-stages li { display: flex; align-items: center; gap: 2px; }
+.pmf-stages li + li::before { content: "›"; color: #59617a; font-size: 12px; line-height: 1; }
+.st-chip { padding: 1px 5px; border-radius: 999px; font-size: 10px; line-height: 15px; font-weight: 500; white-space: nowrap; background: rgba(255, 255, 255, .1); color: #c9cde0; }
+.st-chip.is-feat { box-shadow: inset 0 0 0 1px currentColor; }
+.st-process, .st-state { background: rgba(251, 225, 168, .16); color: #f3d9a4; }
+.st-dest { background: rgba(143, 214, 184, .16); color: #9fe0c4; }
+.st-dash { background: rgba(137, 196, 255, .16); color: #a9d2ff; }
+.st-entry { background: none; color: #8a93ab; box-shadow: inset 0 0 0 1px rgba(138, 147, 171, .5); }
+.pmf-skip { display: flex; align-items: center; gap: 4px; font-size: 11px; line-height: 14px; color: #8a93ab; }
+.pmf-pick { display: flex; gap: 6px; }
+.pmf-pick select {
+  flex: 1; width: 0; min-width: 0;  /* no say in the panel's width: the longest URL title would widen it past a phone */ height: 30px; padding: 0 26px 0 8px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; color: var(--kr-white); cursor: pointer;
+  -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, .1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9cde0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center / 14px;
+}
+.pmf-pick select option, .pmf-pick select optgroup { color: var(--kr-grey-100); background: var(--kr-white); }
+.pmf-pick select:focus-visible, .pmf-run:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pmf-run { display: flex; align-items: center; gap: 4px; height: 30px; padding: 0 10px 0 8px; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
+.pmf-run:hover { background: #e4e7f0; }
+.pmf-run svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
+.pmf-what { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; margin: 0; max-width: 300px; font-size: 11px; line-height: 15px; color: #c9cde0; }
+.pmf-what dt { color: #8a93ab; }
+.pmf-what dd { margin: 0; }
+.pmf-what code { font: 10.5px/15px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; word-break: break-all; }
+.proto-more-panel { max-height: calc(100vh - 72px); max-width: min(380px, calc(100vw - 24px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 
 /* ---------- Responsive ---------- */
 /* Goal cards: two columns (560px) below ~1100px */
@@ -2347,11 +2384,11 @@ body.has-note .au-main { padding-bottom: 96px; }
 
 <template id="logo-symbol">__LOGO_SYMBOL__</template>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<!-- The running flow template (see FLOWS) -->
+<!-- The running flow (see FLOW_T and FEATURES) -->
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.5">v2.5</div>
+<div class="proto-ver" aria-label="Prototype version 2.6">v2.6</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2380,12 +2417,19 @@ body.has-note .au-main { padding-bottom: 96px; }
 <!-- More options: a quiet corner button that opens the less-used settings -->
 <div class="proto-more" id="proto-more">
   <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
-    <div class="pm-sec"><span class="pm-label">Flows</span><div id="pm-flows"></div></div>
+    <div class="pm-sec"><span class="pm-label">Flows</span><p class="pmf-intro">Every URL follows one of four flows. The URL only changes the outlined stages: the feature’s own screens and where it ends.</p><div id="pm-flows"></div></div>
     <div class="pm-sec"><span class="pm-label">Screens</span><div id="pm-routes"></div></div>
     <div class="pm-row"><span class="pm-label">CV</span>
       <div class="seg">
         <button type="button" data-cv="no" aria-pressed="true" aria-label="No CV uploaded yet" data-tip="No CV yet · screens that need one ask for it"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m14.5 12.5-5 5"/><path d="m9.5 12.5 5 5"/></svg></button>
         <button type="button" data-cv="yes" aria-pressed="false" aria-label="CV uploaded" data-tip="CV uploaded · skip the upload step"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg></button>
+      </div>
+    </div>
+    <div class="pm-row"><span class="pm-label">Result</span>
+      <div class="seg">
+        <button type="button" data-result="ok" aria-pressed="true" aria-label="Processing ends: completed" data-tip="Processing · Completed"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+        <button type="button" data-result="fail" aria-pressed="false" aria-label="Processing ends: failed" data-tip="Processing · Failed (the input can’t be used)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        <button type="button" data-result="error" aria-pressed="false" aria-label="Processing ends: error" data-tip="Processing · Error (something broke on our side)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v8"/><path d="M12 19h.01"/></svg></button>
       </div>
     </div>
     <div class="pm-row"><span class="pm-label">Variant</span>
@@ -2675,7 +2719,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setMore(open) {
     pmWrap.classList.toggle('is-open', open); pmBtn.setAttribute('aria-expanded', String(open)); pmPanel.inert = !open;
   }
-  const markMore = () => pmBtn.classList.toggle('has-active', variant === 'C' || document.body.classList.contains('look-3d'));
+  const markMore = () => pmBtn.classList.toggle('has-active', variant === 'C' || document.body.classList.contains('look-3d') || document.querySelector('.proto-more [data-result="ok"]').getAttribute('aria-pressed') !== 'true');
   // The 3D look's backdrop (only shown on the method screen in 3D; see .d-backdrop). The resume
   // fragments in the margins are hidden for now but kept in full: set SHOW_3D_PAPERS to true to show them.
   const SHOW_3D_PAPERS = false;
@@ -3266,7 +3310,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* The app's menu: the same left sidebar on every page inside the app (editor, dashboard, My Documents, the
      resume tools), and the same top bar on phones. `at` marks the page: dashboard, docs, fill (the editor), ats,
      proof or coach. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
-  const NAV_SOON = { design: 'Design', download: 'Download &amp; Share', jobs: 'Find Jobs', tracker: 'Job Tracker' };
+  const NAV_SOON = { design: 'Design', download: 'Download &amp; Share' };
   function appNavHTML(at) {
     const P = person, logo = document.querySelector('#topbar .logo').innerHTML;
     const here = key => at === key ? ' is-active" aria-current="page' : '';
@@ -3301,6 +3345,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (n === 'ats' || n === 'proof') openTool(n);
     else if (n === 'career-map') openRoute(findRoute('/career-map/'));
     else if (n === 'interviews') openRoute(findRoute('/dashboard/create-interview/'));
+    else if (n === 'jobs') openRoute(findRoute('/jobs/'));
+    else if (n === 'tracker') openRoute(findRoute('/jobs/job-tracker/'));
     else if (n === 'upgrade') openUpgrade(upgPlan);
     else toast(`${NAV_SOON[n]} isn’t part of this prototype.`.replace('&amp;', '&'));
   });
@@ -3625,6 +3671,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
+    ...[['resume', 'New resume'], ['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
     { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
     { group: '4 · Generate with AI', path: '/ai/resume/experience/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
@@ -3643,7 +3690,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => openEdit() },
+    { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
+    { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
+    { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
+    { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
@@ -3659,6 +3710,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
      ATS check ask for a resume first when there is none) */
   function pickGoal(id, el) {
+    flowGoal(id);
     if (id === 'build') return go('create', el);
     if (id === 'tailor') return openRoute(findRoute('/dashboard/tailor-resume/'));
     if (id === 'ats') return cvUploaded ? openTool('ats') : openRoute(findRoute('/dashboard/analyse-resume/'));
@@ -3681,15 +3733,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function fillRoute(r, pane) {
     // a tool that needs a CV: Add your resume (gate) → Upload your resume → the tool; pane picks where to start
-    const el = screens.route, cv = r.needsCv || r.upload;
-    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : 'main');
+    // the main pane is "main", or the flow stage a generic wireframe stands for (process, state, dest)
+    const el = screens.route, cv = r.needsCv || r.upload, main = r.pane || 'main';
+    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
-    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML('main', r.html())}</div>`;
+    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML(main, r.html())}</div>`;
     el.setAttribute('aria-label', r.title);
     const item = el.firstElementChild;
-    if (r.init) r.init(item.querySelector('[data-pane="main"]').firstElementChild);
+    if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild);
     if (cv) initUpload(item.querySelector('[data-pane="upload"]'), {
-      onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, 'main', 1),
+      onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, main, 1),
       onCancel: r.needsCv ? () => showPane(item, 'gate', -1) : closeRoute
     });
     if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
@@ -4006,14 +4059,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if (needFilled(required())) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
+      if (needFilled(required()) && !flowOn()) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
     initUpload(root.querySelector('[data-pane="upload"]'), { onDone: toStepTwo, onCancel: () => showPane(root, 'gate', -1) });
     const sel = root.querySelector('.sel');
     sel.addEventListener('click', e => {
       const it = e.target.closest('.sel-item'); if (it) return sel.querySelectorAll('.sel-item').forEach(x => x.setAttribute('aria-checked', String(x === it)));
       if (e.target.closest('.sel-back')) showPane(root, 's1', -1);
-      if (e.target.closest('.sel-go')) notYet(e.target.closest('.sel-go'), 'Writing…', `The personalized ${result} would open here; that screen isn’t part of the prototype yet.`);
+      if (e.target.closest('.sel-go') && !flowOn()) notYet(e.target.closest('.sel-go'), 'Writing…', `The personalized ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
   }
 
@@ -4081,6 +4134,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     Object.assign(input, { type: 'file', hidden: true, accept: '.docx,.odt,.html,.htm,.rtf,.txt,.pdf' });
     pane.appendChild(input);
     const setState = st => {
+      if (st === 'progress') flowSeen('progress');  // uploading is the flow's data processing
       morphHeight(card, () => { card.dataset.state = st; card.innerHTML = UPL[st](); });
       if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
     };
@@ -4142,7 +4196,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     initLang(form.querySelector('.aim-lang-wrap'));
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if (needFilled([form.elements.title])) notYet(form.querySelector('.rsg-go'), 'Writing…', 'The resignation letter would open here; that screen isn’t part of the prototype yet.');
+      if (needFilled([form.elements.title]) && !flowOn()) notYet(form.querySelector('.rsg-go'), 'Writing…', 'The resignation letter would open here; that screen isn’t part of the prototype yet.');
     });
   }
 
@@ -4708,14 +4762,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <h1 class="t-title">Sign up to see your resume</h1>${wLines(2)}
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
-      </div>`, wNote('Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')),
+      </div>`, wNote('Guests reach this when processing is done, before the destination (Flow 2’s guest features). Their work is kept and opens right after sign-up.')),
     gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
         <div class="wf-grid" style="--cols:2">
           <div class="wf-card"><h3 class="t-heading">Upload a resume</h3>${wLines(2)}<button class="wf-btn wf-btn--primary" type="button" data-wire="gate-upload">Upload</button></div>
           <div class="wf-card"><h3 class="t-heading">Create a new one</h3>${wLines(2)}<button class="wf-btn" type="button" data-wire="gate-create">Create resume</button></div>
         </div>
-      </div>`, wNote('Flow 3 and 5: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
+      </div>`, wNote('Feature personalization: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
       const body = o.tool === 'career-coach'
         ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
@@ -4730,11 +4784,47 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
         <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
-      </div>`, wNote('Flow 8: Career Map has its own onboarding. Design will come later; this is a stand-in.'), 520),
-    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640)
+      </div>`, wNote('Career Map’s feature personalization (Flow 2): its own onboarding. Design will come later; this is a stand-in.'), 520),
+    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640),
+    /* The flow stages every feature shares (see FLOW_T): one screen each, only the wording changes */
+    process: o => wShell('Data processing', `<div class="wf-card wf-stack">
+        <h1 class="t-title">${o.f.verb}…</h1><div class="wf-progress" style="--value:55%"></div>
+        <div class="wf-stack wf-gap-sm">${(o.f.psteps || ['Reading what you gave us', 'Working on it', 'Finishing up']).map((t, i) => `<span class="wf-check${i ? '' : ' wf-check--on'}">${t}</span>`).join('')}</div>
+        <div class="wf-row wf-spread"><span class="t-small">This takes a few seconds.</span><button class="wf-btn wf-btn--ghost wf-btn--sm" type="button" data-wire="process">Skip</button></div>
+      </div>`, wNote(`Data processing (Flows 1–3): one screen for every feature; only the wording and the steps change. It moves on by itself; what follows depends on More options › Result.`), 520),
+    state: o => { const f = o.f, r = procResult, noun = f.noun || 'result';
+      const view = r === 'ok' ? [`Your ${noun} ${/s$/.test(noun) ? 'are' : 'is'} ready`, 'wf-alert--success', 'Everything went through.', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-next">Continue</button>']
+        : r === 'fail' ? [f.fail || 'We couldn’t use what you gave us', 'wf-alert--error', 'The input can’t be used (an unreadable file, a private profile, an empty job ad). Fix it and try again.', '<button class="wf-btn" type="button" data-wire="state-retry">Change the input</button>']
+        : ['Something went wrong', 'wf-alert--error', 'It broke on our side. Nothing you entered is lost.', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-again">Try again</button>'];
+      return wShell('Processing state', `<div class="wf-card wf-stack">
+        <div class="wf-row">${[['ok', 'Completed'], ['fail', 'Failed'], ['error', 'Error']].map(([k, l]) => `<button class="wf-btn wf-btn--sm${k === r ? ' wf-btn--primary' : ' wf-btn--ghost'}" type="button" data-wire="result" data-result="${k}" aria-pressed="${k === r}">${l}</button>`).join('')}</div>
+        <h1 class="t-title">${view[0]}</h1><div class="wf-alert ${view[1]}">${view[2]}</div>${wLines(1)}
+        <div class="wf-row">${view[3]}</div>
+      </div>`, wNote('Processing state (Flows 1–3): Completed goes straight on to the destination (this screen shows only when you jump to it); Failed sends the person back to fix the input; Error lets them try again. Pick one under More options › Result.'), 520); },
+    dest: o => wShell(o.title, o.kind === 'list'
+        ? `<div class="wf-card wf-stack"><h1 class="t-title">${o.title}</h1>${[1, 2, 3, 4].map(() => `<div class="wf-card wf-row"><span class="wf-ph wf-ph--icon"></span><div class="wf-grow">${wLines(2)}</div></div>`).join('')}</div>`
+        : `<div class="wf-card wf-split"><div class="wf-pane wf-pane--muted"><span class="t-label">${o.title}</span>${wField('Title', '')}${wField('Text', '', 'area')}</div><div class="wf-pane"><span class="wf-ph wf-ph--square">[${o.kind === 'site' ? 'website preview' : 'page preview'}]</span></div></div>`,
+      wNote(`Destination: ${o.title}. Not designed yet; the flow ends here.`), o.kind === 'list' ? 560 : 760),
+    templates: o => wShell('Pick a template', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Pick a ${o.kind} template</h1>${wLines(1)}
+        <div class="wf-grid" style="--cols:3">${[1, 2, 3, 4, 5, 6].map(i => `<button class="wf-card wf-stack wf-gap-sm" type="button" data-wire="tpl"><span class="wf-ph wf-ph--square">[template ${i}]</span><span class="t-small">Template ${i}</span></button>`).join('')}</div>
+      </div>`, wNote(`Feature personalization for a new ${o.kind} without a template in the URL. With one (…/{template}) the flow starts at processing (Flow 3).`), 640),
+    jobs: () => wShell('Jobs', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Jobs that fit you</h1><div class="wf-row">${wField('Job title', 'Product designer')}${wField('Location', 'Remote', 'select')}</div>
+        ${[96, 91, 84, 78].map(m => `<button class="wf-card" type="button" data-wire="job"><span class="wf-row wf-spread"><span class="wf-row wf-grow"><span class="wf-ph wf-ph--icon"></span><span class="wf-grow">${wLines(2)}</span></span><span class="wf-badge">${m}% match</span></span></button>`).join('')}
+      </div>`, wNote('Job search (/jobs/): open roles with a match score against the resume. A role opens its page (/jobs/job/{id}/). Not designed yet.'), 600),
+    job: () => wShell('Job', `<div class="wf-card wf-stack">
+        <div class="wf-row"><span class="wf-ph wf-ph--icon"></span><span class="t-label">Company</span><span class="wf-badge">96% match</span></div>
+        <h1 class="t-title">Product designer</h1>${wLines(4)}
+        <div class="wf-row"><button class="wf-btn wf-btn--primary" type="button" data-wire="apply">Apply</button><button class="wf-btn" type="button" data-wire="track">Save to Job Tracker</button><button class="wf-btn wf-btn--ghost" type="button" data-wire="company">About the company</button></div>
+      </div>`, wNote('A job’s page (/jobs/job/{id}/): the role, the match and Apply. Not designed yet.'), 600),
+    company: () => wShell('Company', `<div class="wf-card wf-stack"><div class="wf-row"><span class="wf-ph wf-ph--icon"></span><h1 class="t-title">Company</h1></div>${wLines(3)}
+        <span class="t-label">Open roles</span>${[1, 2].map(i => `<button class="wf-card" type="button" data-wire="job" aria-label="Open role ${i}">${wLines(2)}</button>`).join('')}</div>`, wNote('A company’s page (/jobs/organization/{company}/): about it and its open roles. Not designed yet.'), 600),
+    tracker: () => wShell('Job Tracker', `<div class="wf-card wf-stack"><h1 class="t-title">Job Tracker</h1>
+        <div class="wf-grid" style="--cols:4">${['Saved', 'Applied', 'Interview', 'Offer'].map((c, i) => `<div class="wf-stack wf-gap-sm"><span class="t-label">${c}</span><div class="wf-card">${wLines(2)}</div>${i < 2 ? `<div class="wf-card">${wLines(2)}</div>` : ''}</div>`).join('')}</div></div>`, wNote('Job Tracker (/jobs/job-tracker/): every application and its status. Not designed yet.'), 760)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
-  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, html: () => WIRE[id](opts) });
+  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, html: () => WIRE[id](opts) });
   function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
   /* Wireframe buttons: the next flow step when a flow is running, else the obvious place.
      OFF_PATH buttons take a side path the flow doesn't model (create a resume instead of uploading one, or upload from Latest resume), so they always do their own thing. */
@@ -4743,6 +4833,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const b = e.target.closest('[data-wire]');
     if (!b) return;
     const w = b.dataset.wire, root = b.closest('.rt-panes');
+    if (w === 'result') return setResult(b.dataset.result);
+    if (w === 'process') return processDone();
+    if (w.startsWith('state-')) return stateAction(w);
     if (flowNow && !OFF_PATH.includes(w) && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
@@ -4751,59 +4844,219 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
     else if (w === 'tool') notYet(b, 'Working…', 'The result screen isn’t designed yet.');
     else if (w === 'upgrade') toast('Checkout isn’t part of this prototype.');
+    else if (w === 'tpl') jumpEditor();
+    else if (w === 'job') openRoute(findRoute('/jobs/job/1234/'));
+    else if (w === 'company') openRoute(findRoute('/jobs/organization/kickresume/'));
+    else if (w === 'track') openRoute(findRoute('/jobs/job-tracker/'));
+    else if (w === 'apply') toast('Applying isn’t part of this prototype.');
   });
 
   /* ---------- Flow templates ----------
-     Every URL follows one of these. Run one from More options › Flows; the bar at the bottom shows
-     where you are, which steps are still wireframes, and steps you can jump to. */
+     Four flows serve every URL (the flow board in Figma). A URL picks one and fills in only its own screens:
+     the feature personalization (its form, upload or setup), the wording of the data processing, and the destination.
+       1 Intent collection → personalization → processing → state → destination (Skip personalization → Dashboard)
+       2 personalization → processing → state → destination (a feature's URL)
+       3 processing → state → destination (the input came earlier, e.g. a CV on a landing page)
+       4 destination (the URL opens an app screen)
+     Sign up, Log in or a landing page can come before (Entry). Run one from More options › Flows; the bar at the
+     bottom shows the stages and their steps (hollow dots are wireframes) and jumps between them. */
   const S = {
-    wire: (label, path, id, opts) => ({ label, wire: true, match: 'route:' + path, run: () => openWire(path, label, id, opts) }),
-    route: (label, path, pane) => ({ label, match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
+    wire: (label, path, id, opts = {}) => ({ label, wire: true, match: `route:${path}#${opts.pane || 'main'}`, run: () => openWire(path, label, id, opts) }),
+    route: (label, path, pane) => ({ label, tag: pane === 'progress' ? 'progress' : '', match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
     wireTool: (label, path, pane) => ({ label, wire: pane === 'main' || pane === 'gate', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
+    docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
+    tool: (label, kind) => ({ label, match: `route:${TOOL_PATH[kind]}#main`, run: () => { setCv(true); openTool(kind); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
-    latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } })
+    latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } }),
+    // the shared stages, worded for the feature: processing (moves on by itself) and its result
+    process: f => ({ label: f.verb, wire: true, match: `route:${f.path}#process`, run: () => { openWire(f.path, f.verb, 'process', { f, pane: 'process' }); later(processDone, 2600); } }),
+    state: f => ({ label: 'Completed · Failed · Error', wire: true, result: true, match: `route:${f.path}#state`, run: () => openWire(f.path, 'Processing state', 'state', { f, pane: 'state' }) }),
+    dest: (label, path, kind) => S.wire(label, path, 'dest', { title: label, kind, pane: 'dest' })
   };
-  const FLOWS = [
-    { n: 1, title: 'Onboarding', steps: [S.auth('Sign up', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
-    { n: 2, title: 'CV given on the landing page', steps: [S.auth('Sign up · CV attached', 'signup', 'Flow 2: the visitor gave a CV on the landing page (jana-cv.pdf). After sign-up we go straight to uploading and building.'), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload'), S.editor()] },
-    { n: 3, title: 'Tool needs a CV, none given', steps: [S.auth('Sign up', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
-    { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'wall'), S.editor()] },
-    { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'wall'), S.editor()] },
-    { n: 6, title: 'Log in', steps: [S.auth('Log in', 'login'), S.dash()] },
-    { n: 7, title: 'Latest resume', steps: [S.latest('New user, no CV: My Documents', '/latest-resume/', false, 'route:/dashboard/resumes/'), S.latest('Returning user: the editor (/edit/)', '/latest-resume/', true, 'screen:editor'),
-      S.latest('Analyze: ATS checker', '/latest-resume/analyze/', true), S.latest('Proofread', '/latest-resume/proofread/', true), S.latest('Recruiter feedback: Career Coach', '/latest-resume/recruiter-feedback/', true)] },
-    { n: 8, title: 'Career Map', steps: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding'), S.wire('Career Map', '/career-map/', 'cm')] },
-    { n: 9, title: 'Upgrade', steps: [S.upgrade('Premium plans · yearly picked', 'yearly')] }
+  const STAGE = { entry: 'Entry', intent: 'Intent collection', prep: 'Feature personalization', process: 'Data processing', state: 'Processing state', dest: 'Destination' };
+  const STAGE_SHORT = { entry: 'Entry', intent: 'Intent', prep: 'Personalization', process: 'Processing', state: 'State', dest: 'Destination' };
+  const FLOW_T = [
+    { n: 1, title: 'Goal first', stages: ['intent', 'prep', 'process', 'state', 'dest'], skip: true },
+    { n: 2, title: 'Feature first', stages: ['prep', 'process', 'state', 'dest'] },
+    { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
+    { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  let flowNow = null, flowAt = 0;
-  document.getElementById('pm-flows').innerHTML = FLOWS.map(f => `<button class="pm-route" type="button" data-flow="${f.n}"><b>Flow ${f.n} · ${f.title}</b><code>${f.steps.length} step${f.steps.length > 1 ? 's' : ''}${f.steps.some(s => s.wire) ? ` · ${f.steps.filter(s => s.wire).length} wireframe` : ''}</code></button>`).join('');
+  /* A tool that needs a CV: Add your resume and Upload your resume when there is none, then its own form */
+  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')]), S.wireTool(label, path, 'main')];
+  const signUp = S.auth('Sign up', 'signup');
+  const landing = what => S.auth('Sign up · ' + what, 'signup', `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
+  const TOOL_DEST = {
+    'analyse-resume': ['Analysing your resume', 'ATS report', () => S.tool('ATS checker', 'ats')],
+    'rewrite-resume': ['Rewriting your resume', 'rewritten resume', () => S.editor('Editor · the rewritten copy')],
+    'tailor-resume': ['Tailoring your resume', 'tailored resume', () => S.editor('Editor · the tailored copy')],
+    'translate-resume': ['Translating your resume', 'translation', () => S.editor('Editor · the translated copy')],
+    'recruiter-feedback': ['Sending it to a recruiter', 'feedback request', () => S.tool('Career Coach · recruiter feedback', 'coach')],
+    'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary')],
+    'career-coach': ['Reading your resume', 'coach', () => S.tool('Career Coach', 'coach')],
+    'proofreading': ['Proofreading your resume', 'proofread resume', () => S.tool('Proofreading', 'proof')]
+  };
+  /* Every URL, paired with its flow: { flow, group (the URL checklist's), title, path, entry, prep, process, dest,
+     verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall) } */
+  const resumeOut = (label = 'Editor · Fill In') => [S.editor(label)];
+  const FEATURES = [
+    ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
+      ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), dest: resumeOut('Editor · the tailored copy'), verb: 'Tailoring your resume', psteps: ['Reading the job ad', 'Matching your experience to its keywords', 'Rewriting bullet points'], noun: 'tailored resume' }],
+      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
+      ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
+      .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
+
+    ...[['create-resume', 'resume', 'Setting up your resume', resumeOut()], ['create-cover', 'cover letter', 'Setting up your cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')]],
+      ['create-website', 'website', 'Building your website', [S.dest('Website editor', '/dashboard/create-website/', 'site')]]]
+      .map(([t, kind, verb, dest]) => ({ id: t, flow: 2, group: '3 · Start from a template', title: `New ${kind}`, path: `/dashboard/${t}/`, prep: [S.wire('Pick a template', `/dashboard/${t}/`, 'templates', { kind })], dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun: kind })),
+    { id: 'ai-resume', flow: 2, group: '4 · Generate with AI', title: 'Create Resume with AI', path: '/dashboard/create-ai-resume/', prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
+    { id: 'ai-experience', flow: 2, group: '4 · Generate with AI', title: 'Generate work experience', path: '/ai/resume/experience/', prep: [S.route('Generate work experience', '/ai/resume/experience/')], process: [S.build('ai')], dest: resumeOut('Editor · Work experience'), verb: 'Writing your experience', noun: 'resume' },
+    { id: 'ai-objective', flow: 2, group: '4 · Generate with AI', title: 'Generate resume objective', path: '/ai/resume/general/', prep: [S.route('Generate resume objective', '/ai/resume/general/')], process: [S.build('ai')], dest: resumeOut('Editor · Profile'), verb: 'Writing your objective', noun: 'resume' },
+    { id: 'ai-cover', flow: 2, group: '4 · Generate with AI', title: 'AI Cover Letter Writer', path: '/dashboard/create-ai-cover-from-job/', prep: [S.route('AI Cover Letter Writer', '/dashboard/create-ai-cover-from-job/')], dest: [S.dest('Cover letter', '/dashboard/create-ai-cover-from-job/', 'doc')], verb: 'Writing your cover letter', psteps: ['Reading the job post', 'Matching it to your experience', 'Writing the letter'], noun: 'cover letter' },
+    { id: 'ai-resign', flow: 2, group: '4 · Generate with AI', title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], dest: [S.dest('Resignation letter', '/ai/resignation/', 'doc')], verb: 'Writing your letter', noun: 'letter' },
+    { id: 'ai-interview', flow: 2, group: '4 · Generate with AI', title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], dest: [S.dest('Interview questions', '/dashboard/create-interview/', 'list')], verb: 'Preparing your questions', psteps: ['Reading the role', 'Picking likely questions', 'Writing model answers'], noun: 'interview questions' },
+    { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
+    { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], process: [S.build('linkedin')], dest: resumeOut(), verb: 'Importing your profile', noun: 'resume', fail: 'We couldn’t read that profile' },
+    ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
+      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun }; }),
+    { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
+    { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
+    { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
+    { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), dest: resumeOut('Editor · the tailored copy'), verb: 'Tailoring your resume', noun: 'tailored resume' },
+
+    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    ...[['create-resume', 'Resume with a chosen template', 'Setting up your resume', 'resume', resumeOut()], ['create-cover', 'Cover letter with a chosen template', 'Setting up your cover letter', 'cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
+      ['create-website', 'Website with a chosen template', 'Building your website', 'website', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
+      .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
+    { id: 'sample', flow: 3, group: '3 · Start from a template', title: 'Resume from a sample', path: '/dashboard/create/marketing-manager/', url: '/dashboard/create/{sample}/', dest: resumeOut(), verb: 'Copying the sample', psteps: ['Copying the sample', 'Putting your name on it'], noun: 'resume' },
+
+    { id: 'login', flow: 4, group: '1 · Sign up / log in', title: 'Log in', path: '/login/', entry: S.auth('Log in', 'login'), dest: [S.dash()] },
+    { id: 'dashboard', flow: 4, group: '1 · Sign up / log in', title: 'Dashboard', path: '/dashboard/', dest: [S.dash()] },
+    { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', dest: [S.editor('Editor (guest)')] },
+    { id: 'site-tpl', flow: 4, group: '3 · Start from a template', title: 'Website template', path: '/cv/creative/', url: '/cv/{website-template}/', dest: [S.dest('Website template', '/cv/creative/', 'site')] },
+    { id: 'latest', flow: 4, group: '6 · Latest resume', title: 'Latest resume, returning user', path: '/latest-resume/', cv: true, dest: [S.latest('Editor (/edit/)', '/latest-resume/', true, 'screen:editor')] },
+    { id: 'latest-new', flow: 4, group: '6 · Latest resume', title: 'Latest resume, no CV yet', path: '/latest-resume/', cv: false, dest: [S.latest('My Documents', '/latest-resume/', false, 'route:/dashboard/resumes/')] },
+    ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].map(([t, label]) => ({ id: 'latest-' + t, flow: 4, group: '6 · Latest resume', title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] })),
+    { id: 'docs', flow: 4, group: '6 · Latest resume', title: 'My Documents', path: '/dashboard/resumes/', dest: [S.docs()] },
+    { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', dest: [S.editor()] },
+    ...[['/jobs/', 'Jobs', 'jobs'], ['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/'], ['/jobs/job-tracker/', 'Job Tracker', 'tracker']]
+      .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, group: '7 · Jobs', title, path, url, dest: [S.wire(title, path, w)] })),
+    ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, group: '9 · Upgrade', title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] }))
+  ];
+  /* A feature's run through its flow's stages */
+  function buildFlow(f) {
+    const T = FLOW_T[f.flow - 1], has = st => T.stages.includes(st), list = x => [].concat(typeof x === 'function' ? x() : x || []);
+    const at = (stage, steps) => list(steps).map(s => ({ ...s, stage }));
+    return { n: f.flow, title: f.title, f, steps: [
+      ...at('entry', f.entry),
+      ...(has('intent') ? at('intent', S.screen('Goal screen', 'intent')) : []),
+      ...(has('prep') ? at('prep', f.prep) : []),
+      ...(has('process') ? at('process', f.process || S.process(f)) : []),
+      ...(has('state') ? at('state', [S.state(f), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
+      ...at('dest', f.dest)
+    ] };
+  }
+  let flowNow = null, flowAt = 0, procResult = 'ok';
+
+  /* More options › Flows: the four flows with their stages; pick a feature (URL) to see what it puts in them, then Run */
+  const pmFlows = document.getElementById('pm-flows'), flowPick = {};
+  function pmOut(f) {
+    const steps = buildFlow(f).steps, lab = st => steps.filter(s => s.stage === st).map(s => s.label).join(' → ');
+    const rows = [['URL', `<code>${f.url || f.path}</code>`], ['Entry', lab('entry')], ['Feature', lab('prep')], ['Processing', lab('process')], ...(f.guest ? [['Then', 'Sign-up wall']] : []), ['Destination', lab('dest')]];
+    return `<dl class="pmf-what">${rows.filter(r => r[1]).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  }
+  function renderFlowsPanel() {
+    pmFlows.innerHTML = FLOW_T.map(T => {
+      const list = FEATURES.filter(f => f.flow === T.n), sel = flowPick[T.n] || list[0].id;
+      return `<div class="pmf" data-flow-card="${T.n}">
+        <div class="pmf-top"><b>Flow ${T.n}</b><span>${T.title}</span></div>
+        <ol class="pmf-stages" aria-label="Stages">${T.stages.map(st => `<li><span class="st-chip st-${st}${['prep', 'dest'].includes(st) ? ' is-feat' : ''}" title="${STAGE[st]}${['prep', 'dest'].includes(st) ? ': set by the URL' : ''}">${STAGE_SHORT[st]}</span></li>`).join('')}</ol>
+        ${T.skip ? '<div class="pmf-skip">Skip personalization → <span class="st-chip st-dash">Dashboard</span></div>' : ''}
+        <div class="pmf-pick"><select data-flow-pick="${T.n}" aria-label="Flow ${T.n}: the feature or URL to run">${[...new Set(list.map(f => f.group))].map(g => `<optgroup label="${g}">${list.filter(f => f.group === g).map(f => `<option value="${f.id}"${f.id === sel ? ' selected' : ''}>${f.title}</option>`).join('')}</optgroup>`).join('')}</select>
+          <button class="pmf-run" type="button" data-flow-run="${T.n}" aria-label="Run flow ${T.n} with this feature"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button></div>
+        <div class="pmf-out">${pmOut(list.find(f => f.id === sel))}</div>
+      </div>`;
+    }).join('');
+  }
+  renderFlowsPanel();
+  pmFlows.addEventListener('change', e => {
+    const sel = e.target.closest('[data-flow-pick]'); if (!sel) return;
+    flowPick[sel.dataset.flowPick] = sel.value;
+    sel.closest('.pmf').querySelector('.pmf-out').innerHTML = pmOut(FEATURES.find(f => f.id === sel.value));
+  });
+  function startFeature(id) {
+    const f = FEATURES.find(x => x.id === id);
+    flowPick[f.flow] = id;
+    if (f.cv !== undefined) setCv(f.cv);
+    flowNow = buildFlow(f); renderFlowsPanel();
+    flowGo(0);
+  }
+
   const flowBar = document.getElementById('flow-bar');
   function renderFlowBar() {
     flowBar.hidden = !flowNow;
-    document.querySelectorAll('[data-flow]').forEach(b => b.setAttribute('aria-current', String(!!flowNow && +b.dataset.flow === flowNow.n)));
+    document.querySelectorAll('.pmf').forEach(c => c.setAttribute('aria-current', String(!!flowNow && +c.dataset.flowCard === flowNow.n)));
     if (!flowNow) return;
-    const st = flowNow.steps[flowAt];
+    const st = flowNow.steps[flowAt], groups = [];
+    flowNow.steps.forEach((s, i) => { const g = groups.at(-1); if (g && g.stage === s.stage) g.items.push([s, i]); else groups.push({ stage: s.stage, items: [[s, i]] }); });
+    const dot = ([s, i]) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}" aria-label="Step ${i + 1}, ${STAGE[s.stage]}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${STAGE[s.stage]} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`;
+    const now = flowNow.skipped ? 'Skipped personalization → Dashboard' : `${flowAt + 1}/${flowNow.steps.length} · ${STAGE[st.stage]} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}`;
     flowBar.innerHTML = `<b class="fb-name">Flow ${flowNow.n} · ${flowNow.title}</b>
-      <span class="fb-steps">${flowNow.steps.map((s, i) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}" aria-label="Step ${i + 1}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${i + 1} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`).join('')}</span>
-      <span class="fb-now">${flowAt + 1}/${flowNow.steps.length} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}</span>
+      <span class="fb-steps">${groups.map(g => `<span class="fb-grp st-${g.stage}">${g.items.map(dot).join('')}</span>`).join('')}</span>
+      <span class="fb-now">${now}</span>
       <button class="fb-nav" type="button" data-flow-step="${flowAt - 1}" aria-label="Previous step"${flowAt ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav fb-next" type="button" data-flow-step="${flowAt + 1}" aria-label="Next step"${flowAt < flowNow.steps.length - 1 ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav" type="button" data-flow-end aria-label="End the flow">${rtIc(RT_IC.x)}</button>`;
   }
   function flowGo(i) {
     if (!flowNow || i < 0 || i >= flowNow.steps.length) return false;
-    flowAt = i; setMore(false); clearTimers(); renderFlowBar();
+    flowAt = i; flowNow.skipped = false; setMore(false); clearTimers(); renderFlowBar();
     flowNow.steps[i].run();
     return true;
   }
   const flowNext = () => flowGo(flowAt + 1);
-  function startFlow(n) { flowNow = FLOWS.find(f => f.n === n); if ([3, 5, 7].includes(n)) setCv(false); flowGo(0); }
+  const flowOn = () => !!flowNow && flowNext();  // a screen's own button moves a running flow on
   function endFlow() { flowNow = null; renderFlowBar(); }
+  /* Flow 1: the goal picked on the goal screen decides the feature for the rest of the flow */
+  function flowGoal(id) {
+    if (!flowNow || flowNow.n !== 1 || flowNow.f.goal === id) return;
+    const at = flowAt;
+    flowNow = buildFlow(FEATURES.find(f => f.goal === id)); flowAt = at; flowPick[1] = flowNow.f.id;
+    renderFlowsPanel(); renderFlowBar();
+  }
+  /* A step a screen reaches on its own (uploading starts): mark it in the bar */
+  function flowSeen(tag) {
+    if (!flowNow) return;
+    const i = flowNow.steps.findIndex((s, k) => k > flowAt && s.tag === tag);
+    if (i > flowAt) { flowAt = i; renderFlowBar(); }
+  }
+  /* After processing: Completed goes straight on to the destination (the processing screen ends on its own success),
+     Failed and Error show the processing state. More options › Result picks which. */
+  function afterProcessAt() {
+    const st = flowNow.steps; let k = st.findLastIndex(s => s.stage === 'process') + 1;
+    if (st[k] && st[k].result && procResult === 'ok') k++;
+    return k;
+  }
+  function processDone() { if (flowNow) flowGo(afterProcessAt()); }
+  function stateAction(w) {
+    if (!flowNow) return toast('Run a flow (More options › Flows) to move on from here.');
+    const first = st => flowNow.steps.findIndex(s => s.stage === st);
+    if (w === 'state-next') flowNext();
+    else if (w === 'state-retry') flowGo(first('prep') >= 0 ? first('prep') : first('process'));
+    else flowGo(first('process'));
+  }
+  function setResult(r) {
+    procResult = r;
+    document.querySelectorAll('[data-result]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.result === r)));
+    const card = current === 'route' && screens.route.querySelector('[data-pane="state"]');
+    if (card) { card.innerHTML = WIRE.state({ f: flowNow ? flowNow.f : { noun: 'result' } }); syncNote(); }
+    markMore();
+  }
   /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
   function leavesFlow(r) { return !!flowNow && !flowNow.steps.some(s => s.match.split('#')[0] === 'route:' + r.path); }
   /* The wireframe's note (wNote) sits in the chrome at the bottom, never on the screen: the one on screen now, or none.
@@ -4819,6 +5072,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Keep the bar in step when the person moves on with the screen's own buttons */
   function flowSync() {
     if (!flowNow) return;
+    if (flowNow.n === 1 && current === 'dashboard') { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
     const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${TOOL_PATH[toolKind]}#main` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
@@ -4829,11 +5083,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (b && !b.disabled) return flowGo(+b.dataset.flowStep);
     if (e.target.closest('[data-flow-end]')) endFlow();
   });
-  /* After the building screen: the editor, unless the running flow has a step in between (a sign-up wall) */
+  /* After the building screen: the editor, unless the running flow has something before it (a failed result, a sign-up wall) */
   function afterBuild() {
-    if (flowNow) {
-      const i = flowNow.steps.findIndex(s => s.match === 'screen:loading'), nx = flowNow.steps[i + 1];
-      if (i >= 0 && nx && nx.match !== 'screen:editor') return flowGo(i + 1);
+    if (flowNow && flowNow.steps.some(s => s.match === 'screen:loading')) {
+      const k = afterProcessAt(), nx = flowNow.steps[k];
+      if (nx && nx.match !== 'screen:editor') return flowGo(k);
     }
     openEditor();
   }
@@ -5033,9 +5287,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const rt = e.target.closest('[data-route]');
     if (rt) { const r = findRoute(rt.dataset.route); if (leavesFlow(r)) endFlow(); return openRoute(r); }
     const cvb = e.target.closest('[data-cv]');
-    if (cvb) return setCv(cvb.dataset.cv === 'yes');
-    const fl = e.target.closest('[data-flow]');
-    if (fl) return startFlow(+fl.dataset.flow);
+    if (cvb) { setCv(cvb.dataset.cv === 'yes'); return renderFlowsPanel(); }  // a tool's personalization asks for a CV only without one
+    const run = e.target.closest('[data-flow-run]');
+    if (run) return startFeature(run.closest('.pmf').querySelector('select').value);
+    const res = e.target.closest('[data-result]');
+    if (res && !res.closest('.rt-wire')) return setResult(res.dataset.result);
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const a = el.dataset.action;
