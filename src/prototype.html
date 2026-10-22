@@ -1562,6 +1562,179 @@ button.au-dot { cursor: pointer; }
 @container (max-width: 900px) { .auth { grid-template-columns: minmax(0, 1fr); } .au-side { display: none; } }
 @container (max-width: 560px) { .au-top { padding-inline: 16px; } .au-q { display: none; } .au-form { width: min(273px, 100%); } }
 
+/* ---------- Upgrade: Premium plans and student verification (/upgrade/…) ----------
+   Recreated from Figma (Premium › A, and Kickresume 3.0 › ISIC/ITIC). Purple pages of their own, so like
+   Sign up they replace the logo bar and the page (APPS.upgrade). Sizes are Figma's (a 1440px-wide frame);
+   the card keeps the design's drop shadow because it sits on the purple, not on the onboarding's page. */
+body[data-screen="upgrade"] .stage { padding-right: 0; }  /* the purple runs to the window's edge, under the side rail */
+.upg {
+  --upg-grad: #5345ff, #9c3eff;
+  margin-inline: -16px; min-height: calc(var(--vh) * 100); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 50px 16px; background: linear-gradient(#4034d7, #7011ba); color: var(--kr-grey-100);
+}
+.upg.is-student { background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, .1)), linear-gradient(#4034d7, #7011ba); }
+body.has-note .upg, body:has(.flow-bar:not([hidden])) .upg { padding-bottom: 96px; }  /* scrolls clear of the flow bar */
+/* the content keeps clear of the side rail; from 1162px the centred page already does */
+@media (min-width: 481px) and (max-width: 1161px) { body:not(.is-mobile) .upg { padding-right: 68px; } }
+.upg-x { position: absolute; top: 8px; right: 8px; z-index: 1; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 10px; background: none; color: var(--kr-grey-80); cursor: pointer; transition: background .2s; }
+.upg-x:hover { background: rgba(0, 0, 0, .04); }
+.upg-x svg { display: block; width: 24px; height: 24px; }
+.upg button:focus-visible, .upg a:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+/* Premium = more jobs: the billing card (pitch | plans) and the reviews panel under it */
+.upg-modal {
+  position: relative; display: flex; width: min(1000px, 100%); min-height: 540px; border-radius: 16px; overflow: clip; background: #f3f2fd;
+  box-shadow: 206px 299px 145px 0 rgba(0, 0, 0, .01), 116px 168px 123px 0 rgba(0, 0, 0, .05), 52px 75px 91px 0 rgba(0, 0, 0, .09), 13px 19px 50px 0 rgba(0, 0, 0, .1);
+}
+.upg-pitch { flex: 1 1 530px; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 48px; background: var(--kr-white); }
+.upg-logo { display: block; width: 153px; height: 34px; }
+.upg-pitch h1 { margin: 0 0 16px; font: 400 32px/40px var(--font-display); color: var(--kr-grey-100); }
+.upg-perks { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 20px; }
+.upg-perks li { display: flex; align-items: center; gap: 8px; padding-left: 1px; }
+.upg-perks img { flex: none; width: 20px; height: 20px; }
+.upg-proof { position: relative; width: min(434px, 100%); height: 119px; }
+.upg-hire {
+  position: absolute; top: 0; left: 0; display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+  border-radius: 8px; background: var(--kr-white); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); font-size: 12px; line-height: 18px;
+}
+.upg-hire + .upg-hire { top: 45px; left: auto; right: 0; gap: 9px; }
+.upg-hire > img { flex: none; width: 40px; height: 40px; border-radius: 50%; }
+.upg-hire p { width: 180px; margin: 0 0 4px; }
+.upg-hire b { font-weight: 500; }
+.upg-hire p + img { display: block; height: 16px; }
+.upg-plans { flex: 0 0 470px; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 17px; padding: 48px; }
+.upg-plans h2 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; }
+.upg-plans h2 + p { height: 24px; margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--kr-grey-80); }
+.upg-pick { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.upg-plan {
+  position: relative; display: flex; align-items: center; gap: 16px; width: calc(100% - 54px); padding: 14px; border: 2px solid transparent; border-radius: 10px;
+  background: var(--kr-white); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); text-align: left; cursor: pointer;
+  transition: width var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout);
+}
+.upg-plan[aria-checked="true"] { width: 100%; padding: 22px; cursor: default; }
+/* the picked card's 2px border is the Premium gradient (a masked layer, so it can fade in) */
+.upg-plan::after {
+  content: ""; position: absolute; inset: -2px; padding: 2px; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: linear-gradient(165.9deg, var(--upg-grad)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  transition: opacity var(--dur-base) var(--ease-standard);
+}
+.upg-plan[aria-checked="true"]::after { opacity: 1; }
+/* in the design the card's content casts its own faint shadow (the radio's ring, the text) */
+.upg-radio, .upg-plan-t { filter: drop-shadow(.91px 1.83px 4.57px rgba(0, 0, 0, .1)); }
+.upg-plan[aria-checked="true"] :is(.upg-radio, .upg-plan-t) { filter: drop-shadow(1.06px 2.12px 5.3px rgba(0, 0, 0, .1)); }
+/* the radio: a white disc with a grey dot; picked, a little larger with the gradient dot */
+.upg-radio { position: relative; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--kr-white); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); transition: width var(--dur-slow) var(--ease-inout), height var(--dur-slow) var(--ease-inout); }
+.upg-radio::before, .upg-radio::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--kr-grey-60); transition: inset var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard); }
+.upg-radio::after { background: linear-gradient(135deg, var(--upg-grad)); opacity: 0; }
+.upg-plan[aria-checked="true"] .upg-radio { width: 26px; height: 26px; }
+.upg-plan[aria-checked="true"] .upg-radio::before, .upg-plan[aria-checked="true"] .upg-radio::after { inset: 4.33px; }
+.upg-plan[aria-checked="true"] .upg-radio::after { opacity: 1; }
+.upg-plan-t { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; }
+.upg-plan-t > span:first-child { flex: 1; display: grid; gap: 4px; }
+.upg-plan-t b { font-weight: 500; transition: font-size var(--dur-slow) var(--ease-inout), line-height var(--dur-slow) var(--ease-inout); }
+.upg-plan[aria-checked="true"] .upg-plan-t b { font-size: 18px; line-height: 24px; }
+.upg-plan-t > span:last-child { font-size: 12px; line-height: 18px; color: var(--kr-grey-80); text-align: right; white-space: nowrap; }
+.upg-pop {
+  position: absolute; z-index: 1; left: -2px; top: -16.83px; height: 30px; padding: 4px 16px; border-radius: 4px 4px 4px 0;
+  background: linear-gradient(160.97deg, var(--upg-grad)); box-shadow: 1.06px 2.12px 5.3px rgba(0, 0, 0, .1); color: var(--kr-white); font-size: 15.73px; line-height: 22.47px; font-weight: 500;
+}
+.upg-safe { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 12px; line-height: 18px; }
+.upg-safe svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.33; stroke-linecap: round; stroke-linejoin: round; }
+.upg-go, .stu-go {
+  display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 10px; color: var(--kr-white); font: 500 16px/24px var(--font-sans); cursor: pointer; transition: filter .2s;
+}
+.upg-go { width: 100%; height: 48px; background: linear-gradient(172.69deg, var(--upg-grad)); }
+.upg-go:hover, .stu-go:hover { filter: brightness(1.07); }
+.upg-go:active, .stu-go:active { filter: brightness(.93); }
+.upg-go svg { width: 20px; height: 20px; }
+.upg-cred {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; width: min(1026px, 100%); margin-top: 48px; padding: 48px 52px 48px 48px;
+  border-radius: 16px; background: rgba(0, 0, 0, .1); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); color: var(--kr-white); font-size: 14px; line-height: 20px;
+}
+.upg-cred-l { flex: 0 1 591px; min-width: 0; display: flex; flex-direction: column; gap: 40px; }
+.upg-quote { margin: 0; opacity: .8; }
+.upg-who { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+.upg-who img { flex: none; width: 40px; height: 40px; border-radius: 50%; }
+.upg-who span { display: grid; opacity: .8; }
+.upg-who b { font-weight: 500; }
+.upg-stu { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; margin: 0; }
+.upg-stu img { width: 17px; height: 16px; margin-inline: -.3px -.7px; }
+.upg-stu b { font-weight: 500; line-height: 24px; opacity: .8; }
+.upg-stu > span:last-child { opacity: .5; }
+.upg-free { padding: 0; border: 0; border-radius: 2px; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+.upg-cred-r { flex: none; width: 168px; height: 171.19px; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.upg-cred-r > img { display: block; width: 168px; height: 63px; }
+.upg-stores { display: grid; justify-items: end; gap: 16px; font-size: 12px; line-height: 14.72px; }
+.upg-store { display: grid; justify-items: end; gap: 6px; }
+.upg-store > span { display: flex; align-items: center; gap: 8px; }
+.upg-store i { font-style: normal; color: #e0d1ef; }
+.upg-store b { font-weight: 500; opacity: .8; }
+.upg-store img { display: block; }
+/* Verify your student status (/upgrade/student/) */
+.stu {
+  position: relative; display: flex; flex-direction: column; gap: 48px; width: min(600px, 100%); padding: 40px; border-radius: 20px; background: var(--kr-white);
+}
+.stu .upg-x { color: var(--kr-grey-100); }
+.stu h1 { margin: 0 0 7px; font: 500 32px/40px var(--font-sans); color: var(--kr-grey-100); }
+.stu-tabs { display: flex; margin-bottom: 7px; border: 1px solid var(--kr-grey-60); border-radius: 8px; background: var(--kr-white); }
+.stu-tab { flex: 1 1 0; min-width: 0; margin: -1px 0; padding: 6px 4px; border: 1px solid transparent; border-radius: 0; background: none; color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); white-space: nowrap; cursor: pointer; }
+.stu-tab:first-child { margin-left: -1px; border-radius: 8px 0 0 8px; }
+.stu-tab:last-child { margin-right: -1px; border-left-color: var(--kr-grey-60); border-radius: 0 8px 8px 0; }
+.stu-tab[aria-selected="true"] { border-color: transparent; background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, linear-gradient(168.65deg, var(--upg-grad)) border-box; }  /* a gradient border, as in the design */
+.stu-tab[aria-selected="true"] span { background: linear-gradient(161.27deg, var(--upg-grad)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stu-tab:not([aria-selected="true"]):hover { background: var(--kr-grey-40); }
+.stu-lead { margin: 0; font-size: 16px; line-height: 24px; }
+.stu-row { display: flex; align-items: center; gap: 16px; }
+.stu-fields { flex: 1; min-width: 0; display: grid; gap: 16px; }
+.stu-field { display: grid; gap: 4px; min-width: 0; }
+.stu-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; }
+.stu-help { position: relative; flex: none; display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--kr-grey-80); cursor: help; }
+.stu-help svg { display: block; width: 20px; height: 20px; }
+.stu-help[data-tip]::after { right: -6px; top: auto; bottom: calc(100% + 8px); transform: translate(0, 4px); z-index: 2; }
+.stu-help[data-tip]:hover::after, .stu-help[data-tip]:focus-visible::after { transform: none; }
+.stu-input, .stu-sel {
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 7px; border: 1px solid var(--kr-grey-60); border-radius: 4px;  /* 8px from the outer edge */
+  background: var(--kr-white); color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); text-align: left; outline: none; transition: border-color .15s;
+}
+.stu-input:focus, .stu-sel[aria-expanded="true"] { border-color: var(--kr-grey-80); }
+.stu-input.is-error, .stu-sel.is-error { border-color: var(--kr-primary); }
+.stu-sel { cursor: pointer; }
+.stu-sel .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stu-sel .val:empty::before { content: attr(data-ph); color: var(--kr-grey-80); }
+.stu-sel svg { flex: none; width: 16px; height: 16px; transition: transform var(--dur-fast) var(--ease-standard); }
+.stu-sel[aria-expanded="true"] svg { transform: rotate(180deg); }
+.stu-sel:disabled { background: var(--kr-grey-40); cursor: not-allowed; }
+.stu-sel-wrap { position: relative; }
+.stu-sel-wrap .aim-menu { top: calc(100% + 4px); bottom: auto; z-index: 3; }
+.stu-card { flex: none; display: block; width: 253px; height: 159px; }
+.stu-form { display: grid; gap: 16px; margin: 0; }
+.stu-acts { display: flex; justify-content: flex-end; }
+.stu-go { height: 40px; padding: 0 32px; min-width: 150px; background: linear-gradient(165.07deg, var(--upg-grad)); font-size: 14px; line-height: 20px; }
+.stu-go .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
+/* Narrower windows: the billing card stacks (pitch above the plans), the reviews panel stacks too; phones get tighter padding */
+@container (max-width: 1032px) { .upg-plans { flex-basis: 440px; } }
+@container (max-width: 900px) {
+  .upg-modal { flex-direction: column; min-height: 0; }
+  .upg-pitch, .upg-plans { flex: none; }
+  .upg-cred { flex-direction: column; gap: 40px; padding-right: 48px; }
+  .upg-cred-l { flex: none; }
+  .upg-cred-r { width: auto; height: auto; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 24px 48px; }
+  .upg-stores, .upg-store { justify-items: start; }
+}
+@container (max-width: 640px) { .stu-card { display: none; } }
+@container (max-width: 560px) {
+  .upg { padding: 24px 16px; }
+  .upg-pitch, .upg-plans, .upg-cred { padding: 32px 20px; }
+  .upg-pitch h1 { font-size: 28px; line-height: 36px; }
+  .upg-proof { display: none; }
+  .upg-plan, .upg-plan[aria-checked="true"] { width: 100%; }
+  .upg-plan-t { display: grid; justify-content: stretch; }  /* the payment terms go under the price */
+  .upg-plan-t > span:last-child { text-align: left; white-space: normal; }
+  .upg-pop { font-size: 14px; line-height: 20px; height: 28px; top: -15px; }
+  .stu { padding: 32px 20px; gap: 32px; }
+  .stu h1 { font-size: 26px; line-height: 34px; padding-right: 32px; }
+  .stu-go { width: 100%; }
+}
+
 /* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in; its tokens are scoped to .wf so
    they can't touch the prototype's own, and its accent, status and note colours are greys, so a wireframe
    is only shades of grey). Used for every screen without a design. ---------- */
@@ -1875,6 +2048,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <!-- Screen 5: dashboard (where people land when they skip onboarding) -->
 <div class="dash" id="screen-dash" hidden></div>
 <div class="auth" id="screen-auth" hidden></div>
+<div class="upg" id="screen-upgrade" hidden></div>
 </div>
 </div>
 
@@ -1884,7 +2058,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.1.1">v2.1.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.2">v2.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2215,7 +2389,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (routesReady && s !== 'route' && s !== 'auth' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
+    if (routesReady && !['route', 'auth', 'upgrade'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
     syncNote();
     if (routesReady && s !== 'route') flowSync();
   }
@@ -3126,7 +3300,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      They are full screens in the flow (same logo bar, background and top line as the goal and method
      screens), not pop-ups. To add one: write its markup function (and an init for its behaviour), then
      add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
-  const PLAN_NAMES = ['student', 'monthly', 'quarterly', 'yearly'];
+  const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
   const latest = (tool, path) => ({ run: () => cvUploaded ? (tool ? openRoute(findRoute('/dashboard/' + tool + '/')) : jumpEditor()) : openWire(path, 'Latest resume', 'latest-empty') });
   const ROUTES = [
@@ -3150,7 +3324,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofread', ...latest('proofreading', '/latest-resume/proofread/') },
     { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('recruiter-feedback', '/latest-resume/recruiter-feedback/') },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
-    ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: `Upgrade · ${pl}`, wire: true, html: () => WIRE.upgrade({ plan: pl }) }))
+    ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
   let routeNow = null, routeBack = 'intent';
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
@@ -3212,6 +3386,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function closeRoute() {
     if (routeBack === 'dashboard') return openDashboard();
     if (routeBack === 'auth') return openAuth(authKind);
+    if (routeBack === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
     go(routeBack === 'create' ? 'create' : 'intent');
   }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
@@ -3752,6 +3927,191 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
   authEl.addEventListener('submit', e => { e.preventDefault(); });
 
+  /* ---------- Upgrade: Premium plans and student verification (/upgrade/…) ----------
+     Recreated from Figma. Purple pages of their own, so like Sign up they replace the logo bar and the page
+     (APPS.upgrade). /upgrade/<plan>/ opens the plans with that one picked, and picking another changes the URL;
+     "for free today" leads to /upgrade/student/. Upgrade Now carries data-wire, so a running flow moves on. */
+  const UPG_PLANS = [
+    { id: 'yearly', name: 'Yearly', price: '€7 /month', pay: 'Pay €84 every 12 months' },
+    { id: 'quarterly', name: 'Quarterly', price: '€12 /month', pay: 'Pay €36 every 3 months', popular: true },
+    { id: 'monthly', name: 'Monthly', price: '€19 /month', pay: 'Pay every month' }
+  ];
+  const UPG_PERKS = ['Stand out with 40+ templates', 'Generate tailored documents with AI', 'Beat ATS bots with our tools', 'Plan careers, prepare for interviews &amp; more'];
+  const UPG_IMG = {
+    logo: '__ASSET:upgrade/premium-logo.svg__', check: '__ASSET:upgrade/check.svg__', grad: '__ASSET:upgrade/grad.svg__',
+    michelle: '__ASSET:upgrade/michelle.webp__', peter: '__ASSET:upgrade/peter.webp__', david: '__ASSET:upgrade/david.webp__',
+    google: '__ASSET:upgrade/google.svg__', dell: '__ASSET:upgrade/dell.svg__', trustpilot: '__ASSET:upgrade/trustpilot.svg__',
+    google2015: '__ASSET:upgrade/google-2015.svg__', appstore: '__ASSET:upgrade/appstore.svg__', stars: '__ASSET:upgrade/stars.svg__',
+    isic: '__ASSET:upgrade/isic.webp__'
+  };
+  /* The design's own icons (Feather-style paths from the Figma file) */
+  const UPG_IC = {
+    x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 5.29a1 1 0 0 1 0 1.42l-12 12a1 1 0 0 1-1.42-1.42l12-12a1 1 0 0 1 1.42 0Z"/><path fill="currentColor" d="M5.29 5.29a1 1 0 0 1 1.42 0l12 12a1 1 0 0 1-1.42 1.42l-12-12a1 1 0 0 1 0-1.42Z"/></svg>',
+    chev: '<svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M6.88 4.38a.88.88 0 0 1 1.24 0l5 5a.88.88 0 0 1 0 1.24l-5 5a.88.88 0 0 1-1.24-1.24L11.26 10 6.88 5.62a.88.88 0 0 1 0-1.24Z"/></svg>',
+    chevDown: '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M3.51 5.5a.7.7 0 0 1 .99 0L8 9.01l3.51-3.51a.7.7 0 0 1 .99.99l-4 4a.7.7 0 0 1-.99 0l-4-4a.7.7 0 0 1 0-.99Z"/></svg>',
+    tick: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.33 4 6 11.33 2.67 8"/></svg>',
+    help: '<svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M10 2.47a7.53 7.53 0 1 0 0 15.06 7.53 7.53 0 0 0 0-15.06ZM.87 10a9.13 9.13 0 1 1 18.26 0A9.13 9.13 0 0 1 .87 10Z"/><path fill="currentColor" d="M10.22 6.65a1.65 1.65 0 0 0-1.89 1.12.8.8 0 1 1-1.51-.54 3.23 3.23 0 0 1 6.41 1.1c0 1.26-.93 2.1-1.6 2.54a6.6 6.6 0 0 1-1.44.72h-.01a.8.8 0 0 1-.5-1.52l.07-.03c.06-.02.14-.05.25-.1.21-.09.48-.23.74-.4.58-.38.89-.8.89-1.21a1.63 1.63 0 0 0-1.41-1.68ZM9.2 14.17c0-.45.36-.8.8-.8h.01a.8.8 0 0 1 0 1.6H10a.8.8 0 0 1-.8-.8Z"/></svg>'
+  };
+  /* Student verification: a few countries and their universities, enough to try the two linked dropdowns */
+  const STU_UNIS = {
+    'Czechia': ['Charles University', 'Czech Technical University in Prague', 'Masaryk University'],
+    'Germany': ['Heidelberg University', 'Humboldt University of Berlin', 'LMU Munich'],
+    'Slovakia': ['Comenius University Bratislava', 'Slovak University of Technology', 'Technical University of Košice'],
+    'United Kingdom': ['University of Edinburgh', 'University of Manchester', 'University of Oxford'],
+    'United States': ['Stanford University', 'University of Michigan', 'University of Texas at Austin']
+  };
+  const upgEl = document.getElementById('screen-upgrade');
+  APPS.upgrade = upgEl;
+  // upgPlan: the picked billing period; upgStudent: the student page is showing; upgBack: where × leads
+  let upgPlan = 'quarterly', upgStudent = false, upgBack = 'intent', upgBackRoute = null, stuFromPlans = false;
+  const upgPath = () => upgStudent ? '/upgrade/student/' : `/upgrade/${upgPlan}/`;
+  function upgPlanHTML(p) {
+    return `<button class="upg-plan" type="button" role="radio" aria-checked="${p.id === upgPlan}" data-plan="${p.id}">
+      ${p.popular ? '<span class="upg-pop">Popular</span>' : ''}<span class="upg-radio" aria-hidden="true"></span>
+      <span class="upg-plan-t"><span><span>${p.name}</span><b>${p.price}</b></span><span>${p.pay}</span></span></button>`;
+  }
+  function upgPlansHTML() {
+    const hire = (img, who, job, logo, alt, w) => `<div class="upg-hire"><img src="${img}" alt=""><div><p><b>${who}</b> got hired as ${job} at</p><img src="${logo}" width="${w}" height="16" alt="${alt}"></div></div>`;
+    const store = (logo, w, h, alt, score) => `<div class="upg-store"><span><img src="${logo}" width="${w}" height="${h}" alt="${alt}"><i>174 reviews</i></span><span><img src="${UPG_IMG.stars}" width="81" height="13" alt=""><b>${score} / 5</b></span></div>`;
+    return `<section class="upg-modal" aria-labelledby="upg-h"><button class="upg-x" type="button" data-upg="close" aria-label="Close">${UPG_IC.x}</button>
+      <div class="upg-pitch"><img class="upg-logo" src="${UPG_IMG.logo}" alt="Kickresume Premium">
+        <div><h1 id="upg-h">Premium = more jobs. Period.</h1><ul class="upg-perks">${UPG_PERKS.map(t => `<li><img src="${UPG_IMG.check}" alt="">${t}</li>`).join('')}</ul></div>
+        <div class="upg-proof">${hire(UPG_IMG.michelle, 'Michelle D’Aquino', 'Google Account Executive', UPG_IMG.google, 'Google', 46.67)}${hire(UPG_IMG.peter, 'Peter Trenkner', 'Product Line Manager', UPG_IMG.dell, 'Dell', 40)}</div></div>
+      <div class="upg-plans"><div><h2>Select billing period</h2><p>Pick the perfect plan that works for you.</p></div>
+        <div class="upg-pick" role="radiogroup" aria-label="Billing period">${UPG_PLANS.map(upgPlanHTML).join('')}</div>
+        <div><p class="upg-safe">${UPG_IC.tick}14-day money-back guarantee</p><button class="upg-go" type="button" data-wire="upgrade">Upgrade Now${UPG_IC.chev}</button></div></div>
+    </section>
+    <section class="upg-cred" aria-label="What people say about Kickresume">
+      <div class="upg-cred-l"><div><p class="upg-quote">“Not only does Kickresume provide templates, it also makes you think vigorously about yourself as a candidate, thus getting the best out of you. I would highly recommend Kickresume to every enthusiastic jobseeker — give it a try and you'll fall in love with it.”</p>
+          <div class="upg-who"><img src="${UPG_IMG.david}" alt=""><span><b>David Mantic</b>Hired as Product Manager at Telekom</span></div></div>
+        <p class="upg-stu"><img src="${UPG_IMG.grad}" alt=""><b>Are you a student or a teacher?</b><span>Get Kickresume Premium <button class="upg-free" type="button" data-upg="student">for free today</button>.</span></p></div>
+      <div class="upg-cred-r"><img src="${UPG_IMG.trustpilot}" alt="Trustpilot: TrustScore 4.5, 1,382 reviews">
+        <div class="upg-stores">${store(UPG_IMG.google2015, 60, 20, 'Google', '4.7')}${store(UPG_IMG.appstore, 80, 19, 'App Store', '4.6')}</div></div>
+    </section>`;
+  }
+  function stuHTML() {
+    const help = tip => `<button class="stu-help" type="button" aria-label="${tip}" data-tip="${tip}">${UPG_IC.help}</button>`;
+    const field = (id, label, ctl, tip) => `<div class="stu-field"><div class="stu-label"><label for="${id}">${label}</label>${tip ? help(tip) : ''}</div>${ctl}</div>`;
+    const sel = (id, ph, off) => `<div class="stu-sel-wrap"><button class="stu-sel" id="${id}" type="button" aria-haspopup="listbox" aria-expanded="false"${off ? ' disabled' : ''}><span class="val" data-ph="${ph}"></span>${UPG_IC.chevDown}</button><ul class="aim-menu" role="listbox" aria-label="${ph}" hidden></ul></div>`;
+    return `<section class="stu" aria-labelledby="stu-h"><button class="upg-x" type="button" data-upg="back" aria-label="Close">${UPG_IC.x}</button>
+      <div><h1 id="stu-h">Verify your student status</h1>
+        <div class="stu-tabs" role="tablist" aria-label="How to verify">${['ISIC/ITIC', 'UniDays', 'Other'].map((t, i) => `<button class="stu-tab" type="button" role="tab" aria-selected="${!i}"${i ? ` data-upg="tab" data-tab="${t}"` : ''}><span>${t}</span></button>`).join('')}</div>
+        <p class="stu-lead">Enter your details and get six months of Premium for free.</p></div>
+      <form class="stu-form" novalidate>
+        <div class="stu-row"><div class="stu-fields">
+          ${field('stu-name', 'Full name', '<input class="stu-input" id="stu-name" autocomplete="name">', 'As printed on your card')}
+          ${field('stu-country', 'Country / region', sel('stu-country', 'Select Country'))}
+          ${field('stu-uni', 'Institution', sel('stu-uni', 'Select University', true))}
+          ${field('stu-num', 'ISIC/ITIC card number', '<input class="stu-input" id="stu-num" autocomplete="off">', 'The number printed on your card')}
+        </div><img class="stu-card" src="${UPG_IMG.isic}" alt="An ISIC card: the name, institution and card number are printed on the front"></div>
+        <div class="stu-acts"><button class="stu-go" type="submit">Continue</button></div>
+      </form></section>`;
+  }
+  /* A dropdown like the language one, opening downwards; btn.value holds the pick so needFilled can check it */
+  function stuSelect(btn, onPick) {
+    const wrap = btn.parentElement, menu = wrap.querySelector('.aim-menu');
+    const set = open => { menu.hidden = !open; btn.setAttribute('aria-expanded', String(open)); if (open) (menu.querySelector('[aria-selected="true"]') || menu.querySelector('.aim-opt')).focus(); };
+    btn._fill = list => { btn.value = ''; btn.querySelector('.val').textContent = ''; menu.innerHTML = list.map(o => `<li role="presentation"><button class="aim-opt" type="button" role="option" aria-selected="false" data-val="${esc(o)}">${esc(o)}${aimIcon.check}</button></li>`).join(''); };
+    btn.addEventListener('click', () => set(menu.hidden));
+    menu.addEventListener('click', e => {
+      const o = e.target.closest('.aim-opt'); if (!o) return;
+      menu.querySelectorAll('.aim-opt').forEach(x => x.setAttribute('aria-selected', String(x === o)));
+      btn.value = o.dataset.val; btn.querySelector('.val').textContent = o.dataset.val; btn.classList.remove('is-error');
+      set(false); btn.focus();
+      if (onPick) onPick(o.dataset.val);
+    });
+    wrap.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); set(false); btn.focus(); }
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.target.closest('.aim-menu')) {
+        e.preventDefault();
+        const opts = [...menu.querySelectorAll('.aim-opt')], i = opts.indexOf(e.target.closest('.aim-opt'));
+        opts.at((i + (e.key === 'ArrowDown' ? 1 : -1)) % opts.length).focus();
+      }
+    });
+    wrap.addEventListener('focusout', e => { if (!menu.hidden && !wrap.contains(e.relatedTarget)) set(false); });
+  }
+  function initStu(root) {
+    const form = root.querySelector('.stu-form'), country = root.querySelector('#stu-country'), uni = root.querySelector('#stu-uni');
+    // the institution list waits for a country, then offers that country's universities
+    stuSelect(uni);
+    stuSelect(country, c => { uni._fill(STU_UNIS[c]); uni.disabled = false; });
+    country._fill(Object.keys(STU_UNIS));
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!needFilled([root.querySelector('#stu-name'), country, uni, root.querySelector('#stu-num')].filter(el => !el.disabled))) return;
+      busy(form.querySelector('.stu-go'), 'Verifying…', 1400, () => { if (!(flowNow && flowNext())) toast('Card verified. Six months of Premium would start here; that isn’t part of the prototype.'); });
+    });
+  }
+  function fillUpg() {
+    upgEl.classList.toggle('is-student', upgStudent);
+    upgEl.innerHTML = upgStudent ? stuHTML() : upgPlansHTML();
+    if (upgStudent) initStu(upgEl.querySelector('.stu'));
+  }
+  const syncUpg = () => { routeNow = findRoute(upgPath()); markRoutes(); setHash(upgPath()); flowSync(); syncNote(); };
+  /* The card and the reviews panel rise in one after the other, like the dashboard's parts */
+  function enterUpg() {
+    const items = [...upgEl.querySelectorAll('.upg-modal, .upg-cred, .stu')].filter(shown);
+    const anims = items.map((el, i) => play(el, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
+      { duration: DUR.base + 60, delay: i * 90, easing: EASE.standard }));
+    Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
+  }
+  async function openUpgrade(which) {
+    if (screenRun) screenRun.finish();
+    clearTimers(); setMore(false);
+    const student = which === 'student';
+    if (!student) upgPlan = which;
+    if (current === 'upgrade') {
+      if (student === upgStudent) {
+        if (!student) upgEl.querySelectorAll('.upg-plan').forEach(b => b.setAttribute('aria-checked', String(b.dataset.plan === upgPlan)));
+        return syncUpg();
+      }
+      // plans ⇄ student: the purple stays, the content fades over in place
+      stuFromPlans = student; upgStudent = student;
+      if (!reduce) await Promise.all([...upgEl.children].map(el => el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px)' }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {})));
+      fillUpg(); window.scrollTo(0, 0); device.scrollTop = 0; syncUpg(); enterUpg();
+      return;
+    }
+    upgBack = current; upgBackRoute = current === 'route' ? routeNow : null;
+    upgStudent = student; stuFromPlans = false;
+    const fromEl = APPS[current] || screens[current];
+    if (fromEl && !reduce) await fromEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: APPS[current] ? 'none' : 'translateY(-8px)' }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+    if (fromEl) fromEl.getAnimations().forEach(a => a.cancel());
+    Object.values(APPS).forEach(el => { if (el !== upgEl) { el.hidden = true; el.innerHTML = ''; } });
+    topbarEl.hidden = true; pageEl.hidden = true;
+    Object.values(screens).forEach(sc => { sc.hidden = true; });
+    fillUpg(); upgEl.hidden = false;
+    setCurrent('upgrade');
+    window.scrollTo(0, 0); device.scrollTop = 0;
+    syncUpg(); enterUpg();
+  }
+  /* × on the plans: back where the person came from; on the student page: back to the plans if they came from there */
+  function closeUpgrade() {
+    if (upgBack === 'dashboard') return openDashboard();
+    if (upgBack === 'auth') return openAuth(authKind);
+    if (upgBack === 'editor') return jumpEditor();
+    if (upgBack === 'route' && upgBackRoute) return openRoute(upgBackRoute);
+    go(upgBack === 'create' ? 'create' : 'intent');
+  }
+  upgEl.addEventListener('click', e => {
+    const p = e.target.closest('.upg-plan');
+    if (p) return p.getAttribute('aria-checked') === 'true' || openUpgrade(p.dataset.plan);
+    const b = e.target.closest('[data-upg]');
+    if (!b) return;
+    const act = b.dataset.upg;
+    if (act === 'close') closeUpgrade();
+    else if (act === 'student') openUpgrade('student');
+    else if (act === 'back') stuFromPlans ? openUpgrade(upgPlan) : closeUpgrade();
+    else if (act === 'tab') toast(b.dataset.tab === 'UniDays' ? 'Verifying with UniDays isn’t part of this prototype yet.' : 'Other ways to verify aren’t part of this prototype yet.');
+  });
+  // the plans are a radio group: arrow keys pick the next or previous one
+  upgEl.addEventListener('keydown', e => {
+    const p = e.target.closest('.upg-plan');
+    if (!p || !['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(e.key)) return;
+    e.preventDefault();
+    const all = [...upgEl.querySelectorAll('.upg-plan')], to = all.at((all.indexOf(p) + (/Down|Right/.test(e.key) ? 1 : -1)) % all.length);
+    to.focus(); openUpgrade(to.dataset.plan);
+  });
+
   /* ---------- Wireframes (Wire) for screens that have no design yet ----------
      Grey, system font, Wire's classes only, so they read as "needs design" next to the recreated screens.
      Buttons carry data-wire; in a flow they move it on, otherwise they do the obvious thing. */
@@ -3797,12 +4157,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
       </div>`, wNote('Flow 8: Career Map has its own onboarding. Design will come later; this is a stand-in.'), 520),
-    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640),
-    upgrade: o => wShell('Upgrade', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Upgrade to Premium</h1>${wLines(2)}
-        <div class="wf-grid" style="--cols:2">${PLAN_NAMES.map(p => `<div class="wf-card"><span class="wf-radio${p === o.plan ? ' wf-radio--on' : ''}">${p[0].toUpperCase() + p.slice(1)}</span>${wLines(2)}</div>`).join('')}</div>
-        <button class="wf-btn wf-btn--primary" type="button" data-wire="upgrade">Upgrade</button>
-      </div>`, wNote(`Flow 9: /upgrade/${o.plan}/ opens this with the ${o.plan} plan already picked.`), 520)
+    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
   const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, html: () => WIRE[id](opts) });
@@ -3836,7 +4191,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
-    auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) })
+    auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
+    upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) })
   };
   const FLOWS = [
     { n: 1, title: 'Onboarding', steps: [S.auth('Sign up', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
@@ -3847,7 +4203,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 6, title: 'Log in', steps: [S.auth('Log in', 'login'), S.dash()] },
     { n: 7, title: 'Latest resume', steps: [S.wire('New user: no resume yet', '/latest-resume/', 'latest-empty'), S.editor('Returning user: latest resume')] },
     { n: 8, title: 'Career Map', steps: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding'), S.wire('Career Map', '/career-map/', 'cm')] },
-    { n: 9, title: 'Upgrade', steps: [S.wire('Upgrade', '/upgrade/yearly/', 'upgrade', { plan: 'yearly' })] }
+    { n: 9, title: 'Upgrade', steps: [S.upgrade('Premium plans · yearly picked', 'yearly')] }
   ];
   let flowNow = null, flowAt = 0;
   document.getElementById('pm-flows').innerHTML = FLOWS.map(f => `<button class="pm-route" type="button" data-flow="${f.n}"><b>Flow ${f.n} · ${f.title}</b><code>${f.steps.length} step${f.steps.length > 1 ? 's' : ''}${f.steps.some(s => s.wire) ? ` · ${f.steps.filter(s => s.wire).length} wireframe` : ''}</code></button>`).join('');
@@ -3889,7 +4245,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function flowSync() {
     if (!flowNow) return;
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt) { flowAt = i; renderFlowBar(); }
   }
