@@ -1503,6 +1503,8 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
    Recreated from the product. Full pages of their own (a photo column, their own top bar), so like the
    dashboard they replace the logo bar and the page. Sizes are the product's at a 2560px-wide window. */
 body[data-screen="auth"] .stage { padding-right: 0; }  /* the page runs to the window's edge, under the side rail */
+/* the version tag moves up to the photo's top-left corner, clear of the caption and the flow bar */
+@media (min-width: 916px) { body[data-screen="auth"]:not(.is-mobile) .proto-ver { top: calc(12px + env(safe-area-inset-top, 0px)); bottom: auto; } }
 .auth { margin-inline: -16px; min-height: calc(var(--vh) * 100); display: grid; grid-template-columns: 400px minmax(0, 1fr); background: var(--kr-grey-20); color: var(--kr-grey-100); }
 .au-side { position: sticky; top: 0; height: calc(var(--vh) * 100); overflow: hidden; background: #292929; }
 .au-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity var(--dur-slow) var(--ease-inout); }
@@ -1734,6 +1736,7 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 .proto-note b { flex: none; color: var(--kr-white); font-weight: 500; }
 .flow-bar:not([hidden]) ~ .proto-note { bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
 body.has-note #screen-route { padding-bottom: 96px; }  /* the screen can scroll clear of the note */
+body.has-note .au-main { padding-bottom: 96px; }
 /* Mobile view on a wide window: in the free margin left of the phone frame, above the version tag */
 @media (min-width: 900px) {
   body.is-mobile .proto-note, body.is-mobile .flow-bar:not([hidden]) ~ .proto-note { left: 12px; transform: none; bottom: calc(48px + env(safe-area-inset-bottom, 0px)); max-width: min(320px, calc(50vw - 240px)); }
@@ -1881,7 +1884,7 @@ body.has-note #screen-route { padding-bottom: 96px; }  /* the screen can scroll 
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.1">v2.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.1.1">v2.1.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2220,7 +2223,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
   const verEl = document.querySelector('.proto-ver');
   function placeVer() {
-    const side = [...document.querySelectorAll('.dash-rail, .ed-side, .au-side')].find(el => el.getClientRects().length && el.offsetParent);
+    const side = [...document.querySelectorAll('.dash-rail, .ed-side')].find(el => el.getClientRects().length && el.offsetParent);
     verEl.style.left = side ? Math.round(side.offsetParent.getBoundingClientRect().left + side.offsetLeft + side.offsetWidth + 12) + 'px' : '';
   }
   window.addEventListener('resize', placeVer);
@@ -3654,7 +3657,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   const authEl = document.getElementById('screen-auth');
   APPS.auth = authEl;
-  let authKind = null;
+  let authKind = null, authNote = '';  // authNote: the flow's note for the page, shown in the chrome (syncNote)
   function authSideHTML(on) {
     return `<aside class="au-side" aria-label="Hired with Kickresume Premium">
       ${AUTH_PEOPLE.map((p, i) => `<figure class="au-slide${i === on ? ' is-on' : ''}" data-slide="${i}"${i === on ? '' : ' aria-hidden="true"'}><img src="${p.img}" alt=""><figcaption><span>Hired with Kickresume Premium</span><span>${p.name}</span></figcaption></figure>`).join('')}
@@ -3697,19 +3700,20 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       { duration: DUR.base + 60, delay: i * (STAGGER + 15), easing: EASE.standard }));
     Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
   }
-  async function openAuth(kind) {
+  async function openAuth(kind, note = '') {
     if (screenRun) screenRun.finish();
     clearTimers(); setMore(false);
     const A = AUTH[kind];
+    authNote = note;
     if (current === 'auth') {
-      if (authKind === kind) return;
+      if (authKind === kind) return syncNote();
       // Sign up ⇄ Log in: the form fades over in place and the photo cross-fades to this page's person
       authKind = kind;
       const main = authEl.querySelector('.au-main');
       if (!reduce) await main.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
       main.outerHTML = authMainHTML(kind);
       showSlide(A.slide);
-      routeNow = ROUTES.find(r => r.path === A.path) || null; markRoutes(); setHash(A.path); flowSync();
+      routeNow = ROUTES.find(r => r.path === A.path) || null; markRoutes(); setHash(A.path); flowSync(); syncNote();
       enterAuth(false);
       return;
     }
@@ -3729,7 +3733,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   authEl.addEventListener('click', e => {
     if (e.target.closest('a.au-link')) e.preventDefault();  // a toast, not a jump to #
     const sw = e.target.closest('[data-auth]');
-    if (sw) return openAuth(sw.dataset.auth);
+    if (sw) { const step = flowNow && flowNow.steps.at(flowAt), to = sw.dataset.auth; return openAuth(to, step && step.match === 'route:' + AUTH[to].path ? step.note || '' : ''); }
     const dot = e.target.closest('button.au-dot');
     if (dot) return showSlide(+dot.dataset.slide);
     // the product asks for consent before any sign-up: without it the box turns coral and takes focus
@@ -3767,14 +3771,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     'proofreading': ['Proofread your resume', [['Resume', 'My Kickresume', 'select']], 'Check my resume', 'Result: spelling and grammar fixes marked in the resume. Not designed yet.']
   };
   const WIRE = {
-    signup: o => wShell(o.wall ? 'Sign-up wall' : 'Sign up · CV attached', `<div class="wf-card wf-stack">
-        <h1 class="t-title">${o.wall ? 'Sign up to see your resume' : 'Create your free account'}</h1>${wLines(2)}
-        ${o.cv ? '<div class="wf-alert wf-alert--success">jana-cv.pdf is attached. We’ll import it right after sign-up.</div>' : ''}
+    wall: () => wShell('Sign-up wall', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Sign up to see your resume</h1>${wLines(2)}
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
-        ${o.wall ? '' : '<p class="t-small">Already have an account? <a class="wf-link" href="#/login/">Log in</a></p>'}
-      </div>`, o.wall ? wNote('Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')
-      : wNote('Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')),
+      </div>`, wNote('Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')),
     gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
         <div class="wf-grid" style="--cols:2">
@@ -3835,14 +3836,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
-    auth: (label, kind) => ({ label, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind) })
+    auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) })
   };
   const FLOWS = [
     { n: 1, title: 'Onboarding', steps: [S.auth('Sign up', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
-    { n: 2, title: 'CV given on the landing page', steps: [S.wire('Sign up · CV attached', '/register/', 'signup', { cv: true }), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload'), S.editor()] },
+    { n: 2, title: 'CV given on the landing page', steps: [S.auth('Sign up · CV attached', 'signup', 'Flow 2: the visitor gave a CV on the landing page (jana-cv.pdf). After sign-up we go straight to uploading and building.'), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload'), S.editor()] },
     { n: 3, title: 'Tool needs a CV, none given', steps: [S.auth('Sign up', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
-    { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
-    { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
+    { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'wall'), S.editor()] },
+    { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'wall'), S.editor()] },
     { n: 6, title: 'Log in', steps: [S.auth('Log in', 'login'), S.dash()] },
     { n: 7, title: 'Latest resume', steps: [S.wire('New user: no resume yet', '/latest-resume/', 'latest-empty'), S.editor('Returning user: latest resume')] },
     { n: 8, title: 'Career Map', steps: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding'), S.wire('Career Map', '/career-map/', 'cm')] },
@@ -3874,13 +3875,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function endFlow() { flowNow = null; renderFlowBar(); }
   /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
   function leavesFlow(r) { return !!flowNow && !flowNow.steps.some(s => s.match.split('#')[0] === 'route:' + r.path); }
-  /* The wireframe's note (wNote) sits in the chrome at the bottom, never on the screen: the one on screen now, or none */
+  /* The wireframe's note (wNote) sits in the chrome at the bottom, never on the screen: the one on screen now, or none.
+     Sign up and Log in show one only when their flow step gives it (S.auth's note). */
   function syncNote() {
     const note = document.getElementById('proto-note');
     const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
     const src = wire && wire.querySelector(':scope > .wf-note-src');
-    note.hidden = !src; document.body.classList.toggle('has-note', !!src);
-    if (src) note.querySelector('.pn-text').innerHTML = src.innerHTML;
+    const text = src ? src.innerHTML : current === 'auth' ? authNote : '';  // a designed page only when its flow step gives one
+    note.hidden = !text; document.body.classList.toggle('has-note', !!text);
+    if (text) note.querySelector('.pn-text').innerHTML = text;
   }
   /* Keep the bar in step when the person moves on with the screen's own buttons */
   function flowSync() {
