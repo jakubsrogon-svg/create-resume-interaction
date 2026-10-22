@@ -36,6 +36,10 @@ The user sends screenshots of product screens (mostly modals) to recreate pixel 
 - Match the screenshots exactly: measure them (they are usually 2x), use the product's sizes rather than the onboarding's height-aware spacing, and compare a 2x render against the screenshot pixel by pixel before publishing.
 - Later the user will say which buttons (goal screen, method screen, dashboard) lead to which route; wire those with `openRoute(findRoute(path))`.
 
+## The app menu
+
+Every page inside the app uses the editor's left menu (`appNavHTML(at)`: `.ed-side`, and `.ed-mbar` on phones), never a page's own top bar or side menu from a design; `at` marks the page. Its links carry `data-nav` (one click handler opens the page). Put it first in the page's grid (column 1); `enterApp` and `openDashboard` keep it in place when moving between app pages.
+
 ## Latest resume and My Documents
 
 - `/latest-resume/…` routes depend on the CV (`cvUploaded`): with one, `/latest-resume/` opens the editor at `/edit/` (`openEdit`) and analyze, proofread and recruiter-feedback open the ATS, Proofreading and Career Coach pages (`openTool('ats' | 'proof' | 'coach')`, URL kept as the latest-resume path, `TOOL_PATH`); without one they all go to My Documents (`/dashboard/resumes/`). My Documents lists the resumes only with a CV and is redrawn when the CV is switched.

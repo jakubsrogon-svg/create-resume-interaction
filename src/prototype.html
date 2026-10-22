@@ -811,6 +811,10 @@ body.is-mobile .editor { min-height: 100%; }
 .badge-new { font-size: 10px; line-height: 14px; font-weight: 700; font-style: italic; letter-spacing: .3px; color: var(--kr-white); background: var(--kr-primary); padding: 1px 6px; border-radius: 4px; }
 .ed-plan { margin-top: auto; display: grid; gap: 10px; text-align: center; font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
 .ed-plan b { font-weight: 700; font-style: italic; color: var(--kr-grey-100); }
+.nav-item.is-active, .nav-item.is-active:hover { background: var(--kr-grey-100); color: var(--kr-white); }
+/* the same menu on the dashboard, My Documents and the resume tools: first column; on phones the top bar spans the page */
+:is(.dash, .mdoc, .tl) > .ed-side { grid-area: auto; grid-column: 1; grid-row: 1; }
+:is(.dash, .mdoc, .tl) > .ed-mbar { grid-area: auto; grid-column: 1 / -1; }
 
 .ed-mbar { display: none; grid-area: mbar; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); }
 .ed-mbar .logo svg { width: 116px; }
@@ -961,23 +965,8 @@ body.is-mobile .editor { min-height: 100%; }
 .rv-hobbies svg.i { width: 4.6cqw; height: 4.6cqw; stroke-width: 1.4; }
 
 /* ---------- Dashboard ---------- */
-.dash { margin-inline: -16px; min-height: 100vh; background: var(--kr-background); display: grid; grid-template-columns: 72px minmax(0, 1fr); }
+.dash { margin-inline: -16px; min-height: 100vh; background: var(--kr-background); display: grid; grid-template-columns: 232px minmax(0, 1fr); }
 body.is-mobile .dash { min-height: 100%; }
-.dash-rail {
-  position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: calc(100vh - 16px); margin: 8px 0 8px 8px;
-  background: var(--kr-white); border-radius: var(--radius-card); padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
-.rail-logo { width: 40px; height: 40px; border: 0; background: none; border-radius: 10px; display: grid; place-items: center; cursor: pointer; overflow: hidden; }
-.rail-logo svg { width: 28px; height: 28px; }
-.rail-logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.rail-av { margin: 28px 0 40px; width: 36px; height: 36px; border-radius: 10px; background: var(--kr-blue-dark); color: var(--kr-white); display: grid; place-items: center; font-weight: 500; }
-.rail-btn { position: relative; width: 40px; height: 40px; border-radius: 10px; border: 0; background: none; color: var(--kr-grey-100); display: grid; place-items: center; cursor: pointer; transition: background var(--dur-fast) var(--ease-standard); }
-.rail-btn:hover { background: var(--kr-grey-40); }
-.rail-btn:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.rail-btn.is-active, .rail-btn.is-active:hover { background: var(--kr-grey-100); color: var(--kr-white); }
-.rail-btn.up { margin-top: auto; background: var(--kr-premium-gradient); color: var(--kr-white); box-shadow: var(--kr-shadow-premium-light); }
-.rail-btn.up:hover { background: var(--kr-grad-hover); }
-.dash-mbar { display: none; }
 .dash-main { min-width: 0; padding: 36px 40px 64px; display: grid; gap: 24px; align-content: start; max-width: 1280px; width: 100%; justify-self: center; }
 .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .dash-head h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; letter-spacing: -.2px; }
@@ -1082,9 +1071,6 @@ body.is-mobile .dash { min-height: 100%; }
 }
 @container (max-width: 760px) {
   .dash { grid-template-columns: minmax(0, 1fr); }
-  .dash-rail { display: none; }
-  .dash-mbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
-  .dash-mbar .logo svg { width: 116px; }
   .dash-main { padding: 20px 16px 48px; gap: 16px; }
   .dash-head .btn-up .lbl { display: none; }
   .dash-head .btn-up { padding: 8px 10px; }
@@ -1740,24 +1726,12 @@ body.has-note .upg, body:has(.flow-bar:not([hidden])) .upg { padding-bottom: 96p
    so like the dashboard it replaces the logo bar and the page (APPS.docs). Sizes are Figma's (a 1440px-wide frame).
    With a CV the resumes are listed (the design's four, with pages); without one only the "create" card shows. */
 body[data-screen="docs"] .stage, body[data-screen="tool"] .stage { padding-right: 0; }  /* the page runs to the window's edge, under the side rail */
-.mdoc { margin-inline: -16px; min-height: calc(var(--vh) * 100); background: var(--kr-white); color: var(--kr-grey-100); }
+.mdoc { margin-inline: -16px; min-height: calc(var(--vh) * 100); display: grid; grid-template-columns: 232px minmax(0, 1fr); align-items: start; background: var(--kr-background); color: var(--kr-grey-100); }
 body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 56px; }  /* scrolls clear of the flow bar */
 :where(.mdoc) :where(button) { font: inherit; color: inherit; }
 .mdoc button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.md-top { position: relative; height: 61px; }
-.md-top::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 60px; border-bottom: 1px solid var(--kr-grey-60); pointer-events: none; }
-.md-brand { position: absolute; left: 24px; top: 13px; display: flex; align-items: center; gap: 24px; }
-.md-logo { display: block; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4px; }
-.md-logo img { display: block; width: 153px; height: 34px; }
-.md-nav { display: flex; align-items: center; gap: 24px; }
-.md-nav button { padding: 0; border: 0; background: none; font: 400 14px/20px var(--font-sans); cursor: pointer; border-radius: 2px; }
-.md-nav .is-coral { color: var(--kr-primary); }
-.md-nav button:hover { text-decoration: underline; text-underline-offset: 3px; }
-.md-acct { position: absolute; right: 10px; top: 14px; display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 16px; }
-.md-acct img { display: block; width: 32px; height: 32px; }
-.md-acct svg { display: block; width: 12px; height: 7px; }
-.md-body { padding: 43px 120px 40px; }
-.md-panel { display: flex; flex-direction: column; gap: 18px; padding: 16px 32px 32px; border-radius: 24px; background: var(--kr-background); }
+.md-body { min-width: 0; padding: 36px 40px 64px; }
+.md-panel { display: flex; flex-direction: column; gap: 18px; max-width: 1200px; padding: 16px 32px 32px; border-radius: 24px; background: var(--kr-white); }
 .md-panel h1 { margin: 0; padding: 16px 0; font: 500 24px/28px var(--font-sans); }
 .md-docs { display: flex; flex-direction: column; gap: 16px; }
 .md-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -1807,16 +1781,16 @@ body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 5
 .md-page.is-prev { color: var(--kr-grey-80); }
 .md-page.is-prev svg { transform: rotate(180deg); }
 .md-page:not([aria-current]):not(.is-gap):hover { background: var(--kr-grey-20); }
-@container (max-width: 1100px) { .md-body { padding-inline: 40px; } }
+@container (max-width: 1100px) { .md-body { padding-inline: 24px; } }
+@container (max-width: 760px) { .mdoc { grid-template-columns: minmax(0, 1fr); } }
 @container (max-width: 700px) {
-  .md-body { padding: 24px 16px 32px; }
+  .md-body { padding: 20px 16px 32px; }
   .md-panel { padding: 8px 16px 24px; }
   .md-bar { flex-wrap: wrap; }
   .md-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .md-tabs::before { width: 100%; }
   .md-grid { justify-content: center; }
 }
-@container (max-width: 560px) { .md-nav { display: none; } .md-brand { left: 16px; } }
 
 /* ---------- Tool pages: ATS checker, Proofreading, Career Coach (/latest-resume/…) ----------
    Recreated from Figma (Kickresume 3.0 › Analytics 4 PREVIEW, Download/share link active - update, AI Counsellor
@@ -1824,99 +1798,16 @@ body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 5
    they are an app screen too (APPS.tool). Sizes are Figma's (a 1440px-wide frame). In the proofreading design
    the top bar, the Upgrade button and the preview tabs are blurred; they are here too. */
 .tl {
-  position: relative; display: grid; grid-template-columns: 224px minmax(588px, 1fr) minmax(0, 628px); margin-inline: -16px; min-height: calc(var(--vh) * 100);
-  overflow-x: clip; background: #fafafb; color: var(--kr-grey-100);
+  position: relative; display: grid; grid-template-columns: 232px minmax(564px, 1fr) minmax(0, 628px); align-items: start; margin-inline: -16px; min-height: calc(var(--vh) * 100);
+  overflow-x: clip; background: var(--kr-background); color: var(--kr-grey-100);
 }
-.tl.is-proof { grid-template-columns: 241px minmax(596px, 1fr) minmax(0, 603px); background: var(--kr-grey-20); }
-.tl.is-coach { grid-template-columns: 224px minmax(613px, 1fr) minmax(0, 603px); background: var(--kr-grey-20); }
 body.has-note .tl, body:has(.flow-bar:not([hidden])) .tl { padding-bottom: 56px; }
 :where(.tl) :where(button, input) { font: inherit; color: inherit; }
 .tl button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 :where(.tl) :where(p) { margin: 0; }
 :where(.tl) :where(svg) { display: block; flex: none; }
-/* top bar (over the columns) */
-.tl-top { position: absolute; z-index: 3; left: 0; right: 0; top: 0; height: 61px; pointer-events: none; }
-.tl-top > * { pointer-events: auto; }
-.tl-bar { position: absolute; left: 0; right: 0; top: 0; height: 61px; pointer-events: none; }
-.tl-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 60px; background: var(--kr-white); }
-.tl-bar::after { content: ""; position: absolute; left: 0; right: 0; top: 60px; height: 1px; background: #ededed; }
-.is-proof .tl-bar { filter: blur(5px); }
-.tl-logo { position: absolute; left: 17px; top: 14px; display: block; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4px; }
-.tl-logo img { display: block; width: 153px; height: 34px; }
-.is-ats .tl-logo { left: 11px; opacity: .9; }
-.is-ats .tl-logo img { width: 142px; height: 32px; }
-.tl-vline { position: absolute; left: 163px; top: 14px; width: 1px; height: 32px; background: var(--kr-grey-60); }
-.tl-dash { position: absolute; left: 191px; top: 20px; padding: 0; border: 0; background: none; font: 400 14px/20px var(--font-sans); cursor: pointer; border-radius: 2px; }
-.tl-dash:hover { color: var(--kr-primary); }
-.tl-acct { position: absolute; right: 10px; top: 14px; display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 16px; }
-.tl-acct > i { width: 32px; height: 32px; border: 1px solid var(--kr-grey-60); border-radius: 50%; background: var(--kr-white); }
-.tl-acct svg { width: 12px; height: 7px; color: #4a4a4a; }
-.is-ats .tl-acct svg { color: var(--kr-grey-100); }
-.tl-up {
-  position: absolute; right: 73px; top: 14px; width: 96px; height: 32px; padding: 6px 21px 6px 0; border: 0; border-radius: 4px; text-align: right;
-  background: linear-gradient(90deg, #666cff 11.8%, #a066ff 84%); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: filter .2s;
-}
-.tl-up:hover { filter: brightness(1.07); }
-/* proofreading: the blurred Upgrade button and account */
-.tl-blur { position: absolute; right: 17px; top: 13px; display: flex; align-items: center; gap: 24px; filter: blur(5px); pointer-events: none; }
-.tl-blur > b { height: 34px; padding: 7px 32px; border-radius: 4px; background: linear-gradient(90deg, #666cff 11.8%, #a066ff 84%); color: var(--kr-white); font: 500 14px/20px var(--font-sans); }
-.tl-blur > span { position: relative; width: 54.33px; height: 32px; }
-.tl-blur > span > i { position: absolute; left: 0; top: 0; width: 32px; height: 32px; border: 1px solid var(--kr-grey-60); border-radius: 50%; background: var(--kr-white); }
-.tl-blur svg { position: absolute; left: 54px; top: 13px; width: 11px; height: 7px; color: #4a4a4a; }
-/* left menu (ATS, Career Coach) */
-.tl-nav { position: relative; grid-column: 1; grid-row: 1; padding-top: 89px; border-right: 1px solid var(--kr-grey-60); }
-.is-coach .tl-nav { border: 0; }
-.is-coach .tl-nav::before { content: ""; position: absolute; left: 0; top: 60px; width: 224px; height: 1257px; border: 1px solid var(--kr-grey-60); pointer-events: none; }
-.tl-nav ul { position: relative; display: grid; gap: 16px; margin: 0; padding: 0; list-style: none; }
-.tl-item { position: relative; display: block; width: 224px; height: 32px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
-.tl-item > span { position: absolute; left: 52px; top: 6px; font: 400 14px/20px var(--font-sans); color: #212b36; white-space: nowrap; }
-.tl-item.is-sub > span { left: 53px; }
-.tl-item.is-dark > span { color: var(--kr-grey-100); }
-.tl-item > svg { position: absolute; left: 17px; top: 6px; width: 20px; height: 20px; color: var(--kr-grey-80); }
-.is-ats .tl-item[aria-current="page"] > span { font-weight: 500; color: #f74c4a; }
-.is-ats .tl-item[aria-current="page"] > svg { color: #f74c4a; }
-.is-coach .tl-item.is-ai > span { font-weight: 500; color: var(--kr-primary); }
-.tl-item:not([aria-current="page"]):hover > span { color: var(--kr-primary); }
-.tl-ai { position: absolute; left: 15px; top: 8px; display: grid; place-items: center; width: 24px; height: 16px; border-radius: 4px; background: linear-gradient(90deg, #666cff 11.8%, #a066ff 84%); color: var(--kr-white); font: 500 10px/1 var(--font-sans); }
-.tl-ai.is-title { position: static; }
-.tl-track { position: absolute; left: 27px; top: -120px; width: 2px; height: 149px; background: var(--kr-grey-60); }
-.tl-track::after { content: ""; position: absolute; left: 0; bottom: 0; width: 2px; height: 24px; background: var(--kr-grey-100); }
-/* proofreading's sidebar: sticky, the menu at the top and the account panel at the bottom */
-.tl-sidecol { grid-column: 1; grid-row: 1; padding: 98px 0 0 17px; }
-.tl-side { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: space-between; width: 224px; height: 900px; padding-bottom: 40px; overflow: clip; }
-.tl-side-top { display: grid; justify-items: start; }
-.tl-side-logo { display: block; margin: 16px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4px; }
-.tl-side-logo img { display: block; width: 114px; height: 18px; }
-.tl-menu { position: relative; display: grid; gap: 24px; margin-top: 64px; }
-.tl-menu-g { position: relative; display: grid; gap: 8px; }
-.tl-mi { display: flex; align-items: center; gap: 8px; width: 224px; padding: 7px 16px; border: 0; border-radius: 10px; background: none; text-align: left; cursor: pointer; font: 400 14px/20px var(--font-sans); color: var(--kr-grey-80); white-space: pre; }
-.tl-mi > svg { width: 16px; height: 16px; }
-.tl-mi > svg.is-21 { width: 21px; height: 21px; margin: 0 -1px -1px 0; }
-.tl-mi > em { flex: 1; font-style: normal; }
-.tl-mi:hover { background: var(--kr-grey-40); }
-.tl-builder { margin: 0 8px; padding: 0 8px; border-radius: 10px; background: var(--kr-grey-40); display: grid; gap: 4px; }
-.tl-builder .tl-mi { width: 100%; padding: 7px 0; color: var(--kr-grey-100); }
-.tl-builder .tl-mi.is-head { font-weight: 500; }
-.tl-builder .tl-mi[aria-current="page"] { color: var(--kr-primary); cursor: default; }
-.tl-builder .tl-mi:hover { background: none; color: var(--kr-primary); }
-.tl-builder .tl-mi.is-head svg:last-child { transition: transform var(--dur-fast) var(--ease-standard); }
-.tl-builder.is-closed .tl-mi.is-head svg:last-child { transform: rotate(180deg); }
-.tl-builder.is-closed .tl-mi:not(.is-head) { display: none; }
-.tl-tip { position: absolute; left: 50px; top: 144px; width: 145px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
-.tl-tip::before { content: ""; display: block; width: 10px; height: 4px; margin-left: 18px; background: var(--kr-grey-100); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.tl-tip > span { display: block; padding: 4px 8px; border-radius: 4px; background: var(--kr-grey-100); color: var(--kr-white); font: 400 12px/18px var(--font-sans); }
-.tl-acctp { padding: 0 8px; }
-.tl-acctp > div { display: grid; padding: 16px 8px; border-radius: 10px; background: var(--kr-white); box-shadow: 1px 2px 5px rgba(0, 0, 0, .1); }
-.tl-me { display: flex; align-items: center; justify-content: center; gap: 8px; height: 34px; padding: 0; border: 0; background: none; font: 400 14px/20px var(--font-sans); cursor: pointer; border-radius: 6px; }
-.tl-me img { width: 24px; height: 24px; }
-.tl-plan { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 8px; font: 400 12px/18px var(--font-sans); color: var(--kr-grey-80); }
-.tl-plan svg { width: 35px; height: 13px; }
-.tl-upg { height: 40px; margin-top: 8px; padding: 0 32px; border: 1px solid #5345ff; border-radius: 10px; background: linear-gradient(168.23deg, #5345ff, #9c3eff); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: filter .2s; }
-.tl-upg:hover { filter: brightness(1.07); }
 /* the middle column */
-.tl-main { grid-column: 2; grid-row: 1; min-width: 0; padding: 89px 48px 80px 50px; }
-.is-proof .tl-main { padding: 143px 61px 80px 35px; }
-.is-coach .tl-main { padding: 89px 40px 80px 23px; }
+.tl-main { grid-column: 2; grid-row: 1; min-width: 0; padding: 28px 32px 80px; }
 .tl-col { display: grid; gap: 24px; width: 490px; max-width: 100%; }
 .is-proof .tl-col { gap: 40px; width: 500px; }
 .is-coach .tl-col { gap: 32px; width: 498px; }
@@ -1936,6 +1827,7 @@ body.has-note .tl, body:has(.flow-bar:not([hidden])) .tl { padding-bottom: 56px;
 .tl-cc { display: grid; gap: 8px; }
 .tl-cc-top { display: grid; gap: 32px; }
 .tl-h.is-top { align-items: flex-start; }
+.tl-ai { display: grid; place-items: center; width: 24px; height: 16px; border-radius: 4px; background: linear-gradient(90deg, #666cff 11.8%, #a066ff 84%); color: var(--kr-white); font: 500 10px/1 var(--font-sans); }
 /* ATS: the score bars */
 .tl-score { display: flex; align-items: center; gap: 24px; padding: 19px; border: 1px solid var(--kr-grey-60); border-radius: 20px; background: var(--kr-white); }
 .tl-score.is-key { display: grid; gap: 20px; }
@@ -2085,13 +1977,13 @@ button.tl-chk-h { cursor: pointer; border-radius: 4px; }
 /* under 1440px the column narrows and the preview shrinks with it (--tl-z, set by fitPrev) */
 .tl-pv { position: relative; width: 628px; zoom: var(--tl-z, 1); }
 .tl-frame { position: absolute; left: 0; top: 0; width: 628px; height: 1080px; border: 1px solid var(--kr-grey-60); pointer-events: none; }
-.is-proof .tl-frame { top: 61px; height: 2441px; }
-.is-coach .tl-frame { top: 60px; height: 988px; }
-.tl-paper { position: absolute; left: 43px; top: 143px; width: 541px; height: 764px; box-shadow: 1px 2px 20px rgba(0, 0, 0, .1); background: var(--kr-white); }
+.is-proof .tl-frame { height: 2441px; }
+.is-coach .tl-frame { height: 988px; }
+.tl-paper { position: absolute; left: 43px; top: 82px; width: 541px; height: 764px; box-shadow: 1px 2px 20px rgba(0, 0, 0, .1); background: var(--kr-white); }
 .is-proof .tl-paper, .is-coach .tl-paper { left: 31px; }
 .tl-paper > img, .tl-paper > i { position: absolute; display: block; }
 .tl-paper > img:first-child { position: static; width: 541px; height: 764px; }
-.tl-ptabs { position: absolute; left: 99px; top: 77px; width: 406px; height: 34px; }
+.tl-ptabs { position: absolute; left: 99px; top: 16px; width: 406px; height: 34px; }
 .is-proof .tl-ptabs { filter: blur(5px); pointer-events: none; }
 .tl-ptabs > div { position: absolute; left: .4px; top: 0; width: 401px; height: 32px; display: flex; align-items: center; gap: 20px; padding: 0 5px; border: 1px solid var(--kr-grey-60); border-radius: 4px; background: var(--kr-white); }
 .tl-ptabs button { display: flex; align-items: flex-start; gap: 6px; height: 20px; padding: 0; border: 0; background: none; font: 400 14px/20px var(--font-sans); white-space: nowrap; cursor: pointer; }
@@ -2101,15 +1993,12 @@ button.tl-chk-h { cursor: pointer; border-radius: 4px; }
 .tl-ptabs > i { position: absolute; left: 0; top: 0; width: 89px; height: 32px; border: 1px solid var(--kr-primary); border-radius: 4px; pointer-events: none; }
 /* narrower windows: the preview goes first, then the menus; phones get one column */
 @container (max-width: 1180px) {
-  .tl, .tl.is-coach { grid-template-columns: 224px minmax(0, 1fr); }
-  .tl.is-proof { grid-template-columns: 241px minmax(0, 1fr); }
+  .tl { grid-template-columns: 232px minmax(0, 1fr); }
   .tl-prev { display: none; }
-  .tl-blur { display: none; }
 }
 @container (max-width: 760px) {
-  .tl, .tl.is-proof, .tl.is-coach { grid-template-columns: minmax(0, 1fr); }
-  .tl-nav, .tl-sidecol, .tl-vline, .tl-dash { display: none; }
-  .tl-main, .is-proof .tl-main, .is-coach .tl-main { grid-column: 1; padding: 89px 16px 64px; }
+  .tl { grid-template-columns: minmax(0, 1fr); }
+  .tl-main { grid-column: 1; grid-row: 2; padding: 20px 16px 64px; }
   .tl-col, .is-proof .tl-col, .is-coach .tl-col { width: 100%; }
   .tl-checks.is-two > div { width: 100%; }
   .tl-gen form { flex-wrap: wrap; gap: 12px; }
@@ -2445,7 +2334,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.3">v2.3</div>
+<div class="proto-ver" aria-label="Prototype version 2.4">v2.4</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2784,7 +2673,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
   const verEl = document.querySelector('.proto-ver');
   function placeVer() {
-    const side = [...document.querySelectorAll('.dash-rail, .ed-side, .tl-nav, .tl-sidecol')].find(el => el.getClientRects().length && el.offsetParent);
+    const side = [...document.querySelectorAll('.ed-side')].find(el => el.getClientRects().length && el.offsetParent);
     verEl.style.left = side ? Math.round(side.offsetParent.getBoundingClientRect().left + side.offsetLeft + side.offsetWidth + 12) + 'px' : '';
   }
   window.addEventListener('resize', placeVer);
@@ -3343,11 +3232,51 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <span class="rv-mark" aria-hidden="true">PREVIEW</span>`;
   }
 
+  /* The app's menu: the same left sidebar on every page inside the app (editor, dashboard, My Documents, the
+     resume tools), and the same top bar on phones. `at` marks the page: dashboard, docs, fill (the editor), ats,
+     proof or coach. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
+  const NAV_SOON = { design: 'Design', download: 'Download &amp; Share', jobs: 'Find Jobs', tracker: 'Job Tracker' };
+  function appNavHTML(at) {
+    const P = person, logo = document.querySelector('#topbar .logo').innerHTML;
+    const here = key => at === key ? ' is-active" aria-current="page' : '';
+    const item = (ic, label, key, extra = '') => `<li><button class="nav-item${here(key)}" type="button"${at === key ? '' : ` data-nav="${key}"`}>${icon(ic)}${label}${extra}</button></li>`;
+    const sub = (label, key, nav = key) => `<button class="nav-item nav-sub${here(key)}" type="button"${at === key ? '' : ` data-nav="${nav}"`}>${label}</button>`;
+    const doc = ['fill', 'ats', 'proof', 'coach'].includes(at) || cvUploaded ? `<li class="nav-doc">
+        <button class="nav-item" type="button"${at === 'fill' ? ' aria-current="true"' : ' data-nav="edit"'}>${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
+        ${sub('Fill In', 'fill', 'edit')}${sub('Design', 'design')}${sub('ATS Checker', 'ats')}${sub('Proofread &amp; Translate', 'proof')}${sub('Download &amp; Share', 'download')}
+      </li>` : '';
+    return `
+      <div class="ed-mbar">
+        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${logo}</button>
+        <button class="icon-sq" type="button" data-action="toast" data-msg="The menu holds the same links as the desktop sidebar." aria-label="Menu">${icon('menu')}</button>
+      </div>
+      <nav class="ed-side" aria-label="Main">
+        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${logo}</button>
+        <div class="acct"><span class="av" data-out="initial">${esc((P.first || 'J')[0])}</span><span class="acct-text"><b>My Account</b><span data-out="fullname">${esc([P.first, P.last].join(' '))}</span></span></div>
+        <ul class="nav">
+          ${item('home', 'Dashboard', 'dashboard')}${item('file', 'My Documents', 'docs')}${doc}
+          ${item('map', 'Career Map', 'career-map')}${item('chat', 'Job Interviews', 'interviews')}${item('search', 'Find Jobs', 'jobs')}${item('list', 'Job Tracker', 'tracker', ' <span class="badge-new">NEW</span>')}
+        </ul>
+        <div class="ed-plan"><span>Current plan: <b>FREE</b></span><button class="btn btn-gradient btn-block" type="button" data-nav="upgrade">Upgrade</button></div>
+      </nav>`;
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-nav]');
+    if (!b) return;
+    const n = b.dataset.nav;
+    if (n === 'dashboard') openDashboard();
+    else if (n === 'docs') openDocs();
+    else if (n === 'edit') openEdit();
+    else if (n === 'ats' || n === 'proof') openTool(n);
+    else if (n === 'career-map') openRoute(findRoute('/career-map/'));
+    else if (n === 'interviews') openRoute(findRoute('/dashboard/create-interview/'));
+    else if (n === 'upgrade') openUpgrade(upgPlan);
+    else toast(`${NAV_SOON[n]} isn’t part of this prototype.`.replace('&amp;', '&'));
+  });
+
   function editorHTML() {
     const P = person;
     const f = (k, label, cls, ph) => `<div class="f${cls ? ' ' + cls : ''}"><label for="ed-${k}">${label}</label><input class="input sm" id="ed-${k}" data-k="${k}" value="${esc(P[k])}"${ph ? ` placeholder="${ph}"` : ''}></div>`;
-    const navItem = (ic, label, extra) => `<li><button class="nav-item" type="button" data-action="toast" data-msg="${label} isn’t part of this prototype.">${icon(ic)}${label}${extra || ''}</button></li>`;
-    const sub = (label, active) => `<button class="nav-item nav-sub${active ? ' is-active' : ''}" type="button" ${active ? 'aria-current="page"' : `data-action="toast" data-msg="${label} isn’t part of this prototype."`}>${label}</button>`;
     const ecard = (key, ic, title, meta, body, open) => `
       <div class="ecard${open ? ' is-open' : ''}" data-sec="${key}">
         <button class="ehead" type="button" data-action="ecard" aria-expanded="${!!open}"><span class="eicon">${icon(ic)}</span>${title}<span class="meta">${meta}</span><span class="chev-d">${icon('down')}</span></button>
@@ -3359,28 +3288,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       `<button class="add-row" type="button" data-action="toast" data-msg="A new empty ${what} would appear here.">${icon('plus')}Add ${what}</button>`;
     const chips = key => `<div class="chips">${person[key].map((c, i) => `<span class="chip">${esc(Array.isArray(c) ? c[1] : c)}<button type="button" data-action="chip-remove" data-list="${key}" data-i="${i}" aria-label="Remove ${esc(Array.isArray(c) ? c[1] : c)}">${icon('x')}</button></span>`).join('')}</div>`;
 
-    return `
-      <div class="ed-mbar">
-        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
-        <button class="icon-sq" type="button" data-action="toast" data-msg="The menu holds the same links as the desktop sidebar." aria-label="Menu">${icon('menu')}</button>
-      </div>
-      <nav class="ed-side" aria-label="Main">
-        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
-        <div class="acct"><span class="av" data-out="initial">${esc((P.first || 'J')[0])}</span><span class="acct-text"><b>My Account</b><span data-out="fullname">${esc([P.first, P.last].join(' '))}</span></span></div>
-        <ul class="nav">
-          <li><button class="nav-item" type="button" data-action="dashboard">${icon('home')}Dashboard</button></li>
-          ${navItem('file', 'My Documents')}
-          <li class="nav-doc">
-            <button class="nav-item" type="button" aria-current="true">${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
-            ${sub('Fill In', true)}${sub('Design')}${sub('ATS Checker')}${sub('Proofread &amp; Translate')}${sub('Download &amp; Share')}
-          </li>
-          ${navItem('map', 'Career Map')}
-          ${navItem('chat', 'Job Interviews')}
-          ${navItem('search', 'Find Jobs')}
-          ${navItem('list', 'Job Tracker', ' <span class="badge-new">NEW</span>')}
-        </ul>
-        <div class="ed-plan"><span>Current plan: <b>FREE</b></span><button class="btn btn-gradient btn-block" type="button" data-action="toast" data-msg="Upgrade opens the plans page.">Upgrade</button></div>
-      </nav>
+    return `${appNavHTML('fill')}
       <div class="ed-tabs"><div class="seg-light" role="group" aria-label="Editor view">
         <button type="button" data-action="pane" data-pane="edit" aria-pressed="false">Fill In</button>
         <button type="button" data-action="pane" data-pane="preview" aria-pressed="true">Preview</button>
@@ -3568,21 +3476,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ['chart', 'Resume Analysis', 'Check your resume for issues and get tips on how to improve it.', 'var(--kr-mint-tint)', 'var(--kr-green-apple)', '']
   ];
   function dashHTML() {
-    const logo = document.querySelector('#topbar .logo').innerHTML;
-    const rail = (ic, label, extra) => `<button class="rail-btn${extra || ''}" type="button" ${extra === ' is-active' ? 'aria-current="page"' : `data-action="toast" data-msg="${label} isn’t part of this prototype."`} aria-label="${label}" data-tip="${label}">${icon(ic)}</button>`;
     const paperLines = n => Array.from({ length: n }, (_, i) => `<i class="ln${i % 3 === 0 ? ' dk' : ''}" style="width:${[90, 70, 82, 60, 76][i % 5]}%"></i>`).join('');
     const tile = (cls, label, art, action, extra) => `<button class="doc-tile ${cls}" type="button" ${action}>${extra || ''}<span class="art" aria-hidden="true">${art}</span><span class="doc-label">${label}</span></button>`;
-    return `
-      <div class="dash-mbar">
-        <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${logo}</button>
-        <button class="icon-sq" type="button" data-action="toast" data-msg="The menu holds the same links as the desktop sidebar." aria-label="Menu">${icon('menu')}</button>
-      </div>
-      <nav class="dash-rail" aria-label="Main">
-        <button class="rail-logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.getElementById('logo-symbol').innerHTML}</button>
-        <span class="rail-av" aria-hidden="true">${esc((person.first || 'J')[0])}</span>
-        ${rail('home', 'Dashboard', ' is-active')}${rail('file', 'My Documents')}${rail('map', 'Career Map')}${rail('chat', 'Job Interviews')}${rail('search', 'Find Jobs')}
-        <button class="rail-btn up" type="button" data-action="toast" data-msg="Upgrade opens the plans page." aria-label="Upgrade" data-tip="Upgrade">${icon('upCircle')}</button>
-      </nav>
+    return `${appNavHTML('dashboard')}
       <main class="dash-main">
         <div class="dash-head">
           <h1>Welcome, ${esc(person.first || 'there')}!</h1>
@@ -3650,25 +3546,29 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </main>`;
   }
 
+  /* Moving between pages inside the app the menu stays where it is; only the page next to it changes */
+  const hasSide = el => !!el && shown(el) && !!el.querySelector(':scope > .ed-side') && shown(el.querySelector(':scope > .ed-side'));
+  async function leaveOut(fromEl, keepSide) {
+    if (!fromEl) return;
+    const els = keepSide ? [...fromEl.children].filter(c => !c.matches('.ed-side')) : [fromEl];
+    if (!reduce) await Promise.all(els.map(x => x.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: APPS[current] ? 'none' : 'translateY(-8px)' }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {})));
+    els.forEach(x => x.getAnimations().forEach(a => a.cancel()));
+  }
   /* Open a full-screen app view (dashboard) from any screen */
   async function openDashboard() {
     if (screenRun) screenRun.finish();
     clearTimers();
-    const fromEl = APPS[current] || screens[current];
-    if (fromEl && !reduce) {
-      await fromEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: APPS[current] ? 'none' : 'translateY(-8px)' }],
-        { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
-    }
-    if (fromEl) fromEl.getAnimations().forEach(a => a.cancel());
+    const fromEl = APPS[current] || screens[current], keepSide = hasSide(fromEl);
+    await leaveOut(fromEl, keepSide);
     Object.values(APPS).forEach(el => { if (el !== dashEl) { el.hidden = true; el.innerHTML = ''; } });
     topbarEl.hidden = true; pageEl.hidden = true;
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
     setCurrent('dashboard');
     window.scrollTo(0, 0); device.scrollTop = 0;
-    const items = [...dashEl.querySelectorAll('.dash-mbar, .dash-rail, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(shown);
+    const items = [...dashEl.querySelectorAll('.ed-mbar, .ed-side, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
     const anims = items.map((el, i) => play(el,
-      reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: el.classList.contains('dash-rail') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
+      reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: el.classList.contains('ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base + 60, delay: i * (STAGGER + 15), easing: EASE.standard }));
     await Promise.all(anims.map(a => a.finished.catch(() => {})));
     anims.forEach(a => a.cancel());
@@ -3733,6 +3633,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cvUploaded = on; cvName = on ? (name || cvName) : '';
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
+    if (current === 'dashboard') {  // the menu's resume group follows the CV
+      const t = document.createElement('div'); t.innerHTML = appNavHTML('dashboard');
+      ['.ed-mbar', '.ed-side'].forEach(c => dashEl.querySelector(':scope > ' + c).replaceWith(t.querySelector(c)));
+    }
   }
 
   function fillRoute(r, pane) {
@@ -3778,6 +3682,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (routeBack === 'auth') return openAuth(authKind);
     if (routeBack === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
     if (routeBack === 'docs') return openDocs();
+    if (routeBack === 'editor') return jumpEditor();
     if (routeBack === 'tool') return openTool(toolKind);
     go(routeBack === 'create' ? 'create' : 'intent');
   }
@@ -4512,21 +4417,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Career Coach). /latest-resume/… opens the editor or a tool on the latest resume when there is a CV, and
      My Documents when there isn't. The design for recruiter feedback is the Career Coach page. */
   const TL_IMG = {
-    premium: '__ASSET:upgrade/premium-logo.svg__', basic: '__ASSET:tools/basic-logo.svg__', logoDark: '__ASSET:tools/logo-dark.svg__',
-    atsLogo: '__ASSET:tools/ats-logo.webp__', premiumWord: '__ASSET:tools/premium-word.svg__', resume: '__ASSET:tools/resume.webp__',
+    premiumWord: '__ASSET:tools/premium-word.svg__', resume: '__ASSET:tools/resume.webp__',
     hlManager: '__ASSET:tools/hl-manager.svg__', hlAssistant: '__ASSET:tools/hl-assistant.svg__', gauss: '__ASSET:tools/gauss.svg__',
     joe: '__ASSET:tools/joe.webp__', patricia: '__ASSET:tools/patricia.webp__', flagUs: '__ASSET:tools/flag-us.webp__', flagEs: '__ASSET:tools/flag-es.webp__',
-    account: '__ASSET:tools/account.webp__', avatar: '__ASSET:docs/avatar.webp__', thumb: '__ASSET:docs/resume-thumb.webp__'
+    thumb: '__ASSET:docs/resume-thumb.webp__'
   };
   /* The designs' own icons (paths from the Figma file; one colour ones take currentColor) */
   const TL_IC = {
-    edit: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M9.16 3.33H3.33C2.89 3.33 2.46 3.5 2.15 3.82C1.84 4.13 1.66 4.55 1.66 5.00V16.66C1.66 17.1 1.84 17.53 2.15 17.84C2.46 18.15 2.89 18.33 3.33 18.33H14.99C15.44 18.33 15.86 18.15 16.17 17.84C16.49 17.53 16.66 17.1 16.66 16.66V10.83" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.41 2.08C15.74 1.75 16.19 1.56 16.66 1.56C17.13 1.56 17.58 1.75 17.91 2.08C18.24 2.41 18.43 2.86 18.43 3.33C18.43 3.8 18.24 4.25 17.91 4.58L9.99 12.49L6.66 13.33L7.49 9.99L15.41 2.08Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    droplet: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M9.99 2.24L14.71 6.95C15.64 7.89 16.28 9.07 16.54 10.37C16.79 11.66 16.66 13 16.16 14.22C15.65 15.44 14.8 16.48 13.7 17.21C12.61 17.94 11.32 18.34 10 18.34C8.68 18.34 7.39 17.94 6.29 17.21C5.2 16.48 4.34 15.44 3.84 14.22C3.34 13 3.2 11.66 3.46 10.37C3.72 9.07 4.35 7.89 5.29 6.95L9.99 2.24Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    fileText: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M11.66 1.66H5.00C4.55 1.66 4.13 1.84 3.82 2.15C3.5 2.46 3.33 2.89 3.33 3.33V16.66C3.33 17.1 3.5 17.53 3.82 17.84C4.13 18.15 4.55 18.33 5 18.33H15.00C15.44 18.33 15.86 18.15 16.17 17.84C16.49 17.53 16.66 17.1 16.66 16.66V6.66L11.66 1.66Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.66 1.66V6.66H16.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.33 10.83H6.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.33 14.16H6.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.33 7.5H7.49H6.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    barChart: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M15 16.66V8.33" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 16.66V3.33" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 16.66V11.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    fileCheck: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M11.66 1.66H5.00C4.55 1.66 4.13 1.84 3.82 2.15C3.5 2.46 3.33 2.89 3.33 3.33V16.66C3.33 17.1 3.5 17.53 3.82 17.84C4.13 18.15 4.55 18.33 5 18.33H15.00C15.44 18.33 15.86 18.15 16.17 17.84C16.49 17.53 16.66 17.1 16.66 16.66V6.66L11.66 1.66Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.66 1.66V6.66H16.66" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.47 13.03L9.14 14.70L12.47 11.36" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    download: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M17.5 12.5V15.83C17.5 16.27 17.32 16.69 17.01 17.01C16.69 17.32 16.27 17.5 15.83 17.5H4.16C3.72 17.5 3.3 17.32 2.98 17.01C2.67 16.69 2.5 16.27 2.5 15.83V12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.83 8.33L10.0 12.50L14.16 8.33" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 12.5V2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    share: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3.33 10V16.66C3.33 17.1 3.5 17.53 3.82 17.84C4.13 18.15 4.55 18.33 5 18.33H15.00C15.44 18.33 15.86 18.15 16.17 17.84C16.49 17.53 16.66 17.1 16.66 16.66V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.33 4.99L9.99 1.66L6.66 4.99" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 1.66V12.49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     arrowR16: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.66 8.00C2.66 7.63 2.96 7.33 3.33 7.33H12.66C13.03 7.33 13.33 7.63 13.33 8.00C13.33 8.36 13.03 8.66 12.66 8.66H3.33C2.96 8.66 2.66 8.36 2.66 8.00Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.52 2.86C7.78 2.6 8.21 2.6 8.47 2.86L13.13 7.52C13.39 7.78 13.39 8.21 13.13 8.47L8.47 13.13C8.21 13.39 7.78 13.39 7.52 13.13C7.26 12.87 7.26 12.45 7.52 12.19L11.72 7.99L7.52 3.80C7.26 3.54 7.26 3.12 7.52 2.86Z" fill="currentColor"/></svg>',
     ok: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.86 10.00C0.86 4.95 4.95 0.86 10 0.86C15.04 0.86 19.13 4.95 19.13 10.00C19.13 15.04 15.04 19.13 10 19.13C4.95 19.13 0.86 15.04 0.86 10.00Z" fill="#48AD43"/><path fill-rule="evenodd" clip-rule="evenodd" d="M14.7 7.29C15.09 7.68 15.09 8.31 14.7 8.70L9.33 14.08C9.14 14.27 8.88 14.37 8.62 14.37C8.35 14.37 8.1 14.27 7.91 14.08L5.29 11.46C4.9 11.07 4.9 10.43 5.29 10.04C5.68 9.65 6.31 9.65 6.7 10.04L8.62 11.96L13.29 7.29C13.68 6.9 14.31 6.9 14.7 7.29Z" fill="white"/></svg>',
     err: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.86 10.00C0.86 4.95 4.95 0.86 10 0.86C15.04 0.86 19.13 4.95 19.13 10.00C19.13 15.04 15.04 19.13 10 19.13C4.95 19.13 0.86 15.04 0.86 10.00Z" fill="#F74C4A"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5.66C10.55 5.66 11 6.11 11 6.66V9.99C11 10.55 10.55 10.99 10 10.99C9.44 10.99 9 10.55 9 9.99V6.66C9 6.11 9.44 5.66 10 5.66Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 13.33C9 12.78 9.44 12.33 9.99 12.33H10.00C10.55 12.33 11 12.78 11 13.33C11 13.88 10.55 14.33 10 14.33H9.99C9.44 14.33 9 13.88 9 13.33Z" fill="white"/></svg>',
@@ -4542,18 +4439,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     book: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.63 1.99C0.63 1.61 0.94 1.29 1.33 1.29H5.33C6.22 1.29 7.08 1.65 7.71 2.28C8.34 2.91 8.69 3.77 8.69 4.66V14C8.69 14.38 8.38 14.7 7.99 14.7C7.61 14.7 7.29 14.38 7.29 14C7.29 13.65 7.16 13.32 6.91 13.08C6.67 12.83 6.34 12.7 5.99 12.7H1.33C0.94 12.7 0.63 12.38 0.63 12V1.99ZM7.29 11.63V4.66C7.29 4.14 7.09 3.64 6.72 3.27C6.35 2.9 5.85 2.69 5.33 2.69H2.03V11.3H5.99C6.45 11.3 6.9 11.41 7.29 11.63Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.28 2.28C8.91 1.65 9.77 1.29 10.66 1.29H14.66C15.05 1.29 15.36 1.61 15.36 1.99V12C15.36 12.38 15.05 12.7 14.66 12.7H10C9.65 12.7 9.32 12.83 9.08 13.08C8.83 13.32 8.7 13.65 8.7 14C8.7 14.38 8.38 14.7 8 14.7C7.61 14.7 7.3 14.38 7.3 14V4.66C7.3 3.77 7.65 2.91 8.28 2.28ZM8.7 11.63C9.09 11.41 9.54 11.3 10 11.3H13.96V2.69H10.66C10.14 2.69 9.64 2.9 9.27 3.27C8.9 3.64 8.7 4.14 8.7 4.66V11.63Z" fill="currentColor"/></svg>',
     target: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.99 2.03C4.7 2.03 2.03 4.7 2.03 8.00C2.03 11.29 4.7 13.96 7.99 13.96C11.29 13.96 13.96 11.29 13.96 8.00C13.96 4.7 11.29 2.03 7.99 2.03ZM0.63 8.00C0.63 3.93 3.93 0.63 7.99 0.63C12.06 0.63 15.36 3.93 15.36 8.00C15.36 12.06 12.06 15.36 7.99 15.36C3.93 15.36 0.63 12.06 0.63 8.00Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.0 4.69C6.17 4.69 4.7 6.17 4.7 7.99C4.7 9.82 6.17 11.3 8 11.3C9.82 11.3 11.3 9.82 11.3 7.99C11.3 6.17 9.82 4.69 8 4.69ZM3.3 7.99C3.3 5.4 5.4 3.29 8 3.29C10.59 3.29 12.7 5.4 12.7 7.99C12.7 10.59 10.59 12.7 8 12.7C5.4 12.7 3.3 10.59 3.3 7.99Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.0 7.36C7.65 7.36 7.36 7.65 7.36 7.99C7.36 8.34 7.65 8.63 8 8.63C8.35 8.63 8.63 8.34 8.63 7.99C8.63 7.65 8.35 7.36 8 7.36ZM5.96 7.99C5.96 6.87 6.87 5.96 8 5.96C9.12 5.96 10.03 6.87 10.03 7.99C10.03 9.12 9.12 10.03 8 10.03C6.87 10.03 5.96 9.12 5.96 7.99Z" fill="currentColor"/></svg>',
     help: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.99 2.03C4.7 2.03 2.03 4.7 2.03 8C2.03 11.29 4.7 13.96 7.99 13.96C11.29 13.96 13.96 11.29 13.96 8C13.96 4.7 11.29 2.03 7.99 2.03ZM0.63 8C0.63 3.93 3.93 0.63 7.99 0.63C12.06 0.63 15.36 3.93 15.36 8C15.36 12.06 12.06 15.36 7.99 15.36C3.93 15.36 0.63 12.06 0.63 8Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.16 5.38C7.86 5.33 7.55 5.38 7.28 5.54C7.02 5.69 6.82 5.94 6.72 6.23C6.59 6.59 6.19 6.78 5.82 6.66C5.46 6.53 5.27 6.13 5.39 5.76C5.61 5.16 6.02 4.65 6.57 4.33C7.12 4.01 7.77 3.89 8.4 4.00C9.03 4.11 9.6 4.43 10.01 4.92C10.42 5.41 10.64 6.02 10.64 6.66C10.64 7.7 9.87 8.38 9.33 8.74C9.04 8.94 8.75 9.08 8.54 9.18C8.43 9.22 8.34 9.26 8.28 9.28C8.24 9.3 8.22 9.31 8.2 9.31L8.18 9.32L8.17 9.32L8.17 9.33L8.16 9.33L8.16 9.33C8.16 9.33 8.16 9.33 7.95 8.68L8.16 9.33C7.8 9.45 7.4 9.25 7.28 8.88C7.16 8.52 7.35 8.12 7.72 8.00L7.94 8.66C7.72 8 7.72 8 7.72 8.00L7.72 8.00L7.72 8.00L7.72 8.00C7.72 8 7.72 8 7.72 8.00L7.73 7.99C7.74 7.99 7.76 7.98 7.78 7.98C7.82 7.96 7.89 7.93 7.97 7.90C8.13 7.82 8.35 7.72 8.55 7.58C9.01 7.27 9.24 6.96 9.24 6.66L9.24 6.66C9.24 6.35 9.13 6.06 8.94 5.82C8.74 5.59 8.46 5.43 8.16 5.38ZM10.64 6.66C10.64 6.66 10.64 6.66 10.64 6.66L9.94 6.66H10.64C10.64 6.66 10.64 6.66 10.64 6.66Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.3 11.33C7.3 10.94 7.61 10.63 8 10.63H8.00C8.39 10.63 8.7 10.94 8.7 11.33C8.7 11.71 8.39 12.03 8 12.03H8.00C7.61 12.03 7.3 11.71 7.3 11.33Z" fill="currentColor"/></svg>',
-    home: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.59 0.80C7.83 0.61 8.16 0.61 8.4 0.80L14.4 5.47C14.57 5.6 14.66 5.79 14.66 5.99V13.33C14.66 13.86 14.45 14.37 14.08 14.74C13.7 15.12 13.19 15.33 12.66 15.33H3.33C2.8 15.33 2.29 15.12 1.91 14.74C1.54 14.37 1.33 13.86 1.33 13.33V5.99C1.33 5.79 1.42 5.6 1.59 5.47L7.59 0.80ZM2.66 6.32V13.33C2.66 13.51 2.73 13.67 2.86 13.80C2.98 13.92 3.15 14 3.33 14H12.66C12.84 14 13.01 13.92 13.13 13.80C13.26 13.67 13.33 13.51 13.33 13.33V6.32L8.0 2.17L2.66 6.32Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33 8.00C5.33 7.63 5.63 7.33 6 7.33H10C10.36 7.33 10.66 7.63 10.66 8.00V14.66C10.66 15.03 10.36 15.33 10 15.33C9.63 15.33 9.33 15.03 9.33 14.66V8.66H6.66V14.66C6.66 15.03 6.36 15.33 6 15.33C5.63 15.33 5.33 15.03 5.33 14.66V8.00Z" fill="currentColor"/></svg>',
-    fileDoc: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.56 1.22C2.94 0.84 3.46 0.63 4 0.63H9.33C9.51 0.63 9.69 0.7 9.82 0.83L13.82 4.83C13.95 4.96 14.03 5.14 14.03 5.33V13.33C14.03 13.87 13.81 14.38 13.43 14.77C13.05 15.15 12.53 15.36 12 15.36H4.00C3.46 15.36 2.94 15.15 2.56 14.77C2.18 14.38 1.96 13.87 1.96 13.33V2.66C1.96 2.12 2.18 1.61 2.56 1.22ZM4.0 2.03C3.83 2.03 3.67 2.1 3.55 2.21C3.43 2.33 3.36 2.49 3.36 2.66V13.33C3.36 13.5 3.43 13.66 3.55 13.78C3.67 13.9 3.83 13.96 4 13.96H12C12.16 13.96 12.32 13.9 12.44 13.78C12.56 13.66 12.63 13.5 12.63 13.33V5.62L9.04 2.03H4.00Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.33 0.63C9.71 0.63 10.03 0.94 10.03 1.33V4.63H13.33C13.71 4.63 14.03 4.94 14.03 5.33C14.03 5.71 13.71 6.03 13.33 6.03H9.33C8.94 6.03 8.63 5.71 8.63 5.33V1.33C8.63 0.94 8.94 0.63 9.33 0.63Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63 8.66C4.63 8.28 4.94 7.96 5.33 7.96H10.66C11.05 7.96 11.36 8.28 11.36 8.66C11.36 9.05 11.05 9.36 10.66 9.36H5.33C4.94 9.36 4.63 9.05 4.63 8.66Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63 11.33C4.63 10.94 4.94 10.63 5.33 10.63H10.66C11.05 10.63 11.36 10.94 11.36 11.33C11.36 11.72 11.05 12.03 10.66 12.03H5.33C4.94 12.03 4.63 11.72 4.63 11.33Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63 5.99C4.63 5.61 4.94 5.29 5.33 5.29H6.66C7.05 5.29 7.36 5.61 7.36 5.99C7.36 6.38 7.05 6.69 6.66 6.69H5.33C4.94 6.69 4.63 6.38 4.63 5.99Z" fill="currentColor"/></svg>',
-    map: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33 0.66C5.44 0.66 5.55 0.69 5.64 0.74L10.64 3.24L15.0 0.75C15.2 0.63 15.46 0.63 15.66 0.75C15.87 0.87 16 1.09 16 1.33V12C16 12.23 15.87 12.46 15.66 12.57L11.0 15.23C10.9 15.29 10.79 15.33 10.66 15.33C10.66 15.33 10.66 15.33 10.66 15.33C10.65 15.33 10.65 15.33 10.64 15.33C10.53 15.32 10.44 15.3 10.35 15.25L5.35 12.75L0.99 15.24C0.79 15.36 0.53 15.36 0.33 15.24C0.12 15.12 0 14.9 0 14.66V4.00C0 3.76 0.12 3.53 0.33 3.42L4.99 0.76C5.09 0.7 5.2 0.66 5.33 0.66ZM11.33 13.51L14.66 11.61V2.48L11.33 4.38V13.51ZM10 4.41V13.58L6 11.58V2.41L10 4.41ZM1.33 4.38L4.66 2.48V11.61L1.33 13.51V4.38Z" fill="currentColor"/></svg>',
-    starsMono: '<svg aria-hidden="true" viewBox="0 0 21 21" fill="none"><path d="M13.68 0C13.68 3.82 10.7 6.69 6.87 6.69C10.78 6.69 13.68 9.55 13.68 13.19C13.68 9.52 16.02 6.69 20.06 6.69C16.02 6.69 13.68 3.82 13.68 0Z" fill="currentColor"/><path d="M3.73 5.95C3.73 8.07 2.1 9.66 0 9.66C2.14 9.66 3.73 11.25 3.73 13.27C3.73 11.23 5.01 9.66 7.23 9.66C5.01 9.66 3.73 8.07 3.73 5.95Z" fill="currentColor"/><path d="M9.63 12.76C9.63 14.88 7.99 16.47 5.89 16.47C8.04 16.47 9.63 18.06 9.63 20.08C9.63 18.04 10.91 16.47 13.13 16.47C10.91 16.47 9.63 14.88 9.63 12.76Z" fill="currentColor"/></svg>',
-    search: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.33 2.66C4.75 2.66 2.66 4.75 2.66 7.33C2.66 9.91 4.75 12 7.33 12C9.91 12 12 9.91 12 7.33C12 4.75 9.91 2.66 7.33 2.66ZM1.33 7.33C1.33 4.01 4.01 1.33 7.33 1.33C10.64 1.33 13.33 4.01 13.33 7.33C13.33 10.64 10.64 13.33 7.33 13.33C4.01 13.33 1.33 10.64 1.33 7.33Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.62 10.62C10.88 10.36 11.31 10.36 11.57 10.62L14.47 13.52C14.73 13.78 14.73 14.21 14.47 14.47C14.21 14.73 13.78 14.73 13.52 14.47L10.62 11.57C10.36 11.31 10.36 10.88 10.62 10.62Z" fill="currentColor"/></svg>',
-    freeBadge: '<svg aria-hidden="true" viewBox="0 0 35 13" fill="none"><path d="M1.42 1.74L0.02 10.61C-0.07 11.21 0.09 11.82 0.48 12.27C0.87 12.73 1.45 13 2.05 13H4.59C5.61 13 6.47 12.25 6.63 11.24L6.84 9.85H7.33L7.21 10.60C7.12 11.2 7.29 11.81 7.68 12.26C8.07 12.72 8.65 12.98 9.24 12.98H11.77C12.25 12.98 12.69 12.82 13.04 12.53C13.39 12.81 13.83 12.98 14.3 12.98H16.87C17.05 12.98 17.21 12.96 17.38 12.92C17.53 12.96 17.7 12.98 17.87 12.98H24.17C24.4 12.98 24.63 12.94 24.83 12.87C25.04 12.93 25.24 12.98 25.46 12.98H31.76C32.77 12.98 33.64 12.24 33.8 11.24L34.11 9.27C34.2 8.68 34.04 8.07 33.65 7.61C33.6 7.55 33.53 7.51 33.47 7.45L33.72 5.83C33.72 5.8 33.72 5.78 33.72 5.75C34.21 5.44 34.58 4.93 34.68 4.31L34.99 2.35C35.08 1.75 34.91 1.14 34.52 0.69C34.12 0.26 33.54 0 32.94 0H26.84C26.57 0 26.32 0.05 26.08 0.14C25.85 0.06 25.61 0 25.35 0H19.25C18.52 0 17.86 0.39 17.5 0.99C16.5 0.27 15.26 0 14 0H10.64C10.43 0 10.22 0.04 10.03 0.10C9.83 0.04 9.62 0 9.42 0H3.45C2.44 0 1.57 0.74 1.42 1.74Z" fill="white"/><path d="M2.06 10.93H4.60L5.08 7.79H7.82L8.12 5.92H5.38L5.68 4.04H9.10L9.42 2.06H3.46L2.06 10.93Z" fill="#8C8C8C"/><path d="M17.25 4.58C17.26 3.01 16.15 2.06 14 2.06H10.65L9.25 10.93H11.77L12.26 7.76H12.86L14.3 10.93H16.88L15.21 7.27C16.39 6.96 17.25 6.07 17.25 4.58ZM13.43 6.10H12.54L12.87 3.97H13.67C14.4 3.97 14.79 4.27 14.78 4.89C14.78 5.73 14.28 6.1 13.43 6.10Z" fill="#8C8C8C"/><path d="M17.86 10.93H24.17L24.47 8.96H20.70L20.95 7.33H23.81L24.08 5.54H21.24L21.48 4.02H25.04L25.35 2.06H19.26L17.86 10.93Z" fill="#8C8C8C"/><path d="M25.45 10.93H31.75L32.06 8.96H28.28L28.54 7.33H31.39L31.67 5.54H28.83L29.06 4.02H32.63L32.94 2.06H26.85L25.45 10.93Z" fill="#8C8C8C"/></svg>',
     userCheck: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.49 15.49C2.42 14.56 3.68 14.04 5 14.04H12C13.31 14.04 14.57 14.56 15.5 15.49C16.43 16.42 16.96 17.68 16.96 19V21C16.96 21.53 16.53 21.96 16 21.96C15.46 21.96 15.04 21.53 15.04 21V19C15.04 18.19 14.71 17.42 14.14 16.85C13.57 16.28 12.8 15.96 12 15.96H5.00C4.19 15.96 3.42 16.28 2.85 16.85C2.28 17.42 1.96 18.19 1.96 19V21C1.96 21.53 1.53 21.96 1 21.96C0.46 21.96 0.04 21.53 0.04 21V19C0.04 17.68 0.56 16.42 1.49 15.49Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.5 3.96C6.82 3.96 5.46 5.32 5.46 7.00C5.46 8.67 6.82 10.04 8.5 10.04C10.17 10.04 11.54 8.67 11.54 7.00C11.54 5.32 10.17 3.96 8.5 3.96ZM3.54 7.00C3.54 4.26 5.76 2.04 8.5 2.04C11.23 2.04 13.46 4.26 13.46 7.00C13.46 9.73 11.23 11.96 8.5 11.96C5.76 11.96 3.54 9.73 3.54 7.00Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.67 8.32C24.05 8.69 24.05 9.3 23.67 9.67L19.67 13.67C19.3 14.05 18.69 14.05 18.32 13.67L16.32 11.67C15.94 11.3 15.94 10.69 16.32 10.32C16.69 9.94 17.3 9.94 17.67 10.32L19 11.64L22.32 8.32C22.69 7.94 23.3 7.94 23.67 8.32Z" fill="currentColor"/></svg>',
     tick: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.58 4.08C18.09 4.58 18.09 5.41 17.58 5.91L8.41 15.08C8.17 15.32 7.84 15.46 7.49 15.46C7.15 15.46 6.82 15.32 6.58 15.08L2.41 10.91C1.9 10.41 1.9 9.58 2.41 9.08C2.92 8.57 3.74 8.57 4.25 9.08L7.49 12.32L15.74 4.08C16.25 3.57 17.07 3.57 17.58 4.08Z" fill="currentColor"/></svg>',
     languages: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M5 8L11 14M4 14L10 8L12 5M2 5H14M7 2H8M22 22L17 12L12 22M14 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     info: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 2.46C5.83 2.46 2.46 5.83 2.46 10C2.46 14.16 5.83 17.53 10 17.53C14.16 17.53 17.53 14.16 17.53 10C17.53 5.83 14.16 2.46 10 2.46ZM0.86 10C0.86 4.95 4.95 0.86 10 0.86C15.04 0.86 19.13 4.95 19.13 10C19.13 15.04 15.04 19.13 10 19.13C4.95 19.13 0.86 15.04 0.86 10Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.99 9.19C10.44 9.19 10.8 9.55 10.8 9.99V13.33C10.8 13.77 10.44 14.13 9.99 14.13C9.55 14.13 9.19 13.77 9.19 13.33V9.99C9.19 9.55 9.55 9.19 9.99 9.19Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.19 6.66C9.19 6.22 9.55 5.86 9.99 5.86H10.00C10.45 5.86 10.8 6.22 10.8 6.66C10.8 7.1 10.45 7.46 10 7.46H9.99C9.55 7.46 9.19 7.1 9.19 6.66Z" fill="currentColor"/></svg>',
-    avChev: '<svg aria-hidden="true" viewBox="0 0 12 7" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.48234 6.776L0.21523 1.32533C-0.0723945 1.008 -0.0723944 0.522666 0.21523 0.223999C0.502853 -0.0746677 0.98822 -0.0746677 1.27584 0.223999L6.00366 5.13333L10.7315 0.224C11.0371 -0.0746668 11.5045 -0.0746667 11.7921 0.224C12.0797 0.522667 12.0797 1.008 11.7921 1.32533L6.54296 6.776C6.23736 7.07467 5.76997 7.07467 5.48234 6.776Z" fill="currentColor"/></svg>',
-    avChevV: '<svg aria-hidden="true" viewBox="0 0 12 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.47 14.57L0.21 2.85C-0.07 2.16 -0.07 1.12 0.21 0.48C0.5 -0.16 0.98 -0.16 1.27 0.48L6 11.04L10.72 0.48C11.02 -0.16 11.49 -0.16 11.78 0.48C12.07 1.12 12.07 2.16 11.78 2.85L6.53 14.57C6.23 15.21 5.76 15.21 5.47 14.57Z" fill="currentColor"/></svg>',
     starsAi: '<svg aria-hidden="true" viewBox="0 0 21 21" fill="none"><path d="M14.94 0C14.94 3.82 12.56 6.69 9.5 6.69C12.63 6.69 14.94 9.55 14.94 13.19C14.94 9.52 16.81 6.69 20.05 6.69C16.81 6.69 14.94 3.82 14.94 0Z" fill="url(#paint0_linear_22452_14392)"/><path d="M3.77 5.95C3.77 8.07 2.12 9.66 0 9.66C2.17 9.66 3.77 11.25 3.77 13.27C3.77 11.23 5.07 9.66 7.31 9.66C5.07 9.66 3.77 8.07 3.77 5.95Z" fill="url(#paint1_linear_22452_14392)"/><path d="M9.73 12.76C9.73 14.88 8.08 16.47 5.95 16.47C8.12 16.47 9.73 18.06 9.73 20.08C9.73 18.04 11.03 16.47 13.27 16.47C11.03 16.47 9.73 14.88 9.73 12.76Z" fill="url(#paint2_linear_22452_14392)"/><defs><linearGradient id="paint0_linear_22452_14392" x1="18.35" y1="6.59" x2="10.74" y2="6.59" gradientUnits="userSpaceOnUse"><stop stop-color="#A066FF"/><stop offset="1" stop-color="#666CFF"/></linearGradient><linearGradient id="paint1_linear_22452_14392" x1="6.14" y1="9.61" x2="0.86" y2="9.61" gradientUnits="userSpaceOnUse"><stop stop-color="#A066FF"/><stop offset="1" stop-color="#666CFF"/></linearGradient><linearGradient id="paint2_linear_22452_14392" x1="12.09" y1="16.42" x2="6.82" y2="16.42" gradientUnits="userSpaceOnUse"><stop stop-color="#A066FF"/><stop offset="1" stop-color="#666CFF"/></linearGradient></defs></svg>',
     filePen: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M18.226 5.22601L15.706 2.70601C15.4823 2.48153 15.2164 2.30357 14.9236 2.18239C14.6308 2.06122 14.3169 1.99923 14 2.00001H6C5.46957 2.00001 4.96086 2.21072 4.58579 2.58579C4.21071 2.96087 4 3.46957 4 4.00001V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V19.649" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.377 12.626C21.7754 12.2277 21.9991 11.6874 21.9991 11.124C21.9991 10.5607 21.7754 10.0204 21.377 9.62203C20.9786 9.22367 20.4384 8.99988 19.875 8.99988C19.3116 8.99988 18.7714 9.22367 18.373 9.62203L14.363 13.634C14.1252 13.8716 13.9512 14.1654 13.857 14.488L13.02 17.358C12.9949 17.4441 12.9934 17.5353 13.0156 17.6221C13.0379 17.7089 13.0831 17.7882 13.1464 17.8516C13.2098 17.915 13.2891 17.9601 13.3759 17.9824C13.4627 18.0046 13.554 18.0031 13.64 17.978L16.51 17.141C16.8327 17.0468 17.1264 16.8728 17.364 16.635L21.377 12.626Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 18H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     sparkles: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M11.0155 2.81401C11.0583 2.58462 11.1801 2.37743 11.3596 2.22833C11.5391 2.07924 11.7651 1.99762 11.9985 1.99762C12.2319 1.99762 12.4579 2.07924 12.6374 2.22833C12.8169 2.37743 12.9386 2.58462 12.9815 2.81401L14.0325 8.37201C14.1071 8.76716 14.2992 9.13063 14.5835 9.41498C14.8679 9.69934 15.2313 9.89137 15.6265 9.96601L21.1845 11.017C21.4139 11.0599 21.6211 11.1816 21.7702 11.3611C21.9193 11.5406 22.0009 11.7667 22.0009 12C22.0009 12.2334 21.9193 12.4594 21.7702 12.6389C21.6211 12.8184 21.4139 12.9402 21.1845 12.983L15.6265 14.034C15.2313 14.1087 14.8679 14.3007 14.5835 14.585C14.2992 14.8694 14.1071 15.2329 14.0325 15.628L12.9815 21.186C12.9386 21.4154 12.8169 21.6226 12.6374 21.7717C12.4579 21.9208 12.2319 22.0024 11.9985 22.0024C11.7651 22.0024 11.5391 21.9208 11.3596 21.7717C11.1801 21.6226 11.0583 21.4154 11.0155 21.186L9.96449 15.628C9.88984 15.2329 9.69781 14.8694 9.41346 14.585C9.12911 14.3007 8.76564 14.1087 8.37049 14.034L2.81249 12.983C2.58309 12.9402 2.3759 12.8184 2.22681 12.6389C2.07771 12.4594 1.99609 12.2334 1.99609 12C1.99609 11.7667 2.07771 11.5406 2.22681 11.3611C2.3759 11.1816 2.58309 11.0599 2.81249 11.017L8.37049 9.96601C8.76564 9.89137 9.12911 9.69934 9.41346 9.41498C9.69781 9.13063 9.88984 8.76716 9.96449 8.37201L11.0155 2.81401Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 4H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 22C5.10457 22 6 21.1046 6 20C6 18.8954 5.10457 18 4 18C2.89543 18 2 18.8954 2 20C2 21.1046 2.89543 22 4 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -4573,11 +4462,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const card = `<div class="md-card"><div class="md-prev"><button class="md-open" type="button" data-md="open" aria-label="Open My Kickresume in the editor"><img src="${TL_IMG.thumb}" alt=""><span>My Kickresume</span></button>
       <button class="md-more" type="button" data-md="more" aria-label="More actions for My Kickresume">${TL_IC.more}</button></div></div>`;
     const page = (label, extra = '') => `<button class="md-page" type="button" ${extra || 'data-md="page"'}>${label}</button>`;
-    return `<header class="md-top">
-        <div class="md-brand"><button class="md-logo" type="button" data-action="restart" aria-label="Kickresume, back to start"><img src="${TL_IMG.premium}" alt=""></button>
-          <nav class="md-nav" aria-label="Main"><button class="is-coral" type="button" data-action="dashboard">Dashboard</button><button type="button" aria-current="page">My Documents</button></nav></div>
-        <button class="md-acct" type="button" data-md="account" aria-label="Account menu"><img src="${TL_IMG.avatar}" alt="">${TL_IC.avChev}</button>
-      </header>
+    return `${appNavHTML('docs')}
       <main class="md-body"><section class="md-panel" aria-labelledby="md-h">
         <h1 id="md-h">My Documents</h1>
         <div class="md-docs">
@@ -4596,41 +4481,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       </section></main>`;
   }
 
-  /* The tools share the preview on the right; the top bar and the menu differ, as in the designs */
-  function tlTopHTML(kind) {
-    const logo = src => `<button class="tl-logo" type="button" data-action="restart" aria-label="Kickresume, back to start"><img src="${src}" alt=""></button>`;
-    const acct = `<button class="tl-acct" type="button" data-tl="account" aria-label="Account menu"><i></i>${TL_IC.avChev}</button>`;
-    if (kind === 'ats') return `<div class="tl-top"><div class="tl-bar"></div>${logo(TL_IMG.atsLogo)}<i class="tl-vline"></i><button class="tl-dash" type="button" data-action="dashboard">Dashboard</button>${acct}</div>`;
-    if (kind === 'proof') return `<div class="tl-top"><div class="tl-bar"></div>${logo(TL_IMG.premium)}<div class="tl-blur" aria-hidden="true"><b>Upgrade</b><span><i></i>${TL_IC.avChev}</span></div></div>`;
-    return `<div class="tl-top"><div class="tl-bar"></div>${logo(TL_IMG.basic)}<button class="tl-up" type="button" data-tl="upgrade">Upgrade</button>${acct}</div>`;
-  }
-  const tlItem = (label, ic, act, cls = '') => `<li><button class="tl-item${cls ? ' ' + cls : ''}" type="button" ${act}>${ic}<span>${label}</span></button></li>`;
-  const tlNot = what => `data-action="toast" data-msg="${what} isn’t part of this prototype."`;
-  function tlNavHTML(kind) {
-    if (kind === 'ats') return `<nav class="tl-nav" aria-label="Resume tools"><ul>
-      ${tlItem('Fill In', TL_IC.edit, 'data-tl="edit"', 'is-dark')}${tlItem('Design', TL_IC.droplet, tlNot('Design'))}${tlItem('Proofreading', TL_IC.fileText, 'data-tl-open="proof"')}
-      ${tlItem('Analytics', TL_IC.barChart, 'aria-current="page"')}${tlItem('ATS Checker', TL_IC.fileCheck, tlNot('ATS Checker'))}${tlItem('Download', TL_IC.download, tlNot('Download'))}${tlItem('Share', TL_IC.share, tlNot('Share'))}</ul></nav>`;
-    return `<nav class="tl-nav" aria-label="Resume tools"><ul>
-      ${tlItem('Fill In', TL_IC.edit, 'data-tl="edit"', 'is-dark')}${tlItem('Design', TL_IC.droplet, tlNot('Design'))}${tlItem('AI Toolbox', '<b class="tl-ai">AI</b>', 'data-tl="aitools"', 'is-ai')}
-      ${tlItem('Analysis', '', 'data-tl-open="ats"', 'is-dark')}${tlItem('Job Interview', '', 'data-route="/dashboard/create-interview/"', 'is-dark is-sub')}
-      <li><button class="tl-item is-dark is-sub" type="button" aria-current="page"><i class="tl-track" aria-hidden="true"></i><span>Career Counsellor</span></button></li>
-      ${tlItem('Proofreading', TL_IC.fileText, 'data-tl-open="proof"')}${tlItem('Download', TL_IC.download, tlNot('Download'))}${tlItem('Share', TL_IC.share, tlNot('Share'))}</ul></nav>`;
-  }
-  function tlSideHTML() {
-    const mi = (ic, label, act, end = '') => `<button class="tl-mi" type="button" ${act}>${ic}<em>${label}</em>${end}</button>`;
-    return `<div class="tl-sidecol"><nav class="tl-side" aria-label="Main"><div class="tl-side-top">
-        <button class="tl-side-logo" type="button" data-action="restart" aria-label="Kickresume, back to start"><img src="${TL_IMG.logoDark}" alt=""></button>
-        <div class="tl-menu">${mi(TL_IC.home, 'Dashboard', 'data-action="dashboard"')}
-          <div class="tl-menu-g">
-            <div class="tl-builder"><button class="tl-mi is-head" type="button" aria-expanded="true" data-tl="builder">${TL_IC.fileDoc}<em>Resume Builder</em>${TL_IC.chevDown}</button>
-              <button class="tl-mi" type="button" data-tl="edit">Fill In</button><button class="tl-mi" type="button" ${tlNot('Design')}>Design</button>
-              <button class="tl-mi" type="button" aria-current="page">Proofread &amp; Translate</button><button class="tl-mi" type="button" ${tlNot('Download &amp; Share')}>Download &amp; Share</button></div>
-            ${mi(TL_IC.map, 'Career Map', 'data-route="/career-map/"', TL_IC.chevRight)}${mi(TL_IC.starsMono.replace('<svg ', '<svg class="is-21" '), 'AI Toolbox', 'data-tl-open="coach"', TL_IC.chevRight)}${mi(TL_IC.search, 'Find  Jobs', tlNot('Find Jobs'), TL_IC.chevRight)}
-            <button class="tl-tip" type="button" data-tl="tip" aria-label="Try translating your resume here (dismiss)"><span>Try translating your resume here</span></button>
-          </div></div></div>
-      <div class="tl-acctp"><div><button class="tl-me" type="button" data-tl="account"><img src="${TL_IMG.account}" alt="">My Account</button>
-        <p class="tl-plan">Current plan:${TL_IC.freeBadge}</p><button class="tl-upg" type="button" data-tl="upgrade">Upgrade</button></div></div></nav></div>`;
-  }
+  /* The tools share the app menu and the resume preview on the right */
   /* The resume on the right; the ATS checker marks words in it, the other two have the preview tabs above it */
   const ATS_MARKS = [[190, 454, 114, 14, '#fff'], [190, 604, 221, 17, '#fff'], [190, 326, 114, 16, '#fff']].map(([x, y, w, h, c]) => `<i style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${c}"></i>`).join('') +
     `<img src="${TL_IMG.hlAssistant}" alt="" width="106" height="20" style="left:189px;top:447px"><img src="${TL_IMG.hlAssistant}" alt="" width="106" height="20" style="left:189px;top:600px"><img src="${TL_IMG.hlManager}" alt="" width="107" height="20" style="left:189px;top:319px">` +
@@ -4711,7 +4562,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const skill = `<article class="tl-skill"><h3>Wireframing and prototyping</h3><div><p>To possess expertise in cloud-based infrastructure, with a strong understanding of AI and blockchain technologies. To be skilled in agile development methodologies, DevOps practices, and microservices architecture.</p><hr>
       <div class="tl-res"><div><b>The Guide to Wireframing, eBook, Chris Bank</b><p>User experience remains a priority for digital platforms and products. We will be taking a closer look at the power of wireframing and the examples, comparisons</p></div><button type="button" data-action="toast" data-msg="Resources open on the publisher’s site.">Resource</button></div></div></article>`;
     return `<div class="tl-col">
-      <div class="tl-cc"><div class="tl-cc-top"><h1 class="tl-h is-top"><b class="tl-ai is-title">AI</b>Career Coach (Beta)</h1>
+      <div class="tl-cc"><div class="tl-cc-top"><h1 class="tl-h is-top"><b class="tl-ai">AI</b>Career Coach (Beta)</h1>
           <div class="tl-intro"><p>Don’t know what separates you from your dream career? Our AI Career Counsellor will help you identify gaps in your skillset based on your resume and tell you how to become the ideal candidate for the job you want.</p>
             <p>Enter the name of your desired role and the AI will recommend books and resources that will help you grow into the professional you dream to be.</p></div>
           <div class="tl-gen"><p>${TL_IC.starsAi}Generate career advice for</p><form data-tl="gen" novalidate><label class="sr-only" for="tl-job">Your job title</label><input id="tl-job" placeholder="Your job title (include seniority)" autocomplete="off"><button type="submit">Generate</button></form></div></div>
@@ -4720,32 +4571,30 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     </div>`;
   }
   function toolHTML(kind) {
-    const side = kind === 'proof' ? tlSideHTML() : tlNavHTML(kind);
     const main = kind === 'ats' ? atsHTML() : kind === 'proof' ? proofHTML() : coachHTML();
-    return `${tlTopHTML(kind)}${side}<main class="tl-main">${main}</main>${tlPrevHTML(kind)}`;
+    return `${appNavHTML(kind)}<main class="tl-main">${main}</main>${tlPrevHTML(kind)}`;
   }
 
   /* Open an app page (My Documents, a tool) the way the dashboard opens; its URL goes in the address bar */
   const syncApp = path => { routeNow = findRoute(path); markRoutes(); setHash(path); flowSync(); syncNote(); };
-  function riseIn(el) {
-    const items = [...el.querySelectorAll('.md-top, .md-panel, .tl-top, .tl-nav, .tl-sidecol, .tl-ats-h, .tl-col > *, .tl-prev')].filter(shown);
-    const anims = items.map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: x.matches('.tl-nav, .tl-sidecol') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
+  function riseIn(el, keepSide) {
+    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
+    const anims = items.map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: x.matches('.ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base + 60, delay: Math.min(i, 8) * (STAGGER + 15), easing: EASE.standard }));
     Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
   }
   async function enterApp(el, fill, screen, path) {
     if (screenRun) screenRun.finish();
     clearTimers(); setMore(false);
-    const fromEl = APPS[current] || screens[current];
-    if (fromEl && !reduce) await fromEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: APPS[current] ? 'none' : 'translateY(-8px)' }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
-    if (fromEl) fromEl.getAnimations().forEach(a => a.cancel());
+    const fromEl = APPS[current] || screens[current], keepSide = hasSide(fromEl);
+    await leaveOut(fromEl, keepSide);
     Object.values(APPS).forEach(x => { if (x !== el) { x.hidden = true; x.innerHTML = ''; } });
     topbarEl.hidden = true; pageEl.hidden = true;
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     fill(); el.hidden = false;
     setCurrent(screen);
     window.scrollTo(0, 0); device.scrollTop = 0;
-    syncApp(path); riseIn(el);
+    syncApp(path); riseIn(el, keepSide);
   }
   const openDocs = () => enterApp(docsEl, () => { docsEl.innerHTML = docsHTML(); }, 'docs', '/dashboard/resumes/');
   async function openTool(kind) {
@@ -4754,14 +4603,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current !== 'tool') return enterApp(toolEl, fill, 'tool', TOOL_PATH[kind]);
     // from one tool to another: the page stays, its content fades over
     clearTimers(); setMore(false);
-    if (!reduce) await Promise.all([...toolEl.children].map(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {})));
+    await leaveOut(toolEl, hasSide(toolEl));
     fill(); placeVer(); window.scrollTo(0, 0); device.scrollTop = 0;
-    syncApp(TOOL_PATH[kind]); riseIn(toolEl);
+    syncApp(TOOL_PATH[kind]); riseIn(toolEl, true);
   }
   /* Below 1440px the preview column narrows; the preview shrinks to fit it */
   function fitPrev() {
     const pv = current === 'tool' && toolEl.querySelector('.tl-prev');
-    if (pv && pv.clientWidth) toolEl.style.setProperty('--tl-z', String(Math.min(1, pv.clientWidth / (toolKind === 'ats' ? 628 : 603))));
+    if (pv && pv.clientWidth) toolEl.style.setProperty('--tl-z', String(Math.min(1, pv.clientWidth / 628)));
   }
   window.addEventListener('resize', fitPrev);
   /* The editor at its own URL (/edit/): a returning user's latest resume */
@@ -4776,24 +4625,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'tab') toast(`${b.textContent} aren’t part of this prototype.`);
     else if (a === 'example') toast('Examples open the template gallery; that isn’t part of this prototype.');
     else if (a === 'page') toast('Only the first page of resumes is part of this prototype.');
-    else if (a === 'account') toast('The account menu isn’t part of this prototype.');
   });
   toolEl.addEventListener('click', e => {
-    const o = e.target.closest('[data-tl-open]');
-    if (o) return openTool(o.dataset.tlOpen);
     const b = e.target.closest('[data-tl]');
     if (!b) return;
     const a = b.dataset.tl;
     if (a === 'edit') openEdit();
-    else if (a === 'upgrade') openUpgrade(upgPlan);
-    else if (a === 'account') toast('The account menu isn’t part of this prototype.');
-    else if (a === 'aitools') toast('The AI Toolbox lists all the AI tools; Career Counsellor is open.');
     else if (a === 'chk') { const open = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', String(open)); b.nextElementSibling.hidden = !open; }
     else if (a === 'key') toolEl.querySelector(`[data-sec="${b.dataset.to}"]`).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
     else if (a === 'details') toast(`${b.firstChild.textContent.trim()}: the paragraphs that are too long or too short are listed here.`);
     else if (a === 'cat') { tlCat = (tlCat + +b.dataset.dir + TL_CATS.length) % TL_CATS.length; toolEl.querySelector('.tl-cat em').textContent = TL_CATS[tlCat]; }
-    else if (a === 'builder') { const box = b.parentElement, open = box.classList.toggle('is-closed') === false; b.setAttribute('aria-expanded', String(open)); }
-    else if (a === 'tip') b.hidden = true;
     else if (a === 'proofbuy') notYet(b, 'Opening checkout…', 'Paying for proofreading isn’t part of this prototype.');
     else if (a === 'translate') busy(b, 'Translating…', 1400, () => toast('A Spanish copy of the resume would open in the editor.'));
   });
