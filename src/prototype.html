@@ -196,14 +196,17 @@ body.is-mobile .statusbar {
 /* Goal card pictures (.ga-*): each shows the outcome its card promises, on a 156px stage in a 210px box.
    Still at rest; on hover or keyboard focus one or two pieces ease into place and back (500ms, the design's curve). */
 .ga { --ga-ease: cubic-bezier(.22, .8, .28, 1); --ga-dur: .5s; position: relative; height: 210px; border-radius: 12px; overflow: hidden; display: grid; place-items: center; }
-.ga.t-build { background: var(--kr-primary-tint); }
-.ga.t-tailor { background: var(--kr-blue-tint); }
-.ga.t-ats { background: var(--kr-mint-tint); }
-.ga.t-jobs { background: var(--kr-beige); }
+.ga.t-build { background: var(--kr-primary-tint); --ga-tint: rgba(255, 94, 89, .08); }
+.ga.t-tailor { background: var(--kr-blue-tint); --ga-tint: rgba(81, 78, 234, .06); }
+.ga.t-ats { background: var(--kr-mint-tint); --ga-tint: rgba(29, 163, 110, .08); }
+.ga.t-jobs { background: var(--kr-beige); --ga-tint: rgba(255, 193, 7, .12); }
+/* Hover: the picture's background deepens with a tint of its colour */
+.ga::before { content: ""; position: absolute; inset: 0; background: var(--ga-tint); opacity: 0; transition: opacity var(--ga-dur) var(--ga-ease); }
+.intent:is(:hover, :focus-visible) .ga::before { opacity: 1; }
 .ga-stage { position: relative; width: 156px; height: 156px; }
 .ga-stage.is-center { display: grid; place-items: center; }
 .ga-ln { display: block; height: 4px; border-radius: 2px; background: var(--kr-grey-60); flex: none; }
-.ga-ln.dk { background: #cfcfcf; }
+.ga-ln.dk { background: rgba(140, 140, 140, .4); }
 .ga-row { display: flex; align-items: center; gap: 8px; }
 .ga-col { display: grid; gap: 4px; flex: 1; min-width: 0; }
 .ga-paper { position: absolute; top: 0; display: flex; flex-direction: column; gap: 6.4px; width: 120px; height: 156px; padding: 12px; background: var(--kr-white); border-radius: 3px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
@@ -218,8 +221,8 @@ body.is-mobile .statusbar {
 /* Build: an old file behind, the resume AI is writing in front. Hover: the AI line grows, the badge lifts */
 .t-build .ga-paper { left: 26px; }
 .t-build .ga-paper.old { left: 0; top: 16px; width: 96px; height: 124px; padding: 10px; gap: 6px; opacity: .6; }
-.ga-ln.ai { width: 20px; background: #d6d5fa; transition: width var(--ga-dur) var(--ga-ease); }
-.ga-badge { position: absolute; left: 126px; top: 112px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--kr-white); box-shadow: var(--kr-shadow-dropdown); color: #8583f0; transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-ln.ai { width: 20px; background: rgba(151, 149, 242, .5); transition: width var(--ga-dur) var(--ga-ease); }
+.ga-badge { position: absolute; left: 126px; top: 112px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--kr-white); box-shadow: var(--kr-shadow-dropdown); color: #9795f2; transition: transform var(--ga-dur) var(--ga-ease); }
 .ga-badge svg.i { width: 14px; height: 14px; }
 .intent:is(:hover, :focus-visible) .ga-ln.ai { width: 74px; }
 .intent:is(:hover, :focus-visible) .ga-badge { transform: translateY(-4px) rotate(-12deg); }
@@ -228,32 +231,32 @@ body.is-mobile .statusbar {
 .ga-ln.kw { transition: background-color var(--ga-dur) var(--ga-ease); }
 .ga-ad { position: absolute; right: 0; bottom: 0; width: 92px; display: grid; gap: 5px; padding: 9px; transition: transform var(--ga-dur) var(--ga-ease); }
 .ga-ad .ga-sq { width: 16px; height: 16px; background: var(--kr-blue-tint); }
-.ga-pill.match { justify-self: start; background: var(--kr-blue-tint); color: #8583f0; }
+.ga-pill.match { justify-self: start; background: var(--kr-blue-tint); color: #9795f2; }
 .intent:is(:hover, :focus-visible) .ga-ad { transform: translate(-6px, -6px); }
-.intent:is(:hover, :focus-visible) .ga-ln.kw { background-color: #d6d5fa; }
+.intent:is(:hover, :focus-visible) .ga-ln.kw { background-color: rgba(151, 149, 242, .5); }
 /* ATS check. Hover: the flagged issue gets fixed and the score ring fills further */
 .ga-report { width: 156px; height: 156px; display: grid; align-content: space-between; padding: 14px; border-radius: 8px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
 .ga-score { position: relative; width: 38px; height: 38px; flex: none; display: grid; place-items: center; }
 .ga-score svg { position: absolute; inset: 0; transform: rotate(-90deg); }
 .ga-score b { grid-area: 1 / 1; font-size: 12px; line-height: 1; font-weight: 600; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease); }
 .ga-score .after { opacity: 0; }
-.ga-arc { stroke: #8fd6b8; stroke-dasharray: 100; stroke-dashoffset: 28; transition: stroke-dashoffset var(--ga-dur) var(--ga-ease); }
+.ga-arc { stroke: rgba(29, 163, 110, .5); stroke-dasharray: 100; stroke-dashoffset: 28; transition: stroke-dashoffset var(--ga-dur) var(--ga-ease); }
 .ga-hr { display: block; height: 1px; background: var(--kr-grey-40); }
 .ga-chk { display: grid; gap: 8px; }
-.ga-mark { position: relative; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--kr-mint-tint); color: #3fb487; transition: background-color var(--ga-dur) var(--ga-ease), color var(--ga-dur) var(--ga-ease); }
+.ga-mark { position: relative; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; flex: none; background: rgba(29, 163, 110, .08); color: #1da36e; transition: background-color var(--ga-dur) var(--ga-ease), color var(--ga-dur) var(--ga-ease); }
 .ga-mark svg.i { grid-area: 1 / 1; width: 8px; height: 8px; stroke-width: 3.5; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease), transform var(--ga-dur) var(--ga-ease); }
-.ga-mark.flag { background: #fff1c4; color: #d9a100; }
+.ga-mark.flag { background: rgba(255, 193, 7, .2); color: #ffc107; }
 .ga-mark.flag .fixed { opacity: 0; transform: scale(.4); }
 .intent:is(:hover, :focus-visible) .ga-arc { stroke-dashoffset: 6; }
 .intent:is(:hover, :focus-visible) .ga-score .before { opacity: 0; }
 .intent:is(:hover, :focus-visible) .ga-score .after { opacity: 1; }
-.intent:is(:hover, :focus-visible) .ga-mark.flag { background: var(--kr-mint-tint); color: #3fb487; }
+.intent:is(:hover, :focus-visible) .ga-mark.flag { background: rgba(29, 163, 110, .08); color: #1da36e; }
 .intent:is(:hover, :focus-visible) .ga-mark.flag .issue { opacity: 0; transform: scale(.4); }
 .intent:is(:hover, :focus-visible) .ga-mark.flag .fixed { opacity: 1; transform: none; }
 /* Find jobs. Hover: the best match rises out of the list */
 .ga-jobs { width: 156px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .ga-job { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 12px 9px; border-radius: 6px; box-shadow: 0 1px 1px rgba(0, 0, 0, .04); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
-.ga-pill.fit { background: var(--kr-mint-tint); color: #3fb487; }
+.ga-pill.fit { background: rgba(29, 163, 110, .08); color: #1da36e; }
 .intent:is(:hover, :focus-visible) .ga-job:first-child { transform: translateY(-3px) scale(1.04); box-shadow: var(--kr-shadow-dropdown); }
 
 /* ---------- Creation screen ---------- */
@@ -2388,7 +2391,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.6">v2.6</div>
+<div class="proto-ver" aria-label="Prototype version 2.6.1">v2.6.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2526,7 +2529,7 @@ body.has-note .au-main { padding-bottom: 96px; }
         <i class="ga-hr"></i>
         <span class="ga-chk"><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(78)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(64)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark flag">${icon('alert', 'issue')}${icon('check', 'fixed')}</span>${gl(56)}</span></span></div></div>` },
     { id: 'jobs', title: 'Find jobs that fit me', desc: 'Get open roles matched to your skills and experience.', icon: 'briefcase',
-      art: `<div class="ga-stage is-center"><div class="ga-jobs">${[['var(--kr-blue-tint)', 46, 30, '96% match'], ['var(--kr-primary-tint)', 72, 44], ['var(--kr-mint-tint)', 88, 54]]
+      art: `<div class="ga-stage is-center"><div class="ga-jobs">${[['var(--kr-blue-tint)', 46, 30, '96% match'], ['var(--kr-primary-tint)', 72, 44], ['rgba(29, 163, 110, .08)', 88, 54]]
         .map(([bg, a, b, fit]) => `<span class="ga-float ga-job"><span class="ga-sq" style="background:${bg}"></span><span class="ga-col">${gl(a, 'dk')}${gl(b)}</span>${fit ? `<span class="ga-pill fit ga-tiny">${fit}</span>` : ''}</span>`).join('')}</div></div>` }
   ];
 
