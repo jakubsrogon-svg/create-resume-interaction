@@ -150,7 +150,9 @@ body.is-mobile .statusbar {
 .screen[hidden] { display: none !important; }
 
 /* ---------- Intent screen ---------- */
-.intent-grid { margin-top: var(--sp-section); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+/* Goal cards from Figma (Kickresume 3.0 › Intent screen [new], 61797:3677): four 244px cards in a 1048px row,
+   wider than the 950px column of the other onboarding screens; two columns below ~1100px, rows on phones. */
+.intent-grid { --gw: min(1048px, 100cqw); width: var(--gw); margin: var(--sp-section) calc((100% - var(--gw)) / 2) 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
 /* List layout of the first screen: same 400px card stack as "How do you want to start?" */
 .intent-grid.is-list { grid-template-columns: minmax(0, 1fr); gap: var(--list-gap); width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
 .irow {
@@ -158,38 +160,25 @@ body.is-mobile .statusbar {
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
   transition: box-shadow var(--dur-base) var(--ease-standard), background 60ms linear;
 }
-.irow:hover:not(:disabled) { box-shadow: var(--kr-shadow-dropdown); }
-.irow:active:not(:disabled) { background: var(--kr-grey-20); }
+.irow:hover { box-shadow: var(--kr-shadow-dropdown); }
+.irow:active { background: var(--kr-grey-20); }
 .irow:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.irow:disabled { cursor: not-allowed; }
-.irow:disabled .mtile, .irow:disabled .mtext { opacity: .5; }
-.irow .badge-soon { position: static; flex: none; }
-.irow .badge-soon.in-text { display: none; justify-self: start; margin-bottom: 4px; }
-.tone-create { background: var(--kr-primary-tint); color: var(--kr-primary); }
+.tone-build { background: var(--kr-primary-tint); color: var(--kr-primary); }
 .tone-tailor { background: var(--kr-blue-tint); color: var(--kr-blue); }
-.tone-jobs { background: var(--kr-mint-tint); color: var(--kr-mint); }
-.tone-track { background: var(--kr-beige); color: #b7791f; }
+.tone-ats { background: var(--kr-mint-tint); color: var(--kr-mint); }
+.tone-jobs { background: var(--kr-beige); color: #b7791f; }
 .intent {
   position: relative; display: flex; flex-direction: column; gap: 16px; text-align: left;
   background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
-  padding: 12px 12px 20px; cursor: pointer;
-  transition: box-shadow .25s ease-in-out, border-color .25s ease-in-out;
+  padding: 16px; cursor: pointer;
+  transition: box-shadow .3s, border-color .25s ease-in-out;
 }
 .intent:hover { box-shadow: var(--kr-shadow-dropdown); }
-.intent:active:not(:disabled) { border-color: var(--kr-grey-80); background: var(--kr-grey-20); transition-duration: 60ms; }
+.intent:active { border-color: var(--kr-grey-80); background: var(--kr-grey-20); transition-duration: 60ms; }
 .intent:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.intent:disabled { cursor: not-allowed; }
-.intent:disabled:hover { box-shadow: none; }
-.intent:disabled .scene, .intent:disabled .intent-text { opacity: .5; }
 .intent-text { display: grid; gap: 4px; padding-inline: 4px; }
 .intent-title { font-size: 18px; line-height: 24px; font-weight: 500; }
-.intent-desc { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; }
-.badge-soon {
-  position: absolute; top: 20px; right: 20px; z-index: 1;
-  font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16px;
-  background: var(--kr-white); border: 1px solid var(--kr-grey-60); color: var(--kr-grey-100);
-  padding: 3px 8px; border-radius: 999px;
-}
+.intent-desc { font-size: 14px; line-height: 20px; }
 .text-link {
   display: inline-block; margin-top: var(--sp-link); background: none; border: 0; padding: 4px 2px; cursor: pointer;
   color: var(--kr-grey-80); text-decoration: underline; text-underline-offset: 3px; font-size: 16px;
@@ -199,44 +188,73 @@ body.is-mobile .statusbar {
 .text-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .center { text-align: center; }
 
-/* Mini scenes inside intent cards.
-   Everything is sized in cqw (1% of the scene's width), so each scene keeps
-   its proportions at any card size, from the 96px phone tile to the desktop card. */
-.scene { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; overflow: hidden; display: grid; place-items: center; container-type: inline-size; }
-.scene.t-coral { background: var(--kr-primary-tint); }
-.scene.t-violet { background: var(--kr-blue-tint); }
-.scene.t-mint { background: var(--kr-mint-tint); }
-.scene.t-beige { background: var(--kr-beige); }
-.paper {
-  width: 50cqw; height: 66cqw; background: var(--kr-white); border-radius: 1.6cqw; box-shadow: 0 2.4cqw 6cqw rgba(140, 140, 140, .18);
-  padding: 6cqw 6cqw; display: flex; flex-direction: column; gap: 3.2cqw;
-}
-.paper .row { display: flex; align-items: center; gap: 4cqw; margin-bottom: 1.2cqw; }
-.paper .av { width: 10cqw; height: 10cqw; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+/* Resume lines drawn in the pictures of variant C and the dashboard (sized in cqw there) */
 .ln { height: 1.8cqw; border-radius: 1cqw; background: var(--kr-grey-60); flex: none; }
 .ln.dk { background: #cfcfcf; }
 .ln.w90 { width: 90%; } .ln.w80 { width: 80%; } .ln.w70 { width: 70%; } .ln.w60 { width: 60%; } .ln.w50 { width: 50%; } .ln.w40 { width: 40%; } .ln.w30 { width: 30%; }
-.stack { display: grid; gap: 2cqw; flex: 1; min-width: 0; }
-.ai-chip {
-  position: absolute; right: 19cqw; bottom: 14cqw; width: 15cqw; height: 15cqw; border-radius: 50%;
-  background: var(--kr-premium-gradient); color: var(--kr-white); display: grid; place-items: center;
-  box-shadow: 0 .8cqw 2.4cqw rgba(160, 102, 255, .3), 0 .8cqw 6cqw rgba(102, 108, 255, .3);
-}
-.ai-chip svg.i { width: 7cqw; height: 7cqw; }
-.scene-tailor .paper { transform: translateX(-12cqw); }
-.job-card {
-  position: absolute; right: 8cqw; bottom: 16cqw; width: 44cqw; background: var(--kr-white); border-radius: 2.4cqw;
-  box-shadow: 0 .8cqw 4cqw rgba(0, 0, 0, .1); padding: 4.5cqw; display: grid; gap: 2.6cqw;
-}
-.pill { justify-self: start; font-size: 4.2cqw; line-height: 1.4; font-weight: 500; padding: .6cqw 2.4cqw; border-radius: 999px; background: var(--kr-blue-tint); color: var(--kr-blue); white-space: nowrap; }
-.jobs { width: 74cqw; display: grid; gap: 3.5cqw; }
-.job-row { background: var(--kr-white); border-radius: 2.6cqw; padding: 3.5cqw; display: flex; gap: 3.5cqw; align-items: center; box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .04); }
-.job-logo { width: 9cqw; height: 9cqw; border-radius: 2cqw; flex: none; }
-.board { width: 78cqw; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3cqw; }
-.col { display: grid; gap: 2.6cqw; align-content: start; }
-.col > .ln { margin-bottom: .6cqw; }
-.mini { background: var(--kr-white); border-radius: 1.8cqw; padding: 2.6cqw; display: grid; gap: 1.8cqw; box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .04); }
-.mini .ln { height: 1.4cqw; }
+
+/* Goal card pictures (.ga-*): each shows the outcome its card promises, on a 156px stage in a 210px box.
+   Still at rest; on hover or keyboard focus one or two pieces ease into place and back (500ms, the design's curve). */
+.ga { --ga-ease: cubic-bezier(.22, .8, .28, 1); --ga-dur: .5s; position: relative; height: 210px; border-radius: 12px; overflow: hidden; display: grid; place-items: center; }
+.ga.t-build { background: var(--kr-primary-tint); }
+.ga.t-tailor { background: var(--kr-blue-tint); }
+.ga.t-ats { background: var(--kr-mint-tint); }
+.ga.t-jobs { background: var(--kr-beige); }
+.ga-stage { position: relative; width: 156px; height: 156px; }
+.ga-stage.is-center { display: grid; place-items: center; }
+.ga-ln { display: block; height: 4px; border-radius: 2px; background: var(--kr-grey-60); flex: none; }
+.ga-ln.dk { background: #cfcfcf; }
+.ga-row { display: flex; align-items: center; gap: 8px; }
+.ga-col { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.ga-paper { position: absolute; top: 0; display: flex; flex-direction: column; gap: 6.4px; width: 120px; height: 156px; padding: 12px; background: var(--kr-white); border-radius: 3px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
+.ga-paper > .ga-row:first-child { margin-bottom: 2px; }
+.ga-paper .sec { margin-top: 4px; }
+.ga-av { width: 20px; height: 20px; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
+.ga-float { background: var(--kr-white); border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, .08); }
+.ga-tiny { font-size: 9px; line-height: 12px; font-weight: 500; letter-spacing: .06px; white-space: nowrap; }
+.ga-pill { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; border-radius: 999px; }
+.ga-pill svg.i { width: 9px; height: 9px; stroke-width: 3; }
+.ga-sq { width: 20px; height: 20px; border-radius: 4px; flex: none; }
+/* Build: an old file behind, the resume AI is writing in front. Hover: the AI line grows, the badge lifts */
+.t-build .ga-paper { left: 26px; }
+.t-build .ga-paper.old { left: 0; top: 16px; width: 96px; height: 124px; padding: 10px; gap: 6px; opacity: .6; }
+.ga-ln.ai { width: 20px; background: #d6d5fa; transition: width var(--ga-dur) var(--ga-ease); }
+.ga-badge { position: absolute; left: 126px; top: 112px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--kr-white); box-shadow: var(--kr-shadow-dropdown); color: #8583f0; transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-badge svg.i { width: 14px; height: 14px; }
+.intent:is(:hover, :focus-visible) .ga-ln.ai { width: 74px; }
+.intent:is(:hover, :focus-visible) .ga-badge { transform: translateY(-4px) rotate(-12deg); }
+/* Tailor. Hover: the job ad slides onto the resume and its keywords light up */
+.t-tailor .ga-paper { left: 0; }
+.ga-ln.kw { transition: background-color var(--ga-dur) var(--ga-ease); }
+.ga-ad { position: absolute; right: 0; bottom: 0; width: 92px; display: grid; gap: 5px; padding: 9px; transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-ad .ga-sq { width: 16px; height: 16px; background: var(--kr-blue-tint); }
+.ga-pill.match { justify-self: start; background: var(--kr-blue-tint); color: #8583f0; }
+.intent:is(:hover, :focus-visible) .ga-ad { transform: translate(-6px, -6px); }
+.intent:is(:hover, :focus-visible) .ga-ln.kw { background-color: #d6d5fa; }
+/* ATS check. Hover: the flagged issue gets fixed and the score ring fills further */
+.ga-report { width: 156px; height: 156px; display: grid; align-content: space-between; padding: 14px; border-radius: 8px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
+.ga-score { position: relative; width: 38px; height: 38px; flex: none; display: grid; place-items: center; }
+.ga-score svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ga-score b { grid-area: 1 / 1; font-size: 12px; line-height: 1; font-weight: 600; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease); }
+.ga-score .after { opacity: 0; }
+.ga-arc { stroke: #8fd6b8; stroke-dasharray: 100; stroke-dashoffset: 28; transition: stroke-dashoffset var(--ga-dur) var(--ga-ease); }
+.ga-hr { display: block; height: 1px; background: var(--kr-grey-40); }
+.ga-chk { display: grid; gap: 8px; }
+.ga-mark { position: relative; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--kr-mint-tint); color: #3fb487; transition: background-color var(--ga-dur) var(--ga-ease), color var(--ga-dur) var(--ga-ease); }
+.ga-mark svg.i { grid-area: 1 / 1; width: 8px; height: 8px; stroke-width: 3.5; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease), transform var(--ga-dur) var(--ga-ease); }
+.ga-mark.flag { background: #fff1c4; color: #d9a100; }
+.ga-mark.flag .fixed { opacity: 0; transform: scale(.4); }
+.intent:is(:hover, :focus-visible) .ga-arc { stroke-dashoffset: 6; }
+.intent:is(:hover, :focus-visible) .ga-score .before { opacity: 0; }
+.intent:is(:hover, :focus-visible) .ga-score .after { opacity: 1; }
+.intent:is(:hover, :focus-visible) .ga-mark.flag { background: var(--kr-mint-tint); color: #3fb487; }
+.intent:is(:hover, :focus-visible) .ga-mark.flag .issue { opacity: 0; transform: scale(.4); }
+.intent:is(:hover, :focus-visible) .ga-mark.flag .fixed { opacity: 1; transform: none; }
+/* Find jobs. Hover: the best match rises out of the list */
+.ga-jobs { width: 156px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ga-job { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 12px 9px; border-radius: 6px; box-shadow: 0 1px 1px rgba(0, 0, 0, .04); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
+.ga-pill.fit { background: var(--kr-mint-tint); color: #3fb487; }
+.intent:is(:hover, :focus-visible) .ga-job:first-child { transform: translateY(-3px) scale(1.04); box-shadow: var(--kr-shadow-dropdown); }
 
 /* ---------- Creation screen ---------- */
 .methods { width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
@@ -704,7 +722,7 @@ body.look-3d:not([data-screen="create"]) .d-paper { visibility: hidden; }  /* th
 .look-3d #methods .btn:focus-visible { box-shadow: var(--kr-focus-ring); }
 /* The goal screen in 3D: the same frosted cards (grid and list), gradient tiles and glass pills */
 .look-3d #screen-intent .intent, .look-3d #screen-intent .irow {
-  --tone: var(--kr-primary);  /* the one available goal, Create a resume */
+  --tone: var(--kr-primary);  /* each goal's own colour (Build) */
   --glass: color-mix(in srgb, var(--kr-white) 90%, transparent);
   --edge: linear-gradient(160deg, var(--kr-white), color-mix(in srgb, var(--kr-white) 35%, transparent));
   border: 1px solid transparent;
@@ -712,11 +730,11 @@ body.look-3d:not([data-screen="create"]) .d-paper { visibility: hidden; }  /* th
   -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
   box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--kr-blue-dark) 18%, transparent), 0 1px 2px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
 }
-.look-3d #screen-intent .intent:hover:not(:disabled), .look-3d #screen-intent .irow:hover:not(:disabled) {
+.look-3d #screen-intent .intent:hover, .look-3d #screen-intent .irow:hover {
   --edge: linear-gradient(340deg, color-mix(in srgb, var(--tone) 40%, var(--kr-white)), color-mix(in srgb, var(--kr-white) 45%, transparent) 70%);
   box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--tone) 30%, transparent), 0 1px 2px color-mix(in srgb, var(--kr-blue-dark) 5%, transparent);
 }
-.look-3d #screen-intent .intent:active:not(:disabled), .look-3d #screen-intent .irow:active:not(:disabled) { --glass: var(--kr-grey-20); }
+.look-3d #screen-intent .intent:active, .look-3d #screen-intent .irow:active { --glass: var(--kr-grey-20); }
 .look-3d #screen-intent .intent:focus-visible, .look-3d #screen-intent .irow:focus-visible { box-shadow: var(--kr-focus-ring); }
 .look-3d #screen-intent .irow .mtile {
   background: linear-gradient(140deg, color-mix(in srgb, currentColor 16%, var(--kr-white)), color-mix(in srgb, currentColor 6%, var(--kr-white)));
@@ -727,12 +745,14 @@ body.look-3d:not([data-screen="create"]) .d-paper { visibility: hidden; }  /* th
   background: color-mix(in srgb, var(--kr-white) 70%, transparent); box-shadow: inset 0 0 0 1px var(--kr-grey-60);
 }
 .look-3d #screen-intent .irow .chev svg.i { width: 18px; height: 18px; }
-.look-3d #screen-intent .irow:hover:not(:disabled) .chev { color: var(--tone); background: color-mix(in srgb, var(--tone) 10%, var(--kr-white)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent); }
-.look-3d #screen-intent .badge-soon { background: color-mix(in srgb, var(--kr-white) 70%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.look-3d #screen-intent .irow:hover .chev { color: var(--tone); background: color-mix(in srgb, var(--tone) 10%, var(--kr-white)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent); }
+.look-3d #screen-intent [data-goal="tailor"] { --tone: var(--kr-blue); }
+.look-3d #screen-intent [data-goal="ats"] { --tone: var(--kr-mint); }
+.look-3d #screen-intent [data-goal="jobs"] { --tone: #b7791f; }
 /* People who ask their system for less transparency get solid white surfaces */
 @media (prefers-reduced-transparency: reduce) {
   .look-3d #methods .mcard, .look-3d #screen-intent .intent, .look-3d #screen-intent .irow { --glass: var(--kr-white); }
-  .look-3d #screen-intent .intent, .look-3d #screen-intent .irow, .look-3d #screen-intent .badge-soon { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .look-3d #screen-intent .intent, .look-3d #screen-intent .irow { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .look-3d #methods .mcard, .look-3d #methods .assure, .look-3d #methods .back { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .look-3d #methods .assure, .look-3d #methods .back { background: var(--kr-white); }
 }
@@ -2229,25 +2249,22 @@ body.has-note .au-main { padding-bottom: 96px; }
 .proto-more-panel { max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 
 /* ---------- Responsive ---------- */
-@container (max-width: 860px) {
-  .intent-grid:not(.is-list) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* two columns: picture on the left, text on the right, so the pictures don't grow into tall squares */
-  .intent { flex-direction: row; align-items: center; padding: 12px; }
-  .intent .scene { width: clamp(96px, 15cqw, 120px); flex: none; }
-  .badge-soon { position: static; justify-self: start; margin-bottom: 4px; }
+/* Goal cards: two columns (560px) below ~1100px */
+@container (max-width: 1068px) {
+  .intent-grid:not(.is-list) { --gw: min(560px, 100cqw); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; }
   .logo svg { width: 120px; }
   .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
   .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
-  .intent-grid, .intent-grid:not(.is-list) { grid-template-columns: 1fr; }
+  .intent-grid, .intent-grid:not(.is-list) { grid-template-columns: 1fr; gap: 12px; }
   .irow { padding: 14px; gap: 14px; }
-  .irow .badge-soon.in-text { display: inline-block; }
-  .irow .badge-soon.at-end { display: none; }
-  .intent { flex-direction: row; align-items: center; padding: 12px; }
-  .intent .scene { width: 96px; flex: none; }
-  .badge-soon { position: static; justify-self: start; margin-bottom: 4px; }
+  /* Goal cards as rows (Figma's mobile card): a 96px picture on the left, its 156px stage scaled to 72px */
+  .intent { flex-direction: row; align-items: center; gap: 20px; padding: 12px; }
+  .ga { width: 96px; height: 96px; display: block; flex: none; }
+  .ga-stage { position: absolute; left: 12px; top: 12px; transform: scale(calc(72 / 156)); transform-origin: 0 0; }
+  .intent-text { padding-inline: 0; }
   .btn { min-height: 44px; }
 }
 /* Reduced motion: nothing moves or resizes over time; things cross-fade instead */
@@ -2276,7 +2293,7 @@ body.has-note .au-main { padding-bottom: 96px; }
   <section class="screen" id="screen-intent" aria-labelledby="intent-h">
     <div class="page-head">
       <h1 id="intent-h">What do you want to get done first?</h1>
-      <p>Pick your main goal and we’ll set things up around it.</p>
+      <p>Pick one to start. You can use the others anytime.</p>
     </div>
     <div class="intent-grid" id="intent-grid"></div>
     <div class="center"><button class="text-link" type="button" data-action="dashboard">Skip personalization</button></div>
@@ -2334,7 +2351,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.4">v2.4</div>
+<div class="proto-ver" aria-label="Prototype version 2.5">v2.5</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2401,6 +2418,8 @@ body.has-note .au-main { padding-bottom: 96px; }
     file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
+    alert: '<path d="M12 5v8"/><path d="M12 19h.01"/>',
+    aiSpark: '<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>',
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
     pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
@@ -2442,34 +2461,46 @@ body.has-note .au-main { padding-bottom: 96px; }
   };
   const icon = (n, cls) => `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 
-  /* ---------- Intent cards ---------- */
-  const INTENTS = [
-    { id: 'create', title: 'Create a resume', desc: 'Start from LinkedIn, an old file, or let AI draft it.', tone: 't-coral', enabled: true,
-      scene: `<div class="paper"><div class="row"><div class="av"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="ln w90"></div><div class="ln w70"></div><div class="ln w80"></div><div class="ln w40"></div><div class="ln w70"></div></div><div class="ai-chip">${icon('sparkles')}</div>` },
-    { id: 'tailor', title: 'Tailor my resume', desc: 'Match the resume you already have to a job ad.', tone: 't-violet',
-      scene: `<div class="paper"><div class="row"><div class="av"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="ln w90"></div><div class="ln w70"></div><div class="ln w80"></div><div class="ln w40"></div></div><div class="job-card"><div class="ln dk w80"></div><div class="ln w60"></div><span class="pill">92% match</span></div>` },
-    { id: 'jobs', title: 'Find jobs that fit me', desc: 'See open roles matched to your skills.', tone: 't-mint',
-      scene: `<div class="jobs"><div class="job-row"><div class="job-logo" style="background:var(--kr-beige)"></div><div class="stack"><div class="ln dk w80"></div><div class="ln w50"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-blue-tint)"></div><div class="stack"><div class="ln dk w70"></div><div class="ln w40"></div></div></div><div class="job-row"><div class="job-logo" style="background:var(--kr-mint-tint)"></div><div class="stack"><div class="ln dk w90"></div><div class="ln w60"></div></div></div></div>` },
-    { id: 'track', title: 'Track my job apps', desc: 'Keep every application and its status in one place.', tone: 't-beige',
-      scene: `<div class="board"><div class="col"><div class="ln dk w60"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w70"></div><div class="ln w40"></div></div><div class="mini"><div class="ln dk w90"></div><div class="ln w60"></div></div></div><div class="col"><div class="ln dk w70"></div><div class="mini"><div class="ln dk w80"></div><div class="ln w50"></div></div><div class="mini"><div class="ln dk w60"></div><div class="ln w40"></div></div></div><div class="col"><div class="ln dk w40"></div><div class="mini"><div class="ln dk w70"></div><div class="ln w50"></div></div></div></div>` }
+  /* ---------- Goal cards ----------
+     Figma: Kickresume 3.0 › Intent screen [new] (61797:3677). Copy is task-first, the benefit in the description.
+     Each picture shows the outcome its card promises and only moves on hover or keyboard focus (CSS, .ga-*). */
+  const gl = (w, cls) => `<i class="ga-ln${cls ? ' ' + cls : ''}" style="width:${w}px"></i>`;
+  const gaHead = `<span class="ga-row"><span class="ga-av"></span><span class="ga-col">${gl(46, 'dk')}${gl(28)}</span></span>`;
+  const GOALS = [
+    { id: 'build', title: 'Build my resume', desc: 'Start from LinkedIn or a file. AI helps with the rest.', icon: 'file',
+      art: `<div class="ga-stage">
+        <div class="ga-paper old">${gl(44, 'dk')}${gl(66)}${gl(56)}${gl(70)}${gl(30, 'dk sec')}${gl(62)}${gl(48)}</div>
+        <div class="ga-paper">${gaHead}${gl(82)}${gl(64)}${gl(74)}${gl(34, 'dk sec')}${gl(78)}${gl(56)}<i class="ga-ln ai"></i></div>
+        <span class="ga-badge">${icon('aiSpark')}</span></div>` },
+    { id: 'tailor', title: 'Tailor my resume', desc: 'Paste a job ad and match your resume to its keywords.', icon: 'target',
+      art: `<div class="ga-stage">
+        <div class="ga-paper">${gaHead}<span class="ga-row" style="gap:3px">${gl(36)}${gl(40, 'kw')}</span>${gl(64)}<span class="ga-row" style="gap:3px">${gl(30, 'kw')}${gl(42)}</span>${gl(34, 'dk sec')}${gl(70)}${gl(52)}</div>
+        <div class="ga-float ga-ad"><span class="ga-row" style="gap:6px"><span class="ga-sq"></span><span class="ga-col">${gl(44, 'dk')}${gl(30)}</span></span>${gl(66)}${gl(52)}<span class="ga-pill match ga-tiny">${icon('check')}92% match</span></div></div>` },
+    { id: 'ats', title: 'Pass the ATS check', desc: 'Find and fix what could get your resume auto-rejected.', icon: 'shield',
+      art: `<div class="ga-stage is-center"><div class="ga-float ga-report">
+        <span class="ga-row" style="gap:10px"><span class="ga-score"><svg viewBox="0 0 38 38" width="38" height="38"><circle cx="19" cy="19" r="17" fill="none" stroke="var(--kr-grey-40)" stroke-width="4"/><circle class="ga-arc" cx="19" cy="19" r="17" fill="none" stroke-width="4" pathLength="100"/></svg><b class="before">72</b><b class="after">94</b></span><span class="ga-col"><span class="ga-tiny">ATS score</span>${gl(54)}</span></span>
+        <i class="ga-hr"></i>
+        <span class="ga-chk"><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(78)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(64)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark flag">${icon('alert', 'issue')}${icon('check', 'fixed')}</span>${gl(56)}</span></span></div></div>` },
+    { id: 'jobs', title: 'Find jobs that fit me', desc: 'Get open roles matched to your skills and experience.', icon: 'briefcase',
+      art: `<div class="ga-stage is-center"><div class="ga-jobs">${[['var(--kr-blue-tint)', 46, 30, '96% match'], ['var(--kr-primary-tint)', 72, 44], ['var(--kr-mint-tint)', 88, 54]]
+        .map(([bg, a, b, fit]) => `<span class="ga-float ga-job"><span class="ga-sq" style="background:${bg}"></span><span class="ga-col">${gl(a, 'dk')}${gl(b)}</span>${fit ? `<span class="ga-pill fit ga-tiny">${fit}</span>` : ''}</span>`).join('')}</div></div>` }
   ];
 
-  const INTENT_ICON = { create: 'file', tailor: 'target', jobs: 'search', track: 'list' };
   let intentLayout = 'grid';
   function renderIntents() {
     const grid = document.getElementById('intent-grid');
     grid.classList.toggle('is-list', intentLayout === 'list');
     grid.innerHTML = intentLayout === 'list'
-      ? INTENTS.map(it => `
-        <button class="irow" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}. ${it.desc}${it.enabled ? '' : ' Coming soon.'}">
-          <span class="mtile tone-${it.id}">${icon(INTENT_ICON[it.id])}</span>
-          <span class="mtext">${it.enabled ? '' : '<span class="badge-soon in-text">Coming soon</span>'}<span class="mtitle">${it.title}</span><span class="msub">${it.desc}</span></span>
-          ${it.enabled ? `<span class="chev">${icon('chevron')}</span>` : '<span class="badge-soon at-end">Coming soon</span>'}
+      ? GOALS.map(g => `
+        <button class="irow" type="button" data-action="pick-intent" data-goal="${g.id}" aria-label="${g.title}. ${g.desc}">
+          <span class="mtile tone-${g.id}">${icon(g.icon)}</span>
+          <span class="mtext"><span class="mtitle">${g.title}</span><span class="msub">${g.desc}</span></span>
+          <span class="chev">${icon('chevron')}</span>
         </button>`).join('')
-      : INTENTS.map(it => `
-        <button class="intent" type="button" ${it.enabled ? 'data-action="pick-intent"' : 'disabled'} aria-label="${it.title}${it.enabled ? '' : ', coming soon'}">
-          <div class="scene ${it.tone}${it.id === 'tailor' ? ' scene-tailor' : ''}" aria-hidden="true">${it.scene}</div>
-          <div class="intent-text">${it.enabled ? '' : '<span class="badge-soon">Coming soon</span>'}<span class="intent-title">${it.title}</span><span class="intent-desc">${it.desc}</span></div>
+      : GOALS.map(g => `
+        <button class="intent" type="button" data-action="pick-intent" data-goal="${g.id}">
+          <div class="ga t-${g.id}" aria-hidden="true">${g.art}</div>
+          <div class="intent-text"><span class="intent-title">${g.title}</span><span class="intent-desc">${g.desc}</span></div>
         </button>`).join('');
   }
   renderIntents();
@@ -3612,6 +3643,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => openEdit() },
+    { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
@@ -3624,6 +3656,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
     ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
+  /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
+     ATS check ask for a resume first when there is none) */
+  function pickGoal(id, el) {
+    if (id === 'build') return go('create', el);
+    if (id === 'tailor') return openRoute(findRoute('/dashboard/tailor-resume/'));
+    if (id === 'ats') return cvUploaded ? openTool('ats') : openRoute(findRoute('/dashboard/analyse-resume/'));
+    openRoute(findRoute('/jobs/matcher/'));
+  }
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
   /* A CV counts as uploaded once the person uploads one (the onboarding upload method or the Upload
@@ -4681,6 +4721,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
         : `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
+    'jobs-matcher': () => wShell('Job matcher', `<div class="wf-card wf-stack">
+        <h1 class="t-title">Find jobs that fit you</h1>${wLines(2)}
+        ${wField('Job title', 'Product designer')}${wField('Location', 'Remote · Europe', 'select')}${wField('Experience level', 'Mid-level', 'select')}
+        <button class="wf-btn wf-btn--primary" type="button" data-wire="tool">Show matching jobs</button>
+      </div>`, wNote('Find jobs that fit me: the matcher reads the resume (when there is one) and asks only what it can’t tell. Result: open roles with a match score. Not designed yet.'), 520),
     'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
         <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
         <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
@@ -4968,7 +5013,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const vb = e.target.closest('[data-variant]');
     if (vb) {
       setVariant(vb.dataset.variant);
-      if (current !== 'create') { clearTimers(); go('create', current === 'intent' ? screens.intent.querySelector('[data-action="pick-intent"]') : null); }
+      if (current !== 'create') { clearTimers(); go('create', current === 'intent' ? screens.intent.querySelector('[data-goal="build"]') : null); }
       return;
     }
     const lk = e.target.closest('[data-look]');
@@ -4995,7 +5040,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!el) return;
     const a = el.dataset.action;
     const form = el.closest('form');
-    if (a === 'pick-intent') go('create', el);
+    if (a === 'pick-intent') pickGoal(el.dataset.goal, el);
     else if (a === 'restart') { clearTimers(); endFlow(); go('intent'); }
     else if (a === 'toggle') toggleA(el.closest('.mcard'));
     else if (a === 'open') { if (el.getAttribute('aria-disabled') !== 'true') openB(el.closest('.mcard').dataset.id); }

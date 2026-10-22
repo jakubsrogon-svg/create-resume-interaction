@@ -22,6 +22,10 @@ Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src
 
 The 3D look's resume fragments (the four faded pages in the side margins of the method screen) are hidden, not removed. `SHOW_3D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_3D_PAPERS = true` (and update the README's look description); nothing else needs to change.
 
+## Goal cards
+
+The goal screen's four cards come from Figma (Kickresume 3.0 › Intent screen [new], 61797:3677) and the user's choose-goal page. `GOALS` in `src/prototype.html` holds each card's copy, its list-layout icon and its picture: `.ga-*` markup on a 156px stage, scaled to 72px on phones. The hover and focus motion is CSS only (`.intent:is(:hover, :focus-visible) .ga-…`). `pickGoal(id)` decides where each goal leads.
+
 ## Route screens (recreated product screens)
 
 The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/prototype.html`:
