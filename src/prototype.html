@@ -1499,6 +1499,67 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .lki-field { margin-top: 40px; }
 }
 
+/* ---------- Sign up and Log in (/register/, /login/) ----------
+   Recreated from the product. Full pages of their own (a photo column, their own top bar), so like the
+   dashboard they replace the logo bar and the page. Sizes are the product's at a 2560px-wide window. */
+body[data-screen="auth"] .stage { padding-right: 0; }  /* the page runs to the window's edge, under the side rail */
+.auth { margin-inline: -16px; min-height: calc(var(--vh) * 100); display: grid; grid-template-columns: 400px minmax(0, 1fr); background: var(--kr-grey-20); color: var(--kr-grey-100); }
+.au-side { position: sticky; top: 0; height: calc(var(--vh) * 100); overflow: hidden; background: #292929; }
+.au-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity var(--dur-slow) var(--ease-inout); }
+.au-slide.is-on { opacity: 1; z-index: 2; }
+.au-slide.is-under { opacity: 1; z-index: 1; transition: none; }
+.au-slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.au-slide figcaption { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; padding: 20px 6px 0 0; background: rgba(41, 41, 41, .73); color: var(--kr-white); text-align: center; font-size: 14px; line-height: 20px; }
+.au-slide figcaption span { display: block; }
+.au-dots { position: absolute; z-index: 3; left: 0; right: 6px; bottom: 19px; display: flex; justify-content: center; gap: 24px; }
+.au-dot { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .6); }
+button.au-dot { cursor: pointer; }
+.au-dot.is-on { background: var(--kr-white); }
+.au-dot:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255, 255, 255, .5); }
+.au-main { min-width: 0; min-height: calc(var(--vh) * 100); display: grid; grid-template-rows: 68px minmax(0, 1fr); }
+.au-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 28px 0 40px; }
+.au-logo { display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius); }
+.au-logo svg { display: block; width: 152px; height: 24px; }
+.au-logo:focus-visible, .au-other:focus-visible, .au-btn:focus-visible, .au-forgot:focus-visible, .au-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.au-switch { display: flex; align-items: center; gap: 22px; margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; }
+.au-other { width: 121px; height: 36px; padding: 0; border: 1px solid var(--kr-primary); border-radius: var(--radius-btn); background: none; color: var(--kr-primary); font: inherit; cursor: pointer; transition: background .2s; }
+.au-other:hover { background: var(--kr-primary-tint); }
+.au-form { align-self: center; justify-self: center; width: 273px; padding-block: 24px; }
+.au-form.is-signup { padding-top: 32px; }  /* where each page's form rests in the product */
+.au-form.is-login { padding-bottom: 26px; }
+.au-form h1 { margin: 0 0 32.5px; font: 400 32px/40.5px var(--font-display); text-align: center; color: var(--kr-grey-100); }
+.au-consent { display: flex; align-items: center; gap: 11px; margin-bottom: 41px; font-size: 12px; line-height: 18px; }
+.au-consent input { appearance: none; -webkit-appearance: none; flex: none; width: 16px; height: 16px; margin: 0; border: 1px solid #555; border-radius: 4px; background: var(--kr-white); cursor: pointer; display: grid; place-items: center; }
+.au-consent input:checked { border-color: var(--kr-primary); background: var(--kr-primary); }
+.au-consent input:checked::after { content: ""; width: 4px; height: 8px; margin-top: -2px; border: solid var(--kr-white); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.au-consent input:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.au-consent.is-error input { border-color: var(--kr-primary); box-shadow: 0 0 0 3px rgba(255, 94, 89, .2); }
+.au-consent label { cursor: pointer; }
+.au-link { color: inherit; text-decoration: none; border-radius: 2px; }
+.au-link:hover { text-decoration: underline; }
+.au-btn { display: flex; align-items: center; gap: 16px; width: 100%; height: 48px; margin-bottom: 20px; padding: 0 0 0 42.5px; border: 1px solid transparent; border-radius: var(--radius-btn); font: 400 14px/20px var(--font-sans); cursor: pointer; transition: filter .2s; }
+.au-btn:hover { filter: brightness(.94); }
+.au-btn:last-child { margin-bottom: 0; }
+.au-ic { flex: none; display: grid; place-items: center; width: 24px; height: 24px; }
+.au-ic svg { display: block; width: 24px; height: 24px; }
+.au-li { background: #0077b5; color: var(--kr-white); }
+.au-ap { background: #000; color: var(--kr-white); }
+.au-go, .au-em { background: var(--kr-white); border-color: var(--kr-grey-60); color: var(--kr-grey-100); }
+.au-fb { background: #0866ff; color: var(--kr-white); }
+.au-em { justify-content: center; gap: 10px; padding: 0; }
+.au-em svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.au-or { margin: 0 0 19.5px; font-size: 14px; line-height: 23px; text-align: center; }
+.au-input { display: block; width: 100%; height: 48px; margin-bottom: 20px; padding: 0 9px; border: 1px solid var(--kr-grey-60); border-radius: var(--radius); background: var(--kr-white); color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); outline: none; transition: border-color .15s; }
+.au-input::placeholder { color: var(--kr-grey-80); }
+.au-input:focus { border-color: var(--kr-blue); }
+.au-submit { display: block; width: 100%; height: 48px; padding: 0; border: 0; border-radius: var(--radius-btn); background: var(--kr-primary); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: background .2s; }
+.au-submit:hover { background: var(--kr-primary-hover); }
+.au-forgot { display: block; margin: 25.5px auto 0; padding: 0; border: 0; background: none; color: var(--kr-grey-100); font: 500 14px/20px var(--font-sans); cursor: pointer; border-radius: 2px; }
+.au-forgot:hover { text-decoration: underline; }
+/* narrower windows: no photo column; phones: the button alone in the top bar */
+@container (max-width: 900px) { .auth { grid-template-columns: minmax(0, 1fr); } .au-side { display: none; } }
+@container (max-width: 560px) { .au-top { padding-inline: 16px; } .au-q { display: none; } .au-form { width: min(273px, 100%); } }
+
 /* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in; its tokens are scoped to .wf so
    they can't touch the prototype's own, and its accent, status and note colours are greys, so a wireframe
    is only shades of grey). Used for every screen without a design. ---------- */
@@ -1810,6 +1871,7 @@ body.has-note #screen-route { padding-bottom: 96px; }  /* the screen can scroll 
 
 <!-- Screen 5: dashboard (where people land when they skip onboarding) -->
 <div class="dash" id="screen-dash" hidden></div>
+<div class="auth" id="screen-auth" hidden></div>
 </div>
 </div>
 
@@ -1819,7 +1881,7 @@ body.has-note #screen-route { padding-bottom: 96px; }  /* the screen can scroll 
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.0.2">v2.0.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.1">v2.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2150,7 +2212,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (routesReady && s !== 'route' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
+    if (routesReady && s !== 'route' && s !== 'auth' && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
     syncNote();
     if (routesReady && s !== 'route') flowSync();
   }
@@ -2158,7 +2220,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Layout offsets, not the on-screen box, so a sidebar's entrance slide doesn't shift it. */
   const verEl = document.querySelector('.proto-ver');
   function placeVer() {
-    const side = [...document.querySelectorAll('.dash-rail, .ed-side')].find(el => el.getClientRects().length && el.offsetParent);
+    const side = [...document.querySelectorAll('.dash-rail, .ed-side, .au-side')].find(el => el.getClientRects().length && el.offsetParent);
     verEl.style.left = side ? Math.round(side.offsetParent.getBoundingClientRect().left + side.offsetLeft + side.offsetWidth + 12) + 'px' : '';
   }
   window.addEventListener('resize', placeVer);
@@ -3065,8 +3127,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const toolWire = t => () => WIRE.tool({ tool: t });
   const latest = (tool, path) => ({ run: () => cvUploaded ? (tool ? openRoute(findRoute('/dashboard/' + tool + '/')) : jumpEditor()) : openWire(path, 'Latest resume', 'latest-empty') });
   const ROUTES = [
-    { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', wire: true, html: () => WIRE.signup({}) },
-    { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', wire: true, html: () => WIRE.login() },
+    { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
+    { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
     { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
@@ -3146,6 +3208,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Close (×), Cancel: back to where the person came from */
   function closeRoute() {
     if (routeBack === 'dashboard') return openDashboard();
+    if (routeBack === 'auth') return openAuth(authKind);
     go(routeBack === 'create' ? 'create' : 'intent');
   }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
@@ -3568,6 +3631,123 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
   }
 
+  /* ---------- Sign up and Log in (/register/, /login/) ----------
+     Recreated from the product. Full pages with their own top bar and a photo column, so like the
+     dashboard they replace the logo bar and the page (APPS.auth) instead of opening in #screen-route.
+     Their buttons carry data-wire like the wireframes did, so a running flow moves on. */
+  const AUTH = {
+    signup: { path: '/register/', h: 'Get started with your account.', q: 'Already have an account?', other: 'login', otherLabel: 'Log In', slide: 1 },
+    login: { path: '/login/', h: 'Log in to your account.', q: 'Don’t have an account?', other: 'signup', otherLabel: 'Sign Up', slide: 0 }
+  };
+  /* The photo column is a carousel of six hired people; the two in the screenshots are known */
+  const AUTH_PEOPLE = [
+    { name: 'Steve Dominguez, Graphic Designer at K-Brite', img: '__AUTH_STEVE__' },
+    { name: 'Ibrahim Mahdi, Video Production Assistant at Disney', img: '__AUTH_IBRAHIM__' }
+  ];
+  const AUTH_DOTS = 6;
+  const AU_IC = {
+    linkedin: '<svg viewBox="2.58 2.6 18.56 18.56" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>',
+    apple: '<svg viewBox="-0.5 -0.5 25 25" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>',
+    google: '<svg viewBox="-2.4 -2.4 52.8 52.8" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
+    facebook: '<svg viewBox="-6 -0.5 24 24" aria-hidden="true"><path fill="currentColor" d="M3.3 23V12.6H0V8.6h3.3V5.8C3.3 2.1 5.2 0 8.7 0c1.4 0 2.6.1 3.3.2v3.9H9.9c-1.6 0-2.3.8-2.3 2.2v2.3h4.1l-.6 4H7.6V23z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>'
+  };
+  const authEl = document.getElementById('screen-auth');
+  APPS.auth = authEl;
+  let authKind = null;
+  function authSideHTML(on) {
+    return `<aside class="au-side" aria-label="Hired with Kickresume Premium">
+      ${AUTH_PEOPLE.map((p, i) => `<figure class="au-slide${i === on ? ' is-on' : ''}" data-slide="${i}"${i === on ? '' : ' aria-hidden="true"'}><img src="${p.img}" alt=""><figcaption><span>Hired with Kickresume Premium</span><span>${p.name}</span></figcaption></figure>`).join('')}
+      <div class="au-dots">${Array.from({ length: AUTH_DOTS }, (_, i) => i < AUTH_PEOPLE.length
+        ? `<button class="au-dot${i === on ? ' is-on' : ''}" type="button" data-slide="${i}" aria-label="Show ${AUTH_PEOPLE[i].name.split(',')[0]}" aria-current="${i === on}"></button>`
+        : '<span class="au-dot" aria-hidden="true"></span>').join('')}</div>
+    </aside>`;
+  }
+  function authMainHTML(kind) {
+    const A = AUTH[kind], up = kind === 'signup', verb = up ? 'Sign up' : 'Log in';
+    const btn = (cls, ic, label) => `<button class="au-btn ${cls}" type="button" data-wire="${kind}"><span class="au-ic">${AU_IC[ic]}</span><span>${verb} with ${label}</span></button>`;
+    const body = up
+      ? `<div class="au-consent"><input type="checkbox" id="au-consent" aria-describedby="au-consent-err"><label for="au-consent">I have read and agree to Kickresume’s <a class="au-link" href="#" data-action="toast" data-msg="The Terms of use aren’t part of this prototype.">Terms of use</a>,&nbsp; <a class="au-link" href="#" data-action="toast" data-msg="The Privacy Policy isn’t part of this prototype.">Privacy Policy</a>&nbsp; and&nbsp; <a class="au-link" href="#" data-action="toast" data-msg="The Cookie Policy isn’t part of this prototype.">Cookie Policy</a></label><span class="sr-only" id="au-consent-err" aria-live="polite"></span></div>
+        ${btn('au-li', 'linkedin', 'LinkedIn')}<p class="au-or">or</p><button class="au-btn au-em" type="button" data-wire="signup">${AU_IC.mail}<span>Sign up with email</span></button>
+        ${btn('au-ap', 'apple', 'Apple')}${btn('au-go', 'google', 'Google')}${btn('au-fb', 'facebook', 'Facebook')}`
+      : `${btn('au-li', 'linkedin', 'LinkedIn')}${btn('au-ap', 'apple', 'Apple')}${btn('au-go', 'google', 'Google')}${btn('au-fb', 'facebook', 'Facebook')}<p class="au-or">or</p>
+        <form class="au-login" novalidate><label class="sr-only" for="au-email">E-mail</label><input class="au-input" id="au-email" type="email" placeholder="E-mail" autocomplete="email">
+        <label class="sr-only" for="au-pass">Password</label><input class="au-input" id="au-pass" type="password" placeholder="Password" autocomplete="current-password">
+        <button class="au-submit" type="submit" data-wire="login">Log In</button></form>
+        <button class="au-forgot" type="button" data-action="toast" data-msg="Password reset isn’t part of this prototype.">Forgot Password?</button>`;
+    return `<div class="au-main">
+      <header class="au-top"><button class="au-logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
+        <p class="au-switch"><span class="au-q">${A.q}</span><button class="au-other" type="button" data-auth="${A.other}">${A.otherLabel}</button></p></header>
+      <section class="au-form is-${kind}" aria-labelledby="au-h"><h1 id="au-h">${A.h}</h1>${body}</section>
+    </div>`;
+  }
+  /* The photo column: the new person fades in over the old one */
+  function showSlide(i) {
+    const slides = [...authEl.querySelectorAll('.au-slide')], to = slides.at(i);
+    if (!to || to.classList.contains('is-on')) return;
+    slides.forEach(s => { s.classList.toggle('is-under', s.classList.contains('is-on')); s.classList.remove('is-on'); s.setAttribute('aria-hidden', 'true'); });
+    to.classList.remove('is-under'); to.classList.add('is-on'); to.removeAttribute('aria-hidden');
+    authEl.querySelectorAll('button.au-dot').forEach(d => { const on = +d.dataset.slide === i; d.classList.toggle('is-on', on); d.setAttribute('aria-current', String(on)); });
+    later(() => slides.forEach(s => s.classList.remove('is-under')), reduce ? 0 : DUR.slow);
+  }
+  /* Parts arrive like the dashboard's: rising 16px and fading in, one after another */
+  function enterAuth(withSide) {
+    const items = [...authEl.querySelectorAll(`${withSide ? '.au-side, ' : ''}.au-top, .au-form > *`)].filter(shown);
+    const anims = items.map((el, i) => play(el, reduce || el.classList.contains('au-side') ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
+      { duration: DUR.base + 60, delay: i * (STAGGER + 15), easing: EASE.standard }));
+    Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
+  }
+  async function openAuth(kind) {
+    if (screenRun) screenRun.finish();
+    clearTimers(); setMore(false);
+    const A = AUTH[kind];
+    if (current === 'auth') {
+      if (authKind === kind) return;
+      // Sign up ⇄ Log in: the form fades over in place and the photo cross-fades to this page's person
+      authKind = kind;
+      const main = authEl.querySelector('.au-main');
+      if (!reduce) await main.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+      main.outerHTML = authMainHTML(kind);
+      showSlide(A.slide);
+      routeNow = ROUTES.find(r => r.path === A.path) || null; markRoutes(); setHash(A.path); flowSync();
+      enterAuth(false);
+      return;
+    }
+    const fromEl = APPS[current] || screens[current];
+    if (fromEl && !reduce) await fromEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: APPS[current] ? 'none' : 'translateY(-8px)' }], { duration: DUR.fast, easing: EASE.exit, fill: 'forwards' }).finished.catch(() => {});
+    if (fromEl) fromEl.getAnimations().forEach(a => a.cancel());
+    Object.values(APPS).forEach(el => { if (el !== authEl) { el.hidden = true; el.innerHTML = ''; } });
+    topbarEl.hidden = true; pageEl.hidden = true;
+    Object.values(screens).forEach(sc => { sc.hidden = true; });
+    authKind = kind;
+    authEl.innerHTML = authSideHTML(A.slide) + authMainHTML(kind); authEl.hidden = false;
+    setCurrent('auth');
+    window.scrollTo(0, 0); device.scrollTop = 0;
+    routeNow = ROUTES.find(r => r.path === A.path) || null; markRoutes(); setHash(A.path); flowSync();
+    enterAuth(true);
+  }
+  authEl.addEventListener('click', e => {
+    if (e.target.closest('a.au-link')) e.preventDefault();  // a toast, not a jump to #
+    const sw = e.target.closest('[data-auth]');
+    if (sw) return openAuth(sw.dataset.auth);
+    const dot = e.target.closest('button.au-dot');
+    if (dot) return showSlide(+dot.dataset.slide);
+    // the product asks for consent before any sign-up: without it the box turns coral and takes focus
+    const box = authEl.querySelector('#au-consent');
+    if (box && !box.checked && e.target.closest('[data-wire="signup"]')) {
+      e.stopPropagation();
+      box.closest('.au-consent').classList.add('is-error');
+      authEl.querySelector('#au-consent-err').textContent = 'Agree to the Terms of use, Privacy Policy and Cookie Policy to sign up.';
+      box.focus();
+    }
+  });
+  authEl.addEventListener('change', e => {
+    if (e.target.id !== 'au-consent') return;
+    e.target.closest('.au-consent').classList.remove('is-error');
+    authEl.querySelector('#au-consent-err').textContent = '';
+  });
+  authEl.addEventListener('submit', e => { e.preventDefault(); });
+
   /* ---------- Wireframes (Wire) for screens that have no design yet ----------
      Grey, system font, Wire's classes only, so they read as "needs design" next to the recreated screens.
      Buttons carry data-wire; in a flow they move it on, otherwise they do the obvious thing. */
@@ -3575,7 +3755,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const wField = (label, value = '', kind = '') => `<div class="wf-field">${label}<span class="wf-input${kind ? ' wf-input--' + kind : ''}">${value}</span></div>`;
   const wShell = (label, body, notes = '', width = 440) => `<div class="wf wf-screen rt-wire" style="width:min(100%,${width}px)"><span class="wf-screen-label">Wireframe · ${label}</span>${body}${notes}</div>`;
   const wNote = text => `<template class="wf-note-src">${text}</template>`;  // shown by syncNote, outside the screen
-  const wSocial = (w = 'signup') => `<button class="wf-btn" type="button" data-wire="${w}">Continue with Google</button><button class="wf-btn" type="button" data-wire="${w}">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
+  const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
   const WIRE_TOOLS = {
     'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
     'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
@@ -3587,21 +3767,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     'proofreading': ['Proofread your resume', [['Resume', 'My Kickresume', 'select']], 'Check my resume', 'Result: spelling and grammar fixes marked in the resume. Not designed yet.']
   };
   const WIRE = {
-    signup: o => wShell(o.wall ? 'Sign-up wall' : o.cv ? 'Sign up · CV attached' : 'Sign up', `<div class="wf-card wf-stack">
+    signup: o => wShell(o.wall ? 'Sign-up wall' : 'Sign up · CV attached', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.wall ? 'Sign up to see your resume' : 'Create your free account'}</h1>${wLines(2)}
         ${o.cv ? '<div class="wf-alert wf-alert--success">jana-cv.pdf is attached. We’ll import it right after sign-up.</div>' : ''}
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
         ${o.wall ? '' : '<p class="t-small">Already have an account? <a class="wf-link" href="#/login/">Log in</a></p>'}
       </div>`, o.wall ? wNote('Guests reach this after the building screen (Flows 4 and 5). Their work is kept and opens right after sign-up.')
-      : o.cv ? wNote('Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')
-      : wNote('After sign-up: the goal screen (Flow 1), or straight to the tool the URL asked for (Flow 3).')),
-    login: () => wShell('Log in', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Log in</h1>${wSocial('login')}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
-        <a class="wf-link t-small" href="#/login/">Forgot password?</a>
-        <button class="wf-btn wf-btn--primary" type="button" data-wire="login">Log in</button>
-        <p class="t-small">New here? <a class="wf-link" href="#/register/">Create an account</a></p>
-      </div>`, wNote('Flow 6: straight to the dashboard.')),
+      : wNote('Flow 2: the visitor gave a CV on the landing page. After sign-up we go straight to uploading and building.')),
     gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
         <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
         <div class="wf-grid" style="--cols:2">
@@ -3661,15 +3834,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
-    dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard })
+    dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
+    auth: (label, kind) => ({ label, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind) })
   };
   const FLOWS = [
-    { n: 1, title: 'Onboarding', steps: [S.wire('Sign up', '/register/', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
+    { n: 1, title: 'Onboarding', steps: [S.auth('Sign up', 'signup'), S.screen('Goal screen', 'intent'), S.screen('Method screen', 'create'), S.build(), S.editor()] },
     { n: 2, title: 'CV given on the landing page', steps: [S.wire('Sign up · CV attached', '/register/', 'signup', { cv: true }), S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload'), S.editor()] },
-    { n: 3, title: 'Tool needs a CV, none given', steps: [S.wire('Sign up', '/register/', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
+    { n: 3, title: 'Tool needs a CV, none given', steps: [S.auth('Sign up', 'signup'), S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main')] },
     { n: 4, title: 'Guest, no CV needed', steps: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
     { n: 5, title: 'Guest, CV needed', steps: [S.wireTool('Add your resume', '/dashboard/tailor-resume/', 'gate'), S.route('Upload your resume', '/dashboard/tailor-resume/', 'upload'), S.wireTool('Tailor resume', '/dashboard/tailor-resume/', 'main'), S.build(), S.wire('Sign-up wall', '/register/', 'signup', { wall: true }), S.editor()] },
-    { n: 6, title: 'Log in', steps: [S.wire('Log in', '/login/', 'login'), S.dash()] },
+    { n: 6, title: 'Log in', steps: [S.auth('Log in', 'login'), S.dash()] },
     { n: 7, title: 'Latest resume', steps: [S.wire('New user: no resume yet', '/latest-resume/', 'latest-empty'), S.editor('Returning user: latest resume')] },
     { n: 8, title: 'Career Map', steps: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding'), S.wire('Career Map', '/career-map/', 'cm')] },
     { n: 9, title: 'Upgrade', steps: [S.wire('Upgrade', '/upgrade/yearly/', 'upgrade', { plan: 'yearly' })] }
@@ -3712,7 +3886,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function flowSync() {
     if (!flowNow) return;
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt) { flowAt = i; renderFlowBar(); }
   }
