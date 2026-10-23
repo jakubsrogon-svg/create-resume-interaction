@@ -132,7 +132,15 @@ body.is-mobile .statusbar {
 }
 
 /* ---------- Top bar ---------- */
-.topbar { display: flex; align-items: center; padding-block: var(--sp-topbar); }
+.topbar { position: relative; display: flex; align-items: center; padding-block: var(--sp-topbar); }
+/* × in the top right corner of the full-screen modal screens (route screens' setup steps; see syncTopX), where the
+   template page has its own: 32px from the edge, centred on the logo, out of the bar's flow so nothing moves */
+.top-x { position: absolute; top: 50%; right: 16px; display: grid; place-items: center; width: 40px; height: 40px; margin-top: -20px; padding: 0; border: 0; border-radius: 10px; background: none; color: var(--kr-grey-100); cursor: pointer; transition: background .2s; }
+.top-x[hidden] { display: none; }
+.top-x:hover { background: rgba(0, 0, 0, .04); }
+.top-x svg { display: block; width: 24px; height: 24px; }
+.top-x:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+@media (min-width: 481px) { body:not(.is-mobile) .top-x { right: -36px; } }  /* the stage keeps 52px for the rail, the device 16px */
 .logo { display: inline-flex; border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--radius); }
 .logo svg { width: 140px; height: auto; display: block; }
 .logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
@@ -1344,7 +1352,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 /* Generate work experience / resume objective (/ai/resume/…): measured from 2x-ish screenshots at 1.3x */
 .aig { --w: 820px; padding: 55px 46px 45px; }
-.aig .rt-x { top: 12px; right: 12px; }
 .aig-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .aig h1 { font-size: 28px; line-height: 40px; }
 .aig .aim-lang { width: 185px; padding: 0 16px; gap: 9px; border-radius: 10px; font-size: 16px; }
@@ -1483,7 +1490,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 /* Resignation letter (/ai/resignation/) */
 .rsg { --w: 500px; padding: 31px 47px 31px; }
-.rsg .rt-x { top: 8px; right: 8px; }
 .rsg h1 { font-size: 24px; line-height: 28px; }
 .rsg-sub { margin: 16px 0 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
 .rsg .aim-field { margin-top: 16px; }
@@ -2011,6 +2017,7 @@ body.has-note .tl, body:has(.flow-bar:not([hidden])) .tl { padding-bottom: 56px;
 :where(.tl) :where(button, input) { font: inherit; color: inherit; }
 .tl button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 :where(.tl) :where(p) { margin: 0; }
+.tl-sec { scroll-margin: 24px 0; }
 :where(.tl) :where(svg) { display: block; flex: none; }
 /* the middle column */
 .tl-main { grid-column: 2; grid-row: 1; min-width: 0; padding: 28px 32px 80px; }
@@ -2586,6 +2593,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="statusbar" aria-hidden="true"><span>9:41</span><span class="notch"></span><span class="sys"><span class="bars"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:11px"></i></span><span class="batt"><i></i></span></span></div>
 <header class="topbar" id="topbar">
   <button class="logo" type="button" data-action="restart" aria-label="Kickresume, back to start">__LOGO_SVG__</button>
+  <button class="top-x" id="top-x" type="button" data-action="route-close" aria-label="Close" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 5.29a1 1 0 0 1 0 1.42l-12 12a1 1 0 0 1-1.42-1.42l12-12a1 1 0 0 1 1.42 0Z"/><path fill="currentColor" d="M5.29 5.29a1 1 0 0 1 1.42 0l12 12a1 1 0 0 1-1.42 1.42l-12-12a1 1 0 0 1 0-1.42Z"/></svg></button>
 </header>
 
 <main class="page" id="page">
@@ -2652,7 +2660,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.12">v2.12</div>
+<div class="proto-ver" aria-label="Prototype version 2.13">v2.13</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3035,6 +3043,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
   let current = 'intent', routesReady = false, cvNext = null, cvDefer = null, cvMade = null, buildNext = null;  // see askCv and buildFor
+  const topXEl = document.getElementById('top-x');
+  let xRoute = null, xPane = '';  // the route screen and step the corner × was last set for (syncTopX)
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
@@ -3042,7 +3052,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (s !== 'loading') buildNext = null;  // so does where a tool's building screen leads (buildFor)
     // a route URL only while it's on screen, or while the method screen gets the CV it asked for
     if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool', 'tpl'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
-    syncNote();
+    syncNote(); syncTopX();
     if (routesReady && s !== 'route') flowSync();
   }
   /* The version tag sits bottom left, clear of the left sidebar on the dashboard and editor.
@@ -3995,6 +4005,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
   const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
+  // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback the Career Coach
+  const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'coach', 'career-coach': 'coach', 'proofreading': 'proof' };
   const latest = tool => ({ run: () => !cvUploaded ? openDocs() : tool ? openTool(tool) : openEdit() });
   /* The headline and subheadline above the card of every personalization, processing and processing-state screen
      (route.head, shown by routeHead): the question the screen asks, or what is happening. The shared wireframes'
@@ -4018,14 +4030,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       fail: ['That job post didn’t work', 'Check the link, or paste the job post instead.'],
       error: ['Tailoring didn’t finish', 'It broke on our side. Nothing you entered is lost.'] },
     tool: {
-      'analyse-resume': ['Which resume should we check?', 'We’ll read it the way an ATS does and show you what to fix.'],
       'rewrite-resume': ['How should we rewrite it?', 'Pick a tone and the AI rewrites your resume in it.'],
       'tailor-resume': ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'],
-      'translate-resume': ['Which language do you need?', 'We’ll make a translated copy and keep your original.'],
-      'recruiter-feedback': ['What job are you aiming for?', 'A recruiter reads your resume and tells you what to improve.'],
       'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
-      'career-coach': ['What would you like to ask?', 'Your career coach answers with your resume in mind.'],
-      'proofreading': ['Which resume should we proofread?', 'We’ll catch typos and grammar slips before a recruiter does.']
     },
     templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
     'jobs-matcher': ['Find jobs that fit you', 'Tell us what you’re after and we’ll match open roles to your resume.'],
@@ -4050,11 +4057,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', head: { main: HEADS.interview, s1: HEADS.interview, s2: HEADS.interviewCv }, html: interviewHTML, init: initWriter },
     { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: HEADS.upload, progress: HEADS.uploading } },
     { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
+    // the resume tools: three ask for something first (Tailor resume is recreated, Rewrite and Summary are wireframes);
+    // the others have nothing to ask and start on the CV straight away (analyseNow, toolNow)
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
-      .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
-        ...(t === 'tailor-resume' ? { buildCv: 'tailor', head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } }
-          : { wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats' } : {}) }) })),
+      .map(([t, title]) => { const path = `/dashboard/${t}/`, base = { group: '5 · Bring a resume to a tool', path, title };
+        if (t === 'tailor-resume') return { ...base, needsCv: true, buildCv: 'tailor', head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } };
+        if (t === 'analyse-resume') return { ...base, buildCv: 'ats', run: () => analyseNow(findRoute(path)) };
+        if (TOOL_PAGE[t]) return { ...base, run: () => toolNow(findRoute(path), TOOL_PAGE[t]) };
+        return { ...base, needsCv: true, wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t) }; }),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -4170,7 +4181,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (where === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
     if (where === 'docs') return openDocs();
     if (where === 'editor') return jumpEditor();
-    if (where === 'tool') return openTool(toolKind);
+    if (where === 'tool') return openTool(toolKind, toolPath);
     if (where === 'tpl') return openTemplates();
     if (where === 'route' && route) return openRoute(route);
     go(where === 'create' ? 'create' : 'intent');
@@ -4182,7 +4193,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function routeHead(r, pane, instant, nested) {
     const h = r && r.head && r.head[pane], t = typeof h === 'function' ? h() : h;
     if (!t && nested) return;
-    setRouteHead(t, instant);
+    setRouteHead(t, instant); syncTopX(r, pane);
+  }
+  /* The × in the top right corner (closeRoute): on the full-screen modal screens' setup steps, the ones with a
+     headline; not while a screen processes (it can't be left then), on a result, a destination or the sign-up wall */
+  function syncTopX(r = xRoute, pane = xPane) {
+    xRoute = r; xPane = pane;
+    const show = current === 'route' && !!r && !!r.head && !!r.head[pane] && !r.noX && !['process', 'progress', 'state', 'dest'].includes(pane);
+    if (show && topXEl.hidden && !reduce) play(topXEl, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => topXEl.getAnimations().forEach(a => a.cancel()));
+    topXEl.hidden = !show;
   }
   // a new headline cross-fades in place, like the onboarding screens'
   function setRouteHead(t, instant) {
@@ -4342,7 +4361,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     lines: '<path d="M15 12H3"/><path d="M17 18H3"/><path d="M21 6H3"/>',
     pen: '<path d="M15 3 8.6 10.4"/><path d="M8.6 10.4 4.2 15.3a2 2 0 0 0-.5 1.3V20H11l4-4z"/><path d="m15 16 5.5-5.5"/>'
   };
-  const xBtn = () => `<button class="rt-x" type="button" data-action="route-close" aria-label="Close">${rtIc(RT_IC.x)}</button>`;
   /* Language dropdown (the same component as on Create Resume with AI) */
   function langHTML(langs) {
     return `<div class="aim-lang-wrap">
@@ -4389,7 +4407,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const exp = kind === 'experience', rec = exp ? 'structured' : 'paragraphs';
     const fields = exp ? [['title', 'Job title'], ['company', 'Company']] : [['title', 'Job you’re applying for']];
     const chips = (list, sel, recId) => list.map(([id, label, ic]) => `<button class="aig-chip" type="button" role="radio" aria-checked="${id === sel}" aria-label="${label}" data-v="${id}"><span class="aig-in">${rtIc(ic)}<span class="lbl">${label}</span></span>${id === recId ? '<span class="aig-rec">Recommended</span>' : ''}</button>`).join('');
-    return `<form class="rt-card aig" data-kind="${kind}" novalidate aria-labelledby="aig-h">${xBtn()}
+    return `<form class="rt-card aig" data-kind="${kind}" novalidate aria-labelledby="aig-h">
       <div class="aig-head"><h1 id="aig-h">${exp ? 'Generate work experience' : 'Generate resume objective'}</h1>${langHTML(AIM_LANGS)}</div>
       <div class="aig-fields${exp ? '' : ' is-one'}">${fields.map(([n, l]) => `<div class="aig-field"><label for="aig-${n}">${l}</label><input class="aig-input" id="aig-${n}" name="${n}" placeholder="${l}" autocomplete="off"></div>`).join('')}</div>
       <div class="aig-opts">
@@ -4832,7 +4850,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* ---------- Resignation letter (/ai/resignation/) ---------- */
   function resignHTML() {
-    return `<form class="rt-card rsg" novalidate aria-labelledby="rsg-h">${xBtn()}
+    return `<form class="rt-card rsg" novalidate aria-labelledby="rsg-h">
       <h1 id="rsg-h">What is your job title?</h1>
       <p class="rsg-sub">Enter the job title for which you want to generate a resignation letter.</p>
       <div class="aim-field"><label for="rsg-title">Job title</label><input class="aim-input" id="rsg-title" name="title" autocomplete="organization-title"></div>
@@ -5187,7 +5205,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const docsEl = document.getElementById('screen-docs'), toolEl = document.getElementById('screen-tool');
   APPS.docs = docsEl; APPS.tool = toolEl;
   const TOOL_PATH = { ats: '/latest-resume/analyze/', proof: '/latest-resume/proofread/', coach: '/latest-resume/recruiter-feedback/' };
-  let toolKind = 'ats';
+  let toolKind = 'ats', toolPath = TOOL_PATH.ats;  // the tool page on screen and the URL it shows
 
   /* My Documents: the "create" card, then the resumes (only with a CV) and their pages */
   function docsHTML() {
@@ -5330,15 +5348,31 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     syncApp(path); riseIn(el, keepSide);
   }
   const openDocs = () => enterApp(docsEl, () => { docsEl.innerHTML = docsHTML(); }, 'docs', '/dashboard/resumes/');
-  async function openTool(kind) {
-    toolKind = kind; tlCat = 0;
+  // path: the URL it shows (a tool's own, e.g. /dashboard/translate-resume/; the latest-resume one otherwise)
+  async function openTool(kind, path = TOOL_PATH[kind]) {
+    toolKind = kind; toolPath = path; tlCat = 0;
     const fill = () => { toolEl.className = 'tl is-' + kind; toolEl.innerHTML = toolHTML(kind); requestAnimationFrame(fitPrev); };
-    if (current !== 'tool') return enterApp(toolEl, fill, 'tool', TOOL_PATH[kind]);
+    if (current !== 'tool') { await enterApp(toolEl, fill, 'tool', path); return toolAt(path); }
     // from one tool to another: the page stays, its content fades over
     clearTimers(); setMore(false);
     await leaveOut(toolEl, hasSide(toolEl));
     fill(); placeVer(); window.scrollTo(0, 0); device.scrollTop = 0;
-    syncApp(TOOL_PATH[kind]); riseIn(toolEl, true);
+    syncApp(path); riseIn(toolEl, true); toolAt(path);
+  }
+  // Translate resume opens the Proofread & Translate page and brings its Translation part (below the fold) into view
+  function toolAt(path) {
+    const sec = path === '/dashboard/translate-resume/' && toolEl.querySelector('#tl-tr');
+    if (sec) later(() => sec.closest('.tl-sec').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 350);
+  }
+  /* The resume tools with nothing to ask (no setup screen). Without a CV the method screen comes first (askCvFor),
+     then the building screen. With one, Analyse resume processes it and shows the ATS checker; the others open their
+     page under their own URL (Translate resume took its language on a landing page). */
+  function toolNow(r, kind) { if (!cvUploaded) return askCvFor(r); openTool(kind, r.path); }
+  function analyseNow(r) {
+    if (!cvUploaded) return askCvFor(r);  // it hands the CV straight back (buildCv) ...
+    if (cvMade && cvMade.path === r.path) { cvNext = cvDefer = null; return runBuildFor(r); }  // ... to make it in the Analyzing screen
+    openWire(r.path, 'Checking your resume', 'process', { f: FEATURES.find(f => f.id === 'analyse-resume'), pane: 'process' });
+    later(() => flowNow ? processDone() : openTool('ats'), 2600);
   }
   /* Below 1440px the preview column narrows; the preview shrinks to fit it */
   function fitPrev() {
@@ -5444,13 +5478,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const wNote = text => `<template class="wf-note-src">${text}</template>`;  // shown by syncNote, outside the screen
   const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
   const WIRE_TOOLS = {
-    'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
     'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
-    'translate-resume': ['Translate your resume', [['Resume', 'My Kickresume', 'select'], ['Translate to', 'German', 'select']], 'Translate', 'Result: a translated copy in the editor. Not designed yet.'],
-    'recruiter-feedback': ['Get recruiter feedback', [['Resume', 'My Kickresume', 'select'], ['Job you’re aiming for', '', '']], 'Get feedback', 'Result: written feedback from a recruiter, delivered later. Not designed yet.'],
     'summary-generator': ['Generate a resume summary', [['Resume', 'My Kickresume', 'select'], ['Job title', '', '']], 'Generate summary', 'Result: 2–3 summary options to pick from. Not designed yet.'],
-    'career-coach': ['Career coach', [], 'Send', 'A chat with an AI coach that knows the resume. Not designed yet.'],
-    'proofreading': ['Proofread your resume', [['Resume', 'My Kickresume', 'select']], 'Check my resume', 'Result: spelling and grammar fixes marked in the resume. Not designed yet.']
   };
   const WIRE = {
     wall: () => wShell('Sign-up wall', `<div class="wf-card wf-stack">
@@ -5459,9 +5488,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
       </div>`, wNote('Guests reach this when processing is done, before the destination (Flow 2’s guest features). Their work is kept and opens right after sign-up.')),
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
-      const body = o.tool === 'career-coach'
-        ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
-        : `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
+      const body = `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
     'jobs-matcher': () => wShell('Job matcher', `<div class="wf-card wf-stack">
         ${wLines(1)}
@@ -5509,7 +5536,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="wf-grid" style="--cols:4">${['Saved', 'Applied', 'Interview', 'Offer'].map((c, i) => `<div class="wf-stack wf-gap-sm"><span class="t-label">${c}</span><div class="wf-card">${wLines(2)}</div>${i < 2 ? `<div class="wf-card">${wLines(2)}</div>` : ''}</div>`).join('')}</div></div>`, wNote('Job Tracker (/jobs/job-tracker/): every application and its status. Not designed yet.'), 760)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
-  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, html: () => WIRE[id](opts),
+  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, noX: id === 'wall', html: () => WIRE[id](opts),
     head: HEADS[id] ? { [opts.pane || 'main']: () => (typeof HEADS[id] === 'function' ? HEADS[id](opts) : HEADS[id]) } : undefined });
   function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
   /* Wireframe buttons: the next flow step when a flow is running, else the obvious place */
@@ -5562,7 +5589,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
     tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
-    tool: (label, kind) => ({ label, match: `route:${TOOL_PATH[kind]}#main`, run: () => { setCv(true); openTool(kind); } }),
+    tool: (label, kind, path = TOOL_PATH[kind]) => ({ label, match: `route:${path}#main`, run: () => { setCv(true); openTool(kind, path); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
     latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } }),
@@ -5579,11 +5606,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form.
+  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form (if it asks anything).
      A buildCv tool skips that building screen: its own (cvMake) comes after the form, as its processing (cvRun). */
   const toolPrep = (path, label) => () => {
     const r = findRoute(path), ask = cvUploaded ? [] : r.buildCv ? [S.cv(path)] : [S.cv(path), S.cvBuild(path)];
-    return [...ask, r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+    return [...ask, ...(r.run ? [] : [r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')])];  // a tool with nothing to ask has no screen of its own
   };
   const cvRun = path => ({ process: () => cvUploaded ? [] : [S.cvMake(path)] });
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
@@ -5592,16 +5619,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     state: () => cvUploaded ? [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }] : []
   });
   const signUp = S.auth('Sign up', 'signup');
-  const landing = what => S.auth('Sign up · ' + what, 'signup', `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
+  const landing = (what, note) => S.auth('Sign up · ' + what, 'signup', note || `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
+  // the tools that ask something first (their setup screen is their personalization)
   const TOOL_DEST = {
-    'analyse-resume': ['Analysing your resume', 'ATS report', () => S.tool('ATS checker', 'ats')],
     'rewrite-resume': ['Rewriting your resume', 'rewritten resume', () => S.editor('Editor · the rewritten copy')],
     'tailor-resume': ['Tailoring your resume', 'tailored resume', () => S.editor('Editor · the tailored copy')],
-    'translate-resume': ['Translating your resume', 'translation', () => S.editor('Editor · the translated copy')],
-    'recruiter-feedback': ['Sending it to a recruiter', 'feedback request', () => S.tool('Career Coach · recruiter feedback', 'coach')],
-    'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary')],
-    'career-coach': ['Reading your resume', 'coach', () => S.tool('Career Coach', 'coach')],
-    'proofreading': ['Proofreading your resume', 'proofread resume', () => S.tool('Proofreading', 'proof')]
+    'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary')]
   };
   /* Every URL, paired with its flow: { flow, group (the URL checklist's), title, path, entry, prep, process, dest,
      verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall),
@@ -5626,7 +5649,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
     { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], process: [S.build('linkedin')], dest: resumeOut(), verb: 'Importing your profile', noun: 'resume', fail: 'We couldn’t read that profile' },
     ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
-      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : r.buildCv ? cvRun(r.path) : {}) }; }),
+      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
+    // the tools with nothing to ask start on the CV straight away: Analyse resume processes it (Flow 3; without a CV
+    // the method screen and its own Analyzing screen come first), the others open their page (Flow 4), Translate
+    // resume after a landing page that took the CV and the language
+    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], process: [S.cvMake('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats')], noun: 'ATS report' },
+    { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
+      entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
+      dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
+    ...[['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach'], ['proofreading', 'Proofreading', 'Proofreading']]
+      .map(([t, title, label]) => ({ id: t, flow: 4, group: '5 · Bring a resume to a tool', title, path: `/dashboard/${t}/`, cv: true, dest: [S.tool(label, TOOL_PAGE[t], `/dashboard/${t}/`)] })),
     { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
     { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
@@ -5794,7 +5827,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard') { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${TOOL_PATH[toolKind]}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt) { flowAt = i; renderFlowBar(); }
   }
