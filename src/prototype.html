@@ -1221,7 +1221,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 
 /* ---------- Route screens ----------
    Product screens recreated from screenshots. Each has its own URL (#/dashboard/create-ai-resume/)
-   and a link under More options › Screens. They are full screens like the rest of the flow (logo bar,
+   and a link under More options › URLs. They are full screens like the rest of the flow (logo bar,
    page background, content from the same top line), never pop-ups over another screen.
    Sizes and colours inside them are measured from the 2x screenshots, so they don't follow the
    onboarding's height-aware spacing. */
@@ -2418,7 +2418,21 @@ body.has-note .au-main { padding-bottom: 96px; }
 .flow-bar [data-tip]:hover::after { transform: translate(-50%, 0); }
 @media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar, .proto-note { max-width: calc(100vw - 140px); } }
 
-/* More options › Screens: the recreated product screens, each with its URL */
+/* More options has two views (tabs at the top, they stay put while the panel scrolls): Flows, with the person's
+   CV, the processing result, the four flows and the goal and method screens' look; and URLs, every screen */
+.pm-tabs { position: sticky; top: -10px; z-index: 2; display: flex; gap: 2px; margin: -10px -10px 0 -12px; padding: 10px 10px 4px 12px; background: var(--kr-blue-dark); }
+.pm-tab { flex: 1; height: 30px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .06); color: #c9cde0; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
+.pm-tab:hover { background: rgba(255, 255, 255, .12); color: var(--kr-white); }
+.pm-tab[aria-selected="true"] { background: var(--kr-white); color: var(--kr-blue-dark); }
+.pm-tab:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pm-count { font-weight: 400; opacity: .6; }
+.pm-view { display: grid; gap: 10px; }
+.pm-view[hidden] { display: none; }
+.pm-view > .pm-sec:last-child { padding-bottom: 0; border-bottom: 0; }
+.pm-key { font-size: 12px; line-height: 16px; color: #c9cde0; }
+.proto-more .pm-seg button { width: auto; height: 28px; padding: 0 10px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.proto-more .pm-sec > .pm-row { min-height: 34px; }
+/* More options › URLs: the recreated product screens, each with its URL */
 .pm-sec { display: grid; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
 .pm-route {
   display: grid; gap: 1px; margin-inline: -6px; padding: 6px; border: 0; border-radius: 8px; background: none;
@@ -2462,11 +2476,16 @@ body.has-note .au-main { padding-bottom: 96px; }
 .pmf-run { display: flex; align-items: center; gap: 4px; height: 30px; padding: 0 10px 0 8px; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
 .pmf-run:hover { background: #e4e7f0; }
 .pmf-run svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
-.pmf-what { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; margin: 0; max-width: 300px; font-size: 11px; line-height: 15px; color: #c9cde0; }
-.pmf-what dt { color: #8a93ab; }
-.pmf-what dd { margin: 0; }
+.pmf-what { display: grid; gap: 2px; font-size: 11px; line-height: 15px; color: #c9cde0; }
 .pmf-what code { font: 10.5px/15px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; word-break: break-all; }
-.proto-more-panel { max-height: calc(100vh - 72px); max-width: min(380px, calc(100vw - 24px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.pmf-seq { display: flex; flex-wrap: wrap; gap: 0 4px; margin: 0; padding: 0; list-style: none; }
+.pmf-seq li + li::before { content: "→"; margin-right: 4px; color: #59617a; }
+.pmf-seq [data-st="entry"] { color: #8a93ab; }
+.pmf-seq [data-st="process"], .pmf-seq [data-st="state"] { color: #f3d9a4; }
+.pmf-seq [data-st="dest"] { color: #9fe0c4; }
+.proto-more-panel { width: min(360px, calc(100vw - 24px)); max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+@media (max-width: 480px) { .proto-more-panel { width: calc(100vw - 72px); } }  /* beside the folded rail */
+.pm-route code { overflow-wrap: anywhere; }
 
 /* ---------- Responsive ---------- */
 /* Goal cards: two columns (560px) below ~1100px */
@@ -2571,7 +2590,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.7.2">v2.7.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.8">v2.8</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2600,31 +2619,44 @@ body.has-note .au-main { padding-bottom: 96px; }
 <!-- More options: a quiet corner button that opens the less-used settings -->
 <div class="proto-more" id="proto-more">
   <div class="proto-more-panel" id="proto-more-panel" role="group" aria-label="More prototype options" inert>
-    <div class="pm-sec"><span class="pm-label">Flows</span><p class="pmf-intro">Every URL follows one of four flows. The URL only changes the outlined stages: the feature’s own screens and where it ends.</p><div id="pm-flows"></div></div>
-    <div class="pm-sec"><span class="pm-label">Screens</span><div id="pm-routes"></div></div>
-    <div class="pm-row"><span class="pm-label">CV</span>
-      <div class="seg">
-        <button type="button" data-cv="no" aria-pressed="true" aria-label="No CV uploaded yet" data-tip="No CV yet · screens that need one ask for it"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m14.5 12.5-5 5"/><path d="m9.5 12.5 5 5"/></svg></button>
-        <button type="button" data-cv="yes" aria-pressed="false" aria-label="CV uploaded" data-tip="CV uploaded · skip the upload step"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg></button>
+    <div class="pm-tabs" role="tablist" aria-label="Prototype options">
+      <button class="pm-tab" type="button" role="tab" id="pm-tab-flows" aria-controls="pm-view-flows" aria-selected="true" data-pm-tab="flows">Flows</button>
+      <button class="pm-tab" type="button" role="tab" id="pm-tab-urls" aria-controls="pm-view-urls" aria-selected="false" tabindex="-1" data-pm-tab="urls">URLs <span class="pm-count" id="pm-count"></span></button>
+    </div>
+    <div class="pm-view" id="pm-view-flows" role="tabpanel" aria-labelledby="pm-tab-flows">
+      <div class="pm-sec"><span class="pm-label">The person</span>
+        <div class="pm-row"><span class="pm-key">CV</span>
+          <div class="seg pm-seg">
+            <button type="button" data-cv="no" aria-pressed="true" data-tip="Tools that work on a resume start on the method screen">No CV</button>
+            <button type="button" data-cv="yes" aria-pressed="false" data-tip="Tools open straight on their own screen">Has a CV</button>
+          </div>
+        </div>
+        <div class="pm-row"><span class="pm-key">Result</span>
+          <div class="seg pm-seg">
+            <button type="button" data-result="ok" aria-pressed="true" data-tip="Processing ends · straight on to the result">Completed</button>
+            <button type="button" data-result="fail" aria-pressed="false" data-tip="Processing ends · the input can’t be used">Failed</button>
+            <button type="button" data-result="error" aria-pressed="false" data-tip="Processing ends · something broke on our side">Error</button>
+          </div>
+        </div>
+      </div>
+      <div class="pm-sec"><span class="pm-label">Flows</span><p class="pmf-intro">Every URL follows one of four flows and fills in only the outlined stages. Pick one, then Run.</p><div id="pm-flows"></div></div>
+      <div class="pm-sec"><span class="pm-label">Goal &amp; method screens</span>
+        <div class="pm-row"><span class="pm-key">Look</span>
+          <div class="seg pm-seg" data-screen-for="intent create">
+            <button type="button" data-look="flat" aria-pressed="true" aria-label="Goal and method screens: flat look">Flat</button>
+            <button type="button" data-look="3d" aria-pressed="false" aria-label="Goal and method screens: 3D look">3D</button>
+          </div>
+        </div>
+        <div class="pm-row"><span class="pm-key">Method screen</span>
+          <div class="seg pm-seg" data-screen-for="create">
+            <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top">Variant C · picture on top</button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="pm-row"><span class="pm-label">Result</span>
-      <div class="seg">
-        <button type="button" data-result="ok" aria-pressed="true" aria-label="Processing ends: completed" data-tip="Processing · Completed"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-        <button type="button" data-result="fail" aria-pressed="false" aria-label="Processing ends: failed" data-tip="Processing · Failed (the input can’t be used)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-        <button type="button" data-result="error" aria-pressed="false" aria-label="Processing ends: error" data-tip="Processing · Error (something broke on our side)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v8"/><path d="M12 19h.01"/></svg></button>
-      </div>
-    </div>
-    <div class="pm-row"><span class="pm-label">Variant</span>
-      <div class="seg" data-screen-for="create">
-    <button type="button" data-variant="C" aria-pressed="false" aria-label="Method screen: variant C, picture on top" data-tip="Method screen · C, picture on top">C</button>
-      </div>
-    </div>
-    <div class="pm-row"><span class="pm-label">Look</span>
-      <div class="seg" data-screen-for="intent create">
-        <button type="button" data-look="flat" aria-pressed="true" aria-label="Goal and method screens: flat look" data-tip="Goal & method screens · Flat look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/></svg></button>
-        <button type="button" data-look="3d" aria-pressed="false" aria-label="Goal and method screens: 3D look" data-tip="Goal & method screens · 3D look"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></button>
-      </div>
+    <div class="pm-view" id="pm-view-urls" role="tabpanel" aria-labelledby="pm-tab-urls" hidden>
+      <p class="pmf-intro">Every screen at its own URL, grouped like the URL checklist. Opening one ends a running flow unless it is one of its steps.</p>
+      <div id="pm-routes"></div>
     </div>
   </div>
   <button class="pm-btn" type="button" data-action="proto-more" aria-expanded="false" aria-controls="proto-more-panel" aria-label="More options"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span class="pm-dot" aria-hidden="true"></span></button>
@@ -2902,6 +2934,27 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setMore(open) {
     pmWrap.classList.toggle('is-open', open); pmBtn.setAttribute('aria-expanded', String(open)); pmPanel.inert = !open;
   }
+  // Its two views, Flows and URLs (arrow keys move between the tabs); the one picked last comes back
+  const pmTabs = [...pmPanel.querySelectorAll('[data-pm-tab]')];
+  function setPmTab(name, focus) {
+    pmTabs.forEach(t => {
+      const on = t.dataset.pmTab === name;
+      t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      if (on && focus) t.focus();
+    });
+    pmPanel.scrollTop = 0;
+    try { localStorage.setItem('kr-start-more', name); } catch (e) {}
+  }
+  pmPanel.querySelector('.pm-tabs').addEventListener('click', e => { const t = e.target.closest('[data-pm-tab]'); if (t) setPmTab(t.dataset.pmTab); });
+  pmPanel.querySelector('.pm-tabs').addEventListener('keydown', e => {
+    const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const at = pmTabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    setPmTab(pmTabs[(at + step + pmTabs.length) % pmTabs.length].dataset.pmTab, true);
+  });
+  try { if (localStorage.getItem('kr-start-more') === 'urls') setPmTab('urls'); } catch (e) {}
   const markMore = () => pmBtn.classList.toggle('has-active', variant === 'C' || document.body.classList.contains('look-3d') || document.querySelector('.proto-more [data-result="ok"]').getAttribute('aria-pressed') !== 'true');
   // The 3D look's backdrop (only shown on the method screen in 3D; see .d-backdrop). The resume
   // fragments in the margins are hidden for now but kept in full: set SHOW_3D_PAPERS to true to show them.
@@ -2919,11 +2972,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading'), route: document.getElementById('screen-route') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
-  let current = 'intent', routesReady = false;
+  let current = 'intent', routesReady = false, cvNext = null;  // cvNext: see askCv
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (routesReady && !['route', 'auth', 'upgrade', 'docs', 'tool'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }  // a route URL only while it's on screen
+    if (s !== 'create' && s !== 'loading') cvNext = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
+    // a route URL only while it's on screen, or while the method screen gets the CV it asked for
+    if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
     syncNote();
     if (routesReady && s !== 'route') flowSync();
   }
@@ -3048,12 +3103,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Clicking mid-way fast-forwards the running change and starts the new one, so no click is lost. */
   let screenRun = null;
   const FLOW = ['intent', 'create', 'route', 'loading'];
-  async function go(screen, picked) {
+  async function go(screen, picked, towards) {
     if (screenRun) screenRun.finish();
     if (screen === current) return;
     if (APPS[current]) return leaveApp(screen);
     const from = screens[current], to = screens[screen];
-    const dir = FLOW.indexOf(screen) < FLOW.indexOf(current) ? -1 : 1;
+    const dir = towards || (FLOW.indexOf(screen) < FLOW.indexOf(current) ? -1 : 1);
     setCurrent(screen);
     await scrollToTop();
     if (current !== screen) return; // another change started while scrolling
@@ -3843,7 +3898,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   /* ---------- Route screens ----------
-     Product screens recreated from screenshots, each at its own URL and listed under More options › Screens.
+     Product screens recreated from screenshots, each at its own URL and listed under More options › URLs.
      They are full screens in the flow (same logo bar, background and top line as the goal and method
      screens), not pop-ups. To add one: write its markup function (and an init for its behaviour), then
      add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
@@ -3890,22 +3945,42 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (path && findRoute(location.hash) && findRoute(location.hash) === findRoute(path)) return;
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
+  document.getElementById('pm-count').textContent = ROUTES.length;
   document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
     ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
   /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
-     ATS check ask for a resume first when there is none) */
+     ATS check get a resume on the method screen first when there is none; see openRoute) */
   function pickGoal(id, el) {
     flowGoal(id);
     if (id === 'build') return go('create', el);
     if (id === 'tailor') return openRoute(findRoute('/dashboard/tailor-resume/'));
-    if (id === 'ats') return cvUploaded ? openTool('ats') : openRoute(findRoute('/dashboard/analyse-resume/'));
+    if (id === 'ats') return openRoute(findRoute('/dashboard/analyse-resume/'));
     openRoute(findRoute('/jobs/matcher/'));
   }
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
   /* A CV counts as uploaded once the person uploads one (the onboarding upload method or the Upload
-     screen), or when More options › CV says so. Screens that work on a resume ask for one first. */
+     screen), makes one on the method screen for a screen that asked (askCv), or when More options › CV says so.
+     Screens that work on a resume ask for one first. */
   let cvUploaded = false, cvName = '';
+  /* No CV yet: the method screen gets one (any of its methods), the building screen makes it, and then
+     `then` opens the screen that asked (afterBuild) instead of the editor */
+  function askCv(then, instant) {
+    cvNext = then;
+    if (!instant) return go('create');
+    renderCreate();
+    Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'create'; });
+    setCurrent('create');
+  }
+  /* A tool that needs a CV and has none: the method screen first, under the tool's URL, then the tool */
+  function askCvFor(r, instant) { routeNow = r; markRoutes(); setHash(r.path); askCv(() => openRoute(r), instant); }
+  /* Back to a route screen that was left for the method screen: its panes are still as they were */
+  async function backToRoute(r, then) {
+    await go('route', null, 1);
+    if (current !== 'route') return;
+    routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
+    then();
+  }
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
@@ -3917,26 +3992,24 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   function fillRoute(r, pane) {
-    // a tool that needs a CV: Add your resume (gate) → Upload your resume → the tool; pane picks where to start
-    // the main pane is "main", or the flow stage a generic wireframe stands for (process, state, dest);
-    // more = panes that follow the main one ({ name: markup function }, e.g. Tailor resume's "process")
-    const el = screens.route, cv = r.needsCv || r.upload, main = r.pane || 'main';
-    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : main);
+    // pane picks where to start: the main pane is "main", or the flow stage a generic wireframe stands for
+    // (process, state, dest); more = panes that follow the main one ({ name: markup function }, e.g. Tailor
+    // resume's "process"). A tool that needs a CV gets it before it opens (openRoute → askCv).
+    const el = screens.route, main = r.pane || 'main';
+    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
-    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
+    el.innerHTML = `<div class="rt-item rt-panes">${r.upload ? uploadHTML('upload', first !== 'upload') : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
     el.setAttribute('aria-label', r.title);
     const item = el.firstElementChild;
     if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
-    if (cv) initUpload(item.querySelector('[data-pane="upload"]'), {
-      onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, main, 1),
-      onCancel: r.needsCv ? () => showPane(item, 'gate', -1) : closeRoute
-    });
+    if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onDone: () => startFromUpload(item), onCancel: closeRoute });
     if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
   }
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant, pane) {
     setMore(false); clearTimers();
     if (r.run) { setHash(r.path); return r.run(); }
+    if (r.needsCv && !cvUploaded && !pane) return askCvFor(r, instant);
     if (current === 'route') {
       // already on a route screen: swap its content in place
       if (screenRun) screenRun.finish();
@@ -3946,12 +4019,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
       return;
     }
-    routeBack = current;
+    routeBack = current === 'loading' ? 'intent' : current;
     fillRoute(r, pane);
     if (instant) {
       Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'route'; });
       setCurrent('route');
-    } else await go('route');
+    } else await go('route', null, current === 'loading' ? 1 : 0);
     if (current !== 'route') return;
     routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
   }
@@ -4190,7 +4263,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <button class="aim-tab" type="button" data-aim-mode="basic" aria-pressed="true">${aimIcon.clock}<span>Basic</span></button>
       <button class="aim-tab" type="button" data-aim-mode="personalized" aria-pressed="false">${aimIcon.upCircle}<span>Personalized</span></button>
     </div>`;
-  const stepTwoPanes = kind => `<div class="rt-pane" data-pane="gate" hidden>${WIRE.gate({})}</div>${uploadHTML('upload', true)}<div class="rt-pane" data-pane="s2" hidden>${selectHTML(kind)}</div>`;
+  const stepTwoPanes = kind => `<div class="rt-pane" data-pane="s2" hidden>${selectHTML(kind)}</div>`;
   function coverHTML() {
     return `<div class="rt-panes" data-writer="cover">
       <div class="rt-pane" data-pane="s1"><form class="rt-card aiw" data-mode="basic" novalidate aria-labelledby="cov-h">
@@ -4240,14 +4313,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         (navigator.clipboard && navigator.clipboard.readText ? navigator.clipboard.readText() : Promise.reject()).then(t => fill(t.trim() || SAMPLE_AD), () => fill(SAMPLE_AD));
         return;
       }
-      if (e.target.closest('.aiw-next') && needFilled(required())) cvUploaded ? toStepTwo() : showPane(root, 'gate', 1);
+      // step 2 picks one of the person's resumes: without one, the method screen makes it first and step 2 follows
+      if (e.target.closest('.aiw-next') && needFilled(required())) { const r = routeNow; cvUploaded ? toStepTwo() : askCv(() => backToRoute(r, toStepTwo)); }
     });
     form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
     form.addEventListener('submit', e => {
       e.preventDefault();
       if (needFilled(required()) && !flowOn()) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
-    initUpload(root.querySelector('[data-pane="upload"]'), { onDone: toStepTwo, onCancel: () => showPane(root, 'gate', -1) });
     const sel = root.querySelector('.sel');
     sel.addEventListener('click', e => {
       const it = e.target.closest('.sel-item'); if (it) return sel.querySelectorAll('.sel-item').forEach(x => x.setAttribute('aria-checked', String(x === it)));
@@ -5171,13 +5244,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
       </div>`, wNote('Guests reach this when processing is done, before the destination (Flow 2’s guest features). Their work is kept and opens right after sign-up.')),
-    gate: o => wShell('Add your resume', `<div class="wf-card wf-stack">
-        <h1 class="t-title">${o.title ? esc(o.title) + ' needs your resume' : 'Add your resume first'}</h1>${wLines(2)}
-        <div class="wf-grid" style="--cols:2">
-          <div class="wf-card"><h3 class="t-heading">Upload a resume</h3>${wLines(2)}<button class="wf-btn wf-btn--primary" type="button" data-wire="gate-upload">Upload</button></div>
-          <div class="wf-card"><h3 class="t-heading">Create a new one</h3>${wLines(2)}<button class="wf-btn" type="button" data-wire="gate-create">Create resume</button></div>
-        </div>
-      </div>`, wNote('Feature personalization: shown when the tool needs a CV and none was given earlier. Upload leads to Upload your resume; Create leads to onboarding.'), 520),
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
       const body = o.tool === 'career-coach'
         ? `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1><div class="wf-card">${wLines(3)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-row"><span class="wf-input wf-grow">Ask anything about your career</span><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`
@@ -5234,23 +5300,23 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
   const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, html: () => WIRE[id](opts) });
   function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
-  /* Wireframe buttons: the next flow step when a flow is running, else the obvious place.
-     OFF_PATH buttons take a side path the flow doesn't model (create a resume instead of uploading one, or upload from Latest resume), so they always do their own thing. */
-  const OFF_PATH = ['gate-create'];
+  /* Wireframe buttons: the next flow step when a flow is running, else the obvious place */
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-wire]');
     if (!b) return;
-    const w = b.dataset.wire, root = b.closest('.rt-panes');
+    const w = b.dataset.wire;
     if (w === 'result') return setResult(b.dataset.result);
     if (w === 'process') return processDone();
     if (w.startsWith('state-')) return stateAction(w);
-    if (w === 'gate-upload' && root) return showPane(root, 'upload', 1);  // the next pane: the flow bar follows it
-    if (flowNow && !OFF_PATH.includes(w) && flowNext()) return;
+    if (flowNow && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
-    else if (w === 'gate-create') go('create');
     else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
-    else if (w === 'tool') notYet(b, 'Working…', 'The result screen isn’t designed yet.');
+    else if (w === 'tool') {
+      // a tool's button opens what it makes (its feature's destination), when that exists
+      const f = routeNow && FEATURES.find(x => x.flow === 2 && x.path === routeNow.path), d = f && [].concat(typeof f.dest === 'function' ? f.dest() : f.dest)[0];
+      d ? d.run() : notYet(b, 'Working…', 'The result screen isn’t designed yet.');
+    }
     else if (w === 'upgrade') toast('Checkout isn’t part of this prototype.');
     else if (w === 'tpl') jumpEditor();
     else if (w === 'job') openRoute(findRoute('/jobs/job/1234/'));
@@ -5272,7 +5338,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const S = {
     wire: (label, path, id, opts = {}) => ({ label, wire: true, match: `route:${path}#${opts.pane || 'main'}`, run: () => openWire(path, label, id, opts) }),
     route: (label, path, pane) => ({ label, tag: pane === 'progress' ? 'progress' : '', match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
-    wireTool: (label, path, pane) => ({ label, wire: pane === 'main' || pane === 'gate', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
+    wireTool: (label, path, pane) => ({ label, wire: pane === 'main', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
+    // a tool's CV when there is none: the method screen, then the building screen, then the tool (askCv)
+    cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
+    cvBuild: path => ({ label: 'Building screen · your resume', match: 'screen:loading', run: () => { const r = findRoute(path); cvNext = () => openRoute(r); showBuilding('upload'); routeNow = r; markRoutes(); setHash(path); } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
@@ -5295,8 +5364,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  /* A tool that needs a CV: Add your resume and Upload your resume when there is none, then its own form */
-  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')]), findRoute(path).wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form */
+  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.cv(path), S.cvBuild(path)]), findRoute(path).wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
     process: [S.route('Tailoring', path, 'process')],
@@ -5323,7 +5392,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
       ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
-      .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
+      .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
 
     ...[['create-resume', 'resume', 'Setting up your resume', resumeOut()], ['create-cover', 'cover letter', 'Setting up your cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')]],
       ['create-website', 'website', 'Building your website', [S.dest('Website editor', '/dashboard/create-website/', 'site')]]]
@@ -5381,10 +5450,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* More options › Flows: the four flows with their stages; pick a feature (URL) to see what it puts in them, then Run */
   const pmFlows = document.getElementById('pm-flows'), flowPick = {};
+  // what the feature puts in the stages: its URL, then its own steps in order, coloured like the stage they fill
+  // (the goal screen and the shared processing state are the template's, shown by the chips above); with the CV
+  // it runs with (its own, or More options › CV)
   function pmOut(f) {
-    const steps = buildFlow(f).steps, lab = st => steps.filter(s => s.stage === st).map(s => s.label).join(' → ');
-    const rows = [['URL', `<code>${f.url || f.path}</code>`], ['Entry', lab('entry')], ['Feature', lab('prep')], ['Processing', lab('process')], ...(f.guest ? [['Then', 'Sign-up wall']] : []), ['Destination', lab('dest')]];
-    return `<dl class="pmf-what">${rows.filter(r => r[1]).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+    const had = cvUploaded;
+    if (f.cv !== undefined) cvUploaded = f.cv;
+    const all = buildFlow(f).steps;
+    cvUploaded = had;
+    const steps = all.filter(s => s.stage !== 'intent' && (s.stage !== 'state' || s.match.startsWith('route:/register/')));
+    return `<div class="pmf-what"><code>${f.url || f.path}</code><ol class="pmf-seq" aria-label="Steps">${steps.map(s => `<li data-st="${s.stage}" title="${STAGE[s.stage]}">${s.label}</li>`).join('')}</ol></div>`;
   }
   function renderFlowsPanel() {
     pmFlows.innerHTML = FLOW_T.map(T => {
@@ -5507,8 +5582,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (b && !b.disabled) return flowGo(+b.dataset.flowStep);
     if (e.target.closest('[data-flow-end]')) endFlow();
   });
-  /* After the building screen: the editor, unless the running flow has something before it (a failed result, a sign-up wall) */
+  /* After the building screen: the screen that asked for a CV (askCv), or the editor, unless the running flow
+     has something before it (a failed result, a sign-up wall) */
   function afterBuild() {
+    if (cvNext) { const then = cvNext; if (!cvUploaded) setCv(true); return then(); }
     if (flowNow && flowNow.steps.some(s => s.match === 'screen:loading')) {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
