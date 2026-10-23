@@ -2590,7 +2590,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.8">v2.8</div>
+<div class="proto-ver" aria-label="Prototype version 2.9">v2.9</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2972,11 +2972,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading'), route: document.getElementById('screen-route') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
-  let current = 'intent', routesReady = false, cvNext = null;  // cvNext: see askCv
+  let current = 'intent', routesReady = false, cvNext = null, cvDefer = null, cvMade = null, buildNext = null;  // see askCv and buildFor
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (s !== 'create' && s !== 'loading') cvNext = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
+    if (s !== 'create' && s !== 'loading') cvNext = cvDefer = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
+    if (s !== 'loading') buildNext = null;  // so does where a tool's building screen leads (buildFor)
     // a route URL only while it's on screen, or while the method screen gets the CV it asked for
     if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
     syncNote();
@@ -3398,13 +3399,41 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${BUSY_LABEL[id]}`;
     person = buildPerson(id, opts);
     if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
-    later(() => showBuilding(id), 450);
+    later(() => {
+      if (!cvNext || !cvDefer) return showBuilding(id);
+      // a tool that makes the resume in its own building screen (buildCv) gets it now, with no building screen here
+      const then = cvNext;
+      cvMade = { method: id, path: cvDefer.path };
+      if (!cvUploaded) setCv(true);
+      then();
+    }, 450);
   }
-  function showBuilding(id) {
-    document.getElementById('loading-h').textContent = 'Building your resume';
-    document.getElementById('loading-sub').textContent = SUBTITLE[id];
+  /* A tool's own building screen (buildCv routes), when the resume was only just given on the method screen:
+     it makes the resume and does the tool's job in one go, then goes straight to the result (done) */
+  const BUILD_AS = {
+    tailor: { head: 'Creating your resume', sub: 'We’re building your resume and tailoring it to the job post.', steps: ['Matching it to the job post', 'Tailoring your resume'], ready: 'Your tailored resume is ready!', done: () => openEditor() },
+    ats: { head: 'Analyzing your resume', sub: 'We’re building your resume and checking it the way an ATS reads it.', steps: ['Checking format and sections', 'Scoring keywords'], ready: 'Your ATS check is ready!', done: () => openTool('ats') }
+  };
+  let buildingAs = null;
+  const needsBuild = r => !!r.buildCv && (!cvUploaded || (!!cvMade && cvMade.path === r.path));
+  function buildFor(r) {
+    const method = cvMade ? cvMade.method : 'upload';
+    cvMade = null;
+    if (!cvUploaded) setCv(true);
+    buildNext = BUILD_AS[r.buildCv].done;
+    showBuilding(method, BUILD_AS[r.buildCv]);
+  }
+  // the tool's own button: the run's building step when a flow is running, else the building screen straight away
+  function runBuildFor(r) {
+    const i = flowNow ? flowNow.steps.findIndex((s, k) => k > flowAt && s.match === 'screen:loading') : -1;
+    if (i >= 0) flowGo(i); else buildFor(r);
+  }
+  function showBuilding(id, as) {
+    buildingAs = as || null;
+    document.getElementById('loading-h').textContent = as ? as.head : 'Building your resume';
+    document.getElementById('loading-sub').textContent = as ? as.sub : SUBTITLE[id];
     screens.loading.querySelector('.ld-badge').classList.remove('is-on');
-    document.getElementById('loading-steps').innerHTML = STEPS[id].map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
+    document.getElementById('loading-steps').innerHTML = (as ? [STEPS[id][0], ...as.steps] : STEPS[id]).map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
     const paper = screens.loading.querySelector('.ld-paper');
     paper.classList.remove('is-done');
     paper.querySelectorAll('.ld-group').forEach(g => g.classList.remove('is-filled'));
@@ -3504,7 +3533,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         el.animate([{ opacity: 0, transform: 'translateY(6px) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard });
       });
     };
-    swapText(h, 'Your resume is ready!');
+    swapText(h, buildingAs ? buildingAs.ready : 'Your resume is ready!');
     swapText(sub, `Nice work${person.first ? ', ' + person.first : ''}. That was the hardest part.`);
     badge.classList.add('is-on');
     if (reduce) { badge.style.opacity = 1; later(() => { badge.style.opacity = ''; afterBuild(); }, 900); return; }
@@ -3922,7 +3951,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
-        ...(t === 'tailor-resume' ? { html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t) }) })),
+        ...(t === 'tailor-resume' ? { buildCv: 'tailor', html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats' } : {}) }) })),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -3932,7 +3961,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, buildCv: 'tailor', html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
@@ -3964,16 +3993,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Screens that work on a resume ask for one first. */
   let cvUploaded = false, cvName = '';
   /* No CV yet: the method screen gets one (any of its methods), the building screen makes it, and then
-     `then` opens the screen that asked (afterBuild) instead of the editor */
-  function askCv(then, instant) {
-    cvNext = then;
+     `then` opens the screen that asked (afterBuild) instead of the editor. A route with buildCv (defer) gets it
+     straight from the method screen instead, and makes it later in its own building screen (startCreation, buildFor). */
+  function askCv(then, instant, defer) {
+    cvNext = then; cvDefer = defer || null;
     if (!instant) return go('create');
     renderCreate();
     Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'create'; });
     setCurrent('create');
   }
   /* A tool that needs a CV and has none: the method screen first, under the tool's URL, then the tool */
-  function askCvFor(r, instant) { routeNow = r; markRoutes(); setHash(r.path); askCv(() => openRoute(r), instant); }
+  function askCvFor(r, instant) { routeNow = r; markRoutes(); setHash(r.path); askCv(() => openRoute(r), instant, r.buildCv ? r : null); }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
   async function backToRoute(r, then) {
     await go('route', null, 1);
@@ -3983,6 +4013,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
+    if (!on) cvMade = null;
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
     if (current === 'dashboard') {  // the menu's resume group follows the CV
@@ -4411,6 +4442,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       e.preventDefault();
       check();
       if (go.disabled) return;
+      // the resume was only just given on the method screen (or there is none): one building screen makes and tailors it
+      if (needsBuild(r)) return runBuildFor(r);
       // the tailoring is this route's next pane: a running flow's bar moves on, and Close comes back to what was typed
       flowTo(`route:${r.path}#process`);
       showPane(root, 'process', 1);
@@ -5308,6 +5341,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (w === 'result') return setResult(b.dataset.result);
     if (w === 'process') return processDone();
     if (w.startsWith('state-')) return stateAction(w);
+    if (w === 'tool' && routeNow && needsBuild(routeNow)) return runBuildFor(routeNow);  // Analyse resume right after the method screen
     if (flowNow && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
@@ -5341,6 +5375,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     wireTool: (label, path, pane) => ({ label, wire: pane === 'main', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
     // a tool's CV when there is none: the method screen, then the building screen, then the tool (askCv)
     cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
+    cvMake: path => ({ label: 'Building screen · ' + BUILD_AS[findRoute(path).buildCv].head, match: 'screen:loading', run: () => buildFor(findRoute(path)) }),
     cvBuild: path => ({ label: 'Building screen · your resume', match: 'screen:loading', run: () => { const r = findRoute(path); cvNext = () => openRoute(r); showBuilding('upload'); routeNow = r; markRoutes(); setHash(path); } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
@@ -5364,12 +5399,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form */
-  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.cv(path), S.cvBuild(path)]), findRoute(path).wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form.
+     A buildCv tool skips that building screen: its own (cvMake) comes after the form, as its processing (cvRun). */
+  const toolPrep = (path, label) => () => {
+    const r = findRoute(path), ask = cvUploaded ? [] : r.buildCv ? [S.cv(path)] : [S.cv(path), S.cvBuild(path)];
+    return [...ask, r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+  };
+  const cvRun = path => ({ process: () => cvUploaded ? [] : [S.cvMake(path)] });
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
-    process: [S.route('Tailoring', path, 'process')],
-    state: [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }]
+    process: () => cvUploaded ? [S.route('Tailoring', path, 'process')] : [S.cvMake(path)],
+    state: () => cvUploaded ? [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }] : []
   });
   const signUp = S.auth('Sign up', 'signup');
   const landing = what => S.auth('Sign up · ' + what, 'signup', `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
@@ -5390,7 +5430,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
-      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
+      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), ...cvRun('/dashboard/analyse-resume/'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
       .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
 
@@ -5406,7 +5446,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
     { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], process: [S.build('linkedin')], dest: resumeOut(), verb: 'Importing your profile', noun: 'resume', fail: 'We couldn’t read that profile' },
     ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
-      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
+      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : r.buildCv ? cvRun(r.path) : {}) }; }),
     { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
     { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
@@ -5435,14 +5475,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ];
   /* A feature's run through its flow's stages */
   function buildFlow(f) {
-    const T = FLOW_T[f.flow - 1], has = st => T.stages.includes(st), list = x => [].concat(typeof x === 'function' ? x() : x || []);
+    // process and state may depend on the CV (functions); when they give nothing, the shared ones stand in
+    const T = FLOW_T[f.flow - 1], has = st => T.stages.includes(st), list = x => [].concat(typeof x === 'function' ? x() : x || []), or = (a, b) => a.length ? a : b;
     const at = (stage, steps) => list(steps).map(s => ({ ...s, stage }));
     return { n: f.flow, title: f.title, f, steps: [
       ...at('entry', f.entry),
       ...(has('intent') ? at('intent', S.screen('Goal screen', 'intent')) : []),
       ...(has('prep') ? at('prep', f.prep) : []),
-      ...(has('process') ? at('process', f.process || S.process(f)) : []),
-      ...(has('state') ? at('state', [...(f.state || [S.state(f)]), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
+      ...(has('process') ? at('process', or(list(f.process), [S.process(f)])) : []),
+      ...(has('state') ? at('state', [...or(list(f.state), [S.state(f)]), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
       ...at('dest', f.dest)
     ] };
   }
@@ -5586,11 +5627,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      has something before it (a failed result, a sign-up wall) */
   function afterBuild() {
     if (cvNext) { const then = cvNext; if (!cvUploaded) setCv(true); return then(); }
+    const next = buildNext; buildNext = null;
     if (flowNow && flowNow.steps.some(s => s.match === 'screen:loading')) {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
     }
-    openEditor();
+    if (next) next(); else openEditor();
   }
   /* Straight into the editor (a returning user, or a flow step) */
   function jumpEditor() {
