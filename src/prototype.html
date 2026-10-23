@@ -2597,7 +2597,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.10">v2.10</div>
+<div class="proto-ver" aria-label="Prototype version 2.11">v2.11</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3941,31 +3941,64 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
   const latest = tool => ({ run: () => !cvUploaded ? openDocs() : tool ? openTool(tool) : openEdit() });
-  // Tailor resume's headline and subheadline above its card, for the setup and the tailoring (route.head)
-  const TLD_HEAD = ['Tailoring your resume', 'This takes about 30 seconds.'];
-  const TRL_HEAD = {
-    url: { main: ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'], process: TLD_HEAD },
-    job: { main: ['Tailor it to this job', 'Pick how far the AI should go. You can edit everything after.'], process: TLD_HEAD }
+  /* The headline and subheadline above the card of every personalization, processing and processing-state screen
+     (route.head, shown by routeHead): the question the screen asks, or what is happening. The shared wireframes'
+     ones depend on the feature (o.f) and are looked up by their WIRE id (wireRoute). */
+  const HEADS = {
+    upload: ['Let’s bring in your resume', 'We’ll move it onto a fresh template, ready to edit.'],
+    uploading: ['Uploading your resume', 'This takes a few seconds.'],
+    linkedin: ['Let’s bring in your LinkedIn profile', 'We’ll turn it into a resume, ready to edit.'],
+    aiResume: ['What job are you going for?', 'Tell the AI a little about you and it drafts your resume.'],
+    experience: ['What did you do in this job?', 'Give the AI a few details and it writes your work experience.'],
+    objective: ['What role are you aiming for?', 'The AI writes a short resume objective for it.'],
+    cover: ['Which job are you applying for?', 'The AI writes a cover letter that fits the job post.'],
+    coverCv: ['Which resume should we use?', 'The AI picks details from it to personalize your letter.'],
+    interview: ['Which job is the interview for?', 'Get the questions you’re likely to hear, with model answers.'],
+    interviewCv: ['Which resume should we use?', 'The AI uses it to fit the questions to you.'],
+    resign: ['Ready to move on?', 'The AI drafts a polite resignation letter for you.'],
+    tailor: ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'],
+    tailorJob: ['Tailor it to this job', 'Pick how far the AI should go. You can edit everything after.'],
+    tailoring: ['Tailoring your resume', 'This takes about 30 seconds.'],
+    tailored: { ok: ['Your tailored resume is ready', 'Open it in the editor to check every change.'],
+      fail: ['That job post didn’t work', 'Check the link, or paste the job post instead.'],
+      error: ['Tailoring didn’t finish', 'It broke on our side. Nothing you entered is lost.'] },
+    tool: {
+      'analyse-resume': ['Which resume should we check?', 'We’ll read it the way an ATS does and show you what to fix.'],
+      'rewrite-resume': ['How should we rewrite it?', 'Pick a tone and the AI rewrites your resume in it.'],
+      'tailor-resume': ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'],
+      'translate-resume': ['Which language do you need?', 'We’ll make a translated copy and keep your original.'],
+      'recruiter-feedback': ['What job are you aiming for?', 'A recruiter reads your resume and tells you what to improve.'],
+      'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
+      'career-coach': ['What would you like to ask?', 'Your career coach answers with your resume in mind.'],
+      'proofreading': ['Which resume should we proofread?', 'We’ll catch typos and grammar slips before a recruiter does.']
+    },
+    templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
+    'jobs-matcher': ['Find jobs that fit you', 'Tell us what you’re after and we’ll match open roles to your resume.'],
+    'cm-onboarding': ['Where do you want your career to go?', 'A few questions, then we map the roles your experience can lead to.'],
+    process: o => [o.f.verb, 'This takes a few seconds.'],
+    state: o => stateView(o.f).slice(0, 2),
+    wall: () => { const noun = (flowNow && flowNow.f.noun) || 'resume'; return [`Sign up to see your ${noun}`, `It’s free, and your ${noun} opens right after.`]; }
   };
+  const TRL_HEAD = { url: { main: HEADS.tailor, process: HEADS.tailoring }, job: { main: HEADS.tailorJob, process: HEADS.tailoring } };
   const ROUTES = [
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
-    ...[['resume', 'New resume'], ['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
-    { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', html: aiModalHTML, init: initAiModal },
-    { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
-    { group: '4 · Generate with AI', path: '/ai/resume/experience/', title: 'Generate work experience', html: () => aigHTML('experience'), init: initAig },
-    { group: '4 · Generate with AI', path: '/ai/resume/general/', title: 'Generate resume objective', html: () => aigHTML('objective'), init: initAig },
-    { group: '4 · Generate with AI', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', html: coverHTML, init: initWriter },
-    { group: '4 · Generate with AI', path: '/ai/resignation/', title: 'Resignation letter', html: resignHTML, init: initResign },
-    { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', html: interviewHTML, init: initWriter },
-    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: ['Let’s bring in your resume', 'We’ll move it onto a fresh template, ready to edit.'] } },
-    { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
+    ...[['resume', 'New resume'], ['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
+    { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', head: { main: HEADS.aiResume }, html: aiModalHTML, init: initAiModal },
+    { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', head: { main: HEADS.experience }, html: () => aigHTML('experience'), init: initAig },
+    { group: '4 · Generate with AI', path: '/ai/resume/experience/', title: 'Generate work experience', head: { main: HEADS.experience }, html: () => aigHTML('experience'), init: initAig },
+    { group: '4 · Generate with AI', path: '/ai/resume/general/', title: 'Generate resume objective', head: { main: HEADS.objective }, html: () => aigHTML('objective'), init: initAig },
+    { group: '4 · Generate with AI', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', head: { main: HEADS.cover, s1: HEADS.cover, s2: HEADS.coverCv }, html: coverHTML, init: initWriter },
+    { group: '4 · Generate with AI', path: '/ai/resignation/', title: 'Resignation letter', head: { main: HEADS.resign }, html: resignHTML, init: initResign },
+    { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', head: { main: HEADS.interview, s1: HEADS.interview, s2: HEADS.interviewCv }, html: interviewHTML, init: initWriter },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: HEADS.upload, progress: HEADS.uploading } },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
         ...(t === 'tailor-resume' ? { buildCv: 'tailor', head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } }
-          : { wire: true, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats', head: { main: ['Which resume should we check?', 'We’ll read it the way an ATS does and show you what to fix.'] } } : {}) }) })),
+          : { wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats' } : {}) }) })),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -3973,12 +4006,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => openEdit() },
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
-    { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
+    { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, head: { main: HEADS['jobs-matcher'] }, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
     { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, buildCv: 'tailor', head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
-    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
+    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, head: { main: HEADS['cm-onboarding'] }, html: () => WIRE['cm-onboarding']() },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
   let routeNow = null, routeBack = 'intent';
@@ -4048,7 +4081,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     routeHead(r, first, true);
     const item = el.querySelector(':scope > .rt-item');
     if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
-    if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onDone: () => startFromUpload(item), onCancel: closeRoute });
+    if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onDone: () => startFromUpload(item), onCancel: closeRoute, onState: st => routeHead(r, st === 'progress' ? 'progress' : 'upload') });
     if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
   }
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
@@ -4085,10 +4118,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     go(routeBack === 'create' ? 'create' : 'intent');
   }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
-  /* The route screen's headline and subheadline for the pane on screen (route.head[pane]: [headline, subheadline]);
-     a new one cross-fades in place, like the onboarding screens' */
-  function routeHead(r, pane, instant) {
-    const head = screens.route.querySelector(':scope > .rt-head'), t = r && r.head && r.head[pane];
+  /* The route screen's headline and subheadline for the pane on screen (route.head[pane]: [headline, subheadline],
+     or a function giving them); a step inside a pane without its own (nested) keeps the pane's */
+  function routeHead(r, pane, instant, nested) {
+    const h = r && r.head && r.head[pane], t = typeof h === 'function' ? h() : h;
+    if (!t && nested) return;
+    setRouteHead(t, instant);
+  }
+  // a new headline cross-fades in place, like the onboarding screens'
+  function setRouteHead(t, instant) {
+    const head = screens.route.querySelector(':scope > .rt-head');
     if (!head) return;
     head.hidden = !t;
     if (!t) return;
@@ -4103,7 +4142,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function showPane(root, name, dir = 1) {
     const from = root.querySelector(':scope > .rt-pane:not([hidden])'), to = root.querySelector(`:scope > [data-pane="${name}"]`);
     if (!to || from === to) return;
-    if (root.matches('#screen-route > .rt-item')) routeHead(routeNow, name);
+    if (screens.route.contains(root)) routeHead(routeNow, name, false, !root.matches('#screen-route > .rt-item'));
     scrollToTop();
     if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); syncNote(); return; }
     Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
@@ -4575,6 +4614,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       pics.forEach((p, k) => p.classList.toggle('is-on', k === 3));
       bars.forEach(b => { b.classList.add('is-done'); b.firstElementChild.removeAttribute('style'); });
       say(...TLD_END[procResult]);
+      if (live()) setRouteHead(HEADS.tailored[procResult]);
       wait.hidden = true; cont.hidden = !ok; retry.hidden = ok; x.hidden = ok;
       hideNote();
       flowSeen('tld-end');
@@ -4582,6 +4622,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // a failed run stops while it reads the job post
     function run() {
       card.dataset.state = 'run';
+      if (live()) setRouteHead(HEADS.tailoring);
       wait.hidden = false; cont.hidden = retry.hidden = x.hidden = true;
       const stopAt = procResult === 'ok' ? TLD_STEPS.length : 1;
       const tick = step => {
@@ -4674,13 +4715,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     progress: () => `<h1>${rtIc(RT_IC.loader)}<span>Uploading your resume...</span></h1><div class="rt-info upl-info">${rtIc(RT_IC.info)}<span>If your resume does not get imported correctly, try uploading it in a different file format (e.g. DOCX).</span></div><div class="upl-wait" aria-hidden="true"></div><p class="upl-quote">Use your wand to cast some wicked spells Harry!<br>-Hermiona</p><div class="upl-foot"><button class="rt-btn rt-coral upl-cont" type="submit" data-upl="continue">Continue</button></div>`
   };
   const uploadHTML = (name, hidden) => `<div class="rt-pane" data-pane="${name}"${hidden ? ' hidden' : ''}><div class="rt-card upl" data-state="start">${UPL.start()}</div></div>`;
-  function initUpload(pane, { onDone, onCancel }) {
+  function initUpload(pane, { onDone, onCancel, onState }) {
     if (!pane) return;
     const card = pane.querySelector('.upl'), input = document.createElement('input');
     Object.assign(input, { type: 'file', hidden: true, accept: '.docx,.odt,.html,.htm,.rtf,.txt,.pdf' });
     pane.appendChild(input);
     const setState = st => {
       if (st === 'progress') flowSeen('progress');  // uploading is the flow's data processing
+      if (onState) onState(st);
       morphHeight(card, () => { card.dataset.state = st; card.innerHTML = UPL[st](); });
       if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
     };
@@ -5290,6 +5332,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Buttons carry data-wire; in a flow they move it on, otherwise they do the obvious thing. */
   const wLines = (n = 2) => `<div class="wf-lines">${'<i class="wf-line"></i>'.repeat(n)}</div>`;
   const wField = (label, value = '', kind = '') => `<div class="wf-field">${label}<span class="wf-input${kind ? ' wf-input--' + kind : ''}">${value}</span></div>`;
+  // the processing state for the result picked in More options › Result: [headline, subheadline, alert, buttons]
+  const stateView = f => { const noun = f.noun || 'result';
+    return procResult === 'ok' ? [`Your ${noun} ${/s$/.test(noun) ? 'are' : 'is'} ready`, 'Everything went through.', 'wf-alert--success', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-next">Continue</button>']
+      : procResult === 'fail' ? [f.fail || 'We couldn’t use what you gave us', 'The input can’t be used (an unreadable file, a private profile, an empty job ad). Fix it and try again.', 'wf-alert--error', '<button class="wf-btn" type="button" data-wire="state-retry">Change the input</button>']
+      : ['Something went wrong', 'It broke on our side. Nothing you entered is lost.', 'wf-alert--error', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-again">Try again</button>']; };
   const wShell = (label, body, notes = '', width = 440) => `<div class="wf wf-screen rt-wire" style="width:min(100%,${width}px)"><span class="wf-screen-label">Wireframe · ${label}</span>${body}${notes}</div>`;
   const wNote = text => `<template class="wf-note-src">${text}</template>`;  // shown by syncNote, outside the screen
   const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
@@ -5304,7 +5351,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   const WIRE = {
     wall: () => wShell('Sign-up wall', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Sign up to see your resume</h1>${wLines(2)}
+        ${wLines(1)}
         ${wSocial()}${wField('Email', 'you@example.com')}${wField('Password', '••••••••')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
       </div>`, wNote('Guests reach this when processing is done, before the destination (Flow 2’s guest features). Their work is kept and opens right after sign-up.')),
@@ -5314,29 +5361,26 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         : `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
     'jobs-matcher': () => wShell('Job matcher', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Find jobs that fit you</h1>${wLines(2)}
+        ${wLines(1)}
         ${wField('Job title', 'Product designer')}${wField('Location', 'Remote · Europe', 'select')}${wField('Experience level', 'Mid-level', 'select')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="tool">Show matching jobs</button>
       </div>`, wNote('Find jobs that fit me: the matcher reads the resume (when there is one) and asks only what it can’t tell. Result: open roles with a match score. Not designed yet.'), 520),
     'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
         <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
-        <h1 class="t-title">Where do you want your career to go?</h1>${wLines(3)}${wField('Current job title', '')}
+        ${wLines(2)}${wField('Current job title', '')}
         <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
       </div>`, wNote('Career Map’s feature personalization (Flow 2): its own onboarding. Design will come later; this is a stand-in.'), 520),
     cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640),
     /* The flow stages every feature shares (see FLOW_T): one screen each, only the wording changes */
     process: o => wShell('Data processing', `<div class="wf-card wf-stack">
-        <h1 class="t-title">${o.f.verb}…</h1><div class="wf-progress" style="--value:55%"></div>
+        <div class="wf-progress" style="--value:55%"></div>
         <div class="wf-stack wf-gap-sm">${(o.f.psteps || ['Reading what you gave us', 'Working on it', 'Finishing up']).map((t, i) => `<span class="wf-check${i ? '' : ' wf-check--on'}">${t}</span>`).join('')}</div>
-        <div class="wf-row wf-spread"><span class="t-small">This takes a few seconds.</span><button class="wf-btn wf-btn--ghost wf-btn--sm" type="button" data-wire="process">Skip</button></div>
+        <div class="wf-row wf-spread"><span></span><button class="wf-btn wf-btn--ghost wf-btn--sm" type="button" data-wire="process">Skip</button></div>
       </div>`, wNote(`Data processing (Flows 1–3): one screen for every feature; only the wording and the steps change. It moves on by itself; what follows depends on More options › Result.`), 520),
-    state: o => { const f = o.f, r = procResult, noun = f.noun || 'result';
-      const view = r === 'ok' ? [`Your ${noun} ${/s$/.test(noun) ? 'are' : 'is'} ready`, 'wf-alert--success', 'Everything went through.', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-next">Continue</button>']
-        : r === 'fail' ? [f.fail || 'We couldn’t use what you gave us', 'wf-alert--error', 'The input can’t be used (an unreadable file, a private profile, an empty job ad). Fix it and try again.', '<button class="wf-btn" type="button" data-wire="state-retry">Change the input</button>']
-        : ['Something went wrong', 'wf-alert--error', 'It broke on our side. Nothing you entered is lost.', '<button class="wf-btn wf-btn--primary" type="button" data-wire="state-again">Try again</button>'];
+    state: o => { const r = procResult, view = stateView(o.f);
       return wShell('Processing state', `<div class="wf-card wf-stack">
         <div class="wf-row">${[['ok', 'Completed'], ['fail', 'Failed'], ['error', 'Error']].map(([k, l]) => `<button class="wf-btn wf-btn--sm${k === r ? ' wf-btn--primary' : ' wf-btn--ghost'}" type="button" data-wire="result" data-result="${k}" aria-pressed="${k === r}">${l}</button>`).join('')}</div>
-        <h1 class="t-title">${view[0]}</h1><div class="wf-alert ${view[1]}">${view[2]}</div>${wLines(1)}
+        <div class="wf-alert ${view[2]}">${['Completed', 'Failed', 'Error'][['ok', 'fail', 'error'].indexOf(r)]}</div>${wLines(2)}
         <div class="wf-row">${view[3]}</div>
       </div>`, wNote('Processing state (Flows 1–3): Completed goes straight on to the destination (this screen shows only when you jump to it); Failed sends the person back to fix the input; Error lets them try again. Pick one under More options › Result.'), 520); },
     dest: o => wShell(o.title, o.kind === 'list'
@@ -5362,7 +5406,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="wf-grid" style="--cols:4">${['Saved', 'Applied', 'Interview', 'Offer'].map((c, i) => `<div class="wf-stack wf-gap-sm"><span class="t-label">${c}</span><div class="wf-card">${wLines(2)}</div>${i < 2 ? `<div class="wf-card">${wLines(2)}</div>` : ''}</div>`).join('')}</div></div>`, wNote('Job Tracker (/jobs/job-tracker/): every application and its status. Not designed yet.'), 760)
   };
   /* A wireframe opened as its own route screen (keeps the URL it belongs to) */
-  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, html: () => WIRE[id](opts) });
+  const wireRoute = (path, title, id, opts = {}) => ({ path, title, wire: true, pane: opts.pane, html: () => WIRE[id](opts),
+    head: HEADS[id] ? { [opts.pane || 'main']: () => (typeof HEADS[id] === 'function' ? HEADS[id](opts) : HEADS[id]) } : undefined });
   function openWire(path, title, id, opts) { openRoute(wireRoute(path, title, id, opts)); }
   /* Wireframe buttons: the next flow step when a flow is running, else the obvious place */
   document.addEventListener('click', e => {
@@ -5623,7 +5668,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     procResult = r;
     document.querySelectorAll('[data-result]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.result === r)));
     const card = current === 'route' && screens.route.querySelector('[data-pane="state"]');
-    if (card) { card.innerHTML = WIRE.state({ f: flowNow ? flowNow.f : { noun: 'result' } }); syncNote(); }
+    if (card) { card.innerHTML = WIRE.state({ f: flowNow ? flowNow.f : { noun: 'result' } }); syncNote(); routeHead(routeNow, 'state'); }
     const tld = current === 'route' && screens.route.querySelector('.tld:not([data-state="run"])');
     if (tld) tld._end();
     markMore();
