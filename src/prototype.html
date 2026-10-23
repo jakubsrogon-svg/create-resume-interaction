@@ -1226,6 +1226,9 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
    Sizes and colours inside them are measured from the 2x screenshots, so they don't follow the
    onboarding's height-aware spacing. */
 .rt-item { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
+/* A route screen in a flow (setup, tailoring, upload) has the onboarding screens' headline and subheadline
+   (route.head), so its card starts where their content does and nothing jumps between the screens */
+#screen-route > .rt-head:not([hidden]) + .rt-item { margin-top: var(--sp-section); }
 
 /* Create Resume with AI (/dashboard/create-ai-resume/) */
 .aim {
@@ -2497,6 +2500,10 @@ body.has-note .au-main { padding-bottom: 96px; }
   .logo svg { width: 120px; }
   .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
   .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
+  /* headlines and subheadlines take one or two lines here: two are kept for all (a short headline sits on its
+     subheadline), so the content below starts at the same place on every screen */
+  .page-head h1 { display: grid; align-content: end; min-height: calc(2em * 1.17); }
+  .page-head p { min-height: calc(2 * 24px); }
   .intent-grid, .intent-grid:not(.is-list) { grid-template-columns: 1fr; gap: 12px; }
   .irow { padding: 14px; gap: 14px; }
   /* Goal cards as rows (Figma's mobile card): a 96px picture on the left, its 156px stage scaled to 72px */
@@ -2590,7 +2597,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.9">v2.9</div>
+<div class="proto-ver" aria-label="Prototype version 2.10">v2.10</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3934,6 +3941,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
   const latest = tool => ({ run: () => !cvUploaded ? openDocs() : tool ? openTool(tool) : openEdit() });
+  // Tailor resume's headline and subheadline above its card, for the setup and the tailoring (route.head)
+  const TLD_HEAD = ['Tailoring your resume', 'This takes about 30 seconds.'];
+  const TRL_HEAD = {
+    url: { main: ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'], process: TLD_HEAD },
+    job: { main: ['Tailor it to this job', 'Pick how far the AI should go. You can edit everything after.'], process: TLD_HEAD }
+  };
   const ROUTES = [
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
@@ -3946,12 +3959,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', html: coverHTML, init: initWriter },
     { group: '4 · Generate with AI', path: '/ai/resignation/', title: 'Resignation letter', html: resignHTML, init: initResign },
     { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', html: interviewHTML, init: initWriter },
-    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: ['Let’s bring in your resume', 'We’ll move it onto a fresh template, ready to edit.'] } },
     { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
-        ...(t === 'tailor-resume' ? { buildCv: 'tailor', html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats' } : {}) }) })),
+        ...(t === 'tailor-resume' ? { buildCv: 'tailor', head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } }
+          : { wire: true, html: toolWire(t), ...(t === 'analyse-resume' ? { buildCv: 'ats', head: { main: ['Which resume should we check?', 'We’ll read it the way an ATS does and show you what to fix.'] } } : {}) }) })),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -3961,7 +3975,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, buildCv: 'tailor', html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, buildCv: 'tailor', head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
@@ -4029,9 +4043,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const el = screens.route, main = r.pane || 'main';
     const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
-    el.innerHTML = `<div class="rt-item rt-panes">${r.upload ? uploadHTML('upload', first !== 'upload') : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
+    el.innerHTML = `<div class="page-head rt-head" hidden><h1></h1><p></p></div><div class="rt-item rt-panes">${r.upload ? uploadHTML('upload', first !== 'upload') : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
     el.setAttribute('aria-label', r.title);
-    const item = el.firstElementChild;
+    routeHead(r, first, true);
+    const item = el.querySelector(':scope > .rt-item');
     if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
     if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onDone: () => startFromUpload(item), onCancel: closeRoute });
     if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
@@ -4070,9 +4085,25 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     go(routeBack === 'create' ? 'create' : 'intent');
   }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
+  /* The route screen's headline and subheadline for the pane on screen (route.head[pane]: [headline, subheadline]);
+     a new one cross-fades in place, like the onboarding screens' */
+  function routeHead(r, pane, instant) {
+    const head = screens.route.querySelector(':scope > .rt-head'), t = r && r.head && r.head[pane];
+    if (!head) return;
+    head.hidden = !t;
+    if (!t) return;
+    const [h1, p] = head.children;
+    if (h1.textContent === t[0] && p.textContent === t[1]) return;
+    if (instant || reduce) { h1.textContent = t[0]; p.textContent = t[1]; return; }
+    [[h1, t[0]], [p, t[1]]].forEach(([el, text]) => el.textContent !== text && play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}).then(() => {
+      el.textContent = text;
+      play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel()));
+    }));
+  }
   function showPane(root, name, dir = 1) {
     const from = root.querySelector(':scope > .rt-pane:not([hidden])'), to = root.querySelector(`:scope > [data-pane="${name}"]`);
     if (!to || from === to) return;
+    if (root.matches('#screen-route > .rt-item')) routeHead(routeNow, name);
     scrollToTop();
     if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); syncNote(); return; }
     Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
