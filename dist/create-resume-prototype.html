@@ -2571,7 +2571,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.7">v2.7</div>
+<div class="proto-ver" aria-label="Prototype version 2.7.1">v2.7.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3846,7 +3846,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      Product screens recreated from screenshots, each at its own URL and listed under More options › Screens.
      They are full screens in the flow (same logo bar, background and top line as the goal and method
      screens), not pop-ups. To add one: write its markup function (and an init for its behaviour), then
-     add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
+     add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first;
+     cvAfter = it shows straight away and asks for the resume when it moves on (Tailor resume's Tailor Now). */
   const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
   const latest = tool => ({ run: () => !cvUploaded ? openDocs() : tool ? openTool(tool) : openEdit() });
@@ -3867,7 +3868,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
-        ...(t === 'tailor-resume' ? { html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t) }) })),
+        ...(t === 'tailor-resume' ? { cvAfter: true, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t) }) })),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -3877,7 +3878,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, cvAfter: true, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
@@ -3892,8 +3893,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
     ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
-  /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
-     ATS check ask for a resume first when there is none) */
+  /* A goal card opens its feature's first screen: Build the method screen, the others their tool (the ATS check
+     asks for a resume first when there is none, Tailor when Tailor Now is pressed) */
   function pickGoal(id, el) {
     flowGoal(id);
     if (id === 'build') return go('create', el);
@@ -3918,17 +3919,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function fillRoute(r, pane) {
     // a tool that needs a CV: Add your resume (gate) → Upload your resume → the tool; pane picks where to start
+    // (cvAfter: the tool first, and its own button leads to the gate when there's no CV)
     // the main pane is "main", or the flow stage a generic wireframe stands for (process, state, dest);
     // more = panes that follow the main one ({ name: markup function }, e.g. Tailor resume's "process")
     const el = screens.route, cv = r.needsCv || r.upload, main = r.pane || 'main';
-    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : main);
+    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !r.cvAfter && !cvUploaded ? 'gate' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
     el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
     el.setAttribute('aria-label', r.title);
-    const item = el.firstElementChild;
-    if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
+    const item = el.firstElementChild, mainEl = item.querySelector(`[data-pane="${main}"]`)?.firstElementChild;
+    if (r.init) r.init(mainEl, r);
     if (cv) initUpload(item.querySelector('[data-pane="upload"]'), {
-      onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, main, 1),
+      onDone: r.upload ? () => startFromUpload(item) : r.cvAfter ? () => mainEl._cvDone() : () => showPane(item, main, 1),
       onCancel: r.needsCv ? () => showPane(item, 'gate', -1) : closeRoute
     });
     if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
@@ -4334,15 +4336,22 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (e.target.name === 'post') form.querySelector('.trl-count').textContent = `${e.target.value.length}/${TRL_POST_MAX}`;
       check();
     });
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      check();
-      if (go.disabled) return;
+    function tailor() {
+      // without a resume, Add your resume and Upload your resume come first (the flow bar follows the panes)
+      if (!cvUploaded) return showPane(root, 'gate', 1);
       // the tailoring is this route's next pane: a running flow's bar moves on, and Close comes back to what was typed
       flowTo(`route:${r.path}#process`);
       showPane(root, 'process', 1);
       root.querySelector('.tld')._run();
-    });
+    }
+    form.addEventListener('submit', e => { e.preventDefault(); check(); if (!go.disabled) tailor(); });
+    // back from Upload your resume: tailor what was filled in, or show the form when it's still empty
+    form._cvDone = () => {
+      check();
+      if (!go.disabled) return tailor();
+      flowTo(`route:${r.path}#main`);
+      showPane(root, 'main', 1);
+    };
     initTld(root.querySelector('.tld'), r.path);
     check();
   }
@@ -5244,10 +5253,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (w === 'result') return setResult(b.dataset.result);
     if (w === 'process') return processDone();
     if (w.startsWith('state-')) return stateAction(w);
+    if (w === 'gate-upload' && root) return showPane(root, 'upload', 1);  // the next pane: the flow bar follows it
     if (flowNow && !OFF_PATH.includes(w) && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
-    else if (w === 'gate-upload') showPane(root, 'upload', 1);
     else if (w === 'gate-create') go('create');
     else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
     else if (w === 'tool') notYet(b, 'Working…', 'The result screen isn’t designed yet.');
@@ -5296,7 +5305,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
   /* A tool that needs a CV: Add your resume and Upload your resume when there is none, then its own form */
-  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')]), findRoute(path).wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+  const toolPrep = (path, label) => () => {
+    const r = findRoute(path), ask = cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')];
+    const tool = r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main');
+    return r.cvAfter ? [tool, ...ask] : [...ask, tool];
+  };
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
     process: [S.route('Tailoring', path, 'process')],
