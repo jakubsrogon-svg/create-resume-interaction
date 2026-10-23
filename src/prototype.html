@@ -2215,6 +2215,60 @@ button.tl-chk-h { cursor: pointer; border-radius: 4px; }
   .tl-person { min-width: 0; flex-basis: 100%; }
 }
 
+/* ---------- Select your template (/dashboard/create-resume/) ----------
+   Recreated from Figma (Kickresume 3.0 › 61941:33517). A page of its own (its own top bar with the logo and ×,
+   a grey wash with the Kickresume symbol faint in it), so like Sign up it replaces the logo bar and the page
+   (APPS.tpl). Sizes are Figma's (a 1440px-wide frame; phones from its 375px one). */
+body[data-screen="tpl"] .stage { padding-right: 0; }  /* the page runs to the window's edge, under the side rail */
+.tps { position: relative; margin-inline: -16px; min-height: calc(var(--vh) * 100); padding-bottom: 64px; overflow: clip; background: var(--kr-white); color: var(--kr-grey-100); }
+body.has-note .tps, body:has(.flow-bar:not([hidden])) .tps { padding-bottom: 112px; }  /* scrolls clear of the flow bar */
+:where(.tps) :where(button) { font: inherit; color: inherit; }
+.tps button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+/* the frame's wash (#f4f7f8 to white over its 900px) and the symbol at 60%, fading out as it goes down */
+.tps-bg { position: absolute; inset: 0 0 auto; height: 900px; background: linear-gradient(#f4f7f8, rgba(244, 247, 248, 0)); pointer-events: none; }
+.tps-bg img { position: absolute; left: calc(50% - 629px); top: -509px; width: 1697.69px; height: 1866.26px; max-width: none; }
+.tps-top { position: relative; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 32px 0 25px; }
+.tps-logo { display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius); }
+.tps-logo svg { display: block; width: 152px; height: 24px; }
+.tps-logo svg path { fill: var(--kr-grey-100); }  /* the design's logo is one colour */
+.tps-x { display: grid; place-items: center; width: 40px; height: 40px; margin-left: auto; padding: 0; border: 0; border-radius: 10px; background: none; cursor: pointer; transition: background .2s; }
+.tps-x:hover { background: rgba(0, 0, 0, .04); }
+.tps-x svg { display: block; width: 24px; height: 24px; }
+.tps-body { position: relative; display: flex; flex-direction: column; gap: 48px; max-width: 1000px; margin-inline: auto; padding: 32px 16px 0; }
+/* the content keeps clear of the side rail; from 1162px the centred page already does */
+@media (min-width: 481px) and (max-width: 1161px) { body:not(.is-mobile) .tps-body { padding-inline: 68px; } }
+.tps-head { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.tps-head h1 { position: relative; top: -2px; margin: 0; font: 500 32px/40px var(--font-sans); text-align: center; }  /* Graphik Web sets 2px lower than Figma's Graphik */
+/* the filters: 1px outline inside (so a chip is the design's 34px; the label 1px up, as above), dark when picked; hover and focus darken the outline */
+.tps-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.tps-chip { padding: 5px 15px 7px; border: 1px solid #f2f2f2; border-radius: 99px; background: rgba(255, 255, 255, .6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); font-size: 14px; line-height: 20px; white-space: nowrap; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+.tps-chip:hover { border-color: var(--kr-grey-100); }
+.tps .tps-chip:focus-visible { border-color: var(--kr-grey-100); box-shadow: inset 0 0 0 1px var(--kr-grey-100); }
+.tps-chip[aria-pressed="true"] { border-color: var(--kr-grey-100); background: var(--kr-grey-100); color: var(--kr-white); box-shadow: 1px 2px 5px rgba(0, 0, 0, .1); cursor: default; }
+.tps .tps-chip[aria-pressed="true"]:focus-visible { box-shadow: 1px 2px 5px rgba(0, 0, 0, .1), var(--kr-focus-ring); }
+/* the templates: 200 × 275 with a 1px #e9e9e9 outline inside; hover (Doodle in the design) darkens it and lifts the card */
+.tps-grid { --tps-lift: -1px 2px 4px rgba(82, 82, 82, .05), -4px 7px 8px rgba(82, 82, 82, .04), -9px 15px 11px rgba(82, 82, 82, .03), -17px 27px 13px rgba(82, 82, 82, .01), -26px 42px 14px rgba(82, 82, 82, 0);
+  display: grid; grid-template-columns: repeat(auto-fill, 200px); justify-content: center; gap: 40px; }
+.tps-card { position: relative; width: 200px; height: 275px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--kr-white); cursor: pointer; transition: box-shadow .2s; }
+.tps-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tps-card::after { content: ""; position: absolute; inset: 0; border: 1px solid #e9e9e9; border-radius: inherit; pointer-events: none; transition: border-color .2s; }
+.tps-card:is(:hover, :focus-visible)::after { border-color: #8c8c8c; }
+.tps-card:hover { box-shadow: var(--tps-lift); }
+.tps .tps-card:focus-visible { box-shadow: var(--tps-lift), var(--kr-focus-ring); }
+/* phones (Figma's 375px frame): no logo, a 72px bar, a smaller headline, the chips from the left, two columns */
+@container (max-width: 560px) {
+  .tps-bg img { left: calc(50% - 848.84px); top: -230px; }
+  .tps-top { height: 72px; padding-inline: 16px 32px; }
+  .tps-logo { display: none; }
+  .tps-body { gap: 24px; padding-top: 0; }
+  .tps-head { align-items: stretch; }
+  .tps-head h1 { top: -1px; font-size: 21px; line-height: 28px; }
+  .tps-chips { justify-content: flex-start; }
+  .tps-chip { padding-block: 8px 10px; }
+  .tps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .tps-card { width: auto; height: auto; aspect-ratio: 163.48 / 225.66; border-radius: 8px; }
+}
+
 /* ---------- Wireframes: Wire, Kubo's grayscale wireframe kit (copied in; its tokens are scoped to .wf so
    they can't touch the prototype's own, and its accent, status and note colours are greys, so a wireframe
    is only shades of grey). Used for every screen without a design. ---------- */
@@ -2588,6 +2642,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="upg" id="screen-upgrade" hidden></div>
 <div class="mdoc" id="screen-docs" hidden></div>
 <div class="tl" id="screen-tool" hidden></div>
+<div class="tps" id="screen-tpl" hidden></div>
 </div>
 </div>
 
@@ -2597,7 +2652,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.11">v2.11</div>
+<div class="proto-ver" aria-label="Prototype version 2.12">v2.12</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2986,7 +3041,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (s !== 'create' && s !== 'loading') cvNext = cvDefer = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
     if (s !== 'loading') buildNext = null;  // so does where a tool's building screen leads (buildFor)
     // a route URL only while it's on screen, or while the method screen gets the CV it asked for
-    if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
+    if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool', 'tpl'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
     syncNote();
     if (routesReady && s !== 'route') flowSync();
   }
@@ -3984,7 +4039,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
-    ...[['resume', 'New resume'], ['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
+    { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: 'New resume · select your template', run: () => openTemplates() },
+    ...[['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', head: { main: HEADS.aiResume }, html: aiModalHTML, init: initAiModal },
     { group: '4 · Generate with AI', path: '/ai/resume/', title: 'Generate work experience', head: { main: HEADS.experience }, html: () => aigHTML('experience'), init: initAig },
     { group: '4 · Generate with AI', path: '/ai/resume/experience/', title: 'Generate work experience', head: { main: HEADS.experience }, html: () => aigHTML('experience'), init: initAig },
@@ -4107,16 +4163,19 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (current !== 'route') return;
     routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
   }
-  /* Close (×), Cancel: back to where the person came from */
-  function closeRoute() {
-    if (routeBack === 'dashboard') return openDashboard();
-    if (routeBack === 'auth') return openAuth(authKind);
-    if (routeBack === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
-    if (routeBack === 'docs') return openDocs();
-    if (routeBack === 'editor') return jumpEditor();
-    if (routeBack === 'tool') return openTool(toolKind);
-    go(routeBack === 'create' ? 'create' : 'intent');
+  /* Back to where the person came from (×, Cancel): the screen they were on, or the goal screen */
+  function goBack(where, route) {
+    if (where === 'dashboard') return openDashboard();
+    if (where === 'auth') return openAuth(authKind);
+    if (where === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
+    if (where === 'docs') return openDocs();
+    if (where === 'editor') return jumpEditor();
+    if (where === 'tool') return openTool(toolKind);
+    if (where === 'tpl') return openTemplates();
+    if (where === 'route' && route) return openRoute(route);
+    go(where === 'create' ? 'create' : 'intent');
   }
+  function closeRoute() { goBack(routeBack); }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
   /* The route screen's headline and subheadline for the pane on screen (route.head[pane]: [headline, subheadline],
      or a function giving them); a step inside a pane without its own (nested) keeps the pane's */
@@ -5064,15 +5123,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     syncUpg(); enterUpg();
   }
   /* × on the plans: back where the person came from; on the student page: back to the plans if they came from there */
-  function closeUpgrade() {
-    if (upgBack === 'dashboard') return openDashboard();
-    if (upgBack === 'auth') return openAuth(authKind);
-    if (upgBack === 'editor') return jumpEditor();
-    if (upgBack === 'docs') return openDocs();
-    if (upgBack === 'tool') return openTool(toolKind);
-    if (upgBack === 'route' && upgBackRoute) return openRoute(upgBackRoute);
-    go(upgBack === 'create' ? 'create' : 'intent');
-  }
+  function closeUpgrade() { goBack(upgBack, upgBackRoute); }
   upgEl.addEventListener('click', e => {
     const p = e.target.closest('.upg-plan');
     if (p) return p.getAttribute('aria-checked') === 'true' || openUpgrade(p.dataset.plan);
@@ -5260,7 +5311,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open an app page (My Documents, a tool) the way the dashboard opens; its URL goes in the address bar */
   const syncApp = path => { routeNow = findRoute(path); markRoutes(); setHash(path); flowSync(); syncNote(); };
   function riseIn(el, keepSide) {
-    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
+    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev, .tps-head > *, .tps-card')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
     const anims = items.map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: x.matches('.ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base + 60, delay: Math.min(i, 8) * (STAGGER + 15), easing: EASE.standard }));
     Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
@@ -5297,6 +5348,58 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   window.addEventListener('resize', fitPrev);
   /* The editor at its own URL (/edit/): a returning user's latest resume */
   function openEdit() { jumpEditor(); routeNow = findRoute('/edit/'); markRoutes(); setHash('/edit/'); }
+
+  /* ---------- Select your template (/dashboard/create-resume/) ----------
+     Recreated from Figma (Kickresume 3.0 › 61941:33517). A page of its own (its own top bar and background), so like
+     Sign up it replaces the logo bar and the page (APPS.tpl). The chips filter the templates; All shows the design's
+     twelve (Dotts twice). A template carries data-wire: it moves a running flow on, otherwise it opens the editor.
+     × goes back where the person came from. */
+  const TPS_T = {
+    bubbles: ['Bubbles', 'popular creative'], ios: ['iOS', 'ats popular'], doodle: ['Doodle', 'creative'], dotts: ['Dotts', 'ats popular'],
+    stanford: ['Stanford', 'ats'], rectangular: ['Rectangular', 'ats popular'], visibility: ['Visibility', 'popular creative'],
+    ribbon: ['Ribbon', 'creative'], square: ['Square', 'ats'], vegan: ['Vegan', 'creative'], sharp: ['Sharp', 'ats popular']
+  };
+  const TPS_IMG = {
+    bubbles: '__ASSET:templates/bubbles.webp__', ios: '__ASSET:templates/ios.webp__', doodle: '__ASSET:templates/doodle.webp__',
+    dotts: '__ASSET:templates/dotts.webp__', stanford: '__ASSET:templates/stanford.webp__', rectangular: '__ASSET:templates/rectangular.webp__',
+    visibility: '__ASSET:templates/visibility.webp__', ribbon: '__ASSET:templates/ribbon.webp__', square: '__ASSET:templates/square.webp__',
+    vegan: '__ASSET:templates/vegan.webp__', sharp: '__ASSET:templates/sharp.webp__', bg: '__ASSET:templates/kr-bg.svg__'
+  };
+  const TPS_ORDER = ['bubbles', 'ios', 'doodle', 'dotts', 'stanford', 'rectangular', 'dotts', 'visibility', 'ribbon', 'square', 'vegan', 'sharp'];
+  const TPS_CATS = [['all', 'All templates'], ['ats', 'ATS Friendly'], ['popular', 'Popular'], ['creative', 'Creative']];
+  const tplEl = document.getElementById('screen-tpl');
+  APPS.tpl = tplEl;
+  let tpsCat = 'all', tplBack = 'intent', tplBackRoute = null;
+  const tpsList = () => tpsCat === 'all' ? TPS_ORDER : Object.keys(TPS_T).filter(k => TPS_T[k][1].split(' ').includes(tpsCat));
+  const tpsCards = () => tpsList().map(k => `<button class="tps-card" type="button" data-wire="tpl" aria-label="${TPS_T[k][0]} template"><img src="${TPS_IMG[k]}" alt="" width="300" height="413"></button>`).join('');
+  function tpsHTML() {
+    return `<div class="tps-bg" aria-hidden="true"><img src="${TPS_IMG.bg}" alt=""></div>
+      <header class="tps-top"><button class="tps-logo" type="button" data-action="restart" aria-label="Kickresume, back to start">${document.querySelector('#topbar .logo').innerHTML}</button>
+        <button class="tps-x" type="button" data-tps="close" aria-label="Close">${UPG_IC.x}</button></header>
+      <div class="tps-body"><div class="tps-head"><h1>Select your template.</h1>
+        <div class="tps-chips" role="group" aria-label="Show">${TPS_CATS.map(([k, l]) => `<button class="tps-chip" type="button" data-cat="${k}" aria-pressed="${k === tpsCat}">${l}</button>`).join('')}</div></div>
+        <div class="tps-grid">${tpsCards()}</div></div>`;
+  }
+  function openTemplates() {
+    if (current === 'tpl') return;
+    // coming back from a screen opened here keeps where × leads
+    if (!(current === 'route' && routeBack === 'tpl') && !(current === 'upgrade' && upgBack === 'tpl')) { tplBack = current; tplBackRoute = current === 'route' ? routeNow : null; }
+    tpsCat = 'all';
+    return enterApp(tplEl, () => { tplEl.innerHTML = tpsHTML(); }, 'tpl', '/dashboard/create-resume/');
+  }
+  tplEl.addEventListener('click', e => {
+    if (e.target.closest('[data-tps="close"]')) return goBack(tplBack, tplBackRoute);
+    const c = e.target.closest('.tps-chip');
+    if (!c || c.dataset.cat === tpsCat) return;
+    // another filter: the chips swap, the templates fade over
+    tpsCat = c.dataset.cat;
+    tplEl.querySelectorAll('.tps-chip').forEach(b => b.setAttribute('aria-pressed', String(b === c)));
+    const grid = tplEl.querySelector('.tps-grid');
+    grid.innerHTML = tpsCards();
+    const anims = [...grid.children].map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
+      { duration: DUR.base, delay: Math.min(i, 8) * STAGGER, easing: EASE.standard }));
+    Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
+  });
 
   docsEl.addEventListener('click', e => {
     const b = e.target.closest('[data-md]');
@@ -5458,6 +5561,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
+    tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
     tool: (label, kind) => ({ label, match: `route:${TOOL_PATH[kind]}#main`, run: () => { setCv(true); openTool(kind); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
@@ -5512,7 +5616,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     ...[['create-resume', 'resume', 'Setting up your resume', resumeOut()], ['create-cover', 'cover letter', 'Setting up your cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')]],
       ['create-website', 'website', 'Building your website', [S.dest('Website editor', '/dashboard/create-website/', 'site')]]]
-      .map(([t, kind, verb, dest]) => ({ id: t, flow: 2, group: '3 · Start from a template', title: `New ${kind}`, path: `/dashboard/${t}/`, prep: [S.wire('Pick a template', `/dashboard/${t}/`, 'templates', { kind })], dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun: kind })),
+      .map(([t, kind, verb, dest]) => ({ id: t, flow: 2, group: '3 · Start from a template', title: `New ${kind}`, path: `/dashboard/${t}/`, prep: [t === 'create-resume' ? S.tpl() : S.wire('Pick a template', `/dashboard/${t}/`, 'templates', { kind })], dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun: kind })),
     { id: 'ai-resume', flow: 2, group: '4 · Generate with AI', title: 'Create Resume with AI', path: '/dashboard/create-ai-resume/', prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
     { id: 'ai-experience', flow: 2, group: '4 · Generate with AI', title: 'Generate work experience', path: '/ai/resume/experience/', prep: [S.route('Generate work experience', '/ai/resume/experience/')], process: [S.build('ai')], dest: resumeOut('Editor · Work experience'), verb: 'Writing your experience', noun: 'resume' },
     { id: 'ai-objective', flow: 2, group: '4 · Generate with AI', title: 'Generate resume objective', path: '/ai/resume/general/', prep: [S.route('Generate resume objective', '/ai/resume/general/')], process: [S.build('ai')], dest: resumeOut('Editor · Profile'), verb: 'Writing your objective', noun: 'resume' },
@@ -5690,7 +5794,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard') { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${TOOL_PATH[toolKind]}#main` : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${TOOL_PATH[toolKind]}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt) { flowAt = i; renderFlowBar(); }
   }
