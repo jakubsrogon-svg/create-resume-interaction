@@ -1332,7 +1332,7 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .rt-coral:disabled { background: var(--kr-primary-light); cursor: not-allowed; }
 .rt-ghost { background: none; color: var(--kr-grey-100); }
 .rt-ghost:hover { background: var(--kr-grey-40); }
-.rt-btn:focus-visible, .rt-x:focus-visible, .aig-chip:focus-visible, .seg3 button:focus-visible, .sel-item:focus-visible, .upl-drop:focus-visible, .aiw-paste:focus-visible, .lki-paste:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.rt-btn:focus-visible, .rt-x:focus-visible, .aig-chip:focus-visible, .seg3 button:focus-visible, .sel-item:focus-visible, .upl-drop:focus-visible, .aiw-paste:focus-visible, .lki-paste:focus-visible, .trl-opt:focus-visible, .trl-switch:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .rt-btn .spin { width: 18px; height: 18px; animation: spin .8s linear infinite; }
 .rt-step { margin: 16px 0 0; text-align: center; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--kr-grey-80); }
 .rt-info { display: flex; align-items: center; gap: 8px; border-radius: 8px; background: var(--kr-background); font-size: 14px; line-height: 20px; }
@@ -1506,6 +1506,186 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   .aiw .rt-btn, .rsg .rt-btn { width: 100%; }
   .lki-foot .rt-btn, .upl-foot .rt-btn { width: auto; flex: 1; }
   .lki-field { margin-top: 40px; }
+}
+
+/* ---------- Tailor your resume to a job (/dashboard/tailor-resume/, /jobs/job/{id}/tailor/) ----------
+   From Figma (Kickresume 3.0 › 61899:29481): the job post as a URL, typed in by hand, or the job a job page
+   passed on; then the tailoring level. The card keeps one height on wider screens, so switching between the URL
+   and the manual view doesn't move it. Phones stack the fields and name only the picked level. */
+.trl { --w: 600px; display: flex; flex-direction: column; gap: 16px; min-height: 520px; padding: 23px 31px; }
+.trl h1 { font-size: 18px; line-height: 24px; }
+.trl-main { flex: 1; display: flex; flex-direction: column; }
+.trl[data-mode="manual"] .trl-main { gap: 16px; }
+.trl-body { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+.trl-top, .trl-fields { display: flex; flex-direction: column; gap: 16px; }
+.trl-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.trl-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.trl-field label, .trl-l { font-size: 12px; line-height: 18px; }
+.trl-input {
+  display: block; width: 100%; height: 36px; padding: 0 9px; border: 1px solid var(--kr-grey-60); border-radius: 4px; outline: none;
+  background: var(--kr-white); color: var(--kr-grey-100); font-size: 14px; line-height: 20px; transition: border-color .15s;
+}
+.trl-input:hover { border-color: var(--kr-grey-80); }
+.trl-input:focus { border-color: var(--kr-blue); }
+.trl-ta { height: 112px; padding: 7px 9px; resize: none; }
+.trl-count { font-size: 12px; line-height: 18px; color: var(--kr-grey-80); text-align: right; }
+/* the job from a job page */
+.trl-job {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "logo title" "logo company" "logo meta"; align-items: start;
+  gap: 4px 16px; padding: 15px; border: 1px solid var(--kr-grey-40); border-radius: 16px; background: var(--kr-white);
+}
+.trl-job img { grid-area: logo; display: block; width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.trl-job b { grid-area: title; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 18px; line-height: 24px; font-weight: 500; }
+.trl-job-co { grid-area: company; font-size: 14px; line-height: 20px; }
+.trl-meta { grid-area: meta; display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.trl-meta span { display: inline-flex; align-items: center; gap: 4px; padding: 2px; font-size: 12px; line-height: 18px; color: var(--kr-grey-80); white-space: nowrap; }
+.trl-meta svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.33333; stroke-linecap: round; stroke-linejoin: round; }
+/* Tailoring level: three choices, the picked one filled dark; its description underneath */
+.trl-level { display: flex; flex-direction: column; gap: 4px; }
+.trl-seg { display: flex; gap: 8px; }
+.trl-opt {
+  flex: 1 1 0; min-width: 0; height: 40px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 7px; overflow: hidden;
+  border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); color: var(--kr-grey-100);
+  font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), flex-grow var(--dur-base) var(--ease-standard);
+}
+.trl-opt[data-level="conservative"] { gap: 4px; }
+.trl-opt .rt-ic { width: 24px; height: 24px; }
+.trl-opt:hover:not([aria-checked="true"]) { border-color: var(--kr-grey-80); }
+.trl-opt[aria-checked="true"] { background: var(--kr-grey-100); border-color: var(--kr-grey-100); color: var(--kr-white); cursor: default; }
+.trl-desc { margin: 0; font-size: 14px; line-height: 20px; color: var(--kr-grey-80); }
+.trl-switch {
+  align-self: flex-start; padding: 0; border: 0; border-radius: 2px; background: none; color: var(--kr-grey-100);
+  font-size: 14px; line-height: 20px; text-decoration: underline; text-underline-position: from-font; cursor: pointer;
+}
+.trl-switch:hover { color: var(--kr-grey-80); }
+.trl[data-mode="job"] .trl-switch { visibility: hidden; }
+.trl-foot { display: flex; justify-content: flex-end; }
+.trl-go, .trl-go:disabled { padding: 0 32px; border-radius: 10px; background: linear-gradient(163.5deg, #5345ff, #9c3eff); }
+.trl-go:disabled { opacity: .5; }
+@container (max-width: 520px) {
+  .trl { min-height: 0; padding: 23px 15px; }
+  .trl[data-mode="url"] { min-height: 420px; }
+  .trl-main, .trl[data-mode="manual"] .trl-main, .trl-body, .trl-top { gap: 8px; }
+  .trl[data-mode="job"] .trl-top { gap: 16px; }
+  .trl[data-mode="job"] .trl-switch { display: none; }
+  .trl-row { grid-template-columns: minmax(0, 1fr); }
+  .trl-ta { height: 143px; }
+  /* only the picked level shows its name; the others shrink to their icon */
+  .trl-opt { flex: 0 0 40px; padding: 0; }
+  .trl-opt[aria-checked="true"] { flex: 1 1 0; padding: 0 7px; }
+  .trl-opt:not([aria-checked="true"]) span { display: none; }
+  .trl-job { grid-template-areas: "logo title" "logo company" "meta meta"; row-gap: 0; }
+  .trl-meta { flex-wrap: nowrap; overflow: hidden; gap: 8px; margin-top: 8px; }
+}
+
+/* ---------- Tailoring (after Tailor Now) ----------
+   From Figma (Kickresume 3.0 › 61899:29483): four steps, each with its own looping picture and a progress bar that
+   fills while it runs (about 30 s each in the product, a few seconds here); then Done! or Something went wrong.
+   Trying to leave while it runs shows "Please wait for tailoring to complete." */
+.tld { --w: 355px; display: flex; flex-direction: column; gap: 16px; min-height: 374px; padding: 0 0 23px; overflow: hidden; }
+.tld-art { position: relative; flex: none; height: 152px; overflow: hidden; background: linear-gradient(#f4f7f8, #9dcad9); }
+.tld-pic { position: absolute; left: 50%; top: 24px; width: 242px; height: 172px; margin-left: -121px; overflow: hidden; opacity: 0; transition: opacity var(--dur-base) var(--ease-standard); }
+.tld-pic.is-on { opacity: 1; }
+/* the resume drawn in boxes, 110 × 152 */
+.tld-doc { position: absolute; left: 66px; top: 10px; width: 110px; height: 152px; overflow: hidden; border-radius: 4px; background: var(--kr-white); }
+.tld-doc::before { content: ""; position: absolute; inset: 0 0 auto; height: 33px; background: #9bbecc; }
+.tld-doc i, .tld-doc u, .tld-doc s { position: absolute; display: block; height: 4px; border-radius: 2px; background: #d9d9d9; }
+.tld-doc i.dk { height: 6px; background: #565656; }
+.tld-doc u { left: 9px; top: 9px; width: 19px; height: 19px; overflow: hidden; border-radius: 99px; }
+.tld-doc u svg { position: absolute; left: 0; bottom: 0; width: 19px; height: 12px; }
+.tld-doc s { width: 44px; height: 10px; background: none; }
+.tld-doc s::before, .tld-doc s::after { content: ""; position: absolute; left: 0; height: 4px; border-radius: 2px; }
+.tld-doc s::before { top: 0; width: 20px; background: #d9d9d9; }
+.tld-doc s::after { top: 6px; width: 100%; box-sizing: border-box; border: 1px solid #d9d9d9; background: linear-gradient(90deg, #d9d9d9 var(--fill), transparent 0) border-box; }
+/* 1 · Creating a copy: a faded copy slides out from behind the resume, tilts, and slides back */
+.tld-pic.p1 { top: 2px; }  /* this one is centred in the header in the design, so it sits higher */
+.p1 > .tld-doc { left: 20px; top: 26px; }
+.tld-copy { position: absolute; left: 116px; top: 37px; width: 94.08px; height: 130px; opacity: .7; transform: rotate(17.83deg); }
+.tld-copy .tld-doc { left: 0; top: 0; transform: scale(.85526); transform-origin: 0 0; }
+.p1.is-on .tld-copy { animation: tld-copy 2s cubic-bezier(.5, 0, .5, 1) infinite; }
+@keyframes tld-copy {
+  0%, 100% { opacity: 0; transform: translate(-86.57px, -7.71px) rotate(.37deg); }
+  33.89%, 66.45% { opacity: .7; transform: rotate(17.83deg); }
+}
+/* 2 · Scanning: a glowing line sweeps up the resume with a violet glow under it */
+.tld-glow { position: absolute; left: 66px; top: 82px; width: 110px; height: 40px; background: linear-gradient(rgba(83, 69, 255, .5), rgba(50, 41, 153, 0)); }
+.tld-line { position: absolute; left: 22px; top: 66px; width: 197px; height: 30px; }
+.p2.is-on .tld-glow { animation: tld-glow 2s linear infinite; }
+.p2.is-on .tld-line { animation: tld-line 2s linear infinite; }
+@keyframes tld-glow {
+  0% { transform: translateY(90px); }
+  40% { transform: translateY(-72px); }
+  60.9% { transform: translateY(-72px); animation-timing-function: cubic-bezier(.5, 0, .5, 1); }
+  71% { transform: translateY(-72px) scaleY(-1); }
+  100% { transform: translateY(39px) scaleY(-1); }
+}
+@keyframes tld-line { 0% { transform: translateY(90px); } 40%, 60.9% { transform: translateY(-72px); } 100% { transform: translateY(80px); } }
+/* 3 · Tailoring: keywords fly in and the resume's lines rearrange */
+.tld-kw { position: absolute; width: 47px; height: 13px; border-radius: 3px; background: #e4e4e4; }
+.tld-kw::before { content: ""; position: absolute; left: 4px; top: 2.5px; width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.p3.is-on .tld-kw { animation: tld-kw 2s linear infinite; }
+@keyframes tld-kw {
+  0% { transform: none; animation-timing-function: ease-in; }
+  25.25%, 63% { transform: translate(var(--x1), var(--y1)); }
+  81.55%, 100% { transform: translate(var(--x2), var(--y2)); }
+}
+.p3.is-on .tld-doc [data-a] { animation: 2s linear infinite; }
+.p3.is-on .tld-doc [data-a="1"] { animation-name: tld-a1; }
+.p3.is-on .tld-doc [data-a="2"] { animation-name: tld-a2; }
+.p3.is-on .tld-doc [data-a="3"] { animation-name: tld-a3; }
+.p3.is-on .tld-doc [data-a="4"] { animation-name: tld-a4; }
+.p3.is-on .tld-doc [data-a="5"] { animation-name: tld-a5; }
+.p3.is-on .tld-doc [data-a="6"] { animation-name: tld-a6; }
+.p3.is-on .tld-doc [data-a="7"] { animation-name: tld-a7; }
+.p3.is-on .tld-doc [data-a="8"] { animation-name: tld-a8; }
+.p3.is-on .tld-doc [data-a="9"] { animation-name: tld-a9; }
+@keyframes tld-a1 { 0%, 12.75%, 100% { width: 92px; } 34.49%, 74.62% { width: 76px; } }
+@keyframes tld-a2 { 0% { width: 71px; } 25.25%, 43.77% { width: 53px; } 74.62% { width: 93px; } 100% { width: 92px; } }
+@keyframes tld-a3 { 0%, 100% { width: 25px; } 24.43%, 61.69% { width: 32px; } }
+@keyframes tld-a4 { 0%, 100% { width: 44px; } 36.08%, 74.62% { width: 11px; } }
+@keyframes tld-a5 { 0%, 100% { width: 44px; } 24.43%, 61.69% { width: 32px; } }
+@keyframes tld-a6 { 0%, 100% { width: 44px; } 24.43%, 43.77% { width: 22px; } }
+@keyframes tld-a7 { 0%, 100% { width: 44px; } 24.43%, 61.69% { width: 37px; } }
+@keyframes tld-a8 { 0%, 100% { transform: translateX(48px); } 24.43%, 43.77% { transform: none; } }
+@keyframes tld-a9 { 0%, 100% { transform: translateX(-48px); } 24.43%, 61.69% { transform: none; } }
+/* 4 · Finishing up: the templates the person can switch to, sliding by */
+.tld-track { position: absolute; inset: 0; }
+.tld-track img { position: absolute; top: 10px; width: 111px; height: 152px; border-radius: 4px; object-fit: cover; box-shadow: 1.8px 3.6px 9px rgba(0, 0, 0, .1); }
+.p4.is-on .tld-track { animation: tld-track 7s linear infinite; }
+@keyframes tld-track {
+  0% { transform: none; }
+  3.57%, 32.14% { transform: translateX(-190px); }
+  35.71%, 59.86% { transform: translateX(-381px); }
+  64.29%, 82.29% { transform: translateX(-572px); }
+  85.71%, 100% { transform: translateX(-763px); }
+}
+.tld[data-state="done"] .tld-track, .tld[data-state="error"] .tld-track { animation: none; }
+.tld-x.rt-x { top: 16px; right: 16px; }
+.tld-bars { display: flex; gap: 4px; padding: 0 16px; }
+.tld-bar { flex: 1 1 0; height: 4px; overflow: hidden; border-radius: 100px; background: var(--kr-grey-60); }
+.tld-bar i { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--kr-blue); }
+.tld-bar.is-done i { width: 100%; }
+.tld[data-state="error"] .tld-bar:not(:first-child) { display: none; }
+.tld[data-state="error"] .tld-bar i { width: 100%; background: var(--kr-primary); }
+.tld-body { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; padding: 0 16px; }
+.tld-text { padding: 0 24px; }
+.tld-text h2 { margin: 0 0 4px; font-size: 18px; line-height: 24px; font-weight: 500; }
+.tld-text p { margin: 0; color: var(--kr-grey-80); }
+.tld-foot { display: flex; justify-content: flex-end; }
+.tld-btn { height: 34px; padding: 0 32px; border-radius: 10px; }
+.tld-wait { min-width: 126px; border: 2px solid #5345ff; background: none; cursor: progress; }
+.tld-wait svg { width: 20px; height: 20px; margin: 4px; animation: spin 1s steps(8) infinite; }
+.tld-retry { padding: 0 32px; }
+.tld-go { background: linear-gradient(164.9deg, #5345ff, #9c3eff); }
+.tld-note {
+  position: absolute; left: 50%; top: 15px; z-index: 1; padding: 8px 16px; border-radius: 99px; background: var(--kr-grey-100); color: var(--kr-white);
+  font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: var(--kr-shadow-dropdown); transform: translateX(-50%); pointer-events: none;
+  opacity: 0; transition: opacity var(--dur-base) var(--ease-standard);
+}
+.tld-note.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .tld-pic.is-on *, .tld-wait svg { animation: none !important; }
 }
 
 /* ---------- Sign up and Log in (/register/, /login/) ----------
@@ -2391,7 +2571,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.6.1">v2.6.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.7">v2.7</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3686,7 +3866,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', html: linkedinHTML, init: initLinkedin },
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
-      .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true, wire: true, html: toolWire(t) })),
+      .map(([t, title]) => ({ group: '5 · Bring a resume to a tool', path: `/dashboard/${t}/`, title, needsCv: true,
+        ...(t === 'tailor-resume' ? { html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } } : { wire: true, html: toolWire(t) }) })),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
@@ -3696,6 +3877,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, html: () => WIRE['cm-onboarding']() },
@@ -3736,14 +3918,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function fillRoute(r, pane) {
     // a tool that needs a CV: Add your resume (gate) → Upload your resume → the tool; pane picks where to start
-    // the main pane is "main", or the flow stage a generic wireframe stands for (process, state, dest)
+    // the main pane is "main", or the flow stage a generic wireframe stands for (process, state, dest);
+    // more = panes that follow the main one ({ name: markup function }, e.g. Tailor resume's "process")
     const el = screens.route, cv = r.needsCv || r.upload, main = r.pane || 'main';
     const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : r.needsCv && !cvUploaded ? 'gate' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
-    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML(main, r.html())}</div>`;
+    el.innerHTML = `<div class="rt-item rt-panes">${r.needsCv ? paneHTML('gate', WIRE.gate({ title: r.title })) : ''}${cv ? uploadHTML('upload', first !== 'upload') : ''}${r.upload ? '' : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
     el.setAttribute('aria-label', r.title);
     const item = el.firstElementChild;
-    if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild);
+    if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
     if (cv) initUpload(item.querySelector('[data-pane="upload"]'), {
       onDone: r.upload ? () => startFromUpload(item) : () => showPane(item, main, 1),
       onCancel: r.needsCv ? () => showPane(item, 'gate', -1) : closeRoute
@@ -4072,6 +4255,229 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (e.target.closest('.sel-go') && !flowOn()) notYet(e.target.closest('.sel-go'), 'Writing…', `The personalized ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
   }
+
+  /* ---------- Tailor your resume to a job (/dashboard/tailor-resume/, /jobs/job/{id}/tailor/) ----------
+     The job post as a URL or typed in (the link under the fields switches), or the job a job page passed on;
+     Tailor Now opens the tailoring screen (tldHTML) in the same route. */
+  const TRL_IC = {
+    flame: '<path d="M12 3c.667 2.667 2 4.833 4 6.5s3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.082.351-2.135 1-3a2.5 2.5 0 0 0 5 0c0-2-1.5-3-1.5-5 0-1.333.833-2.667 2.5-4Z"/>',
+    clock: '<circle cx="8" cy="8" r="6.667"/><path d="M8 4v4l2.667 1.333"/>',
+    pin: '<path d="M13.333 6.667c0 3.329-3.692 6.796-4.932 7.866a.67.67 0 0 1-.802 0C6.359 13.463 2.667 9.996 2.667 6.667a5.333 5.333 0 0 1 10.666 0Z"/><circle cx="8" cy="6.667" r="2"/>',
+    fading: '<path d="M8 1.334a6.667 6.667 0 0 1 4.92 11.167"/><path d="M8 4v4l2.667 1.333"/><path d="M1.667 5.916a6.67 6.67 0 0 0-.334 2"/><path d="M1.887 10.666a6.67 6.67 0 0 0 1.62 2.267"/><path d="M3.09 3.491q.28-.303.595-.571"/><path d="M5.763 14.279a6.67 6.67 0 0 0 5.087-.254"/>',
+    brief: '<path d="M10.667 13.334V2.667A1.333 1.333 0 0 0 9.333 1.334H6.667a1.333 1.333 0 0 0-1.334 1.333v10.667"/><rect x="1.333" y="4" width="13.333" height="9.333" rx="1.333"/>'
+  };
+  const TRL_LEVELS = [
+    ['conservative', 'Conservative', RT_IC.smile, 'Safe. Sticks close to your own words. Doesn’t invent or oversell.'],
+    ['balanced', 'Balanced', RT_IC.scale, 'Recommended. The sweet spot — polished, relevant, and still you.'],
+    ['turbo', 'Turbo', TRL_IC.flame, 'Bold. Goes all-in on the job match. Double-check before sending.']
+  ];
+  const TRL_POST_MAX = 6000;
+  // the job a job page passes on (the design's sample)
+  const TRL_JOB = { title: 'Back-end super long text Developer', company: 'Atlasian', logo: '__ASSET:jobs/atlassian.png__',
+    meta: [['clock', '8 days ago'], ['pin', 'United States +3'], ['fading', 'Full-time +1'], ['brief', 'Remote']] };
+  const TRL_SWITCH = { url: 'No URL? Paste job description', manual: 'Got URL? Paste it instead' };
+  function trlHTML(fromJob) {
+    const field = (id, label, input) => `<div class="trl-field"><label for="trl-${id}">${label}</label>${input}</div>`;
+    const job = `<div class="trl-field"><span class="trl-l">Job post</span><div class="trl-job"><img src="${TRL_JOB.logo}" alt="" width="40" height="40">
+      <b title="${TRL_JOB.title}">${TRL_JOB.title}</b><span class="trl-job-co">${TRL_JOB.company}</span>
+      <span class="trl-meta">${TRL_JOB.meta.map(([ic, t]) => `<span><svg viewBox="0 0 16 16" aria-hidden="true">${TRL_IC[ic]}</svg>${t}</span>`).join('')}</span></div></div>`;
+    const typed = `<div class="trl-fields" data-only="url">${field('url', 'Job post URL', '<input class="trl-input" id="trl-url" name="url" type="url" inputmode="url" autocomplete="off">')}</div>
+      <div class="trl-fields" data-only="manual" hidden>
+        <div class="trl-row">${field('title', 'Job title', '<input class="trl-input" id="trl-title" name="title" autocomplete="off">')}${field('company', 'Company name', '<input class="trl-input" id="trl-company" name="company" autocomplete="off">')}</div>
+        ${field('post', 'Job post', `<textarea class="trl-input trl-ta" id="trl-post" name="post" maxlength="${TRL_POST_MAX}" aria-describedby="trl-count"></textarea><span class="trl-count" id="trl-count">0/${TRL_POST_MAX}</span>`)}
+      </div>`;
+    return `<form class="rt-card trl" data-mode="${fromJob ? 'job' : 'url'}" novalidate aria-labelledby="trl-h">
+      <h1 id="trl-h">Tailor your resume to a job</h1>
+      <div class="trl-main"><div class="trl-body"><div class="trl-top">${fromJob ? job : typed}
+        <div class="trl-level"><span class="trl-l" id="trl-lv">Tailoring level</span>
+          <div class="trl-seg" role="radiogroup" aria-labelledby="trl-lv">${TRL_LEVELS.map(([id, name, ic], i) =>
+            `<button class="trl-opt" type="button" role="radio" aria-checked="${i === 1}" tabindex="${i === 1 ? 0 : -1}" aria-label="${name}" data-level="${id}">${rtIc(ic)}<span>${name}</span></button>`).join('')}</div>
+          <p class="trl-desc" aria-live="polite">${TRL_LEVELS[1][3]}</p></div>
+      </div>${fromJob ? '' : `<button class="trl-switch" type="button">${TRL_SWITCH.url}</button>`}</div>
+      <div class="trl-foot"><button class="rt-btn rt-ai trl-go" type="submit"${fromJob ? '' : ' disabled'}>Tailor Now</button></div></div>
+    </form>`;
+  }
+  function initTrl(form, r) {
+    const root = form.closest('.rt-panes'), go = form.querySelector('.trl-go'), desc = form.querySelector('.trl-desc');
+    const val = n => (form.elements[n] ? form.elements[n].value.trim() : '');
+    // Tailor Now needs the URL, or the job post when it's typed in; a job from a job page is enough on its own
+    const check = () => { if (form.dataset.mode !== 'job') go.disabled = !val(form.dataset.mode === 'url' ? 'url' : 'post'); };
+    function setMode(mode) {
+      const part = form.querySelector(`[data-only="${mode}"]`);
+      morphHeight(form, () => {
+        form.dataset.mode = mode;
+        form.querySelectorAll('[data-only]').forEach(el => { el.hidden = el !== part; });
+        form.querySelector('.trl-switch').textContent = TRL_SWITCH[mode];
+        check();
+      });
+      if (!reduce) part.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+      part.querySelector('.trl-input').focus({ preventScroll: true });
+    }
+    function setLevel(opt) {
+      form.querySelectorAll('.trl-opt').forEach(o => { o.setAttribute('aria-checked', String(o === opt)); o.tabIndex = o === opt ? 0 : -1; });
+      desc.textContent = TRL_LEVELS.find(l => l[0] === opt.dataset.level)[3];
+    }
+    form.addEventListener('click', e => {
+      const opt = e.target.closest('.trl-opt');
+      if (opt) return setLevel(opt);
+      if (e.target.closest('.trl-switch')) setMode(form.dataset.mode === 'url' ? 'manual' : 'url');
+    });
+    form.querySelector('.trl-seg').addEventListener('keydown', e => {
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      const opts = [...form.querySelectorAll('.trl-opt')], at = opts.findIndex(o => o.getAttribute('aria-checked') === 'true');
+      const next = opts[(at + step + opts.length) % opts.length];
+      setLevel(next); next.focus();
+    });
+    form.addEventListener('input', e => {
+      if (e.target.name === 'post') form.querySelector('.trl-count').textContent = `${e.target.value.length}/${TRL_POST_MAX}`;
+      check();
+    });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      check();
+      if (go.disabled) return;
+      // the tailoring is this route's next pane: a running flow's bar moves on, and Close comes back to what was typed
+      flowTo(`route:${r.path}#process`);
+      showPane(root, 'process', 1);
+      root.querySelector('.tld')._run();
+    });
+    initTld(root.querySelector('.tld'), r.path);
+    check();
+  }
+
+  /* ---------- Tailoring (the route's "process" pane, after Tailor Now) ----------
+     Four steps with their own looping pictures (CSS), each TLD_STEP_MS long (about 30 s in the product); then
+     Done! (Continue opens the editor) or, when More options › Result is Failed or Error, Something went wrong.
+     Clicking beside the card, the spinner button or Escape while it runs shows "Please wait…". */
+  const TLD_STEP_MS = 3000;
+  const TLD_STEPS = [
+    ['Creating a copy...', 'Your original resume stays untouched. Find it in the Documents tab.'],
+    ['Scanning resume & job post...', 'Finding the skills and keywords the employer cares about.'],
+    ['Tailoring...', 'Rewriting and restructuring your resume to match the job post.'],
+    ['Finishing up...', 'Go to the Design tab if you want to pick different templates, layouts, or fonts.']
+  ];
+  const TLD_END = {
+    ok: ['Done!', TLD_STEPS[3][1]],
+    fail: ['Something went wrong.', 'We couldn’t read the job post. Check it and try again.'],
+    error: ['Something went wrong.', 'The server is taking too long to respond.']
+  };
+  const TLD_IMG = { martinus: '__ASSET:tailor/martinus.webp__', newsweek: '__ASSET:tailor/newsweek.webp__', rectangular: '__ASSET:tailor/rectangular.webp__', postcard: '__ASSET:tailor/postcard.webp__' };
+  const TLD_KW = [[256, 22, '#ff9494', -69, 18, -148, 39], [-62, 44, '#fb94ff', 73, 9, 140, 15], [264, 107, '#94bfff', -74, -3, -157, -6], [-58, 144, '#a6ff94', 69, -19, 130, -36]];
+  const tldGrad = (id, x1, y1, x2, y2) => `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" gradientUnits="userSpaceOnUse"><stop stop-color="#5345ff"/><stop offset="1" stop-color="#9c3eff"/></linearGradient>`;
+  const TLD_SPIN = `<svg viewBox="0 0 20 20" aria-hidden="true"><defs>${tldGrad('tsp0', 9.2, 14.2, 12.1, 15.14)}${tldGrad('tsp1', 3.31, 3.31, 7.27, 7.27)}${tldGrad('tsp2', 12.73, 12.73, 16.69, 16.69)}${tldGrad('tsp3', .87, 9.2, 1.81, 12.09)}${tldGrad('tsp4', 14.2, 9.2, 15.14, 12.09)}${tldGrad('tsp5', 3.31, 12.73, 7.27, 16.69)}</defs>
+    <path fill="#9c3eff" fill-opacity=".6" d="M10 .867c.442 0 .8.358.8.8V5a.8.8 0 0 1-1.6 0V1.667c0-.442.358-.8.8-.8Z"/>
+    <path fill="url(#tsp0)" d="M10 14.2c.442 0 .8.358.8.8v3.333a.8.8 0 0 1-1.6 0V15c0-.442.358-.8.8-.8Z"/>
+    <path fill="url(#tsp1)" d="M3.543 3.543a.8.8 0 0 1 1.131 0l2.358 2.358a.8.8 0 0 1-1.131 1.131L3.543 4.674a.8.8 0 0 1 0-1.131Z"/>
+    <path fill="url(#tsp2)" d="M12.968 12.967a.8.8 0 0 1 1.131 0l2.358 2.358a.8.8 0 0 1-1.131 1.131l-2.358-2.358a.8.8 0 0 1 0-1.131Z"/>
+    <path fill="url(#tsp3)" d="M.867 10c0-.442.358-.8.8-.8H5a.8.8 0 0 1 0 1.6H1.667a.8.8 0 0 1-.8-.8Z"/>
+    <path fill="url(#tsp4)" d="M14.2 10c0-.442.358-.8.8-.8h3.333a.8.8 0 0 1 0 1.6H15a.8.8 0 0 1-.8-.8Z"/>
+    <path fill="url(#tsp5)" d="M7.032 12.967a.8.8 0 0 1 0 1.131l-2.358 2.358a.8.8 0 0 1-1.131-1.131l2.358-2.358a.8.8 0 0 1 1.131 0Z"/>
+    <path fill="#9c3eff" fill-opacity=".3" d="M16.457 3.543a.8.8 0 0 1 0 1.131l-2.358 2.358a.8.8 0 0 1-1.131-1.131l2.358-2.358a.8.8 0 0 1 1.131 0Z"/></svg>`;
+  const TLD_LINE = `<svg class="tld-line" viewBox="0 0 197 30"><defs><filter id="tld-glow-f" x="0" y="0" width="197" height="30" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" result="bg"/>
+    <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"/><feGaussianBlur stdDeviation="2"/><feComposite in2="a" operator="out"/><feColorMatrix values="0 0 0 0 0.32549 0 0 0 0 0.270588 0 0 0 0 1 0 0 0 1 0"/><feBlend in2="bg" result="s1"/>
+    <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"/><feGaussianBlur stdDeviation="7"/><feComposite in2="a" operator="out"/><feColorMatrix values="0 0 0 0 0.611765 0 0 0 0 0.243137 0 0 0 0 1 0 0 0 0.8 0"/><feBlend in2="s1" result="s2"/>
+    <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"/><feGaussianBlur stdDeviation="7"/><feComposite in2="a" operator="out"/><feColorMatrix values="0 0 0 0 0.337834 0 0 0 0 0.558556 0 0 0 0 1 0 0 0 1 0"/><feBlend in2="s2" result="s3"/>
+    <feBlend in="SourceGraphic" in2="s3"/></filter></defs>
+    <g filter="url(#tld-glow-f)"><line x1="15" y1="15" x2="182" y2="15" stroke="#1235ff" stroke-width="2" stroke-linecap="round"/></g></svg>`;
+  /* The resume drawn in boxes (110 × 152); anim marks the lines the Tailoring picture moves */
+  function tldDoc(anim) {
+    const a = n => anim && n ? ` data-a="${n}"` : '';
+    const bar = (x, y, w, n, dk) => `<i${dk ? ' class="dk"' : ''} style="left:${x}px;top:${y}px;width:${w}px"${a(n)}></i>`;
+    const skill = (x, y, fill, n) => `<s style="left:${x}px;top:${y}px;--fill:${fill}px"${a(n)}></s>`;
+    return `<span class="tld-doc"><u><svg viewBox="0 0 19 12"><path d="M4.108 2.4 0 5.28V12h19V4.32L14.892 0 8.73 5.28Z" fill="#b3b3b3"/></svg></u>${bar(33, 10.5, 52, 0, 1)}${bar(33, 20.5, 27, 0, 1)}`
+      + bar(9, 39, 25) + bar(9, 45, 92, 1) + bar(9, 51, 92, 2)
+      + bar(9, 66, 25, 3) + bar(9, 72, 44) + bar(9, 78, 44, 4) + bar(9, 84, 44, 5) + bar(57, 72, 44, 6) + bar(57, 78, 44, 7) + bar(57, 84, 44)
+      + bar(9, 99, 36) + skill(9, 105, 32, 8) + skill(57, 105, 20, 9) + skill(9, 117, 36) + skill(57, 117, 41) + '</span>';
+  }
+  const TLD_PICS = () => [
+    `<span class="tld-copy">${tldDoc()}</span>${tldDoc()}`,
+    `${tldDoc()}<span class="tld-glow"></span>${TLD_LINE}`,
+    TLD_KW.map(([x, y, c, x1, y1, x2, y2]) => `<span class="tld-kw" style="left:${x}px;top:${y}px;--c:${c};--x1:${x1}px;--y1:${y1}px;--x2:${x2}px;--y2:${y2}px"></span>`).join('') + tldDoc(true),
+    `<span class="tld-track">${['martinus', 'newsweek', 'rectangular', 'postcard', 'martinus'].map((n, i) => `<img src="${TLD_IMG[n]}" alt="" style="left:${66 + 191 * i}px">`).join('')}</span>`
+  ];
+  function tldHTML() {
+    return `<div class="rt-card tld" data-state="run" role="group" aria-labelledby="tld-h">
+      <div class="tld-art" aria-hidden="true">${TLD_PICS().map((p, i) => `<div class="tld-pic p${i + 1}${i ? '' : ' is-on'}">${p}</div>`).join('')}</div>
+      <button class="rt-x tld-x" type="button" aria-label="Close" hidden>${rtIc(RT_IC.x)}</button>
+      <div class="tld-bars">${'<span class="tld-bar"><i></i></span>'.repeat(4)}</div>
+      <div class="tld-body"><div class="tld-text" aria-live="polite"><h2 id="tld-h">${TLD_STEPS[0][0]}</h2><p>${TLD_STEPS[0][1]}</p></div>
+        <div class="tld-foot"><button class="rt-btn tld-btn tld-wait" type="button" aria-label="Tailoring, please wait">${TLD_SPIN}</button>
+          <button class="rt-btn rt-coral tld-btn tld-retry" type="button" hidden>Retry</button>
+          <button class="rt-btn rt-ai tld-btn tld-go" type="button" hidden>Continue</button></div></div>
+      <div class="tld-note" role="status"></div>
+    </div>`;
+  }
+  let tldJump = false;  // the flow bar jumped to the end state: show it without running the steps
+  function initTld(card, path) {
+    if (!card) return;
+    const root = card.closest('.rt-panes'), text = card.querySelector('.tld-text');
+    const pics = [...card.querySelectorAll('.tld-pic')], bars = [...card.querySelectorAll('.tld-bar')];
+    const wait = card.querySelector('.tld-wait'), retry = card.querySelector('.tld-retry'), cont = card.querySelector('.tld-go'), x = card.querySelector('.tld-x'), note = card.querySelector('.tld-note');
+    const live = () => card.isConnected && !card.closest('[hidden]');
+    let noteTimer = 0;
+    function say(title, line) {
+      text.firstElementChild.textContent = title; text.lastElementChild.textContent = line;
+      if (!reduce) text.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+    }
+    function show(step) {
+      pics.forEach((p, k) => p.classList.toggle('is-on', k === step));
+      bars.forEach((b, k) => {
+        const fill = b.firstElementChild;
+        b.classList.toggle('is-done', k < step);
+        fill.style.transition = ''; fill.style.width = '';
+        if (k === step) { fill.style.width = '0'; void fill.offsetWidth; fill.style.transition = `width ${TLD_STEP_MS}ms linear`; fill.style.width = '100%'; }
+      });
+      say(...TLD_STEPS[step]);
+    }
+    function end() {
+      const ok = procResult === 'ok';
+      card.dataset.state = ok ? 'done' : 'error';
+      pics.forEach((p, k) => p.classList.toggle('is-on', k === 3));
+      bars.forEach(b => { b.classList.add('is-done'); b.firstElementChild.removeAttribute('style'); });
+      say(...TLD_END[procResult]);
+      wait.hidden = true; cont.hidden = !ok; retry.hidden = ok; x.hidden = ok;
+      hideNote();
+      flowSeen('tld-end');
+    }
+    // a failed run stops while it reads the job post
+    function run() {
+      card.dataset.state = 'run';
+      wait.hidden = false; cont.hidden = retry.hidden = x.hidden = true;
+      const stopAt = procResult === 'ok' ? TLD_STEPS.length : 1;
+      const tick = step => {
+        if (!live()) return;
+        if (step === stopAt || step === TLD_STEPS.length) return end();
+        show(step);
+        later(() => tick(step + 1), stopAt === step + 1 && procResult !== 'ok' ? TLD_STEP_MS * .6 : TLD_STEP_MS);
+      };
+      tick(0);
+    }
+    function hideNote() { clearTimeout(noteTimer); note.classList.remove('is-on'); }
+    card._note = () => {
+      note.textContent = 'Please wait for tailoring to complete.'; note.classList.add('is-on');
+      clearTimeout(noteTimer); noteTimer = setTimeout(hideNote, 2600);
+    };
+    card._run = run; card._end = end;
+    // Back to the setup (Close, or Retry when the job post couldn't be read); Retry after an error runs it again
+    const back = () => { flowTo(`route:${path}#main`); showPane(root, 'main', -1); };
+    x.addEventListener('click', back);
+    retry.addEventListener('click', () => { if (procResult === 'fail') return back(); flowTo(`route:${path}#process`); run(); });
+    cont.addEventListener('click', () => { if (!flowOn()) jumpEditor(); });
+    wait.addEventListener('click', card._note);
+    if (live()) { if (tldJump) end(); else run(); }
+    tldJump = false;
+  }
+  // Leaving while it runs: clicking beside the card or pressing Escape asks the person to wait
+  function tldInterrupt(e) {
+    const card = current === 'route' && screens.route.querySelector('.tld[data-state="run"]');
+    if (!card || card.closest('[hidden]') || (e.type === 'keydown' && e.key !== 'Escape') || (e.type === 'click' && card.contains(e.target))) return;
+    card._note();
+  }
+  screens.route.addEventListener('click', tldInterrupt);
+  document.addEventListener('keydown', tldInterrupt);
 
   /* ---------- Select your resume (step 2) ---------- */
   function selectHTML(kind) {
@@ -4753,7 +5159,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const WIRE_TOOLS = {
     'analyse-resume': ['Analyse your resume', [['Resume', 'My Kickresume', 'select']], 'Analyse resume', 'Result: a score and a list of issues to fix. Not designed yet.'],
     'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
-    'tailor-resume': ['Tailor your resume to a job', [['Resume', 'My Kickresume', 'select'], ['Job post', '', 'area']], 'Tailor resume', 'Result: a copy of the resume tailored to the job post. Not designed yet.'],
     'translate-resume': ['Translate your resume', [['Resume', 'My Kickresume', 'select'], ['Translate to', 'German', 'select']], 'Translate', 'Result: a translated copy in the editor. Not designed yet.'],
     'recruiter-feedback': ['Get recruiter feedback', [['Resume', 'My Kickresume', 'select'], ['Job you’re aiming for', '', '']], 'Get feedback', 'Result: written feedback from a recruiter, delivered later. Not designed yet.'],
     'summary-generator': ['Generate a resume summary', [['Resume', 'My Kickresume', 'select'], ['Job title', '', '']], 'Generate summary', 'Result: 2–3 summary options to pick from. Not designed yet.'],
@@ -4819,8 +5224,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     job: () => wShell('Job', `<div class="wf-card wf-stack">
         <div class="wf-row"><span class="wf-ph wf-ph--icon"></span><span class="t-label">Company</span><span class="wf-badge">96% match</span></div>
         <h1 class="t-title">Product designer</h1>${wLines(4)}
-        <div class="wf-row"><button class="wf-btn wf-btn--primary" type="button" data-wire="apply">Apply</button><button class="wf-btn" type="button" data-wire="track">Save to Job Tracker</button><button class="wf-btn wf-btn--ghost" type="button" data-wire="company">About the company</button></div>
-      </div>`, wNote('A job’s page (/jobs/job/{id}/): the role, the match and Apply. Not designed yet.'), 600),
+        <div class="wf-row"><button class="wf-btn wf-btn--primary" type="button" data-wire="apply">Apply</button><button class="wf-btn" type="button" data-wire="tailor">Tailor my resume</button><button class="wf-btn" type="button" data-wire="track">Save to Job Tracker</button><button class="wf-btn wf-btn--ghost" type="button" data-wire="company">About the company</button></div>
+      </div>`, wNote('A job’s page (/jobs/job/{id}/): the role, the match, Apply and Tailor my resume (opens Tailor resume with this job). Not designed yet.'), 600),
     company: () => wShell('Company', `<div class="wf-card wf-stack"><div class="wf-row"><span class="wf-ph wf-ph--icon"></span><h1 class="t-title">Company</h1></div>${wLines(3)}
         <span class="t-label">Open roles</span>${[1, 2].map(i => `<button class="wf-card" type="button" data-wire="job" aria-label="Open role ${i}">${wLines(2)}</button>`).join('')}</div>`, wNote('A company’s page (/jobs/organization/{company}/): about it and its open roles. Not designed yet.'), 600),
     tracker: () => wShell('Job Tracker', `<div class="wf-card wf-stack"><h1 class="t-title">Job Tracker</h1>
@@ -4851,6 +5256,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (w === 'job') openRoute(findRoute('/jobs/job/1234/'));
     else if (w === 'company') openRoute(findRoute('/jobs/organization/kickresume/'));
     else if (w === 'track') openRoute(findRoute('/jobs/job-tracker/'));
+    else if (w === 'tailor') openRoute(findRoute('/jobs/job/1234/tailor/'));
     else if (w === 'apply') toast('Applying isn’t part of this prototype.');
   });
 
@@ -4890,7 +5296,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
   /* A tool that needs a CV: Add your resume and Upload your resume when there is none, then its own form */
-  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')]), S.wireTool(label, path, 'main')];
+  const toolPrep = (path, label) => () => [...(cvUploaded ? [] : [S.wireTool('Add your resume', path, 'gate'), S.route('Upload your resume', path, 'upload')]), findRoute(path).wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
+  /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
+  const trlRun = path => ({
+    process: [S.route('Tailoring', path, 'process')],
+    state: [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }]
+  });
   const signUp = S.auth('Sign up', 'signup');
   const landing = what => S.auth('Sign up · ' + what, 'signup', `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
   const TOOL_DEST = {
@@ -4904,11 +5315,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     'proofreading': ['Proofreading your resume', 'proofread resume', () => S.tool('Proofreading', 'proof')]
   };
   /* Every URL, paired with its flow: { flow, group (the URL checklist's), title, path, entry, prep, process, dest,
-     verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall) } */
+     verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall),
+     state (its own processing state instead of the shared one) } */
   const resumeOut = (label = 'Editor · Fill In') => [S.editor(label)];
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
-      ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), dest: resumeOut('Editor · the tailored copy'), verb: 'Tailoring your resume', psteps: ['Reading the job ad', 'Matching your experience to its keywords', 'Rewriting bullet points'], noun: 'tailored resume' }],
+      ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
       ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
       .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
@@ -4925,11 +5337,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
     { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], process: [S.build('linkedin')], dest: resumeOut(), verb: 'Importing your profile', noun: 'resume', fail: 'We couldn’t read that profile' },
     ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
-      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun }; }),
+      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
+    { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
     { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
     { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
-    { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), dest: resumeOut('Editor · the tailored copy'), verb: 'Tailoring your resume', noun: 'tailored resume' },
+    { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
 
     { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
     { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
@@ -4960,7 +5373,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ...(has('intent') ? at('intent', S.screen('Goal screen', 'intent')) : []),
       ...(has('prep') ? at('prep', f.prep) : []),
       ...(has('process') ? at('process', f.process || S.process(f)) : []),
-      ...(has('state') ? at('state', [S.state(f), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
+      ...(has('state') ? at('state', [...(f.state || [S.state(f)]), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
       ...at('dest', f.dest)
     ] };
   }
@@ -5046,6 +5459,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     return k;
   }
   function processDone() { if (flowNow) flowGo(afterProcessAt()); }
+  /* Put the bar back on a step the screen returned to by itself (Tailor's Retry and Close), without opening it again */
+  function flowTo(match) {
+    if (!flowNow) return;
+    const i = flowNow.steps.findIndex(s => s.match === match);
+    if (i >= 0 && i !== flowAt) { flowAt = i; renderFlowBar(); }
+  }
   function stateAction(w) {
     if (!flowNow) return toast('Run a flow (More options › Flows) to move on from here.');
     const first = st => flowNow.steps.findIndex(s => s.stage === st);
@@ -5058,6 +5477,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.querySelectorAll('[data-result]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.result === r)));
     const card = current === 'route' && screens.route.querySelector('[data-pane="state"]');
     if (card) { card.innerHTML = WIRE.state({ f: flowNow ? flowNow.f : { noun: 'result' } }); syncNote(); }
+    const tld = current === 'route' && screens.route.querySelector('.tld:not([data-state="run"])');
+    if (tld) tld._end();
     markMore();
   }
   /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
