@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Resume Start Flow</title>
 <style>
 @font-face { font-family: "Graphik Web"; src: url("__GRAPHIK_400__") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
@@ -144,6 +145,8 @@ body.is-mobile .statusbar {
 .logo { display: inline-flex; border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--radius); }
 .logo svg { width: 140px; height: auto; display: block; }
 .logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+/* a headline or a view that takes the focus when it opens (landFocus) isn't a control: no ring */
+:is(h1, h2, section, div)[tabindex="-1"]:focus { outline: none; }
 
 /* ---------- Page ---------- */
 .page { --anchor-cut: 0px; width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: calc(var(--sp-page-top) - var(--anchor-cut)) var(--sp-page-bottom); transition: padding-top var(--dur-slow) var(--ease-inout); }
@@ -468,9 +471,6 @@ div.mhead { cursor: default; }
 .btn-gradient:hover:not(:disabled) { background: var(--kr-grad-hover); }
 .btn-gradient:active:not(:disabled) { background: var(--kr-grad-press); }
 .btn-gradient:disabled { background: var(--kr-grad-disabled); }
-.btn-white { background: var(--kr-white); color: var(--kr-grey-100); border-color: var(--kr-grey-60); }
-.btn-white:hover { background: var(--kr-grey-40); }
-.btn-white:active { background: var(--kr-grey-60); }
 .btn-block { width: 100%; }
 
 /* Dropzone (matches the provided upload mock) */
@@ -550,7 +550,7 @@ div.mhead { cursor: default; }
 /* LinkedIn: a profile card */
 .cs-profile { width: calc(var(--u) * 72); overflow: hidden; padding-bottom: calc(var(--u) * 7); }
 .cs-cover { height: calc(var(--u) * 17); background: color-mix(in srgb, var(--kr-blue) 16%, var(--kr-white)); }
-.cs-profile .cs-av { width: calc(var(--u) * 20); height: calc(var(--u) * 20); margin: -calc(var(--u) * 10) 0 0 calc(var(--u) * 6); border: calc(var(--u) * 1.4) solid var(--kr-white); background: #d9d8f8; }
+.cs-profile .cs-av { width: calc(var(--u) * 20); height: calc(var(--u) * 20); margin: calc(var(--u) * -10) 0 0 calc(var(--u) * 6); border: calc(var(--u) * 1.4) solid var(--kr-white); background: #d9d8f8; }
 .cs-pbody { padding: calc(var(--u) * 3) calc(var(--u) * 6) 0; display: grid; gap: calc(var(--u) * 3); }
 .cs-in-row { display: flex; align-items: center; gap: calc(var(--u) * 3); margin-top: calc(var(--u) * 1.4); }
 .cs-in { width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-radius: calc(var(--u) * 2.4); flex: none; display: grid; place-items: center; background: var(--kr-blue); color: var(--kr-white); }
@@ -577,7 +577,7 @@ div.mhead { cursor: default; }
 .cs-file.is-front { right: 0; bottom: 0; rotate: 5deg; }
 .cs-tag {
   position: absolute; left: calc(var(--u) * 5); bottom: calc(var(--u) * 6); padding: calc(var(--u) * 1.6) calc(var(--u) * 2.6); border-radius: calc(var(--u) * 1.6);
-  font-size: calc(var(--u) * 6.4); line-height: 1; font-weight: 600; letter-spacing: .calc(var(--u) * 3); color: var(--kr-white); background: var(--kr-primary);
+  font-size: calc(var(--u) * 6.4); line-height: 1; font-weight: 600; letter-spacing: calc(var(--u) * .3); color: var(--kr-white); background: var(--kr-primary);
 }
 .cs-tag.is-doc { background: var(--kr-blue); }
 /* Paste: a messy note */
@@ -627,6 +627,7 @@ div.mhead { cursor: default; }
    shows, inside the phone screen. */
 .d-backdrop { display: none; }
 body.look-3d .device { isolation: isolate; }
+body.is-mobile.look-3d .device { position: relative; }  /* the phone frame holds the backdrop */
 body.look-3d .d-backdrop {
   display: block; position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   opacity: 0; transition: opacity var(--dur-slow) var(--ease-standard);
@@ -850,6 +851,7 @@ body.is-mobile .editor { min-height: 100%; }
 .ed-mbar { display: none; grid-area: mbar; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); }
 .ed-mbar .logo svg { width: 116px; }
 .ed-tabs { display: none; grid-area: tabs; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; justify-content: center; padding: 12px 16px; background: var(--kr-background); }
+@media (min-width: 481px) { body.is-mobile .ed-tabs { top: 44px; } }  /* in the phone frame: under its status bar */
 .seg-light { display: flex; padding: 3px; gap: 2px; background: var(--kr-grey-60); border-radius: 10px; }
 .seg-light button { border: 0; background: none; padding: 7px 18px; border-radius: 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast), box-shadow var(--dur-fast); }
 .seg-light button[aria-pressed="true"] { background: var(--kr-white); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
@@ -865,7 +867,7 @@ body.is-mobile .editor { min-height: 100%; }
 .icon-sq:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .ed-col { max-width: 760px; margin-inline: auto; display: grid; gap: 16px; }
 
-.premium { border: 1.5px solid transparent; border-radius: var(--radius-card); background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, var(--kr-premium-gradient) border-box; box-shadow: var(--kr-shadow-premium-light); }
+.premium { border: 1.5px solid transparent; border-radius: var(--radius-card); background: linear-gradient(var(--kr-white), var(--kr-white)) padding-box, var(--kr-premium-gradient) border-box; }
 .premium-head { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 20px; border: 0; background: none; cursor: pointer; text-align: left; font-size: 15px; line-height: 22px; font-weight: 500; border-radius: var(--radius-card); }
 .premium-head:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .premium-head .txt { flex: 1; min-width: 0; }
@@ -1001,7 +1003,7 @@ body.is-mobile .dash { min-height: 100%; }
 .dash-main { min-width: 0; padding: 36px 40px 64px; display: grid; gap: 24px; align-content: start; max-width: 1280px; width: 100%; justify-self: center; }
 .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .dash-head h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; letter-spacing: -.2px; }
-.btn-up { min-height: 42px; padding: 8px 18px; font-size: 15px; box-shadow: var(--kr-shadow-premium-light); }
+.btn-up { min-height: 42px; padding: 8px 18px; font-size: 15px; }
 .btn-up svg.i { width: 20px; height: 20px; }
 .panel { background: var(--kr-white); border-radius: 24px; padding: 28px 32px; min-width: 0; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
@@ -1013,7 +1015,7 @@ body.is-mobile .dash { min-height: 100%; }
 .sq-arrow.grid svg.i { transform: none; }
 
 /* Documents: horizontal row of "start a new…" tiles */
-.doc-row { display: grid; grid-auto-flow: column; grid-auto-columns: 232px; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; margin-inline: -4px; padding-inline: 4px; scrollbar-width: thin; }
+.doc-row { display: grid; grid-auto-flow: column; grid-auto-columns: 232px; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; margin: -4px; padding: 4px 4px 8px; scrollbar-width: thin; }  /* room for the tiles' focus ring and shadow */
 .doc-tile {
   position: relative; scroll-snap-align: start; height: 188px; border: 0; border-radius: 16px; padding: 0; cursor: pointer; overflow: hidden;
   display: grid; grid-template-rows: 1fr auto; text-align: center; transition: box-shadow var(--dur-base) var(--ease-standard);
@@ -1199,6 +1201,10 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 /* tooltips open above, right-aligned, so they stay on screen */
 .proto-more [data-tip]::after { right: 0; top: auto; bottom: calc(100% + 10px); transform: translate(0, 4px); }
 .proto-more [data-tip]:hover::after, .proto-more [data-tip]:focus-visible::after { transform: none; }
+/* in the panel (it scrolls, so it clips): wrapped, set off from the dark panel, and the CV and Result rows' open below */
+.proto-more [data-tip]::after { white-space: normal; width: max-content; max-width: 220px; z-index: 3; box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), var(--kr-shadow-dropdown); }
+.proto-more :is([data-cv], [data-result])[data-tip]::after { top: calc(100% + 10px); bottom: auto; transform: translate(0, -4px); }
+.proto-more :is([data-cv], [data-result])[data-tip]:is(:hover, :focus-visible)::after { transform: none; }
 /* Version tag, bottom left: same dark chrome as the rail so it reads as part of the prototype, not the product */
 .proto-ver {
   position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; pointer-events: none;
@@ -1298,9 +1304,8 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .aim-opt[aria-selected="true"] .aim-ic { visibility: visible; }
 .aim-go {
   width: 150px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px;
-  border: 0; background: var(--kr-blue); color: var(--kr-white); font-weight: 500; white-space: nowrap; transition: background .2s;
+  border: 0; background: var(--kr-ai-grad); color: var(--kr-white); font-weight: 500; white-space: nowrap; transition: filter .2s;
 }
-.aim-go { background: var(--kr-ai-grad); transition: filter .2s; }
 .aim-go:hover:not(:disabled) { filter: brightness(1.07); }
 .aim-go:active:not(:disabled) { filter: brightness(.93); }
 .aim-go:disabled { background: var(--kr-ai-disabled); cursor: not-allowed; }
@@ -1758,7 +1763,7 @@ button.au-dot { cursor: pointer; }
 .au-forgot:hover { text-decoration: underline; }
 /* narrower windows: no photo column; phones: the button alone in the top bar */
 @container (max-width: 900px) { .auth { grid-template-columns: minmax(0, 1fr); } .au-side { display: none; } }
-@container (max-width: 560px) { .au-top { padding-inline: 16px; } .au-q { display: none; } .au-form { width: min(273px, 100%); } }
+@container (max-width: 560px) { .au-top { gap: 8px; padding-inline: 16px; } .au-q { display: none; } .au-form { width: min(273px, 100%); } }
 
 /* ---------- Upgrade: Premium plans and student verification (/upgrade/…) ----------
    Recreated from Figma (Premium › A, and Kickresume 3.0 › ISIC/ITIC). Purple pages of their own, so like
@@ -1938,6 +1943,7 @@ body.has-note .upg, body:has(.flow-bar:not([hidden])) .upg { padding-bottom: 96p
    so like the dashboard it replaces the logo bar and the page (APPS.docs). Sizes are Figma's (a 1440px-wide frame).
    With a CV the resumes are listed (the design's four, with pages); without one only the "create" card shows. */
 body[data-screen="docs"] .stage, body[data-screen="tool"] .stage { padding-right: 0; }  /* the page runs to the window's edge, under the side rail */
+@media (min-width: 481px) and (max-width: 1161px) { body:not(.is-mobile) :is(.tl-main, .md-body) { padding-right: 68px; } }  /* its content clear of the rail */
 .mdoc { margin-inline: -16px; min-height: calc(var(--vh) * 100); display: grid; grid-template-columns: 232px minmax(0, 1fr); align-items: start; background: var(--kr-background); color: var(--kr-grey-100); }
 body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 56px; }  /* scrolls clear of the flow bar */
 :where(.mdoc) :where(button) { font: inherit; color: inherit; }
@@ -1946,7 +1952,7 @@ body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 5
 .md-panel { display: flex; flex-direction: column; gap: 18px; max-width: 1200px; padding: 16px 32px 32px; border-radius: 24px; background: var(--kr-white); }
 .md-panel h1 { margin: 0; padding: 16px 0; font: 500 24px/28px var(--font-sans); }
 .md-docs { display: flex; flex-direction: column; gap: 16px; }
-.md-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.md-bar { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .md-tabs { position: relative; display: flex; gap: 32px; height: 37px; padding: 0 16px; }
 .md-tabs::before { content: ""; position: absolute; left: 0; top: 35.5px; width: 529px; height: 1px; background: #ededed; }
 .md-tabs::after { content: ""; position: absolute; left: 0; top: 36px; width: 100px; height: 1px; background: var(--kr-primary); }
@@ -1998,7 +2004,6 @@ body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 5
 @container (max-width: 700px) {
   .md-body { padding: 20px 16px 32px; }
   .md-panel { padding: 8px 16px 24px; }
-  .md-bar { flex-wrap: wrap; }
   .md-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .md-tabs::before { width: 100%; }
   .md-grid { justify-content: center; }
@@ -2431,7 +2436,7 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 .wf-flow--down>.wf-arrow{align-self:flex-start;min-width:0;height:64px;margin-left:48px;padding:0 0 0 var(--space-6);display:flex;align-items:center;text-align:left}
 .wf-flow--down>.wf-arrow::after{left:4px;right:auto;top:0;bottom:6px;width:2px;height:auto}
 .wf-flow--down>.wf-arrow::before{left:0;right:auto;border-top:8px solid var(--ink);border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:0}
-.rt-wire { max-width: 100%; }
+.rt-wire { max-width: 100%; background: none; }  /* the label sits on the page, the card keeps its paper */
 
 /* Flow bar (prototype chrome, bottom centre): the running flow template, its steps, wireframe steps hollow */
 .flow-bar {
@@ -2459,6 +2464,12 @@ body.has-note .au-main { padding-bottom: 96px; }
 @media (max-width: 480px) {
   body .proto-note, .flow-bar:not([hidden]) ~ .proto-note { left: 12px; right: 12px; transform: none; width: auto; max-width: none; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
   body.has-note #screen-route { padding-bottom: 150px; }
+  /* so does a running flow's bar, and the note goes one row higher */
+  body .flow-bar { left: 12px; right: 12px; transform: none; max-width: none; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  body .flow-bar .fb-steps { flex: 1; min-width: 0; }
+  .flow-bar:not([hidden]) ~ .proto-note { bottom: calc(116px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.flow-bar:not([hidden])) #screen-route { padding-bottom: 120px; }
+  body.has-note:has(.flow-bar:not([hidden])) #screen-route { padding-bottom: 200px; }
 }
 .fb-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
 .fb-steps { display: flex; gap: 10px; }
@@ -2479,7 +2490,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 .fb-nav svg { width: 16px; height: 16px; }
 .fb-next svg { transform: rotate(180deg); }
 .flow-bar [data-tip]::after { right: auto; left: 50%; top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 4px); }
-.flow-bar [data-tip]:hover::after { transform: translate(-50%, 0); }
+.flow-bar [data-tip]:is(:hover, :focus-visible)::after { transform: translate(-50%, 0); }
 @media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar, .proto-note { max-width: calc(100vw - 140px); } }
 
 /* More options has two views (tabs at the top, they stay put while the panel scrolls): Flows, with the person's
@@ -2585,6 +2596,9 @@ body.has-note .au-main { padding-bottom: 96px; }
   .ld-paper::after { animation: none; opacity: 0; }
   .more, .ecard > .acc { transition-property: opacity !important; }
   .acc-inner > .ebody { transform: none !important; }
+  /* sizes that grow and pictures that move on hover: they change at once */
+  .upg-plan, .upg-plan *, .aig-chip, .trl-opt { transition-property: opacity, background-color, border-color, color, box-shadow !important; }
+  .intent [class*="ga-"], .md-open img { transition-duration: 0s !important; }
 }
 </style>
 
@@ -2658,9 +2672,10 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <!-- The running flow (see FLOW_T and FEATURES) -->
 <div class="flow-bar" id="flow-bar" role="group" aria-label="Flow steps" hidden></div>
+<p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
-<!-- Prototype version: bump the minor number with every update; the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.13">v2.13</div>
+<!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
+<div class="proto-ver" aria-label="Prototype version 2.14">v2.14</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2889,7 +2904,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           <span class="dz-meta">or <span class="dz-link">browse your files</span> · PDF or DOCX, up to&nbsp;10&nbsp;MB</span>
         </div>
         <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
-        <div class="file-slot field"><span class="error">That file type won’t work. Upload a PDF or a Word document.</span></div>
+        <div class="file-slot field"><span class="error" role="alert">That file type won’t work. Upload a PDF or a Word document.</span></div>
         <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
       </form>`;
     if (id === 'paste') return `
@@ -3180,7 +3195,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (screenRun) screenRun.finish();
     if (screen === current) return;
     if (APPS[current]) return leaveApp(screen);
-    const from = screens[current], to = screens[screen];
+    // from: the screen on view (current runs ahead of it while an earlier change waits for the scroll)
+    const to = screens[screen], from = Object.values(screens).find(s => !s.hidden && s !== to) || screens[current];
     const dir = towards || (FLOW.indexOf(screen) < FLOW.indexOf(current) ? -1 : 1);
     setCurrent(screen);
     await scrollToTop();
@@ -3229,10 +3245,20 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     screenRun = run;
     await Promise.all(anims.map(a => a.finished.catch(() => {})));
     cleanup();
+    if (current === screen) landFocus(to);
   }
 
   let focusTimer = 0;
   function focusLater(el, ms) { clearTimeout(focusTimer); if (el) focusTimer = setTimeout(() => el.focus({ preventScroll: true }), ms); }
+  /* After a screen or a step changes: focus left on something now hidden or gone moves to the new view's headline,
+     so a screen reader reads it and Tab goes on from there */
+  function landFocus(el) {
+    const a = document.activeElement;
+    if (a && a !== document.body && a.isConnected && a.getClientRects().length && !a.closest('[hidden], [inert]')) return;
+    const t = [...el.querySelectorAll('h1')].find(x => x.getClientRects().length && !x.closest('[hidden]')) || el;  // no headline: the view itself
+    if (!t.hasAttribute('tabindex')) t.tabIndex = -1;
+    t.focus({ preventScroll: true });
+  }
 
   function setOpen(card, open) {
     card.classList.toggle('is-open', open);
@@ -3297,10 +3323,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let headTok = 0;
   function setHead(h, p, animate = true) {
     const els = [createHead.querySelector('h1'), createHead.querySelector('p')], tok = ++headTok;
-    if (els[0].textContent === h && els[1].textContent === p) return;
-    const swap = () => { els[0].textContent = h; els[1].textContent = p; };
+    // a change still fading gives way to this one (else going back to the same text could leave it faded out)
     els.forEach(el => el.getAnimations().forEach(a => a.cancel()));
     createHead.getAnimations().forEach(a => a.cancel());
+    if (els[0].textContent === h && els[1].textContent === p) return;
+    const swap = () => { els[0].textContent = h; els[1].textContent = p; };
     if (!animate || reduce) return swap();
     // A different number of lines (phones) eases the headline's height from the click, with the same
     // duration and easing as the rest of the screen change, so everything below moves in one motion.
@@ -3410,7 +3437,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   /* ---------- Method behaviour ---------- */
-  const setError = (field, on) => field.classList.toggle('has-error', on);
+  // a field's message is tied to its control while it shows, so it is read out with it (C's fields tie their own)
+  let errSeq = 0;
+  const setError = (field, on) => {
+    field.classList.toggle('has-error', on);
+    const err = field.querySelector(':scope > .error'), ctl = field.querySelector('.input, .textarea');
+    if (!err || !ctl) return;
+    ctl.setAttribute('aria-invalid', String(on));
+    if (ctl.hasAttribute('aria-describedby') && !('errLink' in ctl.dataset)) return;
+    err.id ||= 'err-' + ++errSeq;
+    if (on) { ctl.setAttribute('aria-describedby', err.id); ctl.dataset.errLink = ''; } else { ctl.removeAttribute('aria-describedby'); delete ctl.dataset.errLink; }
+  };
 
   /* ---------- Creating the resume ---------- */
   const STEPS = {
@@ -3465,13 +3502,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let person = buildPerson('paste');
 
   function startCreation(form, id, opts) {
-    const btn = form.querySelector('[type="submit"]');
+    const btn = form.querySelector('[type="submit"]'), label = btn.innerHTML, at = current;
     btn.style.minWidth = btn.offsetWidth + 'px';
     btn.disabled = true;
     btn.innerHTML = `<svg class="i spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${BUSY_LABEL[id]}`;
-    person = buildPerson(id, opts);
-    if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
     later(() => {
+      // left in the meantime (Back, Cancel, ×, the card closed): nothing is made and the button comes back
+      if (current !== at || !form.isConnected || form.closest('[inert]')) { btn.innerHTML = label; btn.disabled = false; btn.style.minWidth = ''; return; }
+      person = buildPerson(id, opts);
+      if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
       if (!cvNext || !cvDefer) return showBuilding(id);
       // a tool that makes the resume in its own building screen (buildCv) gets it now, with no building screen here
       const then = cvNext;
@@ -3484,7 +3523,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      it makes the resume and does the tool's job in one go, then goes straight to the result (done) */
   const BUILD_AS = {
     tailor: { head: 'Creating your resume', sub: 'We’re building your resume and tailoring it to the job post.', steps: ['Matching it to the job post', 'Tailoring your resume'], ready: 'Your tailored resume is ready!', done: () => openEditor() },
-    ats: { head: 'Analyzing your resume', sub: 'We’re building your resume and checking it the way an ATS reads it.', steps: ['Checking format and sections', 'Scoring keywords'], ready: 'Your ATS check is ready!', done: () => openTool('ats') }
+    ats: { head: 'Analyzing your resume', sub: 'We’re building your resume and checking it the way an ATS reads it.', steps: ['Checking format and sections', 'Scoring keywords'], ready: 'Your ATS check is ready!', done: () => openTool('ats', '/dashboard/analyse-resume/') }
   };
   let buildingAs = null;
   const needsBuild = r => !!r.buildCv && (!cvUploaded || (!!cvMade && cvMade.path === r.path));
@@ -3504,7 +3543,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     buildingAs = as || null;
     document.getElementById('loading-h').textContent = as ? as.head : 'Building your resume';
     document.getElementById('loading-sub').textContent = as ? as.sub : SUBTITLE[id];
-    screens.loading.querySelector('.ld-badge').classList.remove('is-on');
+    const badge = screens.loading.querySelector('.ld-badge');
+    badge.classList.remove('is-on'); badge.style.opacity = ''; badge.getAnimations().forEach(a => a.cancel());  // a celebration cut short
     document.getElementById('loading-steps').innerHTML = (as ? [STEPS[id][0], ...as.steps] : STEPS[id]).map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
     const paper = screens.loading.querySelector('.ld-paper');
     paper.classList.remove('is-done');
@@ -3610,7 +3650,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     badge.classList.add('is-on');
     if (reduce) { badge.style.opacity = 1; later(() => { badge.style.opacity = ''; afterBuild(); }, 900); return; }
     paper.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: .4 }, { transform: 'scale(.99)', offset: .75 }, { transform: 'scale(1)' }], { duration: 520, easing: 'cubic-bezier(.2,0,0,1)' });
-    popIn(badge, .2).finished.then(() => { badge.style.opacity = 1; });
+    popIn(badge, .2).finished.then(() => { if (badge.classList.contains('is-on')) badge.style.opacity = 1; });
     const r = paper.getBoundingClientRect();
     later(() => {
       confetti(r.left + r.width * .2, r.top + r.height * .35, { angle: -115, spread: 50, power: 13, count: 60 });
@@ -3764,7 +3804,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           ${ecard('education', 'cap', 'Education', `${P.education.length} school`, entries(P.education, 'school'))}
           ${ecard('skills', 'star', 'Strengths', `<span data-out="skillcount">${P.skills.length}</span>`, `<div data-out="skills">${chips('skills')}</div>
             <div class="f"><label for="ed-skill-new">Add a strength</label><input class="input sm" id="ed-skill-new" data-add="skills" placeholder="Type and press Enter"></div>`)}
-          ${ecard('hobbies', 'heart', 'Hobbies', `${P.hobbies.length}`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}
+          ${ecard('hobbies', 'heart', 'Hobbies', `<span data-out="hobbycount">${P.hobbies.length}</span>`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}
         </div>
       </div>
       <aside class="ed-preview" aria-label="Resume preview">
@@ -3803,8 +3843,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const box = editorEl.querySelector(`[data-out="${key}"]`);
     const label = c => Array.isArray(c) ? c[1] : c;
     box.innerHTML = `<div class="chips">${person[key].map((c, i) => `<span class="chip">${esc(label(c))}<button type="button" data-action="chip-remove" data-list="${key}" data-i="${i}" aria-label="Remove ${esc(label(c))}">${icon('x')}</button></span>`).join('')}</div>`;
-    const count = editorEl.querySelector('[data-out="skillcount"]');
-    if (count && key === 'skills') count.textContent = person.skills.length;
+    const count = editorEl.querySelector(`[data-out="${key === 'skills' ? 'skill' : 'hobby'}count"]`);
+    if (count) count.textContent = person[key].length;
     syncEditor();
   }
   function toggleEcard(card, open) {
@@ -3836,6 +3876,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     setCurrent('editor');
     scroller().scrollTo({ top: 0 });
+    landFocus(editorEl);
     if (reduce) { editorEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); return; }
     const paper = editorEl.querySelector('#rv'), pv = editorEl.querySelector('.ed-preview');
     const r1 = paper.getBoundingClientRect();
@@ -3868,6 +3909,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       { duration: DUR.base, delay: 60 + i * STAGGER, easing: EASE.standard }));
     await Promise.all(anims.map(a => a.finished.catch(() => {})));
     anims.forEach(a => a.cancel());
+    if (current === screen) landFocus(screens[screen]);
   }
 
   /* ---------- Dashboard ---------- */
@@ -3982,6 +4024,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
     setCurrent('dashboard');
     window.scrollTo(0, 0); device.scrollTop = 0;
+    landFocus(dashEl);
     const items = [...dashEl.querySelectorAll('.ed-mbar, .ed-side, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
     const anims = items.map((el, i) => play(el,
       reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: el.classList.contains('ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
@@ -4031,7 +4074,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       error: ['Tailoring didn’t finish', 'It broke on our side. Nothing you entered is lost.'] },
     tool: {
       'rewrite-resume': ['How should we rewrite it?', 'Pick a tone and the AI rewrites your resume in it.'],
-      'tailor-resume': ['Which job is it for?', 'Add the job post and we’ll tailor your resume to it.'],
       'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
     },
     templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
@@ -4045,7 +4087,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const ROUTES = [
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
-    { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: jumpEditor },
+    { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: () => editorAt('/guest-edit-start/') },
     { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: 'New resume · select your template', run: () => openTemplates() },
     ...[['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => ({ group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', head: { main: HEADS.aiResume }, html: aiModalHTML, init: initAiModal },
@@ -4117,7 +4159,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setCurrent('create');
   }
   /* A tool that needs a CV and has none: the method screen first, under the tool's URL, then the tool */
-  function askCvFor(r, instant) { routeNow = r; markRoutes(); setHash(r.path); askCv(() => openRoute(r), instant, r.buildCv ? r : null); }
+  function askCvFor(r, instant) {
+    // × on the tool goes back to where the person asked for it, not to the method or the building screen
+    const from = current === 'loading' ? 'intent' : current;
+    routeNow = r; markRoutes(); setHash(r.path);
+    askCv(() => { const opening = openRoute(r); routeBack = from; return opening; }, instant, r.buildCv ? r : null);
+  }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
   async function backToRoute(r, then) {
     await go('route', null, 1);
@@ -4128,6 +4175,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
     if (!on) cvMade = null;
+    if (routesReady) renderFlowsPanel();  // the flows' step lists depend on it
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
     if (current === 'dashboard') {  // the menu's resume group follows the CV
@@ -4160,7 +4208,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       // already on a route screen: swap its content in place
       if (screenRun) screenRun.finish();
       fillRoute(r, pane); routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
-      scroller().scrollTo({ top: 0 });
+      scroller().scrollTo({ top: 0 }); landFocus(screens.route);
       if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
         .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
       return;
@@ -4173,6 +4221,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     } else await go('route', null, current === 'loading' ? 1 : 0);
     if (current !== 'route') return;
     routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
+    const tld = screens.route.querySelector('.tld');
+    if (tld && tld._start && !tld.closest('[hidden]')) tld._start();
   }
   /* Back to where the person came from (×, Cancel): the screen they were on, or the goal screen */
   function goBack(where, route) {
@@ -4204,15 +4254,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     topXEl.hidden = !show;
   }
   // a new headline cross-fades in place, like the onboarding screens'
+  let routeHeadTok = 0;
   function setRouteHead(t, instant) {
     const head = screens.route.querySelector(':scope > .rt-head');
     if (!head) return;
+    const [h1, p] = head.children, tok = ++routeHeadTok;
+    [h1, p].forEach(el => el.getAnimations().forEach(a => a.cancel()));  // like setHead: the newest change wins
     head.hidden = !t;
     if (!t) return;
-    const [h1, p] = head.children;
     if (h1.textContent === t[0] && p.textContent === t[1]) return;
     if (instant || reduce) { h1.textContent = t[0]; p.textContent = t[1]; return; }
     [[h1, t[0]], [p, t[1]]].forEach(([el, text]) => el.textContent !== text && play(el, [{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}).then(() => {
+      if (tok !== routeHeadTok) return;
       el.textContent = text;
       play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel()));
     }));
@@ -4222,12 +4275,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!to || from === to) return;
     if (screens.route.contains(root)) routeHead(routeNow, name, false, !root.matches('#screen-route > .rt-item'));
     scrollToTop();
-    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); syncNote(); return; }
+    if (!from || reduce) { if (from) from.hidden = true; to.hidden = false; flowSync(); syncNote(); landFocus(screens.route.contains(root) ? screens.route : root); return; }
     Object.assign(from.style, { position: 'absolute', top: from.offsetTop + 'px', left: '0', right: '0', pointerEvents: 'none' });
     to.hidden = false;
     const a = play(from, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }], { duration: DUR.fast, easing: EASE.exit });
     const b = play(to, [{ opacity: 0, transform: `translateX(${32 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: DUR.base, delay: 80, easing: EASE.standard });
-    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); flowSync(); syncNote(); });
+    Promise.all([a.finished, b.finished].map(p => p.catch(() => {}))).then(() => { from.hidden = true; from.removeAttribute('style'); a.cancel(); b.cancel(); flowSync(); syncNote(); landFocus(screens.route.contains(root) ? screens.route : root); });
   }
   /* One motion for a card whose content changes height */
   function morphHeight(el, change) {
@@ -4326,7 +4379,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       }
       if (!menu.hidden && !e.target.closest('.aim-menu')) setMenu(false);
     });
-    lang.parentElement.addEventListener('focusout', e => { if (!menu.hidden && !lang.parentElement.contains(e.relatedTarget)) setMenu(false); });
+    closeOnLeave(lang.parentElement, () => !menu.hidden, () => setMenu(false));
     form.addEventListener('input', () => { ta.nextElementSibling.textContent = `${ta.value.length}/${AIM_POST_MAX}`; check(); });
     form.addEventListener('keydown', e => {
       if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); setMenu(false); lang.focus(); }
@@ -4387,7 +4440,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         opts.at((i + (e.key === 'ArrowDown' ? 1 : -1)) % opts.length).focus();
       }
     });
-    wrap.addEventListener('focusout', e => { if (!menu.hidden && !wrap.contains(e.relatedTarget)) set(false); });
+    closeOnLeave(wrap, () => !menu.hidden, () => set(false));
   }
   /* Required fields: a coral outline until the person types */
   function needFilled(fields) {
@@ -4406,7 +4459,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function aigHTML(kind) {
     const exp = kind === 'experience', rec = exp ? 'structured' : 'paragraphs';
     const fields = exp ? [['title', 'Job title'], ['company', 'Company']] : [['title', 'Job you’re applying for']];
-    const chips = (list, sel, recId) => list.map(([id, label, ic]) => `<button class="aig-chip" type="button" role="radio" aria-checked="${id === sel}" aria-label="${label}" data-v="${id}"><span class="aig-in">${rtIc(ic)}<span class="lbl">${label}</span></span>${id === recId ? '<span class="aig-rec">Recommended</span>' : ''}</button>`).join('');
+    const chips = (list, sel, recId) => list.map(([id, label, ic]) => `<button class="aig-chip" type="button" role="radio" aria-checked="${id === sel}" tabindex="${id === sel ? 0 : -1}" data-v="${id}"><span class="aig-in">${rtIc(ic)}<span class="lbl">${label}</span></span>${id === recId ? '<span class="aig-rec">Recommended</span>' : ''}</button>`).join('');
     return `<form class="rt-card aig" data-kind="${kind}" novalidate aria-labelledby="aig-h">
       <div class="aig-head"><h1 id="aig-h">${exp ? 'Generate work experience' : 'Generate resume objective'}</h1>${langHTML(AIM_LANGS)}</div>
       <div class="aig-fields${exp ? '' : ' is-one'}">${fields.map(([n, l]) => `<div class="aig-field"><label for="aig-${n}">${l}</label><input class="aig-input" id="aig-${n}" name="${n}" placeholder="${l}" autocomplete="off"></div>`).join('')}</div>
@@ -4461,7 +4514,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="aim-field"><label for="ivw-title">Job title from the job ad (required)</label><input class="aim-input" id="ivw-title" name="title" autocomplete="off"></div>
         <div class="aim-field" data-only="personalized" hidden><label for="ivw-post">Copy-paste the job ad here (required)</label>
           <div class="aiw-ta"><textarea class="aim-input aim-ta" id="ivw-post" name="post" maxlength="1000"></textarea><button class="aiw-paste" type="button">${rtIc(RT_IC.clipboard)}Paste</button></div><span class="aim-count">0/1000</span></div>
-        <div class="aim-field"><span class="aiw-l" id="ivw-sen">Seniority</span><div class="seg3" role="radiogroup" aria-labelledby="ivw-sen">${['Junior', 'Mid', 'Senior'].map(s => `<button type="button" role="radio" aria-checked="${s === 'Mid'}">${s}</button>`).join('')}</div></div>
+        <div class="aim-field"><span class="aiw-l" id="ivw-sen">Seniority</span><div class="seg3" role="radiogroup" aria-labelledby="ivw-sen">${['Junior', 'Mid', 'Senior'].map(s => `<button type="button" role="radio" aria-checked="${s === 'Mid'}" tabindex="${s === 'Mid' ? 0 : -1}">${s}</button>`).join('')}</div></div>
         <p class="rt-step" data-only="personalized" hidden>Step 1/2</p>
         <div class="aim-foot"><button class="rt-btn rt-ai ivw-go" type="submit" data-only="basic">Generate with AI</button><button class="rt-btn rt-coral aiw-next" type="button" data-only="personalized" hidden>Next</button></div>
       </form></div>${stepTwoPanes('interview')}</div>`;
@@ -4497,6 +4550,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
     form.addEventListener('submit', e => {
       e.preventDefault();
+      // Enter in Personalized goes on to step 2, like Next
+      if (form.dataset.mode === 'personalized') return form.querySelector('.aiw-next').click();
       if (needFilled(required()) && !flowOn()) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
     const sel = root.querySelector('.sel');
@@ -4687,6 +4742,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     }
     function end() {
       const ok = procResult === 'ok';
+      card._start = null;
       card.dataset.state = ok ? 'done' : 'error';
       pics.forEach((p, k) => p.classList.toggle('is-on', k === 3));
       bars.forEach(b => { b.classList.add('is-done'); b.firstElementChild.removeAttribute('style'); });
@@ -4698,10 +4754,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     }
     // a failed run stops while it reads the job post
     function run() {
+      card._start = null;
       card.dataset.state = 'run';
       if (live()) setRouteHead(HEADS.tailoring);
       wait.hidden = false; cont.hidden = retry.hidden = x.hidden = true;
-      const stopAt = procResult === 'ok' ? TLD_STEPS.length : 1;
+      const stopAt = procResult === 'ok' ? TLD_STEPS.length : 2;
       const tick = step => {
         if (!live()) return;
         if (step === stopAt || step === TLD_STEPS.length) return end();
@@ -4722,8 +4779,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     retry.addEventListener('click', () => { if (procResult === 'fail') return back(); flowTo(`route:${path}#process`); run(); });
     cont.addEventListener('click', () => { if (!flowOn()) jumpEditor(); });
     wait.addEventListener('click', card._note);
-    if (live()) { if (tldJump) end(); else run(); }
+    // opened from another screen, it starts once the route screen shows (openRoute)
+    card._start = tldJump ? end : run;
     tldJump = false;
+    if (live()) card._start();
   }
   // Leaving while it runs: clicking beside the card or pressing Escape asks the person to wait
   function tldInterrupt(e) {
@@ -4746,7 +4805,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   function refreshSel(sel) {
     const docs = [cvName || 'My Kickresume (copy)', 'My Kickresume (copy)'];
-    sel.querySelector('.sel-row').innerHTML = docs.map((n, i) => `<button class="sel-item" type="button" role="radio" aria-checked="${i === 0}">${i % 2 ? miniB() : miniA()}<span class="sel-name">${esc(n)}</span></button>`).join('');
+    sel.querySelector('.sel-row').innerHTML = docs.map((n, i) => `<button class="sel-item" type="button" role="radio" aria-checked="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${i % 2 ? miniB() : miniA()}<span class="sel-name">${esc(n)}</span></button>`).join('');
   }
   /* Two resume previews in the style of the screenshot's templates, drawn with boxes and lines.
      Sizes are in cqw (percent of the thumbnail's width) so they stay crisp at any size. */
@@ -4801,6 +4860,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (st === 'progress') flowSeen('progress');  // uploading is the flow's data processing
       if (onState) onState(st);
       morphHeight(card, () => { card.dataset.state = st; card.innerHTML = UPL[st](); });
+      landFocus(card);
       if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
     };
     // prototype triggers: a file name containing "scan" can't be read; other formats or over 10 MB are refused
@@ -4815,9 +4875,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     });
     card.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.upl-drop')) { e.preventDefault(); input.click(); } });
     input.addEventListener('change', () => { take(input.files[0]); input.value = ''; });
-    ['dragenter', 'dragover'].forEach(t => card.addEventListener(t, e => { const d = e.target.closest('.upl-drop'); if (d) { e.preventDefault(); d.classList.add('is-over'); } }));
+    // a file dropped anywhere on the card counts (and never opens in the tab instead of the prototype)
+    ['dragenter', 'dragover'].forEach(t => card.addEventListener(t, e => { e.preventDefault(); const d = e.target.closest('.upl-drop'); if (d) d.classList.add('is-over'); }));
     card.addEventListener('dragleave', e => { const d = e.target.closest('.upl-drop'); if (d && !d.contains(e.relatedTarget)) d.classList.remove('is-over'); });
-    card.addEventListener('drop', e => { const d = e.target.closest('.upl-drop'); if (!d) return; e.preventDefault(); take(e.dataTransfer.files[0]); });
+    card.addEventListener('drop', e => { e.preventDefault(); if (card.querySelector('.upl-drop')) take(e.dataTransfer.files[0]); });
   }
   /* /dashboard/upload-resume/: after the upload, the usual building screen and the editor */
   function startFromUpload(item) { const card = item.querySelector('.upl'); card._file = card._file || null; startCreation(card, 'upload'); }
@@ -4843,7 +4904,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     form.addEventListener('submit', e => {
       e.preventDefault();
       const slug = slugOf(input.value);
-      if (!/^[\w\-%.]{2,}$/.test(slug)) { err.hidden = false; return input.focus(); }
+      if (!/^[\p{L}\p{N}_.-]{2,}$/u.test(slug)) { err.hidden = false; return input.focus(); }
       startCreation(form, 'linkedin', { url: 'https://www.linkedin.com/in/' + slug });
     });
   }
@@ -5022,7 +5083,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let upgPlan = 'quarterly', upgStudent = false, upgBack = 'intent', upgBackRoute = null, stuFromPlans = false;
   const upgPath = () => upgStudent ? '/upgrade/student/' : `/upgrade/${upgPlan}/`;
   function upgPlanHTML(p) {
-    return `<button class="upg-plan" type="button" role="radio" aria-checked="${p.id === upgPlan}" data-plan="${p.id}">
+    return `<button class="upg-plan" type="button" role="radio" aria-checked="${p.id === upgPlan}" tabindex="${p.id === upgPlan ? 0 : -1}" data-plan="${p.id}">
       ${p.popular ? '<span class="upg-pop">Popular</span>' : ''}<span class="upg-radio" aria-hidden="true"></span>
       <span class="upg-plan-t"><span><span>${p.name}</span><b>${p.price}</b></span><span>${p.pay}</span></span></button>`;
   }
@@ -5038,7 +5099,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div><p class="upg-safe">${UPG_IC.tick}14-day money-back guarantee</p><button class="upg-go" type="button" data-wire="upgrade">Upgrade Now${UPG_IC.chev}</button></div></div>
     </section>
     <section class="upg-cred" aria-label="What people say about Kickresume">
-      <div class="upg-cred-l"><div><p class="upg-quote">“Not only does Kickresume provide templates, it also makes you think vigorously about yourself as a candidate, thus getting the best out of you. I would highly recommend Kickresume to every enthusiastic jobseeker — give it a try and you'll fall in love with it.”</p>
+      <div class="upg-cred-l"><div><p class="upg-quote">“Not only does Kickresume provide templates, it also makes you think vigorously about yourself as a candidate, thus getting the best out of you. I would highly recommend Kickresume to every enthusiastic jobseeker — give it a try and you’ll fall in love with it.”</p>
           <div class="upg-who"><img src="${UPG_IMG.david}" alt=""><span><b>David Mantic</b>Hired as Product Manager at Telekom</span></div></div>
         <p class="upg-stu"><img src="${UPG_IMG.grad}" alt=""><b>Are you a student or a teacher?</b><span>Get Kickresume Premium <button class="upg-free" type="button" data-upg="student">for free today</button>.</span></p></div>
       <div class="upg-cred-r"><img src="${UPG_IMG.trustpilot}" alt="Trustpilot: TrustScore 4.5, 1,382 reviews">
@@ -5084,7 +5145,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         opts.at((i + (e.key === 'ArrowDown' ? 1 : -1)) % opts.length).focus();
       }
     });
-    wrap.addEventListener('focusout', e => { if (!menu.hidden && !wrap.contains(e.relatedTarget)) set(false); });
+    closeOnLeave(wrap, () => !menu.hidden, () => set(false));
   }
   function initStu(root) {
     const form = root.querySelector('.stu-form'), country = root.querySelector('#stu-country'), uni = root.querySelector('#stu-uni');
@@ -5264,7 +5325,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <div class="tl-col">
         <div class="tl-score">${meter()}</div>
         <div class="tl-score is-key"><div>${meter()}</div><div class="tl-keys">${key('Design', '55/100', 'design')}${key('Structure', '60/100', 'structure')}${key('Content', '25/100', 'content')}</div></div>
-        <section class="tl-card is-shadow" data-sec="design" aria-labelledby="tl-design">${head('Design', '55/100', 'This is where you can make sure your resume’s design does not interfere with the ATS\'s ability to process it.', 'tl-design')}
+        <section class="tl-card is-shadow" data-sec="design" aria-labelledby="tl-design">${head('Design', '55/100', 'This is where you can make sure your resume’s design does not interfere with the ATS’s ability to process it.', 'tl-design')}
           <div class="tl-checks is-one"><div>${chk('ok', 'Resume template')}${chk('ok', 'Font type')}
             ${chk('err', 'Skills section', `<p>ATS systems can sometimes struggle to determine skill levels from  graphical representations. Try using text descriptions instead.</p>${fix('Edit Skills', 'data-tl="edit"')}`, true)}
             ${chk('err', 'Background', `<p>ATS systems can have issues reading text when there’s a background pattern. Try to avoid these for optimal ATS performance.</p>${fix('Remove Background', 'data-action="toast" data-msg="The background pattern would be removed from the template."')}`, true)}</div></div></section>
@@ -5346,6 +5407,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setCurrent(screen);
     window.scrollTo(0, 0); device.scrollTop = 0;
     syncApp(path); riseIn(el, keepSide);
+    landFocus(el);
   }
   const openDocs = () => enterApp(docsEl, () => { docsEl.innerHTML = docsHTML(); }, 'docs', '/dashboard/resumes/');
   // path: the URL it shows (a tool's own, e.g. /dashboard/translate-resume/; the latest-resume one otherwise)
@@ -5372,7 +5434,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!cvUploaded) return askCvFor(r);  // it hands the CV straight back (buildCv) ...
     if (cvMade && cvMade.path === r.path) { cvNext = cvDefer = null; return runBuildFor(r); }  // ... to make it in the Analyzing screen
     openWire(r.path, 'Checking your resume', 'process', { f: FEATURES.find(f => f.id === 'analyse-resume'), pane: 'process' });
-    later(() => flowNow ? processDone() : openTool('ats'), 2600);
+    later(() => flowNow && !leavesFlow(r) ? processDone() : openTool('ats', r.path), 2600);
   }
   /* Below 1440px the preview column narrows; the preview shrinks to fit it */
   function fitPrev() {
@@ -5381,7 +5443,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   window.addEventListener('resize', fitPrev);
   /* The editor at its own URL (/edit/): a returning user's latest resume */
-  function openEdit() { jumpEditor(); routeNow = findRoute('/edit/'); markRoutes(); setHash('/edit/'); }
+  // the editor under a URL of its own (/edit/, /guest-edit-start/)
+  function editorAt(path) { jumpEditor(); routeNow = findRoute(path); markRoutes(); setHash(path); }
+  function openEdit() { editorAt('/edit/'); }
 
   /* ---------- Select your template (/dashboard/create-resume/) ----------
      Recreated from Figma (Kickresume 3.0 › 61941:33517). A page of its own (its own top bar and background), so like
@@ -5488,7 +5552,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <button class="wf-btn wf-btn--primary" type="button" data-wire="signup">Create account</button>
       </div>`, wNote('Guests reach this when processing is done, before the destination (Flow 2’s guest features). Their work is kept and opens right after sign-up.')),
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
-      const body = `<div class="wf-card wf-stack"><h1 class="t-title">${title}</h1>${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
+      const body = `<div class="wf-card wf-stack">${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
     'jobs-matcher': () => wShell('Job matcher', `<div class="wf-card wf-stack">
         ${wLines(1)}
@@ -5518,7 +5582,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         : `<div class="wf-card wf-split"><div class="wf-pane wf-pane--muted"><span class="t-label">${o.title}</span>${wField('Title', '')}${wField('Text', '', 'area')}</div><div class="wf-pane"><span class="wf-ph wf-ph--square">[${o.kind === 'site' ? 'website preview' : 'page preview'}]</span></div></div>`,
       wNote(`Destination: ${o.title}. Not designed yet; the flow ends here.`), o.kind === 'list' ? 560 : 760),
     templates: o => wShell('Pick a template', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Pick a ${o.kind} template</h1>${wLines(1)}
+        ${wLines(1)}
         <div class="wf-grid" style="--cols:3">${[1, 2, 3, 4, 5, 6].map(i => `<button class="wf-card wf-stack wf-gap-sm" type="button" data-wire="tpl"><span class="wf-ph wf-ph--square">[template ${i}]</span><span class="t-small">Template ${i}</span></button>`).join('')}</div>
       </div>`, wNote(`Feature personalization for a new ${o.kind} without a template in the URL. With one (…/{template}) the flow starts at processing (Flow 3).`), 640),
     jobs: () => wShell('Jobs', `<div class="wf-card wf-stack">
@@ -5547,8 +5611,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (w === 'result') return setResult(b.dataset.result);
     if (w === 'process') return processDone();
     if (w.startsWith('state-')) return stateAction(w);
-    if (w === 'tool' && routeNow && needsBuild(routeNow)) return runBuildFor(routeNow);  // Analyse resume right after the method screen
-    if (flowNow && flowNext()) return;
+    // a page's side buttons (Apply, Save to Job Tracker, About the company) lead off the run, never along it
+    if (flowNow && !['apply', 'track', 'company'].includes(w) && flowNext()) return;
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
     else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
@@ -5585,7 +5649,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cvBuild: path => ({ label: 'Building screen · your resume', match: 'screen:loading', run: () => { const r = findRoute(path); cvNext = () => openRoute(r); showBuilding('upload'); routeNow = r; markRoutes(); setHash(path); } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
-    editor: label => ({ label: label || 'Editor', match: 'screen:editor', run: jumpEditor }),
+    editor: (label, path) => ({ label: label || 'Editor', match: 'screen:editor', run: path ? () => editorAt(path) : jumpEditor }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
     tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
@@ -5633,7 +5697,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
-      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), ...cvRun('/dashboard/analyse-resume/'), dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
+      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), ...cvRun('/dashboard/analyse-resume/'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
       .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
 
@@ -5653,8 +5717,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // the tools with nothing to ask start on the CV straight away: Analyse resume processes it (Flow 3; without a CV
     // the method screen and its own Analyzing screen come first), the others open their page (Flow 4), Translate
     // resume after a landing page that took the CV and the language
-    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
-    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], process: [S.cvMake('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats')], noun: 'ATS report' },
+    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], process: [S.cvMake('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], noun: 'ATS report' },
     { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
@@ -5667,7 +5731,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
 
     { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
-    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, dest: () => [S.tool('ATS checker', 'ats')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
     ...[['create-resume', 'Resume with a chosen template', 'Setting up your resume', 'resume', resumeOut()], ['create-cover', 'Cover letter with a chosen template', 'Setting up your cover letter', 'cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
       ['create-website', 'Website with a chosen template', 'Building your website', 'website', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
       .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
@@ -5675,13 +5739,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     { id: 'login', flow: 4, group: '1 · Sign up / log in', title: 'Log in', path: '/login/', entry: S.auth('Log in', 'login'), dest: [S.dash()] },
     { id: 'dashboard', flow: 4, group: '1 · Sign up / log in', title: 'Dashboard', path: '/dashboard/', dest: [S.dash()] },
-    { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', dest: [S.editor('Editor (guest)')] },
+    { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', dest: [S.editor('Editor (guest)', '/guest-edit-start/')] },
     { id: 'site-tpl', flow: 4, group: '3 · Start from a template', title: 'Website template', path: '/cv/creative/', url: '/cv/{website-template}/', dest: [S.dest('Website template', '/cv/creative/', 'site')] },
     { id: 'latest', flow: 4, group: '6 · Latest resume', title: 'Latest resume, returning user', path: '/latest-resume/', cv: true, dest: [S.latest('Editor (/edit/)', '/latest-resume/', true, 'screen:editor')] },
     { id: 'latest-new', flow: 4, group: '6 · Latest resume', title: 'Latest resume, no CV yet', path: '/latest-resume/', cv: false, dest: [S.latest('My Documents', '/latest-resume/', false, 'route:/dashboard/resumes/')] },
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].map(([t, label]) => ({ id: 'latest-' + t, flow: 4, group: '6 · Latest resume', title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] })),
     { id: 'docs', flow: 4, group: '6 · Latest resume', title: 'My Documents', path: '/dashboard/resumes/', dest: [S.docs()] },
-    { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', dest: [S.editor()] },
+    { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', dest: [S.editor('Editor', '/edit/')] },
     ...[['/jobs/', 'Jobs', 'jobs'], ['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/'], ['/jobs/job-tracker/', 'Job Tracker', 'tracker']]
       .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, group: '7 · Jobs', title, path, url, dest: [S.wire(title, path, w)] })),
     ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, group: '9 · Upgrade', title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] }))
@@ -5738,18 +5802,21 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const f = FEATURES.find(x => x.id === id);
     flowPick[f.flow] = id;
     if (f.cv !== undefined) setCv(f.cv);
+    cvNext = cvDefer = cvMade = buildNext = null;  // nothing from an earlier run carries over
     flowNow = buildFlow(f); renderFlowsPanel();
     flowGo(0);
   }
 
-  const flowBar = document.getElementById('flow-bar');
+  const flowBar = document.getElementById('flow-bar'), flowLive = document.getElementById('flow-live');
   function renderFlowBar() {
+    // the bar is drawn anew: focus on one of its buttons comes back to the same button (or the step now on)
+    const had = flowBar.contains(document.activeElement) && document.activeElement, was = had && (had.matches('.fb-dot') ? '' : had.getAttribute('aria-label'));
     flowBar.hidden = !flowNow;
     document.querySelectorAll('.pmf').forEach(c => c.setAttribute('aria-current', String(!!flowNow && +c.dataset.flowCard === flowNow.n)));
-    if (!flowNow) return;
+    if (!flowNow) { flowLive.textContent = ''; if (had) pmBtn.focus(); return; }
     const st = flowNow.steps[flowAt], groups = [];
     flowNow.steps.forEach((s, i) => { const g = groups.at(-1); if (g && g.stage === s.stage) g.items.push([s, i]); else groups.push({ stage: s.stage, items: [[s, i]] }); });
-    const dot = ([s, i]) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}" aria-label="Step ${i + 1}, ${STAGE[s.stage]}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${STAGE[s.stage]} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`;
+    const dot = ([s, i]) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}"${i === flowAt ? ' aria-current="step"' : ''} aria-label="Step ${i + 1}, ${STAGE[s.stage]}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${STAGE[s.stage]} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`;
     const now = flowNow.skipped ? 'Skipped personalization → Dashboard' : `${flowAt + 1}/${flowNow.steps.length} · ${STAGE[st.stage]} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}`;
     flowBar.innerHTML = `<b class="fb-name">Flow ${flowNow.n} · ${flowNow.title}</b>
       <span class="fb-steps">${groups.map(g => `<span class="fb-grp st-${g.stage}">${g.items.map(dot).join('')}</span>`).join('')}</span>
@@ -5757,6 +5824,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <button class="fb-nav" type="button" data-flow-step="${flowAt - 1}" aria-label="Previous step"${flowAt ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav fb-next" type="button" data-flow-step="${flowAt + 1}" aria-label="Next step"${flowAt < flowNow.steps.length - 1 ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav" type="button" data-flow-end aria-label="End the flow">${rtIc(RT_IC.x)}</button>`;
+    flowLive.textContent = flowNow.skipped ? 'Skipped personalization, on the dashboard' : `Step ${flowAt + 1} of ${flowNow.steps.length}, ${STAGE[st.stage]}: ${st.label}`;
+    if (had) (was && flowBar.querySelector(`[aria-label="${was}"]:not(:disabled)`) || flowBar.querySelector('.fb-dot.is-on')).focus({ preventScroll: true });
   }
   function flowGo(i) {
     if (!flowNow || i < 0 || i >= flowNow.steps.length) return false;
@@ -5787,7 +5856,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (st[k] && st[k].result && procResult === 'ok') k++;
     return k;
   }
-  function processDone() { if (flowNow) flowGo(afterProcessAt()); }
+  function processDone() {
+    if (flowNow) return flowGo(afterProcessAt());
+    // no run (it was ended, or the screen was opened from URLs): on to what the feature makes, as Skip promises
+    const f = routeNow && FEATURES.find(x => x.path === routeNow.path && x.dest), d = f && [].concat(typeof f.dest === 'function' ? f.dest() : f.dest)[0];
+    if (d) d.run();
+  }
   /* Put the bar back on a step the screen returned to by itself (Tailor's Retry and Close), without opening it again */
   function flowTo(match) {
     if (!flowNow) return;
@@ -5798,7 +5872,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return toast('Run a flow (More options › Flows) to move on from here.');
     const first = st => flowNow.steps.findIndex(s => s.stage === st);
     if (w === 'state-next') flowNext();
-    else if (w === 'state-retry') flowGo(first('prep') >= 0 ? first('prep') : first('process'));
+    else if (w === 'state-retry') { const prep = flowNow.steps.findLastIndex(s => s.stage === 'prep'); flowGo(prep >= 0 ? prep : first('process')); }  // the input just given
     else flowGo(first('process'));
   }
   function setResult(r) {
@@ -5807,7 +5881,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const card = current === 'route' && screens.route.querySelector('[data-pane="state"]');
     if (card) { card.innerHTML = WIRE.state({ f: flowNow ? flowNow.f : { noun: 'result' } }); syncNote(); routeHead(routeNow, 'state'); }
     const tld = current === 'route' && screens.route.querySelector('.tld:not([data-state="run"])');
-    if (tld) tld._end();
+    if (tld && !tld.closest('[hidden]')) tld._end();
     markMore();
   }
   /* A screen picked from the Screens list or typed as a URL ends the running flow unless it is one of its steps */
@@ -5825,7 +5899,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Keep the bar in step when the person moves on with the screen's own buttons */
   function flowSync() {
     if (!flowNow) return;
-    if (flowNow.n === 1 && current === 'dashboard') { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
+    if (flowNow.n === 1 && current === 'dashboard' && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
     const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
@@ -5862,7 +5936,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function normLinkedIn(v) {
     const s = v.trim().replace(/^https?:\/\//i, '').replace(/^(www\.|m\.|[a-z]{2}\.)/i, '');
     const m = s.match(/^linkedin\.com\/in\/([^/?#\s]+)/i);
-    return m ? `https://www.linkedin.com/in/${decodeURIComponent(m[1])}` : null;
+    if (!m) return null;
+    try { return `https://www.linkedin.com/in/${decodeURIComponent(m[1])}`; } catch (e) { return null; }  // a broken %-escape
   }
   function checkLinkedInC(form) {
     const input = form.querySelector('[name="url"]'), url = normLinkedIn(input.value);
@@ -6089,8 +6164,35 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       el.textContent = hide ? 'Show Additional Fields' : 'Hide Additional Fields';
       el.setAttribute('aria-expanded', String(!hide));
     }
-    else if (a === 'chip-remove') { person[el.dataset.list].splice(+el.dataset.i, 1); refreshChips(el.dataset.list); }
+    else if (a === 'chip-remove') {
+      const key = el.dataset.list, i = +el.dataset.i, card = el.closest('.ecard');
+      person[key].splice(i, 1); refreshChips(key);
+      // the focus goes to the chip that took its place, the one before it, the field that adds one, or the section
+      const btns = editorEl.querySelectorAll(`[data-out="${key}"] [data-action="chip-remove"]`);
+      (btns[Math.min(i, btns.length - 1)] || card.querySelector('[data-add]') || card.querySelector('.ehead')).focus();
+    }
     else if (a === 'rv-sec') editSection(el.dataset.sec);
+  });
+
+  /* A menu closes when the focus leaves it. Safari doesn't focus a button on click, so pressing an option blurs the
+     menu with no relatedTarget: a press inside doesn't count as leaving */
+  function closeOnLeave(wrap, isOpen, close) {
+    let pressed = false;
+    wrap.addEventListener('pointerdown', () => { pressed = true; setTimeout(() => { pressed = false; }); });
+    wrap.addEventListener('focusout', e => { if (isOpen() && !pressed && !wrap.contains(e.relatedTarget)) close(); });
+  }
+  /* Radio groups of buttons (Tone, Form, Seniority, Select your resume, billing period): one Tab stop, the checked
+     option, and the arrow keys move the choice (Tailor's levels and the billing period handle their own keys) */
+  new MutationObserver(ms => new Set(ms.map(m => m.target.closest('[role="radiogroup"]')).filter(Boolean))
+    .forEach(g => g.querySelectorAll('[role="radio"]').forEach(r => { r.tabIndex = r.getAttribute('aria-checked') === 'true' ? 0 : -1; })))
+    .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['aria-checked'] });
+  document.addEventListener('keydown', e => {
+    const r = e.target.closest && e.target.closest('[role="radio"]'), group = r && r.closest('[role="radiogroup"]');
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!group || !step || group.matches('.trl-seg, .upg-pick')) return;
+    e.preventDefault();
+    const all = [...group.querySelectorAll('[role="radio"]')], next = all[(all.indexOf(r) + step + all.length) % all.length];
+    next.click(); next.focus();
   });
 
   // C: check the LinkedIn link when the field loses focus (never on each keystroke)
@@ -6164,7 +6266,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   setLayout(hl ? hl[0] : (savedLayout || 'grid'));
   const startRoute = findRoute(location.hash);
   if (startRoute) openRoute(startRoute, true);
-  else if (/dashboard/.test(hash)) openDashboard();
+  else if (hash.split(/[-,]/).includes('dashboard') || normPath(hash) === '/dashboard/') openDashboard();
   routesReady = true;
   if (/editor/.test(hash)) {
     screens.intent.hidden = true; screens.loading.hidden = false; setCurrent('loading');
