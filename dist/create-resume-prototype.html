@@ -2493,8 +2493,9 @@ body.has-note .au-main { padding-bottom: 96px; }
 .flow-bar [data-tip]:is(:hover, :focus-visible)::after { transform: translate(-50%, 0); }
 @media (max-width: 760px) { .fb-name, .fb-now { display: none; } .flow-bar, .proto-note { max-width: calc(100vw - 140px); } }
 
-/* More options has two views (tabs at the top, they stay put while the panel scrolls): Flows, with the person's
-   CV, the processing result, the four flows and the goal and method screens' look; and URLs, every screen */
+/* More options has two views (tabs at the top, they stay put while the panel scrolls): Flows, with the processing
+   result, the four flows (each with its own CV choice) and the goal and method screens' look; and URLs, a CV
+   choice for the screens opened from there and every screen */
 .pm-tabs { position: sticky; top: -10px; z-index: 2; display: flex; gap: 2px; margin: -10px -10px 0 -12px; padding: 10px 10px 4px 12px; background: var(--kr-blue-dark); }
 .pm-tab { flex: 1; height: 30px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .06); color: #c9cde0; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
 .pm-tab:hover { background: rgba(255, 255, 255, .12); color: var(--kr-white); }
@@ -2542,6 +2543,15 @@ body.has-note .au-main { padding-bottom: 96px; }
 .st-entry { background: none; color: #8a93ab; box-shadow: inset 0 0 0 1px rgba(138, 147, 171, .5); }
 .pmf-skip { display: flex; align-items: center; gap: 4px; font-size: 11px; line-height: 14px; color: #8a93ab; }
 .pmf-pick { display: flex; gap: 6px; }
+/* the flow's own CV: the person starts the run with or without one (unless the URL decides), then Run */
+.pmf-cv { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.pmf-cv .pmf-run { margin-left: auto; }
+.proto-more .pmf-cv .pm-seg button { height: 26px; }
+.proto-more .pmf-cv .pm-seg button:disabled { cursor: default; opacity: .55; }
+.proto-more .pmf-cv .pm-seg button:disabled:not([aria-pressed="true"]):hover { background: none; color: inherit; }
+.pmf-fixed { font-size: 11px; line-height: 14px; color: #8a93ab; }
+@media (max-width: 480px) { .pmf-fixed { order: 1; flex-basis: 100%; margin-top: -2px; } }  /* under the buttons, Run stays on their row */
+.pm-url-cv { min-height: 34px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
 .pmf-pick select {
   flex: 1; width: 0; min-width: 0;  /* no say in the panel's width: the longest URL title would widen it past a phone */ height: 30px; padding: 0 26px 0 8px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; color: var(--kr-white); cursor: pointer;
   -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, .1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9cde0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center / 14px;
@@ -2675,7 +2685,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.14">v2.14</div>
+<div class="proto-ver" aria-label="Prototype version 2.15">v2.15</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2709,22 +2719,15 @@ body.has-note .au-main { padding-bottom: 96px; }
       <button class="pm-tab" type="button" role="tab" id="pm-tab-urls" aria-controls="pm-view-urls" aria-selected="false" tabindex="-1" data-pm-tab="urls">URLs <span class="pm-count" id="pm-count"></span></button>
     </div>
     <div class="pm-view" id="pm-view-flows" role="tabpanel" aria-labelledby="pm-tab-flows">
-      <div class="pm-sec"><span class="pm-label">The person</span>
-        <div class="pm-row"><span class="pm-key">CV</span>
-          <div class="seg pm-seg">
-            <button type="button" data-cv="no" aria-pressed="true" data-tip="Tools that work on a resume start on the method screen">No CV</button>
-            <button type="button" data-cv="yes" aria-pressed="false" data-tip="Tools open straight on their own screen">Has a CV</button>
-          </div>
-        </div>
-        <div class="pm-row"><span class="pm-key">Result</span>
+      <div class="pm-sec"><span class="pm-label">Flows</span><p class="pmf-intro">Every URL follows one of four flows and fills in only the outlined stages. Pick one, say whether the person has a CV, then Run.</p>
+        <div class="pm-row"><span class="pm-key">Result, every flow</span>
           <div class="seg pm-seg">
             <button type="button" data-result="ok" aria-pressed="true" data-tip="Processing ends · straight on to the result">Completed</button>
             <button type="button" data-result="fail" aria-pressed="false" data-tip="Processing ends · the input can’t be used">Failed</button>
             <button type="button" data-result="error" aria-pressed="false" data-tip="Processing ends · something broke on our side">Error</button>
           </div>
         </div>
-      </div>
-      <div class="pm-sec"><span class="pm-label">Flows</span><p class="pmf-intro">Every URL follows one of four flows and fills in only the outlined stages. Pick one, then Run.</p><div id="pm-flows"></div></div>
+        <div id="pm-flows"></div></div>
       <div class="pm-sec"><span class="pm-label">Goal &amp; method screens</span>
         <div class="pm-row"><span class="pm-key">Look</span>
           <div class="seg pm-seg" data-screen-for="intent create">
@@ -2741,6 +2744,12 @@ body.has-note .au-main { padding-bottom: 96px; }
     </div>
     <div class="pm-view" id="pm-view-urls" role="tabpanel" aria-labelledby="pm-tab-urls" hidden>
       <p class="pmf-intro">Every screen at its own URL, grouped like the URL checklist. Opening one ends a running flow unless it is one of its steps.</p>
+      <div class="pm-row pm-url-cv"><span class="pm-key">CV, for the screens below</span>
+        <div class="seg pm-seg">
+          <button type="button" data-cv="no" aria-pressed="true" data-tip="Tools that work on a resume start on the method screen">No CV</button>
+          <button type="button" data-cv="yes" aria-pressed="false" data-tip="Tools open straight on their own screen">Has a CV</button>
+        </div>
+      </div>
       <div id="pm-routes"></div>
     </div>
   </div>
@@ -4145,7 +4154,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
   /* A CV counts as uploaded once the person uploads one (the onboarding upload method or the Upload
-     screen), makes one on the method screen for a screen that asked (askCv), or when More options › CV says so.
+     screen), makes one on the method screen for a screen that asked (askCv), or when a flow or the URLs view's CV says so.
      Screens that work on a resume ask for one first. */
   let cvUploaded = false, cvName = '';
   /* No CV yet: the method screen gets one (any of its methods), the building screen makes it, and then
@@ -4175,7 +4184,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
     if (!on) cvMade = null;
-    if (routesReady) renderFlowsPanel();  // the flows' step lists depend on it
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
     if (current === 'dashboard') {  // the menu's resume group follows the CV
@@ -5766,14 +5774,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   let flowNow = null, flowAt = 0, procResult = 'ok';
 
-  /* More options › Flows: the four flows with their stages; pick a feature (URL) to see what it puts in them, then Run */
-  const pmFlows = document.getElementById('pm-flows'), flowPick = {};
+  /* More options › Flows: the four flows with their stages; pick a feature (URL) to see what it puts in them, say
+     whether the person has a CV, then Run. Each flow keeps its own CV choice (one for all of them couldn't fit every
+     flow); a feature that decides it itself (a landing page's CV, Latest resume, a tool that needs one) shows it fixed. */
+  const pmFlows = document.getElementById('pm-flows'), flowPick = {}, flowCv = { 1: false, 2: false, 3: false, 4: false };
+  const runsWithCv = f => f.cv ?? flowCv[f.flow];
   // what the feature puts in the stages: its URL, then its own steps in order, coloured like the stage they fill
   // (the goal screen and the shared processing state are the template's, shown by the chips above); with the CV
-  // it runs with (its own, or More options › CV)
+  // it runs with
   function pmOut(f) {
     const had = cvUploaded;
-    if (f.cv !== undefined) cvUploaded = f.cv;
+    cvUploaded = runsWithCv(f);
     const all = buildFlow(f).steps;
     cvUploaded = had;
     const steps = all.filter(s => s.stage !== 'intent' && (s.stage !== 'state' || s.match.startsWith('route:/register/')));
@@ -5786,22 +5797,45 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="pmf-top"><b>Flow ${T.n}</b><span>${T.title}</span></div>
         <ol class="pmf-stages" aria-label="Stages">${T.stages.map(st => `<li><span class="st-chip st-${st}${['prep', 'dest'].includes(st) ? ' is-feat' : ''}" title="${STAGE[st]}${['prep', 'dest'].includes(st) ? ': set by the URL' : ''}">${STAGE_SHORT[st]}</span></li>`).join('')}</ol>
         ${T.skip ? '<div class="pmf-skip">Skip personalization → <span class="st-chip st-dash">Dashboard</span></div>' : ''}
-        <div class="pmf-pick"><select data-flow-pick="${T.n}" aria-label="Flow ${T.n}: the feature or URL to run">${[...new Set(list.map(f => f.group))].map(g => `<optgroup label="${g}">${list.filter(f => f.group === g).map(f => `<option value="${f.id}"${f.id === sel ? ' selected' : ''}>${f.title}</option>`).join('')}</optgroup>`).join('')}</select>
-          <button class="pmf-run" type="button" data-flow-run="${T.n}" aria-label="Run flow ${T.n} with this feature"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button></div>
+        <div class="pmf-pick"><select data-flow-pick="${T.n}" aria-label="Flow ${T.n}: the feature or URL to run">${[...new Set(list.map(f => f.group))].map(g => `<optgroup label="${g}">${list.filter(f => f.group === g).map(f => `<option value="${f.id}"${f.id === sel ? ' selected' : ''}>${f.title}</option>`).join('')}</optgroup>`).join('')}</select></div>
+        ${pmCv(list.find(f => f.id === sel))}
         <div class="pmf-out">${pmOut(list.find(f => f.id === sel))}</div>
       </div>`;
     }).join('');
+  }
+  // the flow's CV choice and Run
+  function pmCv(f) {
+    const n = f.flow, fixed = f.cv !== undefined, on = runsWithCv(f);
+    return `<div class="pmf-cv"><span class="pm-key">CV</span>
+      <div class="seg pm-seg" role="group" aria-label="Flow ${n}: does the person have a CV${fixed ? ' (set by this URL)' : ''}">${[['no', 'No CV'], ['yes', 'Has a CV']].map(([v, l]) =>
+        `<button type="button" data-flow-cv="${n}" data-v="${v}" aria-pressed="${on === (v === 'yes')}"${fixed ? ' disabled' : ''}>${l}</button>`).join('')}</div>
+      ${fixed ? '<span class="pmf-fixed">set by this URL</span>' : ''}
+      <button class="pmf-run" type="button" data-flow-run="${n}" aria-label="Run flow ${n} with this feature"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button></div>`;
+  }
+  // a new pick or CV choice redraws that flow's CV row and steps (not the picker, which may still have the focus)
+  function refreshFlowCard(n) {
+    const card = pmFlows.querySelector(`[data-flow-card="${n}"]`), f = FEATURES.find(x => x.id === card.querySelector('select').value);
+    card.querySelector('.pmf-cv').outerHTML = pmCv(f);
+    card.querySelector('.pmf-out').innerHTML = pmOut(f);
   }
   renderFlowsPanel();
   pmFlows.addEventListener('change', e => {
     const sel = e.target.closest('[data-flow-pick]'); if (!sel) return;
     flowPick[sel.dataset.flowPick] = sel.value;
-    sel.closest('.pmf').querySelector('.pmf-out').innerHTML = pmOut(FEATURES.find(f => f.id === sel.value));
+    refreshFlowCard(sel.dataset.flowPick);
+  });
+  // (the CV buttons change in place: a clicked button taken out of the page would count as a click outside the panel)
+  pmFlows.addEventListener('click', e => {
+    const b = e.target.closest('[data-flow-cv]'); if (!b || b.disabled) return;
+    const n = b.dataset.flowCv, card = b.closest('.pmf');
+    flowCv[n] = b.dataset.v === 'yes';
+    card.querySelectorAll('[data-flow-cv]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    card.querySelector('.pmf-out').innerHTML = pmOut(FEATURES.find(x => x.id === card.querySelector('select').value));
   });
   function startFeature(id) {
     const f = FEATURES.find(x => x.id === id);
     flowPick[f.flow] = id;
-    if (f.cv !== undefined) setCv(f.cv);
+    setCv(runsWithCv(f));
     cvNext = cvDefer = cvMade = buildNext = null;  // nothing from an earlier run carries over
     flowNow = buildFlow(f); renderFlowsPanel();
     flowGo(0);
@@ -6118,7 +6152,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const rt = e.target.closest('[data-route]');
     if (rt) { const r = findRoute(rt.dataset.route); if (leavesFlow(r)) endFlow(); return openRoute(r); }
     const cvb = e.target.closest('[data-cv]');
-    if (cvb) { setCv(cvb.dataset.cv === 'yes'); return renderFlowsPanel(); }  // a tool's personalization asks for a CV only without one
+    if (cvb) return setCv(cvb.dataset.cv === 'yes');  // the URLs view's: the CV the screens opened from there start with
     const run = e.target.closest('[data-flow-run]');
     if (run) return startFeature(run.closest('.pmf').querySelector('select').value);
     const res = e.target.closest('[data-result]');
