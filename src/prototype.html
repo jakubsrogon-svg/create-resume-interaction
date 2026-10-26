@@ -65,16 +65,16 @@
      Content is top-aligned so the headline stays put between steps; the gap under the navbar
      scales with height (12px on small laptops, 160px max on big displays). */
   --vh: 1vh;
-  --sp-topbar: clamp(10px, calc(var(--vh) * 2.2), 24px);
+  --sp-topbar: clamp(10px, calc(var(--vh) * 2.2), 20px);  /* 20 + the 24px logo + 20: Figma's 64px bar */
   --sp-page-top: clamp(12px, calc((var(--vh) * 100 - 600px) * .25), 160px);  /* top-aligned: grows with height, stops at 160px */
   --sp-page-bottom: clamp(16px, calc(var(--vh) * 4), 48px);
-  --sp-head-gap: clamp(6px, calc(var(--vh) * 1.2), 12px);
-  --sp-section: clamp(16px, calc(var(--vh) * 4.5), 56px);
-  --sp-link: clamp(8px, calc(var(--vh) * 3), 40px);
+  --sp-head-gap: clamp(6px, calc(var(--vh) * 1.8), 16px);
+  --sp-section: clamp(16px, calc(var(--vh) * 4.5), 40px);
+  --sp-link: clamp(8px, calc(var(--vh) * 4.5), 40px);
   --h1: clamp(30px, calc(var(--vh) * 4 + 12px), 48px);
-  --list-gap: clamp(8px, calc(var(--vh) * 1.4), 12px);
+  --list-gap: clamp(6px, calc(var(--vh) * 1.4), 8px);
   --card-pad: clamp(10px, calc(var(--vh) * 2), 16px);
-  --tile: clamp(40px, calc(var(--vh) * 6.4), 52px);
+  --tile: clamp(40px, calc(var(--vh) * 6.4), 48px);
   --form-gap: clamp(10px, calc(var(--vh) * 2), 16px);
   --field-h: clamp(40px, calc(var(--vh) * 5.6), 48px);
 }
@@ -144,6 +144,8 @@ body.is-mobile .statusbar {
 @media (min-width: 481px) { body:not(.is-mobile) .top-x { right: -36px; } }  /* the stage keeps 52px for the rail, the device 16px */
 .logo { display: inline-flex; border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--radius); }
 .logo svg { width: 140px; height: auto; display: block; }
+.topbar { padding-inline: 9px; }  /* + the device's 16px: the logo 25px from the edge, as in Figma */
+.topbar .logo svg { width: 152px; }
 .logo:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 /* a headline or a view that takes the focus when it opens (landFocus) isn't a control: no ring */
 :is(h1, h2, section, div)[tabindex="-1"]:focus { outline: none; }
@@ -154,7 +156,7 @@ body.is-mobile .statusbar {
 .page-head { position: relative; text-align: center; display: grid; gap: var(--sp-head-gap); }
 .page-head h1 {
   font-family: var(--font-display); font-weight: 400; font-size: var(--h1); line-height: 1.17;
-  letter-spacing: -1.4px; margin: 0; text-wrap: balance;
+  letter-spacing: 0; margin: 0; text-wrap: balance;  /* Figma's Heading/H1: 48/56, no tracking */
 }
 .page-head p { margin: 0; text-wrap: balance; }
 
@@ -164,7 +166,7 @@ body.is-mobile .statusbar {
 /* Goal cards from Figma (Kickresume 3.0 › Intent screen [new], 61797:3677): four 244px cards in a 1048px row,
    wider than the 950px column of the other onboarding screens; two columns below ~1100px, rows on phones. */
 .intent-grid { --gw: min(1048px, 100cqw); width: var(--gw); margin: var(--sp-section) calc((100% - var(--gw)) / 2) 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
-/* List layout of the first screen: same 400px card stack as "How do you want to start?" */
+/* List layout of the first screen: same 500px card stack as the method screen */
 .intent-grid.is-list { grid-template-columns: minmax(0, 1fr); gap: var(--list-gap); width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
 .irow {
   width: 100%; display: flex; align-items: center; gap: 16px; padding: var(--card-pad) 16px; text-align: left; cursor: pointer;
@@ -195,6 +197,7 @@ body.is-mobile .statusbar {
   color: var(--kr-grey-80); text-decoration: underline; text-underline-offset: 3px; font-size: 16px;
   border-radius: var(--radius); transition: color .2s;
 }
+#screen-intent { --sp-head-gap: clamp(6px, calc(var(--vh) * 1.2), 8px); --sp-section: clamp(16px, calc(var(--vh) * 3.6), 32px); --sp-link: clamp(4px, calc(var(--vh) * 3.2), 28px); }
 .text-link:hover { color: var(--kr-grey-100); }
 .text-link:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .center { text-align: center; }
@@ -275,13 +278,13 @@ body.is-mobile .statusbar {
 .method-list { display: grid; gap: var(--list-gap); }
 
 .mcard {
-  background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: var(--radius-card);
+  background: var(--kr-white); border: 1px solid transparent; border-radius: var(--radius-card);
   transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-slow) var(--ease-standard);
   contain: layout style;
 }
 .mcard:hover, .mcard.is-open { box-shadow: var(--kr-shadow-dropdown); }
 .mhead {
-  width: 100%; display: flex; align-items: center; gap: 16px; padding: var(--card-pad) 16px; text-align: left;
+  width: 100%; display: flex; align-items: center; gap: 16px; padding: calc(var(--card-pad) - 1px) 15px; text-align: left;
   background: none; border: 0; border-radius: var(--radius-card); cursor: pointer;
 }
 .mhead:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
@@ -296,7 +299,7 @@ div.mhead { cursor: default; }
 .tone-ai { background: var(--kr-blue-tint); color: #8a5cff; }
 .tone-upload { background: var(--kr-primary-tint); color: var(--kr-primary); }
 .tone-paste { background: var(--kr-mint-tint); color: var(--kr-mint); }
-.mtext { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.mtext { flex: 1; min-width: 0; display: grid; gap: 4px; }
 .mtitle { font-size: 18px; line-height: 24px; font-weight: 500; }
 .msub { font-size: 14px; line-height: 20px; letter-spacing: 0.16px; color: var(--kr-grey-80); }
 .chev { display: inline-flex; color: var(--kr-grey-100); transition: transform var(--dur-slow) var(--ease-inout), opacity var(--dur-fast) var(--ease-standard); }
@@ -314,9 +317,9 @@ div.mhead { cursor: default; }
 /* Variant A: while one option is open, the others step back so the open one stands out.
    They come forward again on hover or keyboard focus, so they still read as clickable. */
 .method-list > .mcard { transition: box-shadow var(--dur-base) var(--ease-standard), opacity var(--dur-base) var(--ease-standard), background var(--dur-base) var(--ease-standard), border-color var(--dur-base) var(--ease-standard); }
-.method-list:has(> .mcard.is-open) > .mcard:not(.is-open) { opacity: .7; background: var(--kr-grey-20); border-color: var(--kr-grey-40); }
+.method-list:has(> .mcard.is-open) > .mcard:not(.is-open) { opacity: .7; background: var(--kr-grey-20); }
 .method-list:has(> .mcard.is-open) > .mcard:not(.is-open):hover,
-.method-list:has(> .mcard.is-open) > .mcard:not(.is-open):focus-within { opacity: 1; background: var(--kr-white); border-color: var(--kr-grey-60); }
+.method-list:has(> .mcard.is-open) > .mcard:not(.is-open):focus-within { opacity: 1; background: var(--kr-white); }
 
 /* Variant A on short windows: while one option is open, the others shrink to a single line.
    Every part of the shrink (padding, icon tile, title size, subtitle) moves with the fold, same
@@ -331,11 +334,11 @@ div.mhead { cursor: default; }
   .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtile { width: 32px; height: 32px; border-radius: 8px; }
   .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtile svg.i { width: 18px; height: 18px; }
   .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .mtitle { font-size: 16px; }
-  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .msub { max-height: 0; margin-top: -2px; opacity: 0; }
+  .method-list:has(> .mcard.is-open) > .mcard:not(.is-open) .msub { max-height: 0; margin-top: -4px; opacity: 0; }
 }
 
 /* Variant B: once a method is open, the "Skip personalization" link folds away */
-#screen-create > .center { display: grid; grid-template-rows: 1fr; padding-top: var(--sp-link); transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 120ms; }
+#screen-create > .center { display: grid; grid-template-rows: 1fr; padding-top: calc(var(--sp-link) - 4px); transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-base) var(--ease-standard) 120ms; }
 #screen-create > .center > .text-link { min-height: 0; overflow: hidden; justify-self: center; margin-top: 0; }
 #screen-create:has(.b-wrap.has-focus) > .center > .text-link { padding-block: 0; }
 #screen-create:has(.b-wrap.has-focus) > .center { grid-template-rows: 0fr; padding-top: 0; opacity: 0; transition: grid-template-rows var(--dur-slow) var(--ease-inout), padding var(--dur-slow) var(--ease-inout), opacity var(--dur-fast) var(--ease-exit); }
@@ -844,9 +847,9 @@ body.is-mobile .editor { min-height: 100%; }
 .ed-plan { margin-top: auto; display: grid; gap: 10px; text-align: center; font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
 .ed-plan b { font-weight: 700; font-style: italic; color: var(--kr-grey-100); }
 .nav-item.is-active, .nav-item.is-active:hover { background: var(--kr-grey-100); color: var(--kr-white); }
-/* the same menu on the dashboard, My Documents and the resume tools: first column; on phones the top bar spans the page */
-:is(.dash, .mdoc, .tl) > .ed-side { grid-area: auto; grid-column: 1; grid-row: 1; }
-:is(.dash, .mdoc, .tl) > .ed-mbar { grid-area: auto; grid-column: 1 / -1; }
+/* the same menu on the dashboard, My Documents, the resume tools and the jobs pages: first column; on phones the top bar spans the page */
+:is(.dash, .mdoc, .tl, .jobs) > .ed-side { grid-area: auto; grid-column: 1; grid-row: 1; }
+:is(.dash, .mdoc, .tl, .jobs) > .ed-mbar { grid-area: auto; grid-column: 1 / -1; }
 
 .ed-mbar { display: none; grid-area: mbar; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); }
 .ed-mbar .logo svg { width: 116px; }
@@ -1116,7 +1119,7 @@ body.is-mobile .dash { min-height: 100%; }
 .job { width: 100%; display: flex; gap: 16px; align-items: center; padding: 10px 8px; border: 0; background: none; border-radius: 12px; cursor: pointer; text-align: left; transition: background var(--dur-fast); }
 .job:hover { background: var(--kr-grey-20); }
 .job:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.co { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; flex: none; color: var(--kr-white); font-size: 13px; font-weight: 700; }
+.co { display: block; width: 40px; height: 40px; border-radius: 5px; flex: none; object-fit: cover; }
 .job-text { display: grid; min-width: 0; }
 .job-text span { font-size: 13px; line-height: 18px; color: var(--kr-grey-80); }
 .job-text b { font-size: 15px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2071,6 +2074,168 @@ body.has-note .mdoc, body:has(.flow-bar:not([hidden])) .mdoc { padding-bottom: 5
   .md-grid { justify-content: center; }
 }
 
+/* ---------- Find Jobs (Figma Kickresume 3.0 › Flow 1, 62207:3265) ----------
+   The job board (/jobs/search/) is an onboarding screen in #screen-route; its search results (/jobs/) and Jobs for
+   You (/jobs/matcher/) are an app page with the app menu (APPS.jobs). Sizes are Figma's (a 1440px-wide frame). */
+.jb { display: grid; justify-items: center; width: 100%; }
+.jb-search { width: min(747px, 100%); margin: 0; padding: 16px; border-radius: 24px; background: rgba(255, 255, 255, .5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); box-shadow: 0 8px 20px rgba(165, 165, 165, .18); }
+.jb-box { display: flex; align-items: center; gap: 12px; padding: 18px 23px; border: 1px solid var(--kr-grey-60); border-radius: 16px; background: var(--kr-white); color: var(--kr-grey-100); }
+.jb-box:has(input:focus-visible), .jbs-box:has(input:focus-visible) { box-shadow: var(--kr-focus-ring); }
+.jb-box > svg, .jbs-x svg, .jbs-go svg { flex: none; display: block; }
+.jb-box input, .jbs-box input { flex: 1; min-width: 0; padding: 0; border: 0; background: none; outline: none; -webkit-appearance: none; appearance: none; font-size: 16px; line-height: 24px; color: var(--kr-grey-100); }
+.jb-box input::placeholder, .jbs-box input::placeholder { color: var(--kr-grey-80); opacity: 1; }
+.jb-box input::-webkit-search-cancel-button, .jbs-box input::-webkit-search-cancel-button { display: none; }
+.jb-go { flex: none; width: 142px; height: 40px; padding: 0; border: 1px solid var(--kr-primary); border-radius: 10px; background: var(--kr-primary); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: filter var(--dur-fast); }
+.jb-go:hover, .jbs-go:hover { filter: brightness(.94); }
+.jb-go:focus-visible, .jb-trend:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.jb-trends { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 758px; margin-top: 24px; }
+.jb-trend { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .5); font: 500 14px/20px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast); }
+.jb-trend span { font-size: 16px; line-height: 24px; }
+.jb-trend:hover { background: var(--kr-white); }
+.jb .text-link { margin-top: calc(var(--sp-link) - 4px); }
+
+.jobs { margin-inline: -16px; min-height: calc(var(--vh) * 100); display: grid; grid-template-columns: 232px minmax(0, 1fr); align-items: start; color: var(--kr-grey-100); background: var(--kr-white); }
+.jobs.is-search { background: linear-gradient(var(--kr-background), var(--kr-white)); }
+.jobs.is-match { background: linear-gradient(var(--kr-background), var(--kr-grey-20) 384px) var(--kr-grey-20); }  /* Header BG over Gray/20 */
+body.has-note .jobs, body:has(.flow-bar:not([hidden])) .jobs { padding-bottom: 56px; }  /* scrolls clear of the flow bar */
+:where(.jobs) :where(button) { font: inherit; color: inherit; }
+.jobs button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.jbs-main { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: 21px 40px 64px; }
+.jobs.is-match .jbs-main { padding-top: 40px; }
+.jbs-col, .jm-col { display: flex; flex-direction: column; width: 100%; max-width: 1000px; }
+.jm-col { align-items: center; }
+/* All Jobs: the search results */
+.jbs-h { margin: 0; font: 400 32px/40px var(--font-display); }
+.jbs-box { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; padding: 15px 23px; border: 1px solid var(--kr-grey-60); border-radius: 16px; background: var(--kr-white); box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
+.jbs-box input { font-weight: 500; }
+.jbs-x, .jbs-go, .jbs-unfilter { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 10px; cursor: pointer; }
+.jbs-x { border: 0; background: none; transition: background var(--dur-fast); }
+.jbs-x:hover { background: rgba(0, 0, 0, .04); }
+.jbs-go { border: 1px solid var(--kr-primary); background: var(--kr-primary); color: var(--kr-white); transition: filter var(--dur-fast); }
+.jbs-filters { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 16px; padding-inline: 8px; }
+.jbs-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.jbs-unfilter, .jbs-btn, .jbs-sort { border: 1px solid var(--kr-grey-60); background: var(--kr-white); transition: background var(--dur-fast); }
+.jbs-unfilter:hover, .jbs-btn:hover, .jbs-sort:hover, .jm-prefs:hover, .jm-save:hover { background: var(--kr-grey-20); }
+.jbs-chip { padding: 10px 16px; border: 0; border-radius: 10px; background: var(--kr-grey-100); color: var(--kr-white); font-size: 14px; line-height: 20px; cursor: pointer; }
+.jobs .jbs-chip { color: var(--kr-white); }
+.jobs .jbs-chip[aria-pressed="false"] { background: var(--kr-white); color: var(--kr-grey-100); box-shadow: inset 0 0 0 1px var(--kr-grey-60); }
+.jbs-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 10px; font-size: 14px; line-height: 20px; cursor: pointer; }
+.jbs-btn svg, .jbs-unfilter svg, .jbs-sort svg { flex: none; display: block; }
+.jbs-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 60px; }
+.jbs-bar p { margin: 0; font-size: 16px; line-height: 24px; }
+.jbs-sort { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 6px; font-size: 14px; line-height: 20px; cursor: pointer; }
+.jbs-list, .jm-list { display: grid; width: 100%; margin: 0; padding: 0; list-style: none; }
+.jbs-list { gap: 16px; margin-top: 16px; }
+.jbs-job, .jm-job { position: relative; display: flex; gap: 16px; padding: 15px; border: 1px solid var(--kr-grey-40); border-radius: 16px; background: var(--kr-white); transition: box-shadow var(--dur-base) var(--ease-standard); }
+.jbs-job { align-items: center; }
+.jbs-job:hover, .jbs-job:focus-within, .jm-list:not(.is-blur) .jm-job:hover, .jm-job:focus-within { box-shadow: var(--kr-shadow-dropdown); }
+.jb-logo { flex: none; display: block; width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.jbs-text { flex: 1; min-width: 0; display: grid; gap: 8px; }
+.jbs-line { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-width: 0; }
+/* the job's title opens it; its ::after covers the card (Save sits above it) */
+.jb-open { min-width: 0; max-width: 100%; padding: 0; border: 0; background: none; font: 500 16px/24px var(--font-sans); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.jb-open::after { content: ""; position: absolute; inset: 0; border-radius: 16px; }
+.jobs .jb-open:focus-visible { box-shadow: none; }
+.jb-open:focus-visible::after { box-shadow: var(--kr-focus-ring); }
+.jbs-pay { flex: none; font-size: 14px; line-height: 20px; text-align: right; }
+.jbs-co { font-size: 14px; line-height: 20px; white-space: nowrap; }
+.jbs-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 8px; }
+.jbs-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px; border-radius: 4px; background: var(--kr-grey-40); font-size: 12px; line-height: 18px; white-space: nowrap; }
+.jbs-tag svg { flex: none; display: block; }
+/* Jobs for You */
+.jm-tabs { display: flex; gap: 8px; padding: 3px; border: 1px solid var(--kr-grey-60); border-radius: 99px; background: var(--kr-white); }
+.jm-tabs button { display: inline-flex; justify-content: center; align-items: center; gap: 4px; width: 140px; padding: 7px 4px; border: 0; border-radius: 99px; background: none; font: 500 14px/20px var(--font-sans); cursor: pointer; transition: background var(--dur-fast); }
+.jm-tabs button:not(.is-on):hover { background: var(--kr-grey-20); }
+.jm-tabs svg { flex: none; display: block; }
+.jobs .jm-tabs .is-on { background: var(--kr-grey-100); color: var(--kr-white); cursor: default; }
+.jm-head { display: grid; justify-items: center; gap: 16px; width: 400px; max-width: 100%; margin-top: 16px; text-align: center; }
+.jm-h { margin: 0; font: 700 32px/40px var(--font-sans); white-space: nowrap; }  /* Graphik Bold in the design; the prototype has Medium, which the browser emboldens */
+.jm-head p { margin: 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
+.jm-drop { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; width: 100%; height: 300px; margin-top: 32px; padding: 64px 16px; overflow: hidden;
+  border: 2px dashed var(--kr-blue); border-radius: 24px; background: linear-gradient(108.85deg, rgba(81, 78, 234, .1), rgba(81, 78, 234, .04)); cursor: pointer; transition: background-color var(--dur-fast); }
+.jm-drop.is-over { background-color: rgba(81, 78, 234, .08); }
+.jm-drop-h { margin: 0; font: 500 16px/24px var(--font-sans); color: var(--kr-blue); }
+.jm-drop-b { display: grid; justify-items: center; gap: 8px; width: 364px; max-width: 100%; }
+.jm-drop-b p { margin: 0; font-size: 12px; line-height: 18px; color: var(--kr-grey-80); text-align: center; }
+.jobs .jm-up { width: 150px; padding: 10px 0; border: 0; border-radius: 12px; background: var(--kr-blue); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: filter var(--dur-fast); }
+.jm-up:hover { filter: brightness(.94); }
+.jm-file { display: none; }
+/* the light across the drop zone: two strips at 42.58°, 25% and 45% white */
+.jm-shine { position: absolute; left: 443px; top: -156px; width: 830px; height: 865px; display: grid; place-items: center; pointer-events: none; }
+.jm-shine::before { content: ""; width: 303px; height: 897px; transform: rotate(42.58deg);
+  background: linear-gradient(rgba(255, 255, 255, .25), rgba(255, 255, 255, .25)) left top / 50% 100% no-repeat, linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .45)) right top / 50% 811px no-repeat; }
+.jm-list.is-blur { gap: 24px; margin-top: 32px; filter: blur(5.05px) drop-shadow(0 3px 8px rgba(0, 0, 0, .06)); pointer-events: none; user-select: none; }
+.jm-load { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; width: 100%; height: 300px; margin-top: 32px; padding: 16px 16px 8px; overflow: hidden; border-radius: 16px; background: var(--kr-white); box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
+.jm-load > svg { position: relative; flex: none; display: block; }
+.jm-load-b { position: relative; display: grid; justify-items: center; gap: 24px; width: 400px; max-width: 100%; }
+.jm-load-h { height: 56px; margin: 0; font: 500 24px/28px var(--font-sans); text-align: center; }
+.jm-bar { position: relative; width: 100%; height: 6px; overflow: hidden; border-radius: 99px; background: var(--kr-grey-40); }
+.jm-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 3px; background: linear-gradient(178.28deg, #5345ff, #9c3eff); }
+.jm-pct { margin: -16px 0 0; font-size: 12px; line-height: 18px; color: var(--kr-grey-80); text-align: center; }
+/* the two faded resumes and the match pill around the loader (centres from Figma's rotated boxes) */
+.jm-cv { position: absolute; width: 259.56px; height: 356.89px; overflow: hidden; border-radius: 3.2px; opacity: .3; transform: rotate(-15deg); }
+.jm-cv img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.jm-cv.is-a { left: calc(100% - 258.24px); top: 71.52px; filter: drop-shadow(-19.2px -12.8px 9.6px rgba(0, 0, 0, .1)); }
+.jm-cv.is-b { left: 9.76px; top: -186.49px; filter: drop-shadow(19.2px 12.8px 9.6px rgba(0, 0, 0, .1)); }
+.jm-pill { position: absolute; left: calc(100% - 310.07px); top: 69.94px; display: flex; justify-content: center; align-items: center; gap: 3.2px; width: 91.2px; height: 19.2px; overflow: hidden; border: .8px solid var(--kr-grey-40); border-radius: 8px; opacity: .4; transform: rotate(-15deg);
+  background: linear-gradient(90deg, rgba(72, 173, 67, .1), rgba(72, 173, 67, .1) 85%, rgba(72, 173, 67, 0) 95%); color: #48ad43; font-size: 9.6px; line-height: 14.4px; }
+.jm-pill b { width: 33.6px; font: 500 12.8px/19.2px var(--font-sans); text-align: right; }
+.jm-top { display: flex; gap: 24px; width: 100%; margin-top: 32px; }
+.jm-cvrow { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 16px; }
+.jm-thumb { flex: none; display: block; width: 100.36px; height: 138px; border: 1.045px solid var(--kr-grey-60); border-radius: 4.18px; background: var(--kr-white); object-fit: cover; object-position: top; }
+.jm-cvtext { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.jm-cvtext > b { font: 500 16px/24px var(--font-sans); }
+.jm-cvtext > span:first-of-type { font-size: 12px; line-height: 18px; color: var(--kr-grey-80); }
+.jm-prefs { height: 34px; padding: 0 23px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: background var(--dur-fast); }
+.jm-tags { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.jm-tags .jbs-tag { background: none; color: var(--kr-grey-80); }
+.jm-cvtext .jm-tags { align-self: stretch; margin-top: 4px; }
+.jm-cvtext .jbs-tag { padding: 0; }
+.jbs-tag.is-wide { width: 340px; max-width: 100%; }
+.jm-banner { flex: none; align-self: flex-start; display: flex; align-items: center; gap: 15px; width: 380px; padding: 8px 8px 8px 16px; border: 0; border-radius: 10px; text-align: left; cursor: pointer;
+  background: linear-gradient(rgba(255, 199, 92, .24), rgba(255, 199, 92, .08)), var(--kr-white); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); transition: box-shadow var(--dur-base) var(--ease-standard); }
+.jm-banner:hover { box-shadow: var(--kr-shadow-modal); }
+.jm-banner img { flex: none; display: block; width: 90px; height: 90px; }
+.jm-banner > span { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.jm-banner b { font: 500 14px/20px var(--font-sans); }
+.jm-banner > span > span { font-size: 12px; line-height: 18px; }
+.jm-banner > svg { flex: none; display: block; }
+.jm-top5 { width: 100%; margin: 32px 0 0; font: 500 24px/28px var(--font-sans); }
+.jm-list:not(.is-blur) { gap: 24px; margin-top: 32px; }
+.jm-job { align-items: flex-start; }
+.jm-text { flex: 1; min-width: 0; display: grid; justify-items: start; gap: 4px; }
+.jm-text .jb-open { font-size: 18px; }
+.jm-co { font-size: 14px; line-height: 20px; }
+.jm-cta { flex: none; display: grid; gap: 10px; width: 114px; }
+.jm-match { display: flex; justify-content: center; align-items: center; gap: 4px; height: 24px; padding: 0 15px; overflow: hidden; border: 1px solid var(--kr-grey-40); border-radius: 10px;
+  background: linear-gradient(90deg, rgba(72, 173, 67, .1), rgba(72, 173, 67, .1) 85%, rgba(72, 173, 67, 0) 95%); color: #48ad43; font-size: 12px; line-height: 18px; }
+.jm-match b { width: 42px; flex: none; font: 500 16px/24px var(--font-sans); text-align: right; }
+.jm-save { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; gap: 10px; height: 40px; padding: 0 23px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; transition: background var(--dur-fast); }
+.jm-save svg { flex: none; display: block; }
+.jm-save[aria-pressed="true"] svg path { fill: var(--kr-primary); stroke: var(--kr-primary); }
+@container (max-width: 1100px) { .jbs-main { padding-inline: 24px; } }
+@container (max-width: 760px) { .jobs { grid-template-columns: minmax(0, 1fr); } }
+@container (max-width: 700px) {
+  .jb-search { padding: 8px; border-radius: 20px; }
+  .jb-box { padding: 11px 11px 11px 15px; }
+  .jb-go { width: auto; padding: 0 16px; }
+  .jbs-main, .jobs.is-match .jbs-main { padding: 16px 16px 32px; }
+  .jbs-h { font-size: 26px; line-height: 32px; }
+  .jbs-filters { flex-wrap: wrap; }
+  .jbs-job { align-items: flex-start; }
+  .jbs-line { flex-wrap: wrap; gap: 4px 16px; }
+  .jbs-tags { justify-content: flex-start; }
+  .jm-h { white-space: normal; }
+  .jm-drop { height: auto; padding-block: 40px; }
+  .jm-cv.is-a { left: calc(100% - 96px); }  /* the loader's resumes step aside on a narrow card */
+  .jm-cv.is-b { left: -170px; }
+  .jm-pill { display: none; }
+  .jm-top { flex-direction: column; }
+  .jm-banner { width: 100%; }
+  .jm-job { flex-wrap: wrap; }
+  .jm-cta { width: 100%; grid-template-columns: auto 1fr; padding-left: 56px; }
+}
+
 /* ---------- Tool pages: ATS checker, Proofreading, Career Coach (/latest-resume/…) ----------
    Recreated from Figma (Kickresume 3.0 › Analytics 4 PREVIEW, Download/share link active - update, AI Counsellor
    one expanded). Each is the resume tool with its own top bar, left menu and the resume preview on the right, so
@@ -2640,8 +2805,8 @@ body.has-note .au-main { padding-bottom: 96px; }
   .intent-grid:not(.is-list) { --gw: min(560px, 100cqw); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @container (max-width: 560px) {
-  .topbar { padding-block: 16px; }
-  .logo svg { width: 120px; }
+  .topbar { padding-block: 16px; padding-inline: 0; }
+  .logo svg, .topbar .logo svg { width: 120px; }
   .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
   .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
   /* headlines and subheadlines take one or two lines here: two are kept for all (a short headline sits on its
@@ -2696,11 +2861,11 @@ body.has-note .au-main { padding-bottom: 96px; }
   <!-- Screen 2: resume creation -->
   <section class="screen" id="screen-create" aria-labelledby="create-h" hidden>
     <div class="page-head">
-      <h1 id="create-h" tabindex="-1">How do you want to start?</h1>
-      <p>Pick the method that works for you. It’s completely free, no need to worry.</p>
+      <h1 id="create-h" tabindex="-1">How do you want to create your resume?</h1>
+      <p>We’ll fill in your details — you review and edit.</p>
     </div>
     <div class="methods" id="methods"></div>
-    <div class="center"><button class="text-link" type="button" data-action="dashboard">Skip personalization</button></div>
+    <div class="center"><button class="text-link" type="button" data-action="create-back">Back</button></div>
   </section>
 
   <!-- Screen 3: building the resume -->
@@ -2737,6 +2902,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="mdoc" id="screen-docs" hidden></div>
 <div class="tl" id="screen-tool" hidden></div>
 <div class="tps" id="screen-tpl" hidden></div>
+<div class="jobs" id="screen-jobs" hidden></div>
 </div>
 </div>
 
@@ -2747,7 +2913,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.18">v2.18</div>
+<div class="proto-ver" aria-label="Prototype version 2.19">v2.19</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2922,10 +3088,10 @@ body.has-note .au-main { padding-bottom: 96px; }
 
   /* ---------- Creation methods ---------- */
   const METHODS = [
-    { id: 'linkedin', title: 'Import my LinkedIn profile', sub: 'Just paste the URL', icon: 'linkedin' },
-    { id: 'ai', title: 'Write it with AI', sub: 'Answer a few questions', icon: 'sparkles' },
-    { id: 'upload', title: 'Upload my resume', sub: 'PDF or Word', icon: 'upload' },
-    { id: 'paste', title: 'Paste any text', sub: 'Any written text you have', icon: 'paste' }
+    { id: 'linkedin', title: 'Import from LinkedIn', sub: 'Paste your profile link', icon: 'linkedin' },
+    { id: 'ai', title: 'Write with AI', sub: 'Answer a few questions', icon: 'sparkles' },
+    { id: 'upload', title: 'Upload a resume', sub: 'PDF or Word', icon: 'upload' },
+    { id: 'paste', title: 'Paste text', sub: 'Any text you have', icon: 'paste' }
   ];
   const byId = id => METHODS.find(m => m.id === id);
 
@@ -3129,15 +3295,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
   let current = 'intent', routesReady = false, cvNext = null, buildNext = null;  // see askCv and SECTION_AS
+  let createFrom = { where: 'intent', route: null }, createFromSet = false;  // where the method screen's Back goes
   const topXEl = document.getElementById('top-x');
   let xRoute = null, xPane = '';  // the route screen and step the corner × was last set for (syncTopX)
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
+    if (s === 'create' && current !== 'create' && !createFromSet) createFrom = { where: current === 'loading' ? 'intent' : current, route: routeNow };
+    createFromSet = false;
     current = s; document.body.dataset.screen = s; placeVer();
     if (s !== 'create' && s !== 'loading') cvNext = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
     if (s !== 'loading') buildNext = null;  // so does where a section writer's building screen leads (SECTION_AS)
     // a route URL only while it's on screen, or while the method screen gets the CV it asked for
-    if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool', 'tpl'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
+    if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool', 'tpl', 'jobs'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
     syncNote(); syncTopX();
     if (routesReady && s !== 'route') flowSync();
   }
@@ -3801,7 +3970,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (n === 'ats' || n === 'proof') openTool(n);
     else if (n === 'career-map') openRoute(findRoute('/career-map/'));
     else if (n === 'interviews') openRoute(findRoute('/dashboard/create-interview/'));
-    else if (n === 'jobs') openRoute(findRoute('/jobs/'));
+    else if (n === 'jobs') openJobs('match');
     else if (n === 'tracker') openRoute(findRoute('/jobs/job-tracker/'));
     else if (n === 'upgrade') openUpgrade(upgPlan);
     else toast(`${NAV_SOON[n]} isn’t part of this prototype.`.replace('&amp;', '&'));
@@ -4098,11 +4267,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
 
   /* ---------- Dashboard ---------- */
+  // Job Openings as in Figma's New user dashboard (Flow 1's Skip personalization), with its logos (JB_LOGO)
   const JOBS = [
-    ['Cisco', 'Server Administrator', '#081430', 'C'], ['Figma', 'Senior UX Writer, San Francisco', '#1e1e1e', 'F'],
-    ['Atlassian', 'Data Engineer', '#514eea', 'A'], ['Lumen Health', 'Product Designer', '#1da36e', 'L'],
-    ['Yahoo', 'Front-End Developer', '#7011ba', 'Y'], ['Microsoft', 'Senior Front-End Developer, 8+ years', '#3249bf', 'M'],
-    ['Pixelfield', 'UX Researcher', '#ff5e59', 'P']
+    ['cisco', 'Cisco', 'Server Administrator'], ['figma', 'Figma', 'Senior UX Writer, San Francisco area'], ['atlassian', 'Atlassian', 'Data Engineer'],
+    ['openai', 'OpenAI', 'CEO'], ['yahoo', 'Yahoo', 'Front-End Developer'], ['microsoft', 'Microsoft', 'Senior Front-End Developer, 8+ years of experience'], ['tesla', 'Tesla', 'CEO']
   ];
   const TIPS = [
     ['How to Write a Powerful Resume Objective (10+ Resume Examples)', 'target', 'linear-gradient(135deg,#d9d4cf,#a99f97)'],
@@ -4150,7 +4318,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="dash-mid">
           <section class="panel jobs-panel" aria-labelledby="d-jobs">
             <div class="panel-head"><h2 id="d-jobs">Job Openings</h2><button class="sq-arrow" type="button" data-action="toast" data-msg="This opens the job board." aria-label="All job openings">${icon('arrowLeft')}</button></div>
-            <ul class="job-list">${JOBS.map(([co, role, bg, ch]) => `<li><button class="job" type="button" data-action="toast" data-msg="${role} at ${co} opens here."><span class="co" style="background:${bg}">${ch}</span><span class="job-text"><span>${co}</span><b>${role}</b></span></button></li>`).join('')}</ul>
+            <ul class="job-list">${JOBS.map(([logo, co, role]) => `<li><button class="job" type="button" data-action="toast" data-msg="${role} at ${co} opens here."><img class="co" src="${JB_LOGO[logo]}" alt="" width="40" height="40"><span class="job-text"><span>${co}</span><b>${role}</b></span></button></li>`).join('')}</ul>
           </section>
           <div class="dash-pair">
             <section class="panel feat" aria-labelledby="d-map">
@@ -4263,7 +4431,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
     },
     templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
-    'jobs-matcher': ['Find jobs that fit you', 'Tell us what you’re after and we’ll match open roles to your resume.'],
+    jobBoard: ['Find a job you’ll love.', '3,380,973 jobs waiting for you'],
     'cm-onboarding': ['Where do you want your career to go?', 'A few questions, then we map the roles your experience can lead to.'],
     process: o => [o.f.verb, 'This takes a few seconds.'],
     state: o => stateView(o.f).slice(0, 2),
@@ -4300,8 +4468,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => openEdit() },
-    { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
-    { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, head: { main: HEADS['jobs-matcher'] }, html: () => WIRE['jobs-matcher']() },
+    { group: '7 · Jobs', path: '/jobs/search/', title: 'Job board (Find a job you’ll love)', noX: true, head: { main: HEADS.jobBoard }, html: jbHTML, init: initJb },
+    { group: '7 · Jobs', path: '/jobs/', title: 'Jobs · search results (All Jobs)', run: () => openJobs('search') },
+    { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Jobs for You (job matcher)', run: () => openJobs('match') },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
     { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
@@ -4326,7 +4495,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (id === 'build') return go('create', el);
     if (id === 'tailor') return openRoute(findRoute('/dashboard/tailor-resume/'));
     if (id === 'ats') return openRoute(findRoute('/dashboard/analyse-resume/'));
-    openRoute(findRoute('/jobs/matcher/'));
+    if (flowNow && flowNow.f.id === 'goal-matcher') return openJobs('match', 'main');
+    openRoute(findRoute('/jobs/search/'));
   }
   const markRoutes = () => document.querySelectorAll('.pm-route').forEach(b => b.setAttribute('aria-current', String(!!routeNow && b.dataset.route === routeNow.path)));
 
@@ -4347,6 +4517,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function askCvFor(r, instant) {
     // × on the tool goes back to where the person asked for it, not to the method or the building screen
     const from = current === 'loading' ? 'intent' : current;
+    createFrom = { where: from, route: routeNow }; createFromSet = current !== 'create';
     routeNow = r; markRoutes(); setHash(r.path);
     askCv(() => { const opening = openRoute(r); routeBack = from; return opening; }, instant);
   }
@@ -5579,7 +5750,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open an app page (My Documents, a tool) the way the dashboard opens; its URL goes in the address bar */
   const syncApp = path => { routeNow = findRoute(path); markRoutes(); setHash(path); flowSync(); syncNote(); };
   function riseIn(el, keepSide) {
-    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev, .tps-head > *, .tps-card')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
+    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev, .tps-head > *, .tps-card, .jbs-col > *, .jm-col > *')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
     const anims = items.map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: x.matches('.ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base + 60, delay: Math.min(i, 8) * (STAGGER + 15), easing: EASE.standard }));
     Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
@@ -5634,6 +5805,182 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // the editor under a URL of its own (/edit/, /guest-edit-start/)
   function editorAt(path) { const opening = jumpEditor(); routeNow = findRoute(path); markRoutes(); setHash(path); return opening; }
   function openEdit() { editorAt('/edit/'); }
+
+  /* ---------- Find Jobs: the job board (/jobs/search/), its search results (/jobs/) and Jobs for You (/jobs/matcher/) ----------
+     From Figma (Kickresume 3.0 › Flow 1, 62207:3265: Job Board setup 62221:19596, Jobs results 62221:16319, Job Matcher
+     setup 62221:17042, Loading 62221:17823, Results 62221:18465). The job board is an onboarding screen (a route screen,
+     Back instead of ×, as in the design); the search results and Jobs for You are app pages with the app menu
+     (APPS.jobs, jobsHTML). Jobs for You asks for a resume (upload), analyses it (its own loading, then processDone in a
+     run) and lists the top matches; with a CV it opens on the matches. Icons are the Figma exports (one-colour ones in
+     currentColor; the clock icons' whole-box clip dropped, which renders the same), logos in assets/jobs/. */
+  const JB_IC = {
+    search24: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C14.866 18 18 14.866 18 11C18 7.13401 14.866 4 11 4ZM2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.9433 15.9413C16.3338 15.5508 16.967 15.5508 17.3575 15.9413L21.7075 20.2913C22.098 20.6819 22.098 21.315 21.7075 21.7055C21.317 22.0961 20.6838 22.0961 20.2933 21.7055L15.9433 17.3555C15.5528 16.965 15.5528 16.3319 15.9433 15.9413Z" fill="currentColor"/></svg>',
+    x: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    searchBtn: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.4995 17.4995L13.8828 13.8828" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    funnelX: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10.4425 2.5H2.50003C2.33886 2.50006 2.18118 2.54685 2.04607 2.6347C1.91096 2.72255 1.80422 2.84769 1.73878 2.99497C1.67334 3.14225 1.65201 3.30534 1.67738 3.46449C1.70274 3.62364 1.77371 3.77203 1.88169 3.89167L7.90252 10.5492C8.17964 10.8554 8.33317 11.2537 8.33336 11.6667V16.6667C8.33329 16.8215 8.37637 16.9733 8.45777 17.1051C8.53917 17.2368 8.65566 17.3433 8.79419 17.4125L10.4609 18.2458C10.5879 18.3093 10.7291 18.3393 10.8711 18.3329C11.013 18.3264 11.1509 18.2838 11.2717 18.2091C11.3925 18.1344 11.4922 18.03 11.5614 17.9059C11.6305 17.7818 11.6668 17.6421 11.6667 17.5V11.6667C11.6669 11.2537 11.8204 10.8554 12.0975 10.5492L12.4534 10.155" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.75 2.91797L17.9167 7.08464" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.9167 2.91797L13.75 7.08464" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    panelRight: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15.8333 2.5H4.16667C3.24619 2.5 2.5 3.24619 2.5 4.16667V15.8333C2.5 16.7538 3.24619 17.5 4.16667 17.5H15.8333C16.7538 17.5 17.5 16.7538 17.5 15.8333V4.16667C17.5 3.24619 16.7538 2.5 15.8333 2.5Z" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 2.5V17.5" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.33398 12.5L5.83398 10L8.33398 7.5" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    calDown: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9.33398 12L12.0007 14.6667L14.6673 12" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.666 1.33203V3.9987" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9.33203V14.6654" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 7.57064V4.0013C14 3.64768 13.8595 3.30854 13.6095 3.05849C13.3594 2.80844 13.0203 2.66797 12.6667 2.66797H3.33333C2.97971 2.66797 2.64057 2.80844 2.39052 3.05849C2.14048 3.30854 2 3.64768 2 4.0013V13.3346C2 13.6883 2.14048 14.0274 2.39052 14.2774C2.64057 14.5275 2.97971 14.668 3.33333 14.668H8.22867" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 6.66797H14" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.33398 1.33203V3.9987" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    chevDown: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    mapPin: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.3327 6.66536C13.3327 9.99403 9.64002 13.4607 8.40002 14.5314C8.2845 14.6182 8.14388 14.6652 7.99935 14.6652C7.85482 14.6652 7.7142 14.6182 7.59868 14.5314C6.35868 13.4607 2.66602 9.99403 2.66602 6.66536C2.66602 5.25088 3.22792 3.89432 4.22811 2.89413C5.22831 1.89393 6.58486 1.33203 7.99935 1.33203C9.41384 1.33203 10.7704 1.89393 11.7706 2.89413C12.7708 3.89432 13.3327 5.25088 13.3327 6.66536Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8.66797C9.10457 8.66797 10 7.77254 10 6.66797C10 5.5634 9.10457 4.66797 8 4.66797C6.89543 4.66797 6 5.5634 6 6.66797C6 7.77254 6.89543 8.66797 8 8.66797Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    clockFading: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.33203C9.29343 1.3318 10.559 1.70782 11.6425 2.41427C12.7259 3.12072 13.5805 4.12709 14.102 5.31072C14.6235 6.49436 14.7894 7.80413 14.5795 9.08042C14.3697 10.3567 13.7931 11.5444 12.92 12.4987" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4V8L10.6667 9.33333" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66732 5.91797C1.45488 6.56374 1.34247 7.23821 1.33398 7.91797" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.88672 10.668C2.26105 11.5292 2.81311 12.3016 3.50672 12.9346" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.08984 3.4893C3.27587 3.28679 3.47425 3.09598 3.68384 2.91797" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.76172 14.2807C7.42418 14.8729 9.25365 14.7818 10.8491 14.0273" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    briefcase: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10.6673 13.332V2.66536C10.6673 2.31174 10.5268 1.9726 10.2768 1.72256C10.0267 1.47251 9.68761 1.33203 9.33398 1.33203H6.66732C6.3137 1.33203 5.97456 1.47251 5.72451 1.72256C5.47446 1.9726 5.33398 2.31174 5.33398 2.66536V13.332" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.334 4H2.66732C1.93094 4 1.33398 4.59695 1.33398 5.33333V12C1.33398 12.7364 1.93094 13.3333 2.66732 13.3333H13.334C14.0704 13.3333 14.6673 12.7364 14.6673 12V5.33333C14.6673 4.59695 14.0704 4 13.334 4Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    clock: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.00065 14.6654C11.6825 14.6654 14.6673 11.6806 14.6673 7.9987C14.6673 4.3168 11.6825 1.33203 8.00065 1.33203C4.31875 1.33203 1.33398 4.3168 1.33398 7.9987C1.33398 11.6806 4.31875 14.6654 8.00065 14.6654Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4V8L10.6667 9.33333" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    sparkles: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.34496 1.87629C7.37353 1.72336 7.45468 1.58524 7.57436 1.48584C7.69404 1.38644 7.84472 1.33203 8.00029 1.33203C8.15587 1.33203 8.30655 1.38644 8.42623 1.48584C8.54591 1.58524 8.62706 1.72336 8.65563 1.87629L9.35629 5.58163C9.40606 5.84506 9.53408 6.08737 9.72365 6.27694C9.91322 6.46651 10.1555 6.59453 10.419 6.64429L14.1243 7.34496C14.2772 7.37353 14.4154 7.45468 14.5147 7.57436C14.6141 7.69404 14.6686 7.84472 14.6686 8.00029C14.6686 8.15587 14.6141 8.30655 14.5147 8.42623C14.4154 8.54591 14.2772 8.62706 14.1243 8.65563L10.419 9.35629C10.1555 9.40606 9.91322 9.53408 9.72365 9.72365C9.53408 9.91322 9.40606 10.1555 9.35629 10.419L8.65563 14.1243C8.62706 14.2772 8.54591 14.4154 8.42623 14.5147C8.30655 14.6141 8.15587 14.6686 8.00029 14.6686C7.84472 14.6686 7.69404 14.6141 7.57436 14.5147C7.45468 14.4154 7.37353 14.2772 7.34496 14.1243L6.64429 10.419C6.59453 10.1555 6.46651 9.91322 6.27694 9.72365C6.08737 9.53408 5.84506 9.40606 5.58163 9.35629L1.87629 8.65563C1.72336 8.62706 1.58524 8.54591 1.48584 8.42623C1.38644 8.30655 1.33203 8.15587 1.33203 8.00029C1.33203 7.84472 1.38644 7.69404 1.48584 7.57436C1.58524 7.45468 1.72336 7.37353 1.87629 7.34496L5.58163 6.64429C5.84506 6.59453 6.08737 6.46651 6.27694 6.27694C6.46651 6.08737 6.59453 5.84506 6.64429 5.58163L7.34496 1.87629Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.333 1.33203V3.9987" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.6667 2.66797H12" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.66634 14.6667C3.40272 14.6667 3.99967 14.0697 3.99967 13.3333C3.99967 12.597 3.40272 12 2.66634 12C1.92996 12 1.33301 12.597 1.33301 13.3333C1.33301 14.0697 1.92996 14.6667 2.66634 14.6667Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    search16: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.9998 13.9988L11.1064 11.1055" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.33333 12.6667C10.2789 12.6667 12.6667 10.2789 12.6667 7.33333C12.6667 4.38781 10.2789 2 7.33333 2C4.38781 2 2 4.38781 2 7.33333C2 10.2789 4.38781 12.6667 7.33333 12.6667Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    heart: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M1.66602 7.91711C1.66603 6.98977 1.94734 6.08426 2.47279 5.32016C2.99824 4.55606 3.74311 3.96932 4.60902 3.63744C5.47493 3.30556 6.42115 3.24414 7.32269 3.46131C8.22424 3.67848 9.0387 4.16401 9.65852 4.85377C9.70217 4.90045 9.75495 4.93767 9.81358 4.96311C9.87221 4.98855 9.93544 5.00168 9.99935 5.00168C10.0633 5.00168 10.1265 4.98855 10.1851 4.96311C10.2437 4.93767 10.2965 4.90045 10.3402 4.85377C10.958 4.15952 11.7727 3.66991 12.6757 3.45011C13.5787 3.2303 14.5273 3.29073 15.3951 3.62334C16.2629 3.95596 17.0088 4.54498 17.5336 5.31203C18.0584 6.07907 18.3371 6.98774 18.3327 7.91711C18.3327 9.82544 17.0827 11.2504 15.8327 12.5004L11.256 16.9279C11.1007 17.1063 10.9093 17.2495 10.6944 17.3482C10.4795 17.4468 10.2461 17.4986 10.0096 17.5001C9.77313 17.5016 9.53906 17.4528 9.32292 17.3569C9.10679 17.261 8.91354 17.1201 8.75602 16.9438L4.16602 12.5004C2.91602 11.2504 1.66602 9.83377 1.66602 7.91711Z" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    userStar: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10.7015 8.40926C10.7455 8.27415 10.8316 8.15665 10.9471 8.0739C11.0626 7.99115 11.2016 7.94749 11.3437 7.94927C11.4858 7.95106 11.6236 7.9982 11.737 8.08383C11.8504 8.16946 11.9335 8.28908 11.9741 8.42526L12.4655 9.39326C12.5133 9.48736 12.5828 9.56876 12.6682 9.63077C12.7536 9.69277 12.8525 9.73361 12.9568 9.74992L14.0461 9.92059C14.1864 9.92114 14.3229 9.96592 14.4363 10.0486C14.5496 10.1312 14.634 10.2475 14.6774 10.3809C14.7209 10.5142 14.7211 10.6579 14.6782 10.7915C14.6352 10.925 14.5512 11.0416 14.4381 11.1246L13.6568 11.9033C13.582 11.9777 13.5259 12.0689 13.4933 12.1693C13.4606 12.2696 13.4522 12.3763 13.4688 12.4806L13.6415 13.5559C13.689 13.6907 13.6919 13.8372 13.6498 13.9738C13.6078 14.1103 13.5229 14.2298 13.4078 14.3145C13.2927 14.3992 13.1535 14.4446 13.0106 14.4442C12.8677 14.4437 12.7287 14.3974 12.6141 14.3119L11.6375 13.8119C11.5434 13.7637 11.4392 13.7386 11.3335 13.7386C11.2278 13.7386 11.1236 13.7637 11.0295 13.8119L10.0528 14.3119C9.93826 14.3967 9.79958 14.4425 9.6571 14.4426C9.51463 14.4428 9.37584 14.3973 9.26111 14.3128C9.14637 14.2284 9.06171 14.1093 9.01954 13.9733C8.97738 13.8372 8.97992 13.6911 9.0268 13.5566L9.1988 12.4813C9.21541 12.377 9.20703 12.2703 9.17434 12.1699C9.14166 12.0696 9.08561 11.9784 9.0108 11.9039L8.24014 11.1353C8.12324 11.0543 8.0353 10.938 7.98917 10.8035C7.94304 10.669 7.94114 10.5232 7.98373 10.3876C8.02633 10.2519 8.11119 10.1334 8.22593 10.0494C8.34067 9.96536 8.47926 9.92023 8.62147 9.92059L9.71014 9.74992C9.81442 9.73361 9.91334 9.69277 9.99876 9.63077C10.0842 9.56876 10.1537 9.48736 10.2015 9.39326L10.7015 8.40926Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.33333 10H4.66667C3.95942 10 3.28115 10.281 2.78105 10.781C2.28095 11.2811 2 11.9594 2 12.6667V14" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.66667 7.33333C8.13943 7.33333 9.33333 6.13943 9.33333 4.66667C9.33333 3.19391 8.13943 2 6.66667 2C5.19391 2 4 3.19391 4 4.66667C4 6.13943 5.19391 7.33333 6.66667 7.33333Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    chevRight: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#FFC75C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 18L15 12L9 6" stroke="black" stroke-opacity="0.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    load: '<svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="32" fill="url(#paint0_linear_62221_17917)" fill-opacity="0.1"/><g filter="url(#filter0_d_62221_17917)"><rect x="12" y="12" width="40" height="40" rx="20" fill="url(#paint1_linear_62221_17917)"/><path d="M31.6875 38C31.5729 37.3229 31.2708 36.5938 30.7812 35.8125C30.2917 35.0208 29.5937 34.2865 28.6875 33.6094C27.7917 32.9323 26.8958 32.5 26 32.3125V31.6562C26.8854 31.4479 27.7344 31.0625 28.5469 30.5C29.3698 29.9271 30.0573 29.2396 30.6094 28.4375C31.1719 27.6146 31.5312 26.8021 31.6875 26H32.3438C32.4375 26.5208 32.625 27.0573 32.9062 27.6094C33.1875 28.151 33.5469 28.6719 33.9844 29.1719C34.4323 29.6615 34.9323 30.1042 35.4844 30.5C36.3073 31.0833 37.1458 31.4687 38 31.6562V32.3125C37.4271 32.4271 36.8333 32.6615 36.2188 33.0156C35.6146 33.3698 35.0521 33.7917 34.5312 34.2813C34.0104 34.7604 33.5833 35.2656 33.25 35.7969C32.7604 36.5781 32.4583 37.3125 32.3438 38H31.6875Z" fill="white"/></g><defs><filter id="filter0_d_62221_17917" x="7" y="8" width="52" height="52" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="1" dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix type="matrix" values="0 0 0 0 0.611765 0 0 0 0 0.243137 0 0 0 0 1 0 0 0 0.3 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_62221_17917"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_62221_17917" result="shape"/></filter><linearGradient id="paint0_linear_62221_17917" x1="-7.15256e-07" y1="3.09944e-06" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient><linearGradient id="paint1_linear_62221_17917" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient></defs></svg>'
+  };
+  const jobsEl = document.getElementById('screen-jobs');
+  APPS.jobs = jobsEl;
+  const JB_LOGO = { cisco: '__ASSET:jobs/cisco.png__', figma: '__ASSET:jobs/figma.png__', openai: '__ASSET:jobs/openai.png__', atlassian: '__ASSET:jobs/atlassian.png__', yahoo: '__ASSET:jobs/yahoo.png__', microsoft: '__ASSET:jobs/microsoft.png__', tesla: '__ASSET:jobs/tesla.png__' };
+  const JB_TRENDS = [['📋', 'Project Manager'], ['🎯', 'Product Manager'], ['💻', 'Software Developer'], ['📊', 'Data Analyst']];
+  const JB_FILTERS = ['United States+1', 'Full-time', 'Remote'];
+  // the search results: [logo, title, company, salary, [place, type, site, posted]]
+  const JB_RESULTS = [
+    ['cisco', 'Server Administrator', 'Cisco', '$20,000 - $25,000 / month', ['United States', 'Part-time', 'On-site', 'Today']],
+    ['figma', 'Server Administrator', 'Figma', '', ['United States', 'Part-time', 'On-site', '7 days ago']],
+    ['openai', 'Innovative front-end developer with a focus on user experience', 'OpenAI', '$20,000 - $25,000 / month', ['United States', 'Contract', 'Remote', '15 days ago']],
+    ['atlassian', 'Back-end Developer', 'Atlassian', '', ['United States +3', 'Full-time +1', 'Remote', '8 days ago']],
+    ['yahoo', 'Data scientist with machine learning expertise', 'Yahoo', '', ['United States', 'Full-time', 'On-site', '10 days ago']],
+    ['microsoft', 'Graphic designer specializing in branding and digital media', 'Microsoft', '$125,000 / year', ['United States', 'Part-time', 'On-site', '5 days ago']]
+  ];
+  // Jobs for You: [title, company, match %, [posted, place, type, site]] (the design gives every one Atlassian's logo)
+  const JB_MATCHES = [
+    ['Back-end Developer', 'Atlassian', 90, ['8 days ago', 'United States +3', 'Full-time +1', 'Remote']],
+    ['Front-end Developer', 'TechCorp', 85, ['10 days ago', 'Canada +2', 'Part-time', 'On-site']],
+    ['UI/UX Designer', 'Designify', 88, ['12 days ago', 'United Kingdom +1', 'Contract', 'Remote']],
+    ['Data Analyst', 'DataSolutions', 92, ['5 days ago', 'Australia +4', 'Full-time +2', 'Hybrid']],
+    ['DevOps Engineer', 'CloudTech', 87, ['3 days ago', 'Germany', 'Full-time +1', 'Remote']],
+    ['Product Manager', 'Innovatech', 90, ['1 day ago', 'France +2', 'Full-time +1', 'On-site']],
+    ['System Administrator', 'NetSolutions', 84, ['2 weeks ago', 'India +3', 'Full-time +2', 'Remote']]
+  ];
+  const JOBS_PATH = { search: '/jobs/', match: '/jobs/matcher/' };
+  let jobsView = 'match', jobsState = 'main', jobsQuery = 'Frontend developer';  // state: main (the page, or Upload), process (Analyzing), dest (matches)
+  const jbLogo = k => `<img class="jb-logo" src="${JB_LOGO[k]}" alt="" width="40" height="40">`;
+
+  /* The job board: a search for any job, with trending positions under it */
+  function jbHTML() {
+    return `<div class="jb">
+      <form class="jb-search" role="search" novalidate>
+        <div class="jb-box">${JB_IC.search24}<label class="sr-only" for="jb-q">Job title or keyword</label><input id="jb-q" type="search" placeholder="Enter job title or keyword" autocomplete="off"><button class="jb-go" type="submit">Search</button></div>
+      </form>
+      <div class="jb-trends" role="group" aria-label="Trending positions">${JB_TRENDS.map(([e, t]) => `<button class="jb-trend" type="button" data-q="${t}"><span aria-hidden="true">${e}</span>${t}</button>`).join('')}</div>
+      <div class="center"><button class="text-link" type="button" data-action="route-close">Back</button></div>
+    </div>`;
+  }
+  function initJb(root) {
+    const form = root.querySelector('form'), q = form.querySelector('input');
+    // a running flow moves on to the results (its destination); otherwise they open
+    const search = text => { jobsQuery = text.trim() || 'Frontend developer'; if (!flowOn()) openJobs('search'); };
+    form.addEventListener('submit', e => { e.preventDefault(); search(q.value); });
+    root.querySelector('.jb-trends').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) { q.value = b.dataset.q; search(b.dataset.q); } });
+  }
+
+  /* The search results (All Jobs) */
+  const jbMeta = (ic, t) => `<span class="jbs-tag">${JB_IC[ic]}${t}</span>`;
+  function jbsHTML() {
+    const row = ([logo, title, company, pay, [place, type, site, when]]) => `<li class="jbs-job">${jbLogo(logo)}
+      <div class="jbs-text"><div class="jbs-line"><button class="jb-open" type="button" data-jobs="job">${esc(title)}</button>${pay ? `<span class="jbs-pay">${pay}</span>` : ''}</div>
+        <div class="jbs-line"><span class="jbs-co">${company}</span><span class="jbs-tags">${jbMeta('mapPin', place)}${jbMeta('clockFading', type)}${jbMeta('briefcase', site)}${jbMeta('clock', when)}</span></div></div></li>`;
+    return `<div class="jbs-col">
+      <h1 class="jbs-h" tabindex="-1">Search results for ${esc(jobsQuery)}</h1>
+      <form class="jbs-box" role="search" novalidate><button class="jbs-x" type="button" data-jobs="clear" aria-label="Clear the search">${JB_IC.x}</button>
+        <label class="sr-only" for="jbs-q">Job title or keyword</label><input id="jbs-q" type="search" value="${esc(jobsQuery)}" placeholder="Enter job title or keyword" autocomplete="off"><button class="jbs-go" type="submit" aria-label="Search">${JB_IC.searchBtn}</button></form>
+      <div class="jbs-filters"><div class="jbs-chips" role="group" aria-label="Filters"><button class="jbs-unfilter" type="button" data-jobs="unfilter" aria-label="Clear the filters">${JB_IC.funnelX}</button>${JB_FILTERS.map(f => `<button class="jbs-chip" type="button" aria-pressed="true">${f}</button>`).join('')}</div>
+        <button class="jbs-btn" type="button" data-jobs="all-filters">All Filters${JB_IC.panelRight}</button></div>
+      <div class="jbs-bar"><p>1,732 results</p><button class="jbs-sort" type="button" data-jobs="sort">${JB_IC.calDown}Latest${JB_IC.chevDown}</button></div>
+      <ul class="jbs-list">${JB_RESULTS.map(row).join('')}</ul>
+    </div>`;
+  }
+
+  /* Jobs for You (the matcher): upload a resume → Analyzing your resume… → the top matches */
+  const jmCard = ([title, company, pct, [when, place, type, site]]) => `<li class="jm-job">${jbLogo('atlassian')}
+    <div class="jm-text"><button class="jb-open" type="button" data-jobs="job">${title}</button><span class="jm-co">${company}</span>
+      <span class="jm-tags">${jbMeta('clock', when)}${jbMeta('mapPin', place)}${jbMeta('clockFading', type)}${jbMeta('briefcase', site)}</span></div>
+    <div class="jm-cta"><span class="jm-match"><b>${pct}%</b>Match</span><button class="jm-save" type="button" aria-pressed="false">${JB_IC.heart}<span>Save</span></button></div></li>`;
+  function jmHTML() {
+    const tabs = `<nav class="jm-tabs" aria-label="Find Jobs"><button class="is-on" type="button" aria-current="page">${JB_IC.sparkles}Jobs for You</button><button type="button" data-jobs="all">${JB_IC.search16}All Jobs</button></nav>`;
+    const head = `<div class="jm-head"><h1 class="jm-h" tabindex="-1">Let’s skip the search.</h1><p>Select your resume and instantly see jobs matched to your skills and experience.</p></div>`;
+    const blur = `<ul class="jm-list is-blur" aria-hidden="true" inert>${JB_MATCHES.slice(0, 3).map(jmCard).join('')}</ul>`;
+    if (jobsState === 'main') return `<div class="jm-col">${tabs}${head}
+      <div class="jm-drop" data-jobs="drop"><p class="jm-drop-h">Upload your resume to begin</p>
+        <div class="jm-drop-b"><button class="jm-up" type="button" data-jobs="upload">Upload a File</button><p>Supports PDF, DOCX • Max 10MB<br>english only</p></div>
+        <input class="jm-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
+        <span class="jm-shine" aria-hidden="true"></span></div>${blur}</div>`;
+    if (jobsState === 'process') return `<div class="jm-col">${tabs}${head}
+      <div class="jm-load"><span class="jm-cv is-b" aria-hidden="true"><img src="__ASSET:jobs/cv-black.webp__" alt=""></span><span class="jm-cv is-a" aria-hidden="true"><img src="__ASSET:templates/square.webp__" alt=""></span><span class="jm-pill" aria-hidden="true"><b>90%</b>match</span>
+        ${JB_IC.load}<div class="jm-load-b" role="status"><p class="jm-load-h">Analyzing your resume…</p><div class="jm-bar"><i></i></div><p class="jm-pct">0% Complete</p></div></div>${blur}</div>`;
+    return `<div class="jm-col">${tabs}
+      <div class="jm-top"><div class="jm-cvrow"><img class="jm-thumb" src="__ASSET:tailor/postcard.webp__" alt="" width="100" height="138">
+          <div class="jm-cvtext"><b>My new resume_2025</b><span>Last edited 4 days ago</span>
+            <button class="jm-prefs" type="button" data-jobs="prefs">Adjust Preferences</button>
+            <span class="jm-tags">${jbMeta('mapPin', 'United States')}${jbMeta('clockFading', 'Full-time')}${jbMeta('briefcase', 'Remote')}${jbMeta('userStar', 'Entry-level')}<span class="jbs-tag is-wide">${JB_IC.search16}Snowman</span></span></div></div>
+        <button class="jm-banner" type="button" data-jobs="upgrade"><img src="__ASSET:jobs/premium-banner.webp__" alt="" width="90" height="90"><span><b>Becoming the perfect fit can be easier. Upgrade to Premium.</b><span>Unlock the full power of Kickresume and get hired faster than ever.</span></span>${JB_IC.chevRight}</button></div>
+      <h1 class="jm-top5" tabindex="-1">Your Top 5 Matches</h1>
+      <ul class="jm-list">${JB_MATCHES.map(jmCard).join('')}</ul></div>`;
+  }
+  function jobsHTML() { return `${appNavHTML('jobs')}<main class="jbs-main">${jobsView === 'search' ? jbsHTML() : jmHTML()}</main>`; }
+
+  /* Open a jobs page (or one of its states); between them the page stays and its content fades over */
+  async function openJobs(view, state) {
+    jobsView = view;
+    jobsState = state || (view === 'match' && cvUploaded ? 'dest' : 'main');
+    const fill = () => { jobsEl.className = 'jobs is-' + view; jobsEl.innerHTML = jobsHTML(); if (jobsState === 'process') runMatching(); };
+    if (current !== 'jobs') return enterApp(jobsEl, fill, 'jobs', JOBS_PATH[view]);
+    clearTimers(); setMore(false);
+    await leaveOut(jobsEl, true);
+    fill(); placeVer(); window.scrollTo(0, 0); device.scrollTop = 0;
+    syncApp(JOBS_PATH[view]); riseIn(jobsEl, true); landFocus(jobsEl);
+  }
+  // Analyzing your resume…: the bar fills, then the matches (or, in a run, what its Result leads to)
+  function runMatching() {
+    const bar = jobsEl.querySelector('.jm-bar > i'), pct = jobsEl.querySelector('.jm-pct'), T = 3200, t0 = performance.now();
+    const tick = () => {
+      if (!bar.isConnected) return;
+      const k = Math.min(1, (performance.now() - t0) / T);
+      bar.style.width = (k * 100) + '%'; pct.textContent = Math.round(k * 100) + '% Complete';
+      if (k < 1) return requestAnimationFrame(tick);
+      later(() => { if (current !== 'jobs' || jobsState !== 'process') return; flowNow && flowNow.steps[flowAt].match === 'route:/jobs/matcher/#process' ? processDone() : openJobs('match', 'dest'); }, 300);
+    };
+    requestAnimationFrame(tick);
+  }
+  // a resume picked (or dropped): it is the person's CV from now on, and the analysis starts
+  function jmUpload(file) {
+    setCv(true, file ? file.name.replace(/\.[^.]+$/, '') : '');
+    if (!flowOn()) openJobs('match', 'process');
+  }
+  jobsEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-jobs], .jm-save, .jbs-chip');
+    if (!b) return;
+    if (b.matches('.jm-save')) { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'Saved' : 'Save'; return; }
+    if (b.matches('.jbs-chip')) return b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
+    const a = b.dataset.jobs;
+    if (a === 'job') openRoute(findRoute('/jobs/job/1234/'));
+    else if (a === 'all') openJobs('search');
+    else if (a === 'upload' || a === 'drop') jobsEl.querySelector('.jm-file').click();
+    else if (a === 'clear') { const q = jobsEl.querySelector('#jbs-q'); q.value = ''; q.focus(); }
+    else if (a === 'unfilter') jobsEl.querySelectorAll('.jbs-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+    else if (a === 'all-filters') toast('All the filters open in a side panel here.');
+    else if (a === 'sort') toast('Sorting (Latest, Relevance, Salary) opens here.');
+    else if (a === 'prefs') toast('Your job preferences (location, type, level) open here.');
+    else if (a === 'upgrade') openUpgrade(upgPlan);
+  });
+  jobsEl.addEventListener('change', e => { if (e.target.matches('.jm-file') && e.target.files[0]) jmUpload(e.target.files[0]); });
+  jobsEl.addEventListener('submit', e => {
+    if (!e.target.matches('.jbs-box')) return;
+    e.preventDefault();
+    const q = e.target.querySelector('input').value.trim();
+    if (!q) return e.target.querySelector('input').focus();
+    jobsQuery = q;
+    const h = jobsEl.querySelector('.jbs-h'); h.textContent = 'Search results for ' + q;
+    if (!reduce) play(jobsEl.querySelector('.jbs-list'), [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+  });
+  // the drop zone takes a dragged file too
+  jobsEl.addEventListener('dragover', e => { const z = e.target.closest('.jm-drop'); if (z) { e.preventDefault(); z.classList.add('is-over'); } });
+  jobsEl.addEventListener('dragleave', e => { const z = e.target.closest('.jm-drop'); if (z && !z.contains(e.relatedTarget)) z.classList.remove('is-over'); });
+  jobsEl.addEventListener('drop', e => { const z = e.target.closest('.jm-drop'); if (!z) return; e.preventDefault(); z.classList.remove('is-over'); jmUpload(e.dataTransfer.files[0]); });
 
   /* ---------- Select your template (/dashboard/create-resume/) ----------
      Recreated from Figma (Kickresume 3.0 › 61941:33517). A page of its own (its own top bar and background), so like
@@ -5742,11 +6089,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
       const body = `<div class="wf-card wf-stack">${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
-    'jobs-matcher': () => wShell('Job matcher', `<div class="wf-card wf-stack">
-        ${wLines(1)}
-        ${wField('Job title', 'Product designer')}${wField('Location', 'Remote · Europe', 'select')}${wField('Experience level', 'Mid-level', 'select')}
-        <button class="wf-btn wf-btn--primary" type="button" data-wire="tool">Show matching jobs</button>
-      </div>`, wNote('Find jobs that fit me: the matcher reads the resume (when there is one) and asks only what it can’t tell. Result: open roles with a match score. Not designed yet.'), 520),
     'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
         <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
         ${wLines(2)}${wField('Current job title', '')}
@@ -5773,10 +6115,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         ${wLines(1)}
         <div class="wf-grid" style="--cols:3">${[1, 2, 3, 4, 5, 6].map(i => `<button class="wf-card wf-stack wf-gap-sm" type="button" data-wire="tpl"><span class="wf-ph wf-ph--square">[template ${i}]</span><span class="t-small">Template ${i}</span></button>`).join('')}</div>
       </div>`, wNote(`Feature personalization for a new ${o.kind} without a template in the URL. With one (…/{template}) the flow starts at processing (Flow 3).`), 640),
-    jobs: () => wShell('Jobs', `<div class="wf-card wf-stack">
-        <h1 class="t-title">Jobs that fit you</h1><div class="wf-row">${wField('Job title', 'Product designer')}${wField('Location', 'Remote', 'select')}</div>
-        ${[96, 91, 84, 78].map(m => `<button class="wf-card" type="button" data-wire="job"><span class="wf-row wf-spread"><span class="wf-row wf-grow"><span class="wf-ph wf-ph--icon"></span><span class="wf-grow">${wLines(2)}</span></span><span class="wf-badge">${m}% match</span></span></button>`).join('')}
-      </div>`, wNote('Job search (/jobs/): open roles with a match score against the resume. A role opens its page (/jobs/job/{id}/). Not designed yet.'), 600),
     job: () => wShell('Job', `<div class="wf-card wf-stack">
         <div class="wf-row"><span class="wf-ph wf-ph--icon"></span><span class="t-label">Company</span><span class="wf-badge">96% match</span></div>
         <h1 class="t-title">Product designer</h1>${wLines(4)}
@@ -5850,6 +6188,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tool: (label, kind, path = TOOL_PATH[kind]) => ({ label, match: `route:${path}#main`, run: () => { setCv(true); openTool(kind, path); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
+    jobs: (label, view, state = 'main') => ({ label, match: `route:${JOBS_PATH[view]}#${state}`, run: () => openJobs(view, state) }),
     latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } }),
     // the shared stages, worded for the feature: processing (moves on by itself) and its result
     process: f => ({ label: f.verb, wire: true, match: `route:${f.path}#process`, run: () => { openWire(f.path, f.verb, 'process', { f, pane: 'process' }); later(processDone, 2600); } }),
@@ -5887,12 +6226,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall),
      state (its own processing state instead of the shared one) } */
   const resumeOut = (label = 'Editor · Fill In', sec) => [S.editor(label, undefined, sec)];
+  const JM_RUN = { prep: [S.jobs('Jobs for You · upload your resume', 'match')], process: [S.jobs('Analyzing your resume', 'match', 'process')], dest: [S.jobs('Jobs for You · top matches', 'match', 'dest')] };
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' }],
       ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
-      ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
-      .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
+      ['jobs', 'Find jobs that fit me · Job board', '/jobs/search/', { prep: [S.route('Job board · Find a job you’ll love', '/jobs/search/')], process: false, dest: [S.jobs('Search results', 'search')], noun: 'search results' }],
+      ['matcher', 'Find jobs that fit me · Jobs for You', '/jobs/matcher/', { goal: 'jobs', ...JM_RUN, noun: 'job matches' }]]
+      .map(([id, title, path, o]) => ({ id: 'goal-' + id, goal: id, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
 
     ...[['create-resume', 'resume', 'Setting up your resume', resumeOut()], ['create-cover', 'cover letter', 'Setting up your cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')]],
       ['create-website', 'website', 'Building your website', [S.dest('Website editor', '/dashboard/create-website/', 'site')]]]
@@ -5918,7 +6259,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...[['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach'], ['proofreading', 'Proofreading', 'Proofreading']]
       .map(([t, title, label]) => ({ id: t, flow: 4, group: '5 · Bring a resume to a tool', title, path: `/dashboard/${t}/`, cv: true, dest: [S.tool(label, TOOL_PAGE[t], `/dashboard/${t}/`)] })),
     { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
-    { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
+    { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Jobs for You (job matcher)', path: '/jobs/matcher/', cv: false, ...JM_RUN, noun: 'job matches' },
+    { id: 'jobs-search', flow: 2, group: '7 · Jobs', title: 'Job board', path: '/jobs/search/', prep: [S.route('Job board · Find a job you’ll love', '/jobs/search/')], process: false, dest: [S.jobs('Search results', 'search')], noun: 'search results' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
     { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
@@ -5939,7 +6281,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].map(([t, label]) => ({ id: 'latest-' + t, flow: 4, group: '6 · Latest resume', title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] })),
     { id: 'docs', flow: 4, group: '6 · Latest resume', title: 'My Documents', path: '/dashboard/resumes/', dest: [S.docs()] },
     { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', cv: true, dest: [S.editor('Editor', '/edit/')] },
-    ...[['/jobs/', 'Jobs', 'jobs'], ['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/'], ['/jobs/job-tracker/', 'Job Tracker', 'tracker']]
+    { id: 'jobs-results', flow: 4, group: '7 · Jobs', title: 'Jobs · search results', path: '/jobs/', dest: [S.jobs('Search results', 'search')] },
+    ...[['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/'], ['/jobs/job-tracker/', 'Job Tracker', 'tracker']]
       .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, group: '7 · Jobs', title, path, url, dest: [S.wire(title, path, w)] })),
     ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, group: '9 · Upgrade', title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] }))
   ];
@@ -5952,8 +6295,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ...at('entry', f.entry),
       ...(has('intent') ? at('intent', S.screen('Goal screen', 'intent')) : []),
       ...(has('prep') ? at('prep', f.prep) : []),
-      ...(has('process') ? at('process', or(list(f.process), [S.process(f)])) : []),
-      ...(has('state') ? at('state', [...or(list(f.state), [S.state(f)]), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
+      ...(has('process') && f.process !== false ? at('process', or(list(f.process), [S.process(f)])) : []),
+      ...(has('state') && f.process !== false ? at('state', [...or(list(f.state), [S.state(f)]), ...(f.guest ? [S.wire('Sign-up wall', '/register/', 'wall')] : [])]) : []),
       ...at('dest', f.dest)
     ] };
   }
@@ -6059,7 +6402,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function flowGoal(id) {
     if (!flowNow || flowNow.n !== 1 || flowNow.f.goal === id) return;
     const at = flowAt;
-    flowNow = buildFlow(FEATURES.find(f => f.goal === id)); flowAt = at; flowPick[1] = flowNow.f.id;
+    flowNow = buildFlow(FEATURES.find(f => f.flow === 1 && f.goal === id)); flowAt = at; flowPick[1] = flowNow.f.id;
     renderFlowsPanel(); renderFlowBar();
   }
   /* A step a screen reaches on its own (uploading starts): mark it in the bar */
@@ -6125,7 +6468,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard' && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt) { flowAt = i; renderFlowBar(); }
   }
@@ -6370,6 +6713,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'proto-more') setMore(!pmWrap.classList.contains('is-open'));
     else if (a === 'proto-toggle') { const bar = el.closest('.proto'), open = !bar.classList.contains('is-open'); bar.classList.toggle('is-open', open); el.setAttribute('aria-expanded', String(open)); }
     else if (a === 'dashboard') openDashboard();
+    else if (a === 'create-back') goBack(createFrom.where, createFrom.route);
     else if (a === 'route-close') closeRoute();
     else if (a === 'dash-start') startFromDashboard(el.dataset.method);
     else if (a === 'switch-method') switchMethod(el.dataset.to);
