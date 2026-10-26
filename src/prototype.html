@@ -948,12 +948,72 @@ body.is-mobile .editor { min-height: 100%; }
   background: var(--kr-white); border-left: 1px solid var(--kr-grey-60); padding: 16px 24px 120px; display: grid; align-content: start; gap: 20px;
 }
 .pv-tabs { justify-self: center; display: flex; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); }
-.pv-tab { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border: 0; border-right: 1px solid var(--kr-grey-60); background: none; font-size: 15px; line-height: 20px; color: var(--kr-grey-100); cursor: pointer; white-space: nowrap; transition: background var(--dur-fast); }
+.pv-tab { display: inline-flex; gap: 6px; align-items: center; padding: 8px 12px; border: 0; border-right: 1px solid var(--kr-grey-60); background: none; font-size: 14px; line-height: 20px; color: var(--kr-grey-100); cursor: pointer; white-space: nowrap; transition: background var(--dur-fast); }
 .pv-tab:first-child { border-radius: 10px 0 0 10px; } .pv-tab:last-child { border-right: 0; border-radius: 0 10px 10px 0; }
-.pv-tab:hover { background: var(--kr-grey-40); }
+.pv-tab:hover { box-shadow: inset 0 0 0 1px var(--kr-grey-100); }  /* the design's dark outline */
 .pv-tab.is-active, .pv-tab.is-active:hover { color: var(--kr-primary); background: var(--kr-white); box-shadow: inset 0 0 0 1px var(--kr-primary); }
 .pv-tab:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
-.pv-tab svg.i { width: 18px; height: 18px; }
+.pv-tab svg { flex: none; width: 16px; height: 16px; }
+.pv-body[hidden] { display: none; }
+
+/* Resume Tailoring (the right pane's second tab, after tailoring): from Figma 56166:15938 and the frames beside it */
+.trt { justify-self: center; display: grid; gap: 16px; align-content: start; width: 100%; max-width: 540px; margin-top: 33px; color: var(--kr-grey-100); }
+.trt[hidden] { display: none; }
+:where(.trt) button { font: inherit; color: inherit; }  /* low specificity: each button's own size and colour win */
+.trt-head { display: flex; align-items: center; gap: 16px; }
+.trt-ic { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, rgba(83, 69, 255, .2), rgba(156, 62, 255, .2)); }
+.trt-ic svg { width: 20px; height: 20px; }
+.trt-head > div { display: grid; justify-items: start; }
+.trt-head b { font-size: 16px; line-height: 24px; font-weight: 500; }
+.trt-job { padding: 0; border: 0; background: none; font-size: 14px; line-height: 20px; text-align: left; text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+.trt-job:hover { color: var(--kr-grey-80); }
+.trt-strat { display: grid; gap: 8px; padding: 15px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); font-size: 14px; line-height: 20px; }
+.trt-strat b { font-weight: 500; letter-spacing: 1.12px; text-transform: uppercase; color: var(--kr-grey-80); }
+.trt-strat p { margin: 0; }
+.trt-acc { display: grid; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); overflow: hidden; }
+.trt-acc-h { display: flex; align-items: center; gap: 17px; width: 100%; padding: 7px; border: 0; border-radius: 9px; background: none; text-align: left; cursor: pointer; }
+.trt-acc-h > svg { flex: none; width: 20px; height: 20px; }
+.trt-acc-h b { flex: 1; font-size: 16px; line-height: 24px; font-weight: 500; }
+.trt-count { font-size: 14px; line-height: 20px; font-weight: 500; }
+.trt-count.is-blue { color: #514eea; }
+.trt-count.is-green { color: #48ad43; }
+.trt-chev { flex: none; display: grid; width: 16px; height: 16px; transition: transform var(--dur-base) var(--ease-standard); }
+.trt-chev svg { width: 16px; height: 16px; }
+.trt-acc-h .trt-chev { margin-left: -1px; }
+[aria-expanded="true"] > .trt-chev { transform: rotate(180deg); }
+.trt-acc-h:focus-visible, .trt-ch-h:focus-visible, .trt-job:focus-visible, .trt-chip:focus-visible, .trt-tag:focus-visible, .trt-kw button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.trt-acc-b[hidden], .trt-ch-b[hidden] { display: none; }
+.trt-acc-b { padding-top: 1px; }
+.trt-changes { display: grid; gap: 8px; margin: 0; padding: 0 16px 16px; list-style: none; }
+.trt-ch { display: grid; gap: 4px; padding: 7px; border: 1px solid var(--kr-grey-40); border-radius: 10px; transition: border-color var(--dur-fast); }
+.trt-ch:hover { border-color: var(--kr-grey-80); }
+.trt-ch.is-hit { padding: 6px; border: 2px solid #ffc107; }  /* the picked keyword's changes */
+.trt-ch-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; width: 100%; padding: 0; border: 0; background: none; font-size: 14px; line-height: 20px; font-weight: 500; text-align: left; cursor: pointer; }
+.trt-ch-b { display: grid; gap: 4px; }
+.trt-ch-b p { margin: 0; font-size: 14px; line-height: 20px; }
+.trt-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.trt-tag { padding: 2px 4px; border: 0; border-radius: 4px; background: var(--kr-grey-40); font-size: 12px; line-height: 18px; color: var(--kr-grey-80); cursor: pointer; }
+.trt-tag.is-hit { background: #ffc107; color: var(--kr-grey-100); }
+.trt-kw { position: relative; display: grid; justify-items: start; gap: 16px; padding: 0 16px 16px; }
+.trt-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.trt-chip, .trt-kw-hide { padding: 7px 8px; border: 0; border-radius: 99px; background: var(--kr-grey-40); font-size: 14px; line-height: 20px; cursor: pointer; }
+.trt-kw-hide { font-weight: 500; }
+.trt-chip[aria-pressed="true"] { padding: 5px 6px; border: 2px solid #ffc107; }
+.trt-kw-more { display: none; }
+/* folded: the first row or two, fading under View All Keywords (58275:3563) */
+.trt-kw.is-compact { height: 78px; padding-bottom: 0; overflow: hidden; }
+.trt-kw.is-compact .trt-kw-hide { display: none; }
+.trt-kw.is-compact .trt-kw-more {
+  position: absolute; inset: 14px 0 0; display: flex; justify-content: center; align-items: flex-end; padding: 8px 0 16px;
+  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .8)); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(transparent, #000 24px); mask-image: linear-gradient(transparent, #000 24px);
+}
+.trt-kw-more button { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 23px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); font-weight: 500; font-size: 14px; line-height: 20px; cursor: pointer; }
+.trt-kw-more svg { width: 16px; height: 16px; }
+.trt-tips { display: grid; gap: 16px; padding: 0 16px 16px; }
+.trt-tip { display: grid; gap: 4px; padding: 8px; font-size: 14px; line-height: 20px; }
+.trt-tip b { font-weight: 500; }
+.trt-tip p { margin: 0; }
 .pv-body { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; }
 .pv-tools { display: grid; gap: 12px; align-content: start; padding-top: 24px; }
 .pv-paper-wrap { container-type: inline-size; min-width: 0; }
@@ -1135,7 +1195,9 @@ body.is-mobile .dash { min-height: 100%; }
   .ed-main { padding: 0 16px 120px; }
   .ed-preview { padding: 4px 16px 120px; }
   .ed-top { position: static; }
-  .pv-tabs { display: none; }
+  .pv-tabs:not(.has-trt), .pv-tab[data-pv-tab="help"] { display: none; }  /* phones: only Edit Preview ⇄ Resume Tailoring, once tailored */
+  .pv-tab[data-pv-tab="tailoring"] { border-right: 0; border-radius: 0 10px 10px 0; }
+  .trt { margin-top: 12px; }
   .pv-body { grid-template-columns: minmax(0, 1fr); }
   .pv-tools { display: none; }
   .premium-head { padding: 12px 16px; font-size: 14px; line-height: 20px; }
@@ -2685,7 +2747,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.17">v2.17</div>
+<div class="proto-ver" aria-label="Prototype version 2.18">v2.18</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3549,6 +3611,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let buildingAs = null;
   function showBuilding(id, as) {
     buildingAs = as || null;
+    if (!as || !as.own) tailored = null;  // a new resume (a section writer only adds to the one there is)
     document.getElementById('loading-h').textContent = as ? as.head : 'Building your resume';
     document.getElementById('loading-sub').textContent = as ? as.sub : SUBTITLE[id];
     const badge = screens.loading.querySelector('.ld-badge');
@@ -3744,8 +3807,115 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else toast(`${NAV_SOON[n]} isn’t part of this prototype.`.replace('&amp;', '&'));
   });
 
+  /* ---------- Resume Tailoring (the editor's right pane, once a resume has been tailored) ----------
+     From Figma (Kickresume 3.0 › Tailor & Rewrite › Initial screen - after tailoring completes, 56166:15938; what
+     opens from the frames beside it, 57195:201676 and 58265:12824). The tailoring's Continue opens the editor with this
+     tab on (edTab); Edit Preview brings the resume preview back. Both lists start folded; picking a keyword (only one
+     at a time) opens and marks every change that added it and folds the rest. The Fill In side doesn't change. */
+  // exported from the Figma frame as they are (one-colour ones in currentColor); eye, target and help are the toggle's
+  const TRT_IC = {
+    scale: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M13.3333 13.3327L15.8333 6.66602L18.3333 13.3327C17.6083 13.8743 16.7333 14.166 15.8333 14.166C14.9333 14.166 14.0583 13.8743 13.3333 13.3327Z" stroke="url(#paint0_linear_57209_2667)" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66675 13.3327L4.16675 6.66602L6.66675 13.3327C5.94175 13.8743 5.06675 14.166 4.16675 14.166C3.26675 14.166 2.39175 13.8743 1.66675 13.3327Z" stroke="url(#paint1_linear_57209_2667)" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.83325 17.5H14.1666" stroke="url(#paint2_linear_57209_2667)" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2.5V17.5" stroke="url(#paint3_linear_57209_2667)" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 5.83268H4.16667C5.83333 5.83268 8.33333 4.99935 10 4.16602C11.6667 4.99935 14.1667 5.83268 15.8333 5.83268H17.5" stroke="url(#paint4_linear_57209_2667)" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="paint0_linear_57209_2667" x1="13.3333" y1="6.66602" x2="20.2563" y2="11.2814" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient><linearGradient id="paint1_linear_57209_2667" x1="1.66675" y1="6.66602" x2="8.58982" y2="11.2814" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient><linearGradient id="paint2_linear_57209_2667" x1="5.83325" y1="17.5" x2="6.06984" y2="19.4716" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient><linearGradient id="paint3_linear_57209_2667" x1="10" y1="2.5" x2="11.9912" y2="2.63274" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient><linearGradient id="paint4_linear_57209_2667" x1="2.5" y1="4.16602" x2="2.86585" y2="7.4587" gradientUnits="userSpaceOnUse"><stop stop-color="#5345FF"/><stop offset="1" stop-color="#9C3EFF"/></linearGradient></defs></svg>',
+    list: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M10.8333 4.16602H17.4999" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.8333 10H17.4999" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.8333 15.834H17.4999" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 14.1667L4.16667 15.8333L7.5 12.5" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 5.83268L4.16667 7.49935L7.5 4.16602" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    bulb: '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M12.5 11.666C12.6667 10.8327 13.0833 10.2493 13.75 9.58268C14.5833 8.83268 15 7.74935 15 6.66602C15 5.33993 14.4732 4.06816 13.5355 3.13048C12.5979 2.1928 11.3261 1.66602 10 1.66602C8.67392 1.66602 7.40215 2.1928 6.46447 3.13048C5.52678 4.06816 5 5.33993 5 6.66602C5 7.49935 5.16667 8.49935 6.25 9.58268C6.83333 10.166 7.33333 10.8327 7.5 11.666" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 15H12.5" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.33325 18.334H11.6666" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    chev: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    plus: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><path d="M3.3335 8H12.6668" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3.33398V12.6673" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    eye: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_56166_15942)"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.46558 8.00013C1.537 8.12299 1.63005 8.27701 1.74416 8.4537C2.05073 8.92838 2.50469 9.55955 3.0939 10.188C4.28508 11.4586 5.94621 12.6335 7.99989 12.6335C10.0536 12.6335 11.7147 11.4586 12.9059 10.188C13.4951 9.55955 13.949 8.92838 14.2556 8.4537C14.3697 8.27701 14.4628 8.12299 14.5342 8.00013C14.4628 7.87727 14.3697 7.72325 14.2556 7.54656C13.949 7.07188 13.4951 6.44071 12.9059 5.81222C11.7147 4.54162 10.0536 3.3668 7.99989 3.3668C5.94621 3.3668 4.28508 4.54162 3.0939 5.81222C2.50469 6.44071 2.05073 7.07188 1.74416 7.54656C1.63005 7.72325 1.537 7.87727 1.46558 8.00013ZM15.3332 8.00013C15.9593 7.68708 15.9591 7.68659 15.9591 7.68659L15.958 7.68439L15.9556 7.67975L15.948 7.66477C15.9416 7.65229 15.9325 7.63487 15.9208 7.61283C15.8975 7.56877 15.8637 7.5062 15.8196 7.42778C15.7315 7.27103 15.6017 7.05036 15.4317 6.78703C15.0924 6.26172 14.588 5.55955 13.9272 4.8547C12.6184 3.45864 10.6129 1.9668 7.99989 1.9668C5.3869 1.9668 3.38136 3.45864 2.07254 4.8547C1.41175 5.55955 0.907373 6.26172 0.568108 6.78703C0.398041 7.05036 0.268321 7.27103 0.180148 7.42778C0.136035 7.5062 0.102243 7.56877 0.0789257 7.61283C0.0672649 7.63487 0.0582163 7.65229 0.0517997 7.66477L0.0441482 7.67975L0.0418056 7.68439L0.0410057 7.68598C0.0410057 7.68598 0.0404537 7.68708 0.666553 8.00013L0.0404537 7.68708C-0.0580809 7.88415 -0.0580809 8.11611 0.0404537 8.31318L0.666553 8.00013C0.0404537 8.31318 0.0404537 8.31318 0.0404537 8.31318L0.0418056 8.31587L0.0441482 8.32051L0.0517997 8.33549C0.0582163 8.34797 0.0672649 8.36539 0.0789257 8.38743C0.102243 8.43149 0.136035 8.49406 0.180148 8.57248C0.268321 8.72923 0.398041 8.9499 0.568108 9.21323C0.907373 9.73854 1.41175 10.4407 2.07254 11.1456C3.38136 12.5416 5.3869 14.0335 7.99989 14.0335C10.6129 14.0335 12.6184 12.5416 13.9272 11.1456C14.588 10.4407 15.0924 9.73854 15.4317 9.21323C15.6017 8.9499 15.7315 8.72923 15.8196 8.57248C15.8637 8.49406 15.8975 8.43149 15.9208 8.38743C15.9325 8.36539 15.9416 8.34797 15.948 8.33549L15.9556 8.32051L15.958 8.31587L15.9588 8.31428C15.9588 8.31428 15.9593 8.31318 15.3332 8.00013ZM15.3332 8.00013L15.9593 8.31318C16.0579 8.11611 16.0576 7.88366 15.9591 7.68659L15.3332 8.00013Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00005 6.70078C7.28208 6.70078 6.70005 7.28281 6.70005 8.00078C6.70005 8.71875 7.28208 9.30078 8.00005 9.30078C8.71802 9.30078 9.30005 8.71875 9.30005 8.00078C9.30005 7.28281 8.71802 6.70078 8.00005 6.70078ZM5.30005 8.00078C5.30005 6.50961 6.50888 5.30078 8.00005 5.30078C9.49122 5.30078 10.7 6.50961 10.7 8.00078C10.7 9.49195 9.49122 10.7008 8.00005 10.7008C6.50888 10.7008 5.30005 9.49195 5.30005 8.00078Z" fill="currentColor"/></g><defs><clipPath id="clip0_56166_15942"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>',
+    target: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_56166_15950)"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.99948 2.03281C4.70418 2.03281 2.03281 4.70418 2.03281 7.99948C2.03281 11.2948 4.70418 13.9661 7.99948 13.9661C11.2948 13.9661 13.9661 11.2948 13.9661 7.99948C13.9661 4.70418 11.2948 2.03281 7.99948 2.03281ZM0.632812 7.99948C0.632812 3.93098 3.93098 0.632812 7.99948 0.632812C12.068 0.632812 15.3661 3.93098 15.3661 7.99948C15.3661 12.068 12.068 15.3661 7.99948 15.3661C3.93098 15.3661 0.632812 12.068 0.632812 7.99948Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.9998 4.70078C6.17726 4.70078 4.6998 6.17824 4.6998 8.00078C4.6998 9.82332 6.17726 11.3008 7.9998 11.3008C9.82234 11.3008 11.2998 9.82332 11.2998 8.00078C11.2998 6.17824 9.82234 4.70078 7.9998 4.70078ZM3.2998 8.00078C3.2998 5.40504 5.40407 3.30078 7.9998 3.30078C10.5955 3.30078 12.6998 5.40504 12.6998 8.00078C12.6998 10.5965 10.5955 12.7008 7.9998 12.7008C5.40407 12.7008 3.2998 10.5965 3.2998 8.00078Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00013 7.3668C7.65035 7.3668 7.3668 7.65035 7.3668 8.00013C7.3668 8.34991 7.65035 8.63346 8.00013 8.63346C8.34991 8.63346 8.63346 8.34991 8.63346 8.00013C8.63346 7.65035 8.34991 7.3668 8.00013 7.3668ZM5.9668 8.00013C5.9668 6.87715 6.87715 5.9668 8.00013 5.9668C9.12311 5.9668 10.0335 6.87715 10.0335 8.00013C10.0335 9.12311 9.12311 10.0335 8.00013 10.0335C6.87715 10.0335 5.9668 9.12311 5.9668 8.00013Z" fill="currentColor"/></g><defs><clipPath id="clip0_56166_15950"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>',
+    help: '<svg aria-hidden="true" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_56166_15960)"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.99997 2.03281C4.70467 2.03281 2.0333 4.70418 2.0333 7.99948C2.0333 11.2948 4.70467 13.9661 7.99997 13.9661C11.2953 13.9661 13.9666 11.2948 13.9666 7.99948C13.9666 4.70418 11.2953 2.03281 7.99997 2.03281ZM0.633301 7.99948C0.633301 3.93098 3.93147 0.632812 7.99997 0.632812C12.0685 0.632812 15.3666 3.93098 15.3666 7.99948C15.3666 12.068 12.0685 15.3661 7.99997 15.3661C3.93147 15.3661 0.633301 12.068 0.633301 7.99948Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.1665 5.38161C7.86391 5.32971 7.55272 5.38657 7.28804 5.54212C7.02335 5.69768 6.82227 5.94189 6.72039 6.2315C6.5921 6.59619 6.19246 6.78783 5.82776 6.65954C5.46307 6.53125 5.27143 6.13161 5.39972 5.76692C5.61131 5.16542 6.02896 4.65822 6.57868 4.33514C7.1284 4.01206 7.77473 3.89396 8.40318 4.00176C9.03163 4.10956 9.60165 4.43629 10.0123 4.92409C10.4228 5.41172 10.6475 6.02885 10.6467 6.66624C10.6465 7.70431 9.87723 8.38683 9.33501 8.74831C9.04257 8.94327 8.75511 9.0865 8.54352 9.18054C8.43673 9.22801 8.34676 9.26404 8.28185 9.28877C8.24934 9.30115 8.22295 9.31077 8.20369 9.31761L8.18021 9.32584L8.17268 9.32841L8.17001 9.32931L8.16895 9.32966L8.16849 9.32982C8.16828 9.32989 8.16808 9.32995 7.95283 8.6842L8.16808 9.32995C7.80132 9.45221 7.4049 9.254 7.28264 8.88724C7.16039 8.52048 7.3586 8.12405 7.72536 8.0018L7.94659 8.6655C7.72536 8.0018 7.72517 8.00186 7.72499 8.00192L7.72467 8.00203L7.72416 8.0022L7.72366 8.00237C7.72355 8.0024 7.72391 8.00229 7.7247 8.00201L7.73467 7.99851C7.74471 7.99495 7.76129 7.98893 7.78346 7.98048C7.82793 7.96354 7.89421 7.93708 7.97492 7.90121C8.13833 7.82858 8.35087 7.72181 8.55843 7.58344C9.01615 7.27829 9.24672 6.96094 9.24672 6.66588L9.24672 6.66483C9.24718 6.35783 9.13897 6.06056 8.94125 5.8257C8.74354 5.59083 8.46909 5.43351 8.1665 5.38161ZM10.6467 6.66624C10.6467 6.66647 10.6467 6.66669 10.6467 6.66692L9.94672 6.66588H10.6467C10.6467 6.666 10.6467 6.66612 10.6467 6.66624Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.2998 11.3328C7.2998 10.9462 7.61321 10.6328 7.9998 10.6328H8.00647C8.39307 10.6328 8.70647 10.9462 8.70647 11.3328C8.70647 11.7194 8.39307 12.0328 8.00647 12.0328H7.9998C7.61321 12.0328 7.2998 11.7194 7.2998 11.3328Z" fill="currentColor"/></g><defs><clipPath id="clip0_56166_15960"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>'
+  };
+  const TRT = {
+    job: 'Portfolio Performance Controller',  // the design's job, when the job post came as a link
+    strategy: 'You’re a strong same-field match. Your 10+ years of UAE finance experience across treasury, trade finance, and ERP-based reporting maps directly onto this role. The rewrite repositions your profile around the target title and integrates job keywords throughout.',
+    changes: [
+      ['Profile rewritten', 'Opened with years of experience and UAE finance trajectory, referenced MBA and CertIFR credentials, closed with bridge to target title.', ['User testing results', 'ERP systems', 'Market analysis']],
+      ['Core competencies rebuilt', 'Led with financial control and reporting, the skills the job post asks for first, and moved tools and systems after them.', ['Cash-flow optimization', 'IFRS compliance']],
+      ['Performance metrics defined', 'Turned duties into results with numbers, so each role shows what changed because of your work.', ['Market analysis']],
+      ['Stakeholder engagement strategies', 'Brought your work with finance, operations and leadership to the front, as the job post asks.', ['Stakeholder engagement']],
+      ['Risk management frameworks', 'Identifying, assessing, and mitigating risks: project scope changes, budget overruns, stakeholder conflict, and others.', ['Project financial control', 'Risk assessment tools']],
+      ['Agile methodologies implemented', 'Named the delivery methods behind your projects, so a reviewer sees how you work.', ['Design iteration feedback']],
+      ['Cross-functional collaboration', 'Showed how you worked with sales, procurement and IT to close the books on time.', ['Project financial control']],
+      ['Continuous improvement initiatives', 'Added the process fixes you led and what they saved.', ['ERP systems', 'Final project presentation']],
+      ['Customer satisfaction metrics', 'Linked your reporting work to service quality the hiring team can measure.', ['User testing results']]
+    ],
+    keywords: ['Project financial control', 'Cash-flow optimization', 'IFRS compliance', 'ERP systems', 'Stakeholder engagement', 'Market analysis', 'User testing results', 'Design iteration feedback', 'Final project presentation', 'Risk assessment tools'],
+    tips: [
+      ['Consider a Power BI course before applying', 'The job explicitly requires it alongside SAP and Excel. Even a beginner certification (Microsoft Learn or Coursera) would let you speak to it confidently in an interview.'],
+      ['Add one metric to your Treasury Officer role', 'Your current role sits at the top of the experience section but has no quantified achievements yet. Portfolio size, number of contracts, or a cash-flow improvement figure would significantly strengthen it.'],
+      ['Mention any project-based billing exposure', 'The role is at a construction company. If you have any indirect exposure to milestone invoicing or contract finance through your trade finance work, a brief mention would close the one visible gap.']
+    ]
+  };
+  let tailored = null;      // the job a resume was tailored to: { title, fromJob } (a job page's Tailor my resume)
+  let edTab = 'preview';    // the editor's right pane: 'preview' or 'tailoring'
+  function trtHTML() {
+    const acc = (id, ic, title, count, cls, body) => `<section class="trt-acc" data-acc="${id}">
+        <button class="trt-acc-h" type="button" aria-expanded="false" aria-controls="trt-${id}">${ic}<b>${title}</b><span class="trt-count ${cls}">${count}</span><span class="trt-chev">${TRT_IC.chev}</span></button>
+        <div class="trt-acc-b" id="trt-${id}" hidden>${body}</div></section>`;
+    const changes = `<ol class="trt-changes">${TRT.changes.map(([t, d, kws], i) => `<li class="trt-ch" data-kws="${esc(kws.join('|'))}">
+        <button class="trt-ch-h" type="button" aria-expanded="false"><span>${i + 1}. ${t}</span><span class="trt-chev">${TRT_IC.chev}</span></button>
+        <div class="trt-ch-b" hidden><p>${d}</p><div class="trt-tags">${kws.map(k => `<button class="trt-tag" type="button" data-kw="${esc(k)}">${k}</button>`).join('')}</div></div></li>`).join('')}</ol>
+      <div class="trt-kw is-compact">
+        <button class="trt-kw-hide" type="button" data-trt="kw-less">Hide added keywords</button>
+        <div class="trt-chips" role="group" aria-label="Added keywords">${TRT.keywords.map(k => `<button class="trt-chip" type="button" data-kw="${esc(k)}" aria-pressed="false">${k}</button>`).join('')}</div>
+        <div class="trt-kw-more"><button type="button" data-trt="kw-more">View All Keywords${TRT_IC.plus}</button></div>
+      </div>`;
+    const tips = `<div class="trt-tips">${TRT.tips.map(([t, d]) => `<div class="trt-tip"><b>${t}</b><p>${d}</p></div>`).join('')}</div>`;
+    return `<div class="trt-head"><span class="trt-ic">${TRT_IC.scale}</span><div><b>This resume has been tailored</b>
+        <button class="trt-job" type="button" data-trt="job">${esc(tailored ? tailored.title : TRT.job)}</button></div></div>
+      <div class="trt-strat"><b>Overall strategy</b><p>${TRT.strategy}</p></div>
+      ${acc('changes', TRT_IC.list, 'What we changed', `${TRT.changes.length} changes`, 'is-blue', changes)}
+      ${acc('tips', TRT_IC.bulb, 'Things to consider', `${TRT.tips.length} tips`, 'is-green', tips)}`;
+  }
+  // Edit Preview ⇄ Resume Tailoring; before any tailoring, Resume Tailoring starts it
+  function setPvTab(tab) {
+    if (tab === 'tailoring' && !tailored) return openRoute(findRoute('/dashboard/tailor-resume/'));
+    edTab = tab;
+    const pv = editorEl.querySelector('.ed-preview');
+    pv.querySelectorAll('[data-pv-tab]').forEach(b => { const on = b.dataset.pvTab === tab; b.classList.toggle('is-active', on); b.setAttribute('aria-current', String(on)); });
+    pv.querySelector('.pv-body').hidden = tab !== 'preview';
+    const trt = pv.querySelector('.trt'); if (trt) trt.hidden = tab !== 'tailoring';
+    if (!reduce) play(pv.querySelector(tab === 'preview' ? '.pv-body' : '.trt'), [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(a => pv.querySelectorAll('.pv-body, .trt').forEach(x => x.getAnimations().forEach(y => y.cancel())));
+  }
+  // a keyword picked (or picked again to let go): its changes open and are marked, the others fold
+  function pickKeyword(trt, kw) {
+    const on = trt.dataset.kw === kw ? '' : kw;
+    trt.dataset.kw = on;
+    trt.querySelectorAll('.trt-chip').forEach(c => c.setAttribute('aria-pressed', String(!!on && c.dataset.kw === on)));
+    trt.querySelectorAll('.trt-tag').forEach(t => t.classList.toggle('is-hit', !!on && t.dataset.kw === on));
+    trt.querySelectorAll('.trt-ch').forEach(ch => {
+      const hit = !!on && ch.dataset.kws.split('|').includes(on);
+      ch.classList.toggle('is-hit', hit);
+      if (on) foldChange(ch, hit);
+    });
+  }
+  function foldChange(ch, open) {
+    const h = ch.querySelector('.trt-ch-h'), b = ch.querySelector('.trt-ch-b');
+    if (h.getAttribute('aria-expanded') === String(open)) return;
+    h.setAttribute('aria-expanded', String(open)); b.hidden = !open;
+  }
+  editorEl.addEventListener('click', e => {
+    const tab = e.target.closest('[data-pv-tab]');
+    if (tab) return tab.dataset.pvTab === 'help' ? toast('Help Center opens in a new tab.') : setPvTab(tab.dataset.pvTab);
+    const trt = e.target.closest('.trt'); if (!trt) return;
+    const accH = e.target.closest('.trt-acc-h'), chH = e.target.closest('.trt-ch-h'), kw = e.target.closest('[data-kw]'), act = e.target.closest('[data-trt]');
+    if (accH) {
+      const open = accH.getAttribute('aria-expanded') !== 'true', sec = accH.closest('.trt-acc');
+      morphHeight(sec, () => { accH.setAttribute('aria-expanded', String(open)); sec.querySelector('.trt-acc-b').hidden = !open; });
+    } else if (chH) {
+      const ch = chH.closest('.trt-ch');
+      morphHeight(ch, () => foldChange(ch, chH.getAttribute('aria-expanded') !== 'true'));
+    } else if (kw) {
+      const list = trt.querySelector('.trt-acc[data-acc="changes"]');
+      morphHeight(list, () => pickKeyword(trt, kw.dataset.kw));
+    } else if (act) {
+      const a = act.dataset.trt, kwBox = trt.querySelector('.trt-kw');
+      if (a === 'kw-more' || a === 'kw-less') morphHeight(trt.querySelector('.trt-acc[data-acc="changes"]'), () => kwBox.classList.toggle('is-compact', a === 'kw-less'));
+      // the job it was tailored to: a job page's own page, else the job post that was given (not in the prototype)
+      else if (a === 'job') tailored && tailored.fromJob ? openRoute(findRoute('/jobs/job/1234/')) : toast('The job post you tailored to opens here.');
+    }
+  });
+
   function editorHTML() {
-    const P = person;
+    const P = person, tab = tailored ? edTab : 'preview';
     const f = (k, label, cls, ph) => `<div class="f${cls ? ' ' + cls : ''}"><label for="ed-${k}">${label}</label><input class="input sm" id="ed-${k}" data-k="${k}" value="${esc(P[k])}"${ph ? ` placeholder="${ph}"` : ''}></div>`;
     const ecard = (key, ic, title, meta, body, open) => `
       <div class="ecard${open ? ' is-open' : ''}" data-sec="${key}">
@@ -3822,12 +3992,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         </div>
       </div>
       <aside class="ed-preview" aria-label="Resume preview">
-        <div class="pv-tabs">
-          <button class="pv-tab is-active" type="button" aria-current="true">${icon('eye')}Preview</button>
-          <button class="pv-tab" type="button" data-action="toast" data-msg="Resume Tailoring matches this resume to a job ad.">${icon('target')}Resume Tailoring</button>
-          <button class="pv-tab" type="button" data-action="toast" data-msg="Help Center opens in a new tab.">${icon('help')}Help Center</button>
-        </div>
-        <div class="pv-body">
+        <div class="pv-tabs${tailored ? ' has-trt' : ''}">${[['preview', TRT_IC.eye, 'Edit Preview'], ['tailoring', TRT_IC.target, 'Resume Tailoring'], ['help', TRT_IC.help, 'Help Center']].map(([k, ic, l]) =>
+          `<button class="pv-tab${k === tab ? ' is-active' : ''}" type="button" data-pv-tab="${k}"${k === 'help' ? '' : ` aria-current="${k === tab}"`}>${ic}${l}</button>`).join('')}</div>
+        ${tailored ? `<div class="trt"${tab === 'tailoring' ? '' : ' hidden'}>${trtHTML()}</div>` : ''}
+        <div class="pv-body"${tab === 'preview' ? '' : ' hidden'}>
           <div class="pv-tools">
             <button class="icon-sq" type="button" data-action="toast" data-msg="Full-screen preview opens here." aria-label="Full-screen preview">${icon('eye')}</button>
             <button class="icon-sq" type="button" data-action="toast" data-msg="Download is a Premium feature for this template." aria-label="Download">${icon('download')}</button>
@@ -3897,10 +4065,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const paper = editorEl.querySelector('#rv'), pv = editorEl.querySelector('.ed-preview');
     const r1 = paper.getBoundingClientRect();
     pv.style.overflow = 'visible'; pv.style.zIndex = '7';
-    const anims = [play(paper, [
+    // on the Resume Tailoring tab the page isn't shown: nothing travels, the panel settles in with the chrome
+    const anims = r1.width ? [play(paper, [
       { transformOrigin: '0 0', transform: `translate(${r0.left - r1.left}px, ${r0.top - r1.top}px) scale(${r0.width / r1.width})` },
-      { transformOrigin: '0 0', transform: 'none' }], { duration: DUR.travel, easing: EASE.standard })];
-    const chrome = [...editorEl.querySelectorAll('.ed-mbar, .ed-side, .ed-tabs, .pv-tabs, .pv-tools, .ed-top, .ed-col > *')].filter(shown);
+      { transformOrigin: '0 0', transform: 'none' }], { duration: DUR.travel, easing: EASE.standard })] : [];
+    const chrome = [...editorEl.querySelectorAll('.ed-mbar, .ed-side, .ed-tabs, .pv-tabs, .pv-tools, .trt > *, .ed-top, .ed-col > *')].filter(shown);
     chrome.forEach((el, i) => anims.push(play(el, [
       { opacity: 0, transform: el.classList.contains('ed-side') ? 'translateX(-16px)' : 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base, delay: 200 + Math.min(i, 8) * STAGGER, easing: EASE.standard })));
@@ -4190,6 +4359,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
+    if (!on) tailored = null;  // no resume, nothing tailored
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
     if (current === 'dashboard') {  // the menu's resume group follows the CV
@@ -4756,6 +4926,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     function end() {
       const ok = procResult === 'ok';
       card._start = null;
+      if (ok) {
+        // the job it was tailored to, for the editor's Resume Tailoring tab (a link gives no title: the design's)
+        const trl = root.querySelector('form.trl'), mode = trl ? trl.dataset.mode : 'url', typed = trl && trl.elements.title ? trl.elements.title.value.trim() : '';
+        tailored = { title: mode === 'job' ? TRL_JOB.title : mode === 'manual' && typed ? typed : TRT.job, fromJob: mode === 'job' };
+        edTab = 'tailoring';
+      }
       card.dataset.state = ok ? 'done' : 'error';
       pics.forEach((p, k) => p.classList.toggle('is-on', k === 3));
       bars.forEach(b => { b.classList.add('is-done'); b.firstElementChild.removeAttribute('style'); });
@@ -5660,7 +5836,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai', as) => ({ label: 'Building screen' + (as ? ' · ' + as.head : ''), match: 'screen:loading', run: () => { showBuilding(id, as); if (as) buildNext = as.done; } }),
     // sec: the section it opens at (what the feature wrote)
-    editor: (label, path, sec) => ({ label: label || 'Editor', match: 'screen:editor', run: () => { const opening = path ? editorAt(path) : jumpEditor(); if (sec) opening.then(() => { if (current === 'editor') editSection(sec); }); } }),
+    editor: (label, path, sec) => ({ label: label || 'Editor', match: 'screen:editor', run: () => {
+      if (sec === 'tailoring') {
+        const fromJob = !!flowNow && flowNow.f.path === '/jobs/job/1234/tailor/';
+        tailored = tailored || { title: fromJob ? TRL_JOB.title : TRT.job, fromJob }; edTab = 'tailoring';
+      }
+      const opening = path ? editorAt(path) : jumpEditor();
+      if (sec && sec !== 'tailoring') opening.then(() => { if (current === 'editor') editSection(sec); });
+    } }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
     tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
@@ -5697,7 +5880,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // the tools that ask something first (their setup screen is their personalization)
   const TOOL_DEST = {
     'rewrite-resume': ['Rewriting your resume', 'rewritten resume', () => S.editor('Editor · the rewritten copy')],
-    'tailor-resume': ['Tailoring your resume', 'tailored resume', () => S.editor('Editor · the tailored copy')],
+    'tailor-resume': ['Tailoring your resume', 'tailored resume', () => S.editor('Editor · the tailored copy', undefined, 'tailoring')],
     'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary', undefined, 'profile')]
   };
   /* Every URL, paired with its flow: { flow, group (the URL checklist's), title, path, entry, prep, process, dest,
@@ -5706,7 +5889,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const resumeOut = (label = 'Editor · Fill In', sec) => [S.editor(label, undefined, sec)];
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
-      ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
+      ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' }],
       ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
       .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
@@ -5734,11 +5917,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
     ...[['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach'], ['proofreading', 'Proofreading', 'Proofreading']]
       .map(([t, title, label]) => ({ id: t, flow: 4, group: '5 · Bring a resume to a tool', title, path: `/dashboard/${t}/`, cv: true, dest: [S.tool(label, TOOL_PAGE[t], `/dashboard/${t}/`)] })),
-    { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
+    { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
     { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
     { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
-    { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
+    { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
 
     { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, redo: 'upload', process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
     { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
@@ -5838,7 +6021,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const f = FEATURES.find(x => x.id === id);
     flowPick[f.flow] = id;
     setCv(runsWithCv(f));
-    cvNext = buildNext = null;  // nothing from an earlier run carries over
+    cvNext = buildNext = null; tailored = null;  // nothing from an earlier run carries over
     flowNow = buildFlow(f); renderFlowsPanel();
     flowGo(0);
   }
