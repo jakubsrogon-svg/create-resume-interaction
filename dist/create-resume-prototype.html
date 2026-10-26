@@ -2685,7 +2685,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.16">v2.16</div>
+<div class="proto-ver" aria-label="Prototype version 2.16.1">v2.16.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3020,7 +3020,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let variant = 'A';
   /* Variant C is hidden for now but kept in full: no rail button, and #c links or a remembered C
      open A instead. To show it again, set SHOW_C back to true. */
-  const SHOW_C = true;
+  const SHOW_C = false;
   const VARIANTS = SHOW_C ? ['A', 'B', 'C'] : ['A', 'B'];
   document.querySelector('.proto-more [data-variant="C"]').closest('.pm-row').hidden = !SHOW_C;
   // More options (bottom right): open/close, and a dot on the button while C or the 3D look is on
