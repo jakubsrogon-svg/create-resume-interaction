@@ -1522,7 +1522,6 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 /* Upload your resume (start, error, uploading) */
 .upl { padding: 27px 35px 27px; }
 .upl h1 { display: flex; align-items: center; gap: 12px; font-size: 20px; line-height: 28px; }
-.upl h1 .rt-ic { width: 24px; height: 24px; animation: spin 1.6s linear infinite; }
 .upl-drop {
   margin-top: 28px; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px;
   border: 2px dashed var(--kr-primary); border-radius: 8px; color: var(--kr-primary); cursor: pointer; transition: background-color var(--dur-fast);
@@ -1532,12 +1531,28 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 .upl-hint { margin: 28px 0 0; text-align: center; font-size: 16px; line-height: 24px; color: var(--kr-grey-80); }
 .upl-drop .upl-hint { margin: 0; }
 .upl-alert { margin-top: 28px; min-height: 60px; padding: 10px 12px 10px 10px; background: var(--kr-primary-light); }
-.upl-info { margin-top: 18px; min-height: 60px; padding: 10px 8px 10px 10px; }
-.upl-wait { margin-top: 28px; height: 200px; border-radius: 9px; background: #d9d9d9; }
-.upl-quote { margin: 28px 0 0; font-size: 16px; line-height: 24px; }
 .upl-foot { display: flex; justify-content: flex-end; gap: 16px; margin-top: 28px; }
 .upl-foot .rt-btn { width: 129px; height: 38px; border-radius: 4px; font-size: 16px; }
-.upl-foot .upl-cont { width: 145px; }
+
+/* The upload modal (Figma Kickresume 3.0 › 62245:57072): 393px wide with 24/32 padding (1px less for the outline);
+   its loader is Figma's icon, turned in eight steps */
+.upm-slot { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; margin-top: var(--sp-section); }
+.upm { --w: 393px; display: flex; flex-direction: column; align-items: flex-end; gap: 24px; padding: 23px 31px; }
+.upm-head { display: flex; flex-direction: column; gap: 16px; align-self: stretch; }
+.upm[data-state="fail"] .upm-head { gap: 24px; }
+.upm-h { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; letter-spacing: 0; }
+.upm-spin { flex: none; width: 24px; height: 24px; animation: upm-turn 1s steps(8) infinite; }
+.upm:not([data-state="run"]) .upm-spin { display: none; }
+@keyframes upm-turn { to { transform: rotate(360deg); } }
+.upm-info { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 10px; background: var(--kr-background); font-size: 12px; line-height: 18px; }
+.upm-info svg { flex: none; width: 20px; height: 20px; }
+.upm-info.is-err { background: var(--kr-primary-light); }
+.upm-pic { display: block; align-self: stretch; width: 100%; height: auto; aspect-ratio: 329 / 175; border-radius: 10px; }
+.upm-line { margin: 0; align-self: stretch; }
+.upm[data-state="fail"] .upm-line { display: none; }
+.upm-foot { display: flex; gap: 16px; }
+.upm-foot .rt-btn { height: 34px; padding: 0 32px; border-radius: 10px; }
+.upm-foot .rt-ghost { border-radius: 4px; }
 
 /* LinkedIn import (/dashboard/linkedin-import/) */
 .lki { padding: 25px 35px 25px; }
@@ -2865,6 +2880,7 @@ body.has-note .au-main { padding-bottom: 96px; }
       <p>We’ll fill in your details — you review and edit.</p>
     </div>
     <div class="methods" id="methods"></div>
+    <div class="upm-slot" id="create-upm" hidden></div>
     <div class="center"><button class="text-link" type="button" data-action="create-back">Back</button></div>
   </section>
 
@@ -2913,7 +2929,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.19">v2.19</div>
+<div class="proto-ver" aria-label="Prototype version 2.20">v2.20</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3369,6 +3385,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     clearTimers();
     setHead(HEAD0.h, HEAD0.p, false);
     screens.create.querySelector(':scope > .center').inert = false;
+    // the upload modal (upmCreate) gives the methods their place back
+    const slot = document.getElementById('create-upm');
+    slot.hidden = true; slot.innerHTML = '';
+    methodsEl.hidden = false; screens.create.querySelector(':scope > .center').hidden = false;
     const card = (m, p, action) => `
       <div class="mcard" data-id="${m.id}">
         ${headHTML(m, 'button', `type="button" data-action="${action}" aria-expanded="false" aria-controls="${p}-${m.id}-panel"`)}
@@ -3400,7 +3420,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      A's expand-in-place accordion is for wider screens only. Same width as the phone layout's container query. */
   const phone = () => { const cs = getComputedStyle(device); return device.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) <= 560; };
   const createMode = () => variant === 'A' && !phone() ? 'accordion' : 'steps';
-  const syncCreateMode = () => { if (current === 'create' && methodsEl.dataset.mode !== createMode()) renderCreate(); };
+  const syncCreateMode = () => { if (current === 'create' && !methodsEl.hidden && methodsEl.dataset.mode !== createMode()) renderCreate(); };
   window.addEventListener('resize', syncCreateMode);
 
   /* ---------- Motion ---------- */
@@ -3742,7 +3762,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   let person = buildPerson('paste');
 
+  /* A resume uploaded or imported goes through the upload modal (Upload a resume, Import from LinkedIn); one that is
+     created (Write with AI, Paste text, a section writer) through the building screen. Either way it then goes
+     straight on: to the screen that asked for it (askCv), else to the editor or the run's destination. */
   function startCreation(form, id, opts) {
+    const as = opts && opts.as;
+    if ((id === 'upload' || id === 'linkedin') && !as) {
+      const o = { id, opts, file: id === 'upload' ? (form._file || { name: 'jana-cv.pdf' }).name : '' };
+      return current === 'route' ? upmRoute(form.closest('.rt-item'), routeNow, o) : upmCreate(o);
+    }
     const btn = form.querySelector('[type="submit"]'), label = btn.innerHTML, at = current;
     btn.style.minWidth = btn.offsetWidth + 'px';
     btn.disabled = true;
@@ -3752,15 +3780,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (current !== at || !form.isConnected || form.closest('[inert]')) { btn.innerHTML = label; btn.disabled = false; btn.style.minWidth = ''; return; }
       // a section writer (opts.as, Generate work experience / objective) changes only its section of a resume that is
       // already there; with none, the AI drafts a resume around it
-      const as = opts && opts.as;
       person = as && cvUploaded ? withSection(person, opts) : buildPerson(id, opts);
-      if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
-      if (!cvNext) { showBuilding(id, as); if (as) buildNext = as.done; return; }
-      // a tool asked for the resume (askCv): it gets it straight away, with no building screen, and after its own setup
-      // the person sees that tool's loading (the tailoring card, Checking your resume), never the CV being made
+      // a screen asked for the resume (askCv): it gets it once the building screen is done
       const then = cvNext;
-      if (!cvUploaded) setCv(true);
-      then();
+      if (then && !cvUploaded) setCv(true);
+      showBuilding(id, as);
+      buildNext = as ? as.done : then;
     }, 450);
   }
   /* The section writers' building screen: what they write, in which section the editor opens afterwards */
@@ -4219,10 +4244,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      preview pane and becomes the real resume; the editor chrome settles in around it. */
   // the editor with one section open (what a section writer just wrote)
   async function openEditorAt(sec) { await openEditor(); if (current === 'editor') editSection(sec); }
-  async function openEditor() {
+  // the page travels in from the building screen's, or from `from` (the upload modal)
+  async function openEditor(from) {
     if (screenRun) screenRun.finish();
-    const ldPaper = screens.loading.querySelector('.ld-paper');
-    const r0 = ldPaper.getBoundingClientRect();
+    const r0 = (from || screens.loading.querySelector('.ld-paper')).getBoundingClientRect();
     editorEl.innerHTML = editorHTML();
     setPane('preview');
     topbarEl.hidden = true; pageEl.hidden = true; editorEl.hidden = false;
@@ -4409,7 +4434,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      ones depend on the feature (o.f) and are looked up by their WIRE id (wireRoute). */
   const HEADS = {
     upload: ['Let’s bring in your resume', 'We’ll move it onto a fresh template, ready to edit.'],
-    uploading: ['Uploading your resume', 'This takes a few seconds.'],
     linkedin: ['Let’s bring in your LinkedIn profile', 'We’ll turn it into a resume, ready to edit.'],
     aiResume: ['What job are you going for?', 'Tell the AI a little about you and it drafts your resume.'],
     experience: ['What did you do in this job?', 'Give the AI a few details and it writes your work experience.'],
@@ -4451,8 +4475,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-cover-from-job/', also: ['/ai/cover/'], title: 'AI Cover Letter Writer', head: { main: HEADS.cover, s1: HEADS.cover, s2: HEADS.coverCv }, html: coverHTML, init: initWriter },
     { group: '4 · Generate with AI', path: '/ai/resignation/', title: 'Resignation letter', head: { main: HEADS.resign }, html: resignHTML, init: initResign },
     { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', head: { main: HEADS.interview, s1: HEADS.interview, s2: HEADS.interviewCv }, html: interviewHTML, init: initWriter },
-    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: HEADS.upload, progress: HEADS.uploading } },
-    { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: HEADS.upload, progress: HEADS.upload } },
+    { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin, progress: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
     // the resume tools: three ask for something first (Tailor resume is recreated, Rewrite and Summary are wireframes);
     // the others have nothing to ask and start on the CV straight away (analyseNow, toolNow)
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
@@ -4504,8 +4528,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      screen), makes one on the method screen for a screen that asked (askCv), or when a flow or the URLs view's CV says so.
      Screens that work on a resume ask for one first. */
   let cvUploaded = false, cvName = '';
-  /* No CV yet: the method screen gets one (any of its methods) and hands it straight to `then`, the screen that
-     asked (startCreation), with no building screen: the person goes on to that screen's setup and its own loading */
+  /* No CV yet: the method screen gets one (any of its methods) and hands it to `then`, the screen that asked, once it
+     is made: after the upload modal (uploaded or imported) or the building screen (created); see startCreation */
   function askCv(then, instant) {
     cvNext = then;
     if (!instant) return go('create');
@@ -4514,12 +4538,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     setCurrent('create');
   }
   /* A tool that needs a CV and has none: the method screen first, under the tool's URL, then the tool */
-  function askCvFor(r, instant) {
+  function askCvFor(r, instant) { return askCv(cvFor(r), instant); }
+  // what opens the tool once the CV is there (the URL is the tool's meanwhile)
+  function cvFor(r) {
     // × on the tool goes back to where the person asked for it, not to the method or the building screen
     const from = current === 'loading' ? 'intent' : current;
     createFrom = { where: from, route: routeNow }; createFromSet = current !== 'create';
     routeNow = r; markRoutes(); setHash(r.path);
-    askCv(() => { const opening = openRoute(r); routeBack = from; return opening; }, instant);
+    return () => { const opening = openRoute(r); routeBack = from; return opening; };
   }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
   async function backToRoute(r, then) {
@@ -4544,15 +4570,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // (process, state, dest); more = panes that follow the main one ({ name: markup function }, e.g. Tailor
     // resume's "process"). A tool that needs a CV gets it before it opens (openRoute → askCv).
     const el = screens.route, main = r.pane || 'main';
-    const first = pane === 'progress' ? 'upload' : pane || (r.upload ? 'upload' : main);
+    // progress: the upload modal (upmRoute) on the screen's first pane; progress-end: the modal's result (a run's state)
+    const modal = pane === 'progress' || pane === 'progress-end', first = modal ? (r.upload ? 'upload' : main) : pane || (r.upload ? 'upload' : main);
     const paneHTML = (name, html) => `<div class="rt-pane" data-pane="${name}"${name === first ? '' : ' hidden'}>${html}</div>`;
     el.innerHTML = `<div class="page-head rt-head" hidden><h1></h1><p></p></div><div class="rt-item rt-panes">${r.upload ? uploadHTML('upload', first !== 'upload') : paneHTML(main, r.html())}${Object.entries(r.more || {}).map(([name, html]) => paneHTML(name, html())).join('')}</div>`;
     el.setAttribute('aria-label', r.title);
     routeHead(r, first, true);
     const item = el.querySelector(':scope > .rt-item');
     if (r.init) r.init(item.querySelector(`[data-pane="${main}"]`).firstElementChild, r);
-    if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onDone: () => startFromUpload(item), onCancel: closeRoute, onState: st => routeHead(r, st === 'progress' ? 'progress' : 'upload') });
-    if (pane === 'progress') item.querySelector('.upl')._show({ name: 'jana-cv.pdf' });
+    if (r.upload) initUpload(item.querySelector('[data-pane="upload"]'), { onFile: file => upmRoute(item, r, { id: 'upload', file: file.name }), onCancel: closeRoute });
+    if (modal) upmRoute(item, r, { ...(r.upload ? { id: 'upload', file: 'jana-cv.pdf' } : { id: 'linkedin', opts: { url: 'https://www.linkedin.com/in/jana-novak-design' } }), end: pane === 'progress-end' });
   }
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant, pane) {
@@ -4760,7 +4787,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
     clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
     cloud: '<path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/>',
-    loader: '<path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/>',
     smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
     scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
     briefcase: '<path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
@@ -5201,37 +5227,32 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     </span>`;
   }
 
-  /* ---------- Upload your resume (start · error · uploading) ---------- */
+  /* ---------- Upload your resume (start · error; then the upload modal) ---------- */
   const UPL_OK = /\.(docx|odt|html?|rtf|txt|pdf)$/i;
   const uplFoot = `<div class="upl-foot"><button class="rt-btn rt-ghost" type="button" data-upl="cancel">Cancel</button><button class="rt-btn rt-coral" type="button" data-upl="pick">Upload</button></div>`;
   const uplDrop = hint => `<div class="upl-drop" role="button" tabindex="0" aria-label="Choose your resume file">${rtIc(RT_IC.cloud)}${hint ? '<p class="upl-hint">Drop your resume text file here</p>' : ''}</div>`;
   const UPL = {
     start: () => `<h1>Upload your resume</h1>${uplDrop(false)}<p class="upl-hint">Drop your resume text file here</p>${uplFoot}`,
-    error: () => `<h1>Please upload a valid file</h1><div class="rt-info upl-alert" role="alert">${rtIc(RT_IC.info)}<span>Upload a DOCX, ODT, HTML, RTF, TXT or PDF file that has at least 200 words and less than 10MB.</span></div>${uplDrop(true)}${uplFoot}`,
-    progress: () => `<h1>${rtIc(RT_IC.loader)}<span>Uploading your resume...</span></h1><div class="rt-info upl-info">${rtIc(RT_IC.info)}<span>If your resume does not get imported correctly, try uploading it in a different file format (e.g. DOCX).</span></div><div class="upl-wait" aria-hidden="true"></div><p class="upl-quote">Use your wand to cast some wicked spells Harry!<br>-Hermiona</p><div class="upl-foot"><button class="rt-btn rt-coral upl-cont" type="submit" data-upl="continue">Continue</button></div>`
+    error: () => `<h1>Please upload a valid file</h1><div class="rt-info upl-alert" role="alert">${rtIc(RT_IC.info)}<span>Upload a DOCX, ODT, HTML, RTF, TXT or PDF file that has at least 200 words and less than 10MB.</span></div>${uplDrop(true)}${uplFoot}`
   };
   const uploadHTML = (name, hidden) => `<div class="rt-pane" data-pane="${name}"${hidden ? ' hidden' : ''}><div class="rt-card upl" data-state="start">${UPL.start()}</div></div>`;
-  function initUpload(pane, { onDone, onCancel, onState }) {
+  function initUpload(pane, { onFile, onCancel }) {
     if (!pane) return;
     const card = pane.querySelector('.upl'), input = document.createElement('input');
     Object.assign(input, { type: 'file', hidden: true, accept: '.docx,.odt,.html,.htm,.rtf,.txt,.pdf' });
     pane.appendChild(input);
     const setState = st => {
-      if (st === 'progress') flowSeen('progress');  // uploading is the flow's data processing
-      if (onState) onState(st);
       morphHeight(card, () => { card.dataset.state = st; card.innerHTML = UPL[st](); });
       landFocus(card);
       if (!reduce) [...card.children].forEach(el => play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => el.getAnimations().forEach(a => a.cancel())));
     };
     // prototype triggers: a file name containing "scan" can't be read; other formats or over 10 MB are refused
-    card._show = file => { card._file = file; setState('progress'); };
-    const take = file => { if (!file) return; const ok = UPL_OK.test(file.name) && file.size <= 10 * 1024 * 1024 && !/scan/i.test(file.name); card._file = ok ? file : null; setState(ok ? 'progress' : 'error'); };
+    const take = file => { if (!file) return; if (UPL_OK.test(file.name) && file.size <= 10 * 1024 * 1024 && !/scan/i.test(file.name)) onFile(file); else setState('error'); };
     card.addEventListener('click', e => {
       const b = e.target.closest('[data-upl]');
       if (e.target.closest('.upl-drop') || (b && b.dataset.upl === 'pick')) return input.click();
       if (!b) return;
       if (b.dataset.upl === 'cancel') onCancel();
-      if (b.dataset.upl === 'continue') { setCv(true, card._file ? card._file.name.replace(/\.[^.]+$/, '') : ''); onDone(); }
     });
     card.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.upl-drop')) { e.preventDefault(); input.click(); } });
     input.addEventListener('change', () => { take(input.files[0]); input.value = ''; });
@@ -5240,8 +5261,135 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     card.addEventListener('dragleave', e => { const d = e.target.closest('.upl-drop'); if (d && !d.contains(e.relatedTarget)) d.classList.remove('is-over'); });
     card.addEventListener('drop', e => { e.preventDefault(); if (card.querySelector('.upl-drop')) take(e.dataTransfer.files[0]); });
   }
-  /* /dashboard/upload-resume/: after the upload, the usual building screen and the editor */
-  function startFromUpload(item) { const card = item.querySelector('.upl'); card._file = card._file || null; startCreation(card, 'upload'); }
+
+  /* ---------- The upload modal (Figma Kickresume 3.0 › 62245:57072) ----------
+     A resume that is uploaded or imported (Upload a resume and Import from LinkedIn on the method screen, the Upload
+     and LinkedIn import screens) goes through its states: Uploading resume... → Importing resume... → Finishing
+     upload... → Upload successful! (or Upload failed., from More options › Result), and Continue goes straight on: to
+     the screen that asked for the resume (askCv), else the run's destination or the editor. A resume that is created
+     (Write with AI, Paste text) gets the building screen instead (startCreation). The picture and the line under it
+     are those of the feature the resume is for (UPM_FOR, by its URL); anything else gets Resume Upload only's. On the
+     method screen the modal takes the methods' place under its headline (upmCreate); on the Upload and LinkedIn
+     import screens, the card's (upmRoute). */
+  const UPM = {
+    upload: ['__ASSET:upload/upload.webp__', 'You’re only a few seconds away from a polished resume that will get you invited to interviews.'],
+    ats: ['__ASSET:upload/analytics.webp__', 'You’re about to discover your resume score and see how your resume compares against others.'],
+    interview: ['__ASSET:upload/interview.webp__', 'In just a few seconds you’ll be able to practice for your next interview with AI-generated questions.'],
+    coach: ['__ASSET:upload/coach.webp__', 'Our AI Counsellor will help you fill in the gaps in your skillset based on your current resume.'],
+    feedback: ['__ASSET:upload/feedback.webp__', 'Our AI Recruiter is analyzing your resume. It should be done in just a few seconds!'],
+    rewrite: ['__ASSET:upload/rewrite.webp__', 'You’re only a few seconds away from an AI-rewritten and polished resume.'],
+    tailor: ['__ASSET:upload/tailor.webp__', 'You’re about to have your resume tailored to the job you want—in just a few seconds!'],
+    summary: ['__ASSET:upload/summary.webp__', 'In just a few seconds, you’ll be able to generate an impactful summary for your resume.']
+  };
+  const UPM_FOR = { '/dashboard/analyse-resume/': 'ats', '/dashboard/create-interview/': 'interview', '/dashboard/career-coach/': 'coach', '/dashboard/recruiter-feedback/': 'feedback',
+    '/dashboard/rewrite-resume/': 'rewrite', '/dashboard/tailor-resume/': 'tailor', '/jobs/job/1234/tailor/': 'tailor', '/dashboard/summary-generator/': 'summary' };
+  // a LinkedIn profile is imported, not uploaded: it starts on Importing resume..., with LinkedIn's note
+  const UPM_RUN = ['Uploading resume...', 'Importing resume...', 'Finishing upload...'], UPM_MS = 1000;
+  const UPM_INFO = { upload: 'If your resume does not get imported correctly, try uploading it in a different file format (e.g. .docx).', linkedin: 'Recent LinkedIn profile changes may take up to 30 days to update in our system.' };
+  const UPM_FAIL = { error: 'The server is taking too long to respond.', upload: 'We couldn’t read your resume. Try uploading it in a different file format (e.g. .docx).', linkedin: 'We couldn’t read this profile. Check that it’s public.' };
+  const UPM_SPIN = `<svg class="upm-spin" aria-hidden="true" viewBox="0 0 24 24" fill="#3f3f3f"><path fill-opacity=".4" d="M12 1.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0V2c0-.53.43-.96.96-.96Z"/><path d="M12 17.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0v-4c0-.53.43-.96.96-.96ZM4.25 4.25a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36L4.25 5.61a.96.96 0 0 1 0-1.36ZM15.56 15.56a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36l-2.83-2.83a.96.96 0 0 1 0-1.36ZM1.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92H2A.96.96 0 0 1 1.04 12ZM17.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92h-4a.96.96 0 0 1-.96-.96ZM8.44 15.56a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/><path fill-opacity=".2" d="M19.75 4.25a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/></svg>`;
+  let upmSeq = 0;
+  const upmKind = () => UPM_FOR[((cvNext && routeNow) || (flowNow && flowNow.f) || {}).path] || 'upload';
+  function upmHTML(o) {
+    const [pic, line] = UPM[o.kind], id = 'upm-h' + ++upmSeq;
+    return `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="${id}">
+      <div class="upm-head"><h2 class="upm-h" id="${id}">${UPM_SPIN}<span>${UPM_RUN[o.id === 'linkedin' ? 1 : 0]}</span></h2>
+        <div class="upm-info">${TL_IC.info}<span>${UPM_INFO[o.id]}</span></div></div>
+      <img class="upm-pic" src="${pic}" alt="" width="329" height="175">
+      <p class="upm-line">${line}</p>
+      <div class="upm-foot"><button class="rt-btn rt-ghost" type="button" data-upm="back" hidden>Back</button><button class="rt-btn rt-coral" type="button" data-upm="go" aria-disabled="true">Continue</button></div>
+      <p class="sr-only" aria-live="polite"></p>
+    </div>`;
+  }
+  /* o: { id ('upload' | 'linkedin'), opts (what the import needs), file (its name), end (open on the result: a run's
+     processing state), back (Back and a failed Retry) } */
+  function runUpm(card, o) {
+    const title = card.querySelector('.upm-h span'), infoEl = card.querySelector('.upm-info'), info = infoEl.querySelector('span');
+    const live = card.querySelector('[aria-live]'), goBtn = card.querySelector('[data-upm="go"]'), back = card.querySelector('[data-upm="back"]');
+    const steps = o.id === 'linkedin' ? UPM_RUN.slice(1) : UPM_RUN;
+    let waiting = false;  // Continue pressed while it uploads: go on as soon as it's done
+    const swapTitle = t => {
+      if (title.textContent === t) return;
+      title.textContent = t;
+      if (!reduce) play(title, [{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => title.getAnimations().forEach(a => a.cancel()));
+    };
+    const set = (st, instant) => {
+      const ok = st !== 'fail', apply = () => {
+        card.dataset.state = st;
+        title.textContent = st === 'run' ? steps[0] : ok ? 'Upload successful!' : 'Upload failed.';
+        info.textContent = ok ? UPM_INFO[o.id] : UPM_FAIL[procResult === 'error' ? 'error' : o.id];
+        infoEl.classList.toggle('is-err', !ok);
+        back.hidden = ok; goBtn.textContent = ok ? 'Continue' : 'Retry';
+        if (st === 'run') goBtn.setAttribute('aria-disabled', 'true'); else goBtn.removeAttribute('aria-disabled');
+      };
+      if (instant) apply(); else morphHeight(card, apply);
+    };
+    const end = instant => {
+      const ok = procResult === 'ok';
+      set(ok ? 'done' : 'fail', instant);
+      live.textContent = ok ? 'Upload successful!' : `Upload failed. ${info.textContent}`;
+      flowSeen('upm-end');  // the run's processing state, when it shows one
+      if (ok && waiting) later(() => upmDone(card, o), 500);
+    };
+    const run = () => {
+      if (card.dataset.state !== 'run') set('run');
+      waiting = false;
+      // a failed result stops on Importing resume..., the step that reads the resume
+      const n = procResult === 'ok' ? steps.length : steps.length - 1;
+      steps.slice(0, n).forEach((t, i) => later(() => { swapTitle(t); live.textContent = t; }, i * UPM_MS));
+      later(() => end(), n * UPM_MS);
+    };
+    card.addEventListener('click', e => {
+      const b = e.target.closest('[data-upm]'), st = card.dataset.state;
+      if (!b) return;
+      if (b.dataset.upm === 'back') return o.back();
+      if (st === 'run') { waiting = true; live.textContent = 'We’ll continue as soon as the upload is done.'; return; }
+      if (st === 'done') return upmDone(card, o);
+      if (procResult === 'fail') return o.back();  // a file or profile that can't be read: try another
+      if (flowNow) { const i = flowNow.steps.findIndex(s => s.tag === 'upm'); if (i >= 0 && i !== flowAt) { flowAt = i; renderFlowBar(); } }
+      run();  // Retry
+    });
+    flowSeen('upm');  // uploading is the run's data processing
+    if (o.end) end(true); else run();
+  }
+  /* Continue: the resume is there; straight on to the screen that asked for it, else the run's destination or the editor */
+  function upmDone(card, o) {
+    person = buildPerson(o.id, o.opts); tailored = null;  // a new resume
+    if (o.id === 'upload') setCv(true, (o.file || '').replace(/\.[^.]+$/, ''));
+    const then = cvNext;
+    if (then) { if (!cvUploaded) setCv(true); return then(); }
+    const k = flowNow ? flowNow.steps.findIndex((s, i) => i > flowAt && s.stage === 'dest') : -1;
+    if (k >= 0 && flowNow.steps[k].match !== 'screen:editor') return flowGo(k);
+    if (k >= 0) { flowAt = k; renderFlowBar(); }
+    openEditor(card);
+  }
+  /* On the method screen: the methods (and Back) make way for the modal, under the method screen's headline */
+  const upmSlot = document.getElementById('create-upm'), createBackEl = screens.create.querySelector(':scope > .center');
+  async function upmCreate(o) {
+    if (screenRun) screenRun.finish();
+    clearTimers();
+    o = { kind: upmKind(), ...o, back: () => { renderCreate(); flowTo('screen:create'); landFocus(screens.create); } };
+    if (variant === 'C') setHead(HEAD0.h, HEAD0.p);
+    upmSlot.innerHTML = upmHTML(o);
+    const card = upmSlot.firstElementChild, outs = [methodsEl, createBackEl].filter(shown);
+    if (!reduce) await Promise.all(outs.map(el => play(el, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(-24px)' }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {})));
+    if (current !== 'create' || card.parentElement !== upmSlot) return;
+    methodsEl.hidden = createBackEl.hidden = true; outs.forEach(el => el.getAnimations().forEach(a => a.cancel()));
+    upmSlot.hidden = false;
+    landFocus(screens.create);
+    if (!reduce) play(card, [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => card.getAnimations().forEach(a => a.cancel()));
+    runUpm(card, o);
+  }
+  /* On the Upload and LinkedIn import screens: the modal takes the card's place, under the screen's headline */
+  function upmRoute(item, r, o) {
+    const pane = item.querySelector('.rt-pane:not([hidden])') || item.querySelector('.rt-pane');
+    o = { kind: upmKind(), ...o, back: () => { flowTo('route:' + r.path); openRoute(r); } };
+    pane.innerHTML = upmHTML(o);
+    routeHead(r, 'progress');
+    landFocus(screens.route);
+    if (!reduce && !o.end && current === 'route') play(pane.firstElementChild, [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => pane.firstElementChild?.getAnimations().forEach(a => a.cancel()));
+    runUpm(pane.firstElementChild, o);
+  }
 
   /* ---------- LinkedIn import (/dashboard/linkedin-import/) ---------- */
   function linkedinHTML() {
@@ -5786,15 +5934,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const sec = path === '/dashboard/translate-resume/' && toolEl.querySelector('#tl-tr');
     if (sec) later(() => sec.closest('.tl-sec').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 350);
   }
-  /* The resume tools with nothing to ask (no setup screen). Without a CV the method screen comes first (askCvFor) and
-     hands it straight back. With one, Analyse resume processes it (Checking your resume) and shows the ATS checker;
-     the others open their page under their own URL (Translate resume took its language on a landing page). */
+  /* The resume tools with nothing to ask (no setup screen) open their page under their own URL (Translate resume took
+     its language on a landing page). Without a CV the method screen comes first (askCvFor): the page opens once the CV
+     is uploaded or built, with no loading of its own (the ATS checker included). */
   function toolNow(r, kind) { if (!cvUploaded) return askCvFor(r); openTool(kind, r.path); }
-  function analyseNow(r) {
-    if (!cvUploaded) return askCvFor(r);
-    openWire(r.path, 'Checking your resume', 'process', { f: FEATURES.find(f => f.id === 'analyse-resume'), pane: 'process' });
-    later(() => flowNow && !leavesFlow(r) ? processDone() : openTool('ats', r.path), 2600);
-  }
+  function analyseNow(r) { toolNow(r, 'ats'); }
   /* Below 1440px the preview column narrows; the preview shrinks to fit it */
   function fitPrev() {
     const pv = current === 'tool' && toolEl.querySelector('.tl-prev');
@@ -6167,10 +6311,22 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      bottom shows the stages and their steps (hollow dots are wireframes) and jumps between them. */
   const S = {
     wire: (label, path, id, opts = {}) => ({ label, wire: true, match: `route:${path}#${opts.pane || 'main'}`, run: () => openWire(path, label, id, opts) }),
-    route: (label, path, pane) => ({ label, tag: pane === 'progress' ? 'progress' : '', match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
+    // pane progress / progress-end: the upload modal on the Upload or LinkedIn import screen, uploading / with its result
+    route: (label, path, pane) => ({ label, tag: { progress: 'upm', 'progress-end': 'upm-end' }[pane] || '', match: 'route:' + path + (pane && !pane.startsWith('progress') ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
     wireTool: (label, path, pane) => ({ label, wire: pane === 'main', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
-    // a tool's CV when there is none: the method screen, which hands it straight to the tool (askCv)
+    // a tool's CV when there is none: the method screen, which hands it to the tool once it is made (askCv)
     cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
+    // the CV made on the method screen, by uploading or importing it (the upload modal) or by creating it (the building
+    // screen); for a tool (path) it then goes on to the tool
+    upm: path => ({ label: 'Upload modal (upload, LinkedIn)', tag: 'upm', match: 'screen:create', run: async () => {
+      if (current !== 'create' || (path && !cvNext)) await (path ? askCvFor(findRoute(path)) : go('create'));
+      if (current === 'create') upmCreate({ id: 'upload', file: 'jana-cv.pdf' });
+    } }),
+    buildFor: path => ({ label: 'Building screen (AI, paste)', match: 'screen:loading', run: () => {
+      const then = current === 'create' && cvNext ? cvNext : cvFor(findRoute(path));
+      person = buildPerson('ai'); if (!cvUploaded) setCv(true);
+      cvNext = then; showBuilding('ai'); buildNext = then;
+    } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai', as) => ({ label: 'Building screen' + (as ? ' · ' + as.head : ''), match: 'screen:loading', run: () => { showBuilding(id, as); if (as) buildNext = as.done; } }),
     // sec: the section it opens at (what the feature wrote)
@@ -6203,12 +6359,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  /* A tool that needs a CV: the method screen when there is none (no building screen: the CV goes straight to the tool),
-     then its own form (if it asks anything); its processing is always its own loading */
+  /* The CV made on the method screen: uploaded or imported (the upload modal) or created (the building screen); two
+     ways, so two steps, and a run goes on from whichever the person took. For a tool (path) it goes on to the tool. */
+  const cvMade = path => [S.upm(path), path ? S.buildFor(path) : { ...S.build(), label: 'Building screen (AI, paste)' }];
+  /* A tool that needs a CV: the method screen when there is none and the CV made there, then its own form; its
+     processing is its own loading */
   const toolPrep = (path, label) => () => {
-    const r = findRoute(path), ask = cvUploaded ? [] : [S.cv(path)];
-    return [...ask, ...(r.run ? [] : [r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')])];  // a tool with nothing to ask has no screen of its own
+    const r = findRoute(path);
+    return [...(cvUploaded ? [] : [S.cv(path), ...cvMade(path)]), r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')];
   };
+  // the ATS check has no loading of its own: the CV made on the method screen is its processing, the ATS checker next
+  const ATS = '/dashboard/analyse-resume/', atsOut = () => [S.tool('ATS checker', 'ats', ATS)];
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
     process: [S.route('Tailoring', path, 'process')],
@@ -6226,11 +6387,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall),
      state (its own processing state instead of the shared one) } */
   const resumeOut = (label = 'Editor · Fill In', sec) => [S.editor(label, undefined, sec)];
+  // the upload modal on the Upload or LinkedIn import screen as the processing, and its result as the processing state
+  const upmRun = (path, verb = 'Uploading') => ({
+    process: [S.route(`Upload modal · ${verb} resume...`, path, 'progress')],
+    state: [S.route('Upload successful! or Upload failed.', path, 'progress-end')]
+  });
   const JM_RUN = { prep: [S.jobs('Jobs for You · upload your resume', 'match')], process: [S.jobs('Analyzing your resume', 'match', 'process')], dest: [S.jobs('Jobs for You · top matches', 'match', 'dest')] };
   const FEATURES = [
-    ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
+    ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: cvMade(), dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' }],
-      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
+      ['ats', 'Pass the ATS check', ATS, { prep: [S.cv(ATS)], process: cvMade(ATS), dest: atsOut, noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me · Job board', '/jobs/search/', { prep: [S.route('Job board · Find a job you’ll love', '/jobs/search/')], process: false, dest: [S.jobs('Search results', 'search')], noun: 'search results' }],
       ['matcher', 'Find jobs that fit me · Jobs for You', '/jobs/matcher/', { goal: 'jobs', ...JM_RUN, noun: 'job matches' }]]
       .map(([id, title, path, o]) => ({ id: 'goal-' + id, goal: id, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
@@ -6244,15 +6410,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'ai-cover', flow: 2, group: '4 · Generate with AI', title: 'AI Cover Letter Writer', path: '/dashboard/create-ai-cover-from-job/', prep: [S.route('AI Cover Letter Writer', '/dashboard/create-ai-cover-from-job/')], dest: [S.dest('Cover letter', '/dashboard/create-ai-cover-from-job/', 'doc')], verb: 'Writing your cover letter', psteps: ['Reading the job post', 'Matching it to your experience', 'Writing the letter'], noun: 'cover letter' },
     { id: 'ai-resign', flow: 2, group: '4 · Generate with AI', title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], dest: [S.dest('Resignation letter', '/ai/resignation/', 'doc')], verb: 'Writing your letter', noun: 'letter' },
     { id: 'ai-interview', flow: 2, group: '4 · Generate with AI', title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], dest: [S.dest('Interview questions', '/dashboard/create-interview/', 'list')], verb: 'Preparing your questions', psteps: ['Reading the role', 'Picking likely questions', 'Writing model answers'], noun: 'interview questions' },
-    { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
-    { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], process: [S.build('linkedin')], dest: resumeOut(), verb: 'Importing your profile', noun: 'resume', fail: 'We couldn’t read that profile' },
+    { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
+    { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], ...upmRun('/dashboard/linkedin-import/', 'Importing'), dest: resumeOut(), noun: 'resume' },
     ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
       return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
-    // the tools with nothing to ask start on the CV straight away: Analyse resume processes it (Flow 3; without a CV
-    // the method screen and its own Analyzing screen come first), the others open their page (Flow 4), Translate
-    // resume after a landing page that took the CV and the language
-    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
-    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    // the tools with nothing to ask open their page with the CV (Flow 4); Analyse resume without a CV makes it on the
+    // method screen first (that is its processing; it has no loading of its own), Translate resume comes after a
+    // landing page that took the CV and the language
+    { id: 'analyse-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: ATS, cv: true, dest: atsOut },
+    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: ATS, cv: false, prep: [S.cv(ATS)], process: cvMade(ATS), dest: atsOut, noun: 'ATS report' },
     { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
@@ -6265,8 +6431,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
 
-    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, redo: 'upload', process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
-    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: false, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
     ...[['create-resume', 'Resume with a chosen template', 'Setting up your resume', 'resume', resumeOut()], ['create-cover', 'Cover letter with a chosen template', 'Setting up your cover letter', 'cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
       ['create-website', 'Website with a chosen template', 'Building your website', 'website', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
       .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, redo: t, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
@@ -6477,11 +6643,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (b && !b.disabled) return flowGo(+b.dataset.flowStep);
     if (e.target.closest('[data-flow-end]')) endFlow();
   });
-  /* After the building screen: the editor (or the section a writer wrote), unless the running flow has something
-     before it (a failed result, a sign-up wall) */
+  /* After the building screen: the editor (or the section a writer wrote, or the screen that asked for the CV), unless
+     the building screen is the running flow's processing and something else comes next (a failed result, a sign-up
+     wall, the ATS checker) */
   function afterBuild() {
     const next = buildNext; buildNext = null;
-    if (flowNow && flowNow.steps.some(s => s.match === 'screen:loading')) {
+    if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process' && flowNow.steps[flowAt].match === 'screen:loading') {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
     }
