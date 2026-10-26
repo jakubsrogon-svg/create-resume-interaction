@@ -2926,7 +2926,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.21">v2.21</div>
+<div class="proto-ver" aria-label="Prototype version 2.22">v2.22</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -5347,13 +5347,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     flowSeen('upm');  // uploading is the run's data processing
     if (o.end) end(true); else run();
   }
-  /* Continue: the resume is there; straight on to the screen that asked for it, else the run's destination or the editor */
+  /* Continue: the resume is there; straight on to the screen that asked for it, else the run's next step (not the
+     building screen, the other way to a CV, nor the modal's own result or the shared one) or the editor */
   function upmDone(card, o) {
     person = buildPerson(o.id, o.opts); tailored = null;  // a new resume
     if (o.id === 'upload') setCv(true, (o.file || '').replace(/\.[^.]+$/, ''));
     const then = cvNext;
     if (then) { if (!cvUploaded) setCv(true); return then(); }
-    const k = flowNow ? flowNow.steps.findIndex((s, i) => i > flowAt && s.stage === 'dest') : -1;
+    const k = flowNow ? flowNow.steps.findIndex((s, i) => i > flowAt && !s.alt && !s.result && s.tag !== 'upm-end') : -1;
     if (k >= 0 && flowNow.steps[k].match !== 'screen:editor') return flowGo(k);
     if (k >= 0) { flowAt = k; renderFlowBar(); }
     openEditor(card);
@@ -5378,7 +5379,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* On the Upload and LinkedIn import screens: the modal takes the card's place, under the screen's headline */
   function upmRoute(item, r, o) {
     const pane = item.querySelector('.rt-pane:not([hidden])') || item.querySelector('.rt-pane');
-    o = { kind: upmKind(), ...o, back: () => { flowTo('route:' + r.path); openRoute(r); } };
+    // Back: to the screen's own form; in a run whose input came before it (Flow 3, a landing page's CV) there is none,
+    // so it goes on as the feature's own run that asks for it, like the processing state's "Change the input"
+    o = { kind: upmKind(), ...o, back: () => {
+      if (flowNow && flowNow.f.redo && !flowNow.steps.some(s => s.stage === 'prep')) return startFeature(flowNow.f.redo);
+      flowTo('route:' + r.path); openRoute(r);
+    } };
     pane.innerHTML = upmHTML(o);
     routeHead(r, 'progress');
     landFocus(screens.route);
@@ -6355,7 +6361,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ];
   /* The CV made on the method screen: uploaded or imported (the upload modal) or created (the building screen); two
      ways, so two steps, and a run goes on from whichever the person took. For a tool (path) it goes on to the tool. */
-  const cvMade = path => [S.upm(path), path ? S.buildFor(path) : { ...S.build(), label: 'Building screen (AI, paste)' }];
+  const cvMade = path => [S.upm(path), { ...(path ? S.buildFor(path) : { ...S.build(), label: 'Building screen (AI, paste)' }), alt: true }];
   /* A tool that needs a CV: the method screen when there is none and the CV made there, then its own form; its
      processing is its own loading */
   const toolPrep = (path, label) => () => {
@@ -6410,10 +6416,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
     // the tools with nothing to ask open their page with the CV (Flow 4); Analyse resume without a CV makes it on the
     // method screen first (that is its processing; it has no loading of its own), Translate resume comes after a
-    // landing page that took the CV and the language
+    // landing page that took the CV and the language (never without a CV)
     { id: 'analyse-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: ATS, cv: true, dest: atsOut },
     { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: ATS, cv: false, prep: [S.cv(ATS)], process: cvMade(ATS), dest: atsOut, noun: 'ATS report' },
-    { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
+    { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: true,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
     ...[['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach'], ['proofreading', 'Proofreading', 'Proofreading']]
@@ -6425,13 +6431,21 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
 
-    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
-    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: false, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
-    ...[['create-resume', 'Resume with a chosen template', 'Setting up your resume', 'resume', resumeOut()], ['create-cover', 'Cover letter with a chosen template', 'Setting up your cover letter', 'cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
-      ['create-website', 'Website with a chosen template', 'Building your website', 'website', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
-      .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, redo: t, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
-    { id: 'sample', flow: 3, group: '3 · Start from a template', title: 'Resume from a sample', redo: 'create-resume', path: '/dashboard/create/marketing-manager/', url: '/dashboard/create/{sample}/', dest: resumeOut(), verb: 'Copying the sample', psteps: ['Copying the sample', 'Putting your name on it'], noun: 'resume' },
+    // Flow 3 is only for input given on a landing page (the user's rule): a CV, or for tailoring a CV and the tailoring
+    // setup (the job and the level). The CV is uploaded after sign-up (the upload modal), then the run goes on.
+    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: true, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: true, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
+    { id: 'landing-tailor', flow: 3, group: 'Input given on a landing page', title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, redo: 'tailor-resume',
+      entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and the tailoring setup (the job post and Balanced) on a landing page, so after sign-up the CV is uploaded and tailoring starts straight away.'),
+      ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/dashboard/tailor-resume/')),
+      dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
 
+
+    // a template or sample in the URL: its editor opens straight away
+    ...[['create-resume', 'Resume with a chosen template', resumeOut()], ['create-cover', 'Cover letter with a chosen template', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
+      ['create-website', 'Website with a chosen template', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
+      .map(([t, title, dest]) => ({ id: t + '-tpl', flow: 4, group: '3 · Start from a template', title, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest })),
+    { id: 'sample', flow: 4, group: '3 · Start from a template', title: 'Resume from a sample', path: '/dashboard/create/marketing-manager/', url: '/dashboard/create/{sample}/', dest: resumeOut() },
     { id: 'login', flow: 4, group: '1 · Sign up / log in', title: 'Log in', path: '/login/', entry: S.auth('Log in', 'login'), dest: [S.dash()] },
     { id: 'dashboard', flow: 4, group: '1 · Sign up / log in', title: 'Dashboard', path: '/dashboard/', dest: [S.dash()] },
     { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', cv: false, dest: [S.editor('Editor (guest)', '/guest-edit-start/')] },
