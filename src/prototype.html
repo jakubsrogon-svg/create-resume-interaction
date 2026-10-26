@@ -2704,14 +2704,20 @@ body.has-note .au-main { padding-bottom: 96px; }
 /* On a real phone the bottom row is full (version, flow bar, More options, rail): the note gets its own row above it */
 @media (max-width: 480px) {
   body .proto-note, .flow-bar:not([hidden]) ~ .proto-note { left: 12px; right: 12px; transform: none; width: auto; max-width: none; bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
-  body.has-note #screen-route { padding-bottom: 200px; }
   /* so does a running flow's bar, and the note goes one row higher */
   body .flow-bar { left: 12px; right: 12px; transform: none; max-width: none; bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
   body .flow-bar .fb-steps { flex: 1; min-width: 0; }
   .flow-bar:not([hidden]) ~ .proto-note { bottom: calc(164px + env(safe-area-inset-bottom, 0px)); }
-  body:has(.flow-bar:not([hidden])) #screen-route { padding-bottom: 170px; }
-  body.has-note:has(.flow-bar:not([hidden])) #screen-route { padding-bottom: 250px; }
+  /* the dock, the flow bar and a note stack up over the bottom of the page: every screen can scroll clear of them
+     (a spacer at the end of the page, as tall as they are) */
+  #device::after { content: ""; display: block; height: 88px; }
+  body:has(.flow-bar:not([hidden])) #device::after { height: 140px; }
+  body.has-note #device::after { height: 170px; }
+  body.has-note:has(.flow-bar:not([hidden])) #device::after { height: 220px; }
+  body.has-note #screen-route { padding-bottom: 0; }
 }
+/* a short window: Sign up and Log in scroll clear of the dock (their form sits in its column) */
+@media (min-width: 481px) and (max-height: 900px) { .au-main { padding-bottom: 64px; } }
 .fb-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
 .fb-steps { display: flex; gap: 10px; }
 .fb-grp { display: flex; gap: 6px; padding-bottom: 4px; margin-bottom: -6px; border-bottom: 2px solid rgba(255, 255, 255, .22); }
@@ -2969,7 +2975,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.26">v2.26</div>
+<div class="proto-ver" aria-label="Prototype version 2.27">v2.27</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3819,7 +3825,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* The section writers' building screen: what they write, in which section the editor opens afterwards */
   const SECTION_AS = {
     experience: { own: true, head: 'Writing your work experience', sub: 'The AI writes it from your job title and puts it in your resume.', steps: ['Reading your job title', 'Writing the bullet points', 'Adding it to your resume'], ready: 'Your work experience is ready!', done: () => openEditorAt('work') },
-    objective: { own: true, head: 'Writing your resume objective', sub: 'The AI writes it for the role you’re aiming for and puts it in your resume.', steps: ['Reading the role', 'Writing your objective', 'Adding it to your resume'], ready: 'Your objective is ready!', done: () => openEditorAt('profile') }
+    objective: { own: true, head: 'Writing your resume objective', sub: 'The AI writes it for the role you’re aiming for and puts it in your resume.', steps: ['Reading the role', 'Writing your objective', 'Adding it to your resume'], ready: 'Your objective is ready!', done: () => openEditorAt('profile') },
+    summary: { own: true, head: 'Writing your resume summary', sub: 'The AI writes it from your job title and puts it at the top of your resume.', steps: ['Reading your resume', 'Writing your summary', 'Adding it to your resume'], ready: 'Your summary is ready!', done: () => openEditorAt('profile') }
   };
   function withSection(p, opts) {
     const q = JSON.parse(JSON.stringify(p)), title = opts.title.trim();
@@ -3827,7 +3834,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       // the most recent job gets what was written (its dates and place stay)
       Object.assign(q.work[0], { title, org: (opts.company || '').trim() || q.work[0].org,
         bullets: [`Owned the ${title.toLowerCase()} work end to end, from first research to shipped results.`, 'Planned and prioritised with the team so every release landed on time.'] });
-    } else q.profile = `${title} who turns messy problems into clear plans and works closely with the people around them. Looking for a ${title.toLowerCase()} role where that makes a difference.`;
+    } else if (opts.as === SECTION_AS.summary) q.profile = `${title} with a record of turning messy problems into clear plans and shipped results. Works closely with the people around them and keeps every project moving.`;
+    else q.profile = `${title} who turns messy problems into clear plans and works closely with the people around them. Looking for a ${title.toLowerCase()} role where that makes a difference.`;
     return q;
   }
   let buildingAs = null;
@@ -4467,6 +4475,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     aiResume: ['What job are you going for?', 'Tell the AI a little about you and it drafts your resume.'],
     experience: ['What did you do in this job?', 'Give the AI a few details and it writes your work experience.'],
     objective: ['What role are you aiming for?', 'The AI writes a short resume objective for it.'],
+    summary: ['What role is the summary for?', 'Give the AI your job title and it writes the summary at the top of your resume.'],
     cover: ['Which job are you applying for?', 'The AI writes a cover letter that fits the job post.'],
     coverCv: ['Which resume should we use?', 'The AI picks details from it to personalize your letter.'],
     interview: ['Which job is the interview for?', 'Get the questions you’re likely to hear, with model answers.'],
@@ -4481,7 +4490,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tailoredJob: { fail: ['We couldn’t read this job post', 'Go back and try again in a moment.'] },  // from a job page: no link or post to fix
     tool: {
       'rewrite-resume': ['How should we rewrite it?', 'Pick a tone and the AI rewrites your resume in it.'],
-      'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
     },
     templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
     jobBoard: ['Find a job you’ll love.', '3,380,973 jobs waiting for you'],
@@ -4519,12 +4527,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '4 · Generate with AI', path: '/dashboard/create-interview/', title: 'Job Interview Questions', head: { main: HEADS.interview, s1: HEADS.interview, s2: HEADS.interviewCv }, html: interviewHTML, init: initWriter },
     { group: '5 · Bring a resume to a tool', path: '/dashboard/upload-resume/', title: 'Upload resume', upload: true, head: { upload: HEADS.upload, progress: HEADS.upload } },
     { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin, progress: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
-    // the resume tools: three ask for something first (Tailor resume is recreated, Rewrite and Summary are wireframes);
+    // the resume tools: three ask for something first (Tailor resume is recreated, Summary generator has the section
+    // writers' design, Rewrite is a wireframe);
     // the others have nothing to ask and start on the CV straight away (analyseNow, toolNow)
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => { const path = `/dashboard/${t}/`, base = { group: '5 · Bring a resume to a tool', path, title };
         if (t === 'tailor-resume') return { ...base, needsCv: true, head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } };
+        if (t === 'summary-generator') return { ...base, needsCv: true, head: { main: HEADS.summary }, html: () => aigHTML('summary'), init: initAig };
         if (t === 'analyse-resume') return { ...base, run: () => analyseNow(findRoute(path)) };
         if (TOOL_PAGE[t]) return { ...base, run: () => toolNow(findRoute(path), TOOL_PAGE[t]) };
         return { ...base, needsCv: true, wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t) }; }),
@@ -4880,13 +4890,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- Generate work experience / resume objective (/ai/resume/…) ---------- */
   const TONES = [['friendly', 'Friendly', RT_IC.smile], ['professional', 'Professional', RT_IC.scale], ['formal', 'Formal', RT_IC.briefcase], ['confident', 'Confident', RT_IC.goal]];
   const FORMS = [['bullets', 'Bullet points', RT_IC.list], ['paragraphs', 'Paragraphs', RT_IC.lines], ['structured', 'Structured', RT_IC.pen]];
+  // the section writers (Generate work experience / objective) and the Summary generator: one design, their own copy
+  const AIG = {
+    experience: ['Generate work experience', [['title', 'Job title'], ['company', 'Company']], 'structured'],
+    objective: ['Generate resume objective', [['title', 'Job you’re applying for']], 'paragraphs'],
+    summary: ['Generate resume summary', [['title', 'Job title']], 'paragraphs']
+  };
   function aigHTML(kind) {
-    const exp = kind === 'experience', rec = exp ? 'structured' : 'paragraphs';
-    const fields = exp ? [['title', 'Job title'], ['company', 'Company']] : [['title', 'Job you’re applying for']];
+    const [title, fields, rec] = AIG[kind];
     const chips = (list, sel, recId) => list.map(([id, label, ic]) => `<button class="aig-chip" type="button" role="radio" aria-checked="${id === sel}" tabindex="${id === sel ? 0 : -1}" data-v="${id}"><span class="aig-in">${rtIc(ic)}<span class="lbl">${label}</span></span>${id === recId ? '<span class="aig-rec">Recommended</span>' : ''}</button>`).join('');
     return `<form class="rt-card aig" data-kind="${kind}" novalidate aria-labelledby="aig-h">
-      <div class="aig-head"><h1 id="aig-h">${exp ? 'Generate work experience' : 'Generate resume objective'}</h1>${langHTML(AIM_LANGS)}</div>
-      <div class="aig-fields${exp ? '' : ' is-one'}">${fields.map(([n, l]) => `<div class="aig-field"><label for="aig-${n}">${l}</label><input class="aig-input" id="aig-${n}" name="${n}" placeholder="${l}" autocomplete="off"></div>`).join('')}</div>
+      <div class="aig-head"><h1 id="aig-h">${title}</h1>${langHTML(AIM_LANGS)}</div>
+      <div class="aig-fields${fields.length > 1 ? '' : ' is-one'}">${fields.map(([n, l]) => `<div class="aig-field"><label for="aig-${n}">${l}</label><input class="aig-input" id="aig-${n}" name="${n}" placeholder="${l}" autocomplete="off"></div>`).join('')}</div>
       <div class="aig-opts">
         <div><span class="aig-l" id="aig-tone">Tone of Voice</span><div class="aig-chips" role="radiogroup" aria-labelledby="aig-tone">${chips(TONES, 'professional')}</div></div>
         <div><span class="aig-l" id="aig-form">Form</span><div class="aig-chips" role="radiogroup" aria-labelledby="aig-form">${chips(FORMS, rec, rec)}</div></div>
@@ -6271,7 +6286,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const wSocial = () => `<button class="wf-btn" type="button" data-wire="signup">Continue with Google</button><button class="wf-btn" type="button" data-wire="signup">Continue with LinkedIn</button><p class="t-small">or with email</p>`;
   const WIRE_TOOLS = {
     'rewrite-resume': ['Rewrite your resume', [['Resume', 'My Kickresume', 'select'], ['Tone', 'Professional', 'select']], 'Rewrite with AI', 'Result: the rewritten resume in the editor, changes highlighted. Not designed yet.'],
-    'summary-generator': ['Generate a resume summary', [['Resume', 'My Kickresume', 'select'], ['Job title', '', '']], 'Generate summary', 'Result: 2–3 summary options to pick from. Not designed yet.'],
   };
   const WIRE = {
     wall: () => wShell('Sign-up wall', `<div class="wf-card wf-stack">
@@ -6461,13 +6475,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'upload', flow: 2, group: '5 · Bring a resume to a tool', title: 'Upload resume', path: '/dashboard/upload-resume/', prep: [S.route('Upload your resume', '/dashboard/upload-resume/')], ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
     { id: 'linkedin', flow: 2, group: '5 · Bring a resume to a tool', title: 'LinkedIn import', path: '/dashboard/linkedin-import/', prep: [S.route('LinkedIn import', '/dashboard/linkedin-import/')], ...upmRun('/dashboard/linkedin-import/', 'Importing'), dest: resumeOut(), noun: 'resume' },
     ...Object.entries(TOOL_DEST).map(([t, [verb, noun, dest]]) => { const r = findRoute(`/dashboard/${t}/`);
-      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun, ...(t === 'tailor-resume' ? trlRun(r.path) : {}) }; }),
+      return { id: t, flow: 2, group: '5 · Bring a resume to a tool', title: r.title, path: r.path, prep: toolPrep(r.path, r.title), dest, verb, noun,
+        ...(t === 'tailor-resume' ? trlRun(r.path) : t === 'summary-generator' ? { process: [S.build('ai', SECTION_AS.summary)] } : {}) }; }),
     // the tools with nothing to ask open their page with the CV (Flow 4); Analyse resume without a CV makes it on the
     // method screen first (that is its processing; it has no loading of its own), Translate resume comes after a
     // landing page that took the CV and the language (never without a CV)
     { id: 'analyse-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: ATS, cv: true, dest: atsOut },
     { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: ATS, cv: false, prep: [S.cv(ATS)], process: cvMade(ATS), dest: atsOut, noun: 'ATS report' },
-    { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: true,
+    { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: true, lp: true,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
     ...[['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach'], ['proofreading', 'Proofreading', 'Proofreading']]
@@ -6480,10 +6495,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
 
     // Flow 3 is only for input given on a landing page (the user's rule): a CV, or for tailoring a CV and the tailoring
-    // setup (the job and the level). The CV is uploaded after sign-up (the upload modal), then the run goes on.
-    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: true, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
-    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: true, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
-    { id: 'landing-tailor', flow: 3, group: 'Input given on a landing page', title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, redo: 'tailor-resume',
+    // setup (the job and the level). The CV is uploaded after sign-up (the upload modal), then the run goes on. The
+    // other URLs' landing-page runs are made from their App runs below (lpVariant).
+    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: true, lp: true, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: true, lp: true, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
+    { id: 'landing-tailor', flow: 3, group: 'Input given on a landing page', title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, lp: true, redo: 'tailor-resume',
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and the tailoring setup (the job post and Balanced) on a landing page, so after sign-up the CV is uploaded and tailoring starts straight away.'),
       ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/dashboard/tailor-resume/')),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
@@ -6508,6 +6524,36 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, group: '7 · Jobs', title, path, url, dest: [S.wire(title, path, w)] })),
     ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, group: '9 · Upgrade', title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] }))
   ];
+  /* Where the person comes from (the dock's From): Sign up (a new user, Flow 1's goal screen), a landing page (lp),
+     no account yet (guest) or the app */
+  const fromOf = f => f.flow === 1 ? 'signup' : f.lp ? 'lp' : f.guest || f.id === 'guest-edit' ? 'guest' : 'app';
+  /* Every URL can be opened from a landing page, by someone who gave a CV there or didn't (the user's rule). With a CV
+     it is uploaded after sign-up (the upload modal; a LinkedIn profile is imported) and the run goes on to the
+     feature's setup (Flow 2), or straight to its loading or page when it has none (Flow 3). Without one it goes on
+     as the App's run, so a feature that needs a CV has it made first (the method screen, then the upload modal or the
+     building screen) and its setup and loading follow. The hand-made ones above (lp) are kept; the rest are made
+     from the App's run for that CV (or, for a URL with none, the URL's own). */
+  const LP_UPM = S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress');
+  function lpVariant(base, cv) {
+    const list = x => [].concat(typeof x === 'function' ? x() : x || []), login = base.id === 'login', li = base.id === 'linkedin';
+    const f = { ...base, id: `lp-${base.id}-${cv ? 'cv' : 'nocv'}`, lp: true, cv, group: 'Landing page',
+      title: `${base.title.replace(/(, | · )(returning user|no CV yet)$/, '')} from a landing page, ${cv ? (li ? 'with a profile' : 'with a CV') : 'no CV'}` };
+    if (cv && li) Object.assign(f, { flow: 3, prep: undefined, ...upmRun('/dashboard/linkedin-import/', 'Importing') });
+    else if (cv && base.id === 'jobs-matcher') Object.assign(f, { flow: 3, prep: undefined, process: JM_RUN.process });  // its own Analyzing step
+    else if (cv && base.flow === 4) Object.assign(f, { flow: 3, ...upmRun('/dashboard/upload-resume/') });
+    else if (cv) f.prep = () => [LP_UPM, ...list(base.prep)];
+    else if (base.cv) Object.assign(f, { flow: 2, prep: [S.cv(base.path)], process: cvMade(base.path), state: undefined });
+    const after = login ? 'logging in' : 'sign-up', note = cv
+      ? `Flow ${f.flow}: the visitor gave ${li ? 'their LinkedIn profile' : 'a CV (jana-cv.pdf)'} on a landing page, so after ${after} it is ${li ? 'imported' : 'uploaded'} and ${f.flow === 2 ? 'the setup comes next' : 'the run goes straight on'}.`
+      : `Flow ${f.flow}: the visitor came from a landing page without a CV, so after ${after} the run goes on as in the app${base.cv ? ', making the CV first' : ''}.`;
+    f.entry = [...(base.id === 'guest-edit' ? [] : [S.auth(`${login ? 'Log in' : 'Sign up'} · ${cv ? (li ? 'LinkedIn profile' : 'CV attached') : 'no CV'}`, login ? 'login' : 'signup', note)]), ...(login || base.lp ? [] : list(base.entry))];
+    return f;
+  }
+  FEATURES.push(...[...new Set(FEATURES.map(f => f.path))].filter(Boolean).flatMap(path => {
+    const here = FEATURES.filter(f => f.path === path), app = here.filter(f => fromOf(f) === 'app'), bases = app.length ? app : here.filter(f => fromOf(f) !== 'signup');
+    return [true, false].filter(cv => bases.length && !here.some(f => f.lp && f.cv === cv))
+      .map(cv => lpVariant(bases.find(f => f.cv === cv) || bases.find(f => f.cv === undefined) || bases[0], cv));
+  }));
   /* A feature's run through its flow's stages */
   function buildFlow(f) {
     // process and state may depend on the CV (functions); when they give nothing, the shared ones stand in
@@ -6534,11 +6580,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const FROM = [
     ['signup', 'Sign up', 'A new user from /register: we ask what they want first (the goal screen)'],
     ['app', 'App', 'The app menu, the dashboard, an email or the URL itself'],
-    ['lp', 'Landing page', 'A landing page took the CV (for tailoring also the job) before sign-up', 'Landing'],
+    ['lp', 'Landing page', 'Any URL, with a CV given on the landing page or without one; sign-up comes first', 'Landing'],
     ['guest', 'Guest', 'No account yet: sign-up comes after the result']
   ];
   const ENDS = [['ok', 'Completed', 'Processing goes straight on to the result', 'Done'], ['fail', 'Failed', 'The input can’t be used (an unreadable file, a private profile)'], ['error', 'Error', 'Something broke on our side; the person can try again']];
-  const fromOf = f => f.flow === 1 ? 'signup' : f.id.startsWith('landing-') || f.id === 'translate-resume' ? 'lp' : f.guest || f.id === 'guest-edit' ? 'guest' : 'app';
   let pmKey = '', pmFrom = 'signup', pmCvOn = false;  // the URL (a feature's path; '' is Build my resume, only the goal screen leads there)
   const runsWithCv = f => f.cv ?? pmCvOn;
   const pmList = (key = pmKey, from = pmFrom) => FEATURES.filter(f => f.path === key && fromOf(f) === from);
