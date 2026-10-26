@@ -2685,7 +2685,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.16.1">v2.16.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.17">v2.17</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3066,14 +3066,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const screens = { intent: document.getElementById('screen-intent'), create: document.getElementById('screen-create'), loading: document.getElementById('screen-loading'), route: document.getElementById('screen-route') };
   const topbarEl = document.getElementById('topbar'), pageEl = document.getElementById('page'), editorEl = document.getElementById('screen-editor'), dashEl = document.getElementById('screen-dash');
   const APPS = { editor: editorEl, dashboard: dashEl };
-  let current = 'intent', routesReady = false, cvNext = null, cvDefer = null, cvMade = null, buildNext = null;  // see askCv and buildFor
+  let current = 'intent', routesReady = false, cvNext = null, buildNext = null;  // see askCv and SECTION_AS
   const topXEl = document.getElementById('top-x');
   let xRoute = null, xPane = '';  // the route screen and step the corner × was last set for (syncTopX)
   /* The prototype rail dims the settings that don't affect the screen you're on */
   function setCurrent(s) {
     current = s; document.body.dataset.screen = s; placeVer();
-    if (s !== 'create' && s !== 'loading') cvNext = cvDefer = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
-    if (s !== 'loading') buildNext = null;  // so does where a tool's building screen leads (buildFor)
+    if (s !== 'create' && s !== 'loading') cvNext = null;  // a screen's request for a CV (askCv) ends when the person goes elsewhere
+    if (s !== 'loading') buildNext = null;  // so does where a section writer's building screen leads (SECTION_AS)
     // a route URL only while it's on screen, or while the method screen gets the CV it asked for
     if (routesReady && !cvNext && !['route', 'auth', 'upgrade', 'docs', 'tool', 'tpl'].includes(s) && location.hash.startsWith('#/')) { routeNow = null; markRoutes(); setHash(''); }
     syncNote(); syncTopX();
@@ -3524,10 +3524,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const as = opts && opts.as;
       person = as && cvUploaded ? withSection(person, opts) : buildPerson(id, opts);
       if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
-      if (!cvNext || !cvDefer) { showBuilding(id, as); if (as) buildNext = as.done; return; }
-      // a tool that makes the resume in its own building screen (buildCv) gets it now, with no building screen here
+      if (!cvNext) { showBuilding(id, as); if (as) buildNext = as.done; return; }
+      // a tool asked for the resume (askCv): it gets it straight away, with no building screen, and after its own setup
+      // the person sees that tool's loading (the tailoring card, Checking your resume), never the CV being made
       const then = cvNext;
-      cvMade = { method: id, path: cvDefer.path };
       if (!cvUploaded) setCv(true);
       then();
     }, 450);
@@ -3546,26 +3546,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     } else q.profile = `${title} who turns messy problems into clear plans and works closely with the people around them. Looking for a ${title.toLowerCase()} role where that makes a difference.`;
     return q;
   }
-  /* A tool's own building screen (buildCv routes), when the resume was only just given on the method screen:
-     it makes the resume and does the tool's job in one go, then goes straight to the result (done) */
-  const BUILD_AS = {
-    tailor: { head: 'Creating your resume', sub: 'We’re building your resume and tailoring it to the job post.', steps: ['Matching it to the job post', 'Tailoring your resume'], ready: 'Your tailored resume is ready!', done: () => openEditor() },
-    ats: { head: 'Analyzing your resume', sub: 'We’re building your resume and checking it the way an ATS reads it.', steps: ['Checking format and sections', 'Scoring keywords'], ready: 'Your ATS check is ready!', done: () => openTool('ats', '/dashboard/analyse-resume/') }
-  };
   let buildingAs = null;
-  const needsBuild = r => !!r.buildCv && (!cvUploaded || (!!cvMade && cvMade.path === r.path));
-  function buildFor(r) {
-    const method = cvMade ? cvMade.method : 'upload';
-    cvMade = null;
-    if (!cvUploaded) setCv(true);
-    buildNext = BUILD_AS[r.buildCv].done;
-    showBuilding(method, BUILD_AS[r.buildCv]);
-  }
-  // the tool's own button: the run's building step when a flow is running, else the building screen straight away
-  function runBuildFor(r) {
-    const i = flowNow ? flowNow.steps.findIndex((s, k) => k > flowAt && s.match === 'screen:loading') : -1;
-    if (i >= 0) flowGo(i); else buildFor(r);
-  }
   function showBuilding(id, as) {
     buildingAs = as || null;
     document.getElementById('loading-h').textContent = as ? as.head : 'Building your resume';
@@ -4140,8 +4121,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => { const path = `/dashboard/${t}/`, base = { group: '5 · Bring a resume to a tool', path, title };
-        if (t === 'tailor-resume') return { ...base, needsCv: true, buildCv: 'tailor', head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } };
-        if (t === 'analyse-resume') return { ...base, buildCv: 'ats', run: () => analyseNow(findRoute(path)) };
+        if (t === 'tailor-resume') return { ...base, needsCv: true, head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } };
+        if (t === 'analyse-resume') return { ...base, run: () => analyseNow(findRoute(path)) };
         if (TOOL_PAGE[t]) return { ...base, run: () => toolNow(findRoute(path), TOOL_PAGE[t]) };
         return { ...base, needsCv: true, wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t) }; }),
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
@@ -4153,7 +4134,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/', title: 'Jobs', wire: true, html: () => WIRE.jobs() },
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Job matcher', wire: true, head: { main: HEADS['jobs-matcher'] }, html: () => WIRE['jobs-matcher']() },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, buildCv: 'tailor', head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', wire: true, html: () => WIRE.tracker() },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, head: { main: HEADS['cm-onboarding'] }, html: () => WIRE['cm-onboarding']() },
@@ -4184,11 +4165,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      screen), makes one on the method screen for a screen that asked (askCv), or when a flow or the URLs view's CV says so.
      Screens that work on a resume ask for one first. */
   let cvUploaded = false, cvName = '';
-  /* No CV yet: the method screen gets one (any of its methods), the building screen makes it, and then
-     `then` opens the screen that asked (afterBuild) instead of the editor. A route with buildCv (defer) gets it
-     straight from the method screen instead, and makes it later in its own building screen (startCreation, buildFor). */
-  function askCv(then, instant, defer) {
-    cvNext = then; cvDefer = defer || null;
+  /* No CV yet: the method screen gets one (any of its methods) and hands it straight to `then`, the screen that
+     asked (startCreation), with no building screen: the person goes on to that screen's setup and its own loading */
+  function askCv(then, instant) {
+    cvNext = then;
     if (!instant) return go('create');
     renderCreate();
     Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'create'; });
@@ -4199,7 +4179,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // × on the tool goes back to where the person asked for it, not to the method or the building screen
     const from = current === 'loading' ? 'intent' : current;
     routeNow = r; markRoutes(); setHash(r.path);
-    askCv(() => { const opening = openRoute(r); routeBack = from; return opening; }, instant, r.buildCv ? r : null);
+    askCv(() => { const opening = openRoute(r); routeBack = from; return opening; }, instant);
   }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
   async function backToRoute(r, then) {
@@ -4210,7 +4190,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   function setCv(on, name) {
     cvUploaded = on; cvName = on ? (name || cvName) : '';
-    if (!on) cvMade = null;
     document.querySelectorAll('[data-cv]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.cv === 'yes') === on)));
     if (current === 'docs') docsEl.innerHTML = docsHTML();
     if (current === 'dashboard') {  // the menu's resume group follows the CV
@@ -4680,9 +4659,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       e.preventDefault();
       check();
       if (go.disabled) return;
-      // the resume was only just given on the method screen (or there is none): one building screen makes and tailors it;
-      // so does a second go in a run laid out that way (after its processing state's "Change the input")
-      if (needsBuild(r) || (!!flowNow && flowNow.steps.some((s, k) => k > flowAt && s.match === 'screen:loading'))) return runBuildFor(r);
       // the tailoring is this route's next pane: a running flow's bar moves on, and Close comes back to what was typed
       flowTo(`route:${r.path}#process`);
       showPane(root, 'process', 1);
@@ -5463,13 +5439,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const sec = path === '/dashboard/translate-resume/' && toolEl.querySelector('#tl-tr');
     if (sec) later(() => sec.closest('.tl-sec').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 350);
   }
-  /* The resume tools with nothing to ask (no setup screen). Without a CV the method screen comes first (askCvFor),
-     then the building screen. With one, Analyse resume processes it and shows the ATS checker; the others open their
-     page under their own URL (Translate resume took its language on a landing page). */
+  /* The resume tools with nothing to ask (no setup screen). Without a CV the method screen comes first (askCvFor) and
+     hands it straight back. With one, Analyse resume processes it (Checking your resume) and shows the ATS checker;
+     the others open their page under their own URL (Translate resume took its language on a landing page). */
   function toolNow(r, kind) { if (!cvUploaded) return askCvFor(r); openTool(kind, r.path); }
   function analyseNow(r) {
-    if (!cvUploaded) return askCvFor(r);  // it hands the CV straight back (buildCv) ...
-    if (cvMade && cvMade.path === r.path) { cvNext = cvDefer = null; return runBuildFor(r); }  // ... to make it in the Analyzing screen
+    if (!cvUploaded) return askCvFor(r);
     openWire(r.path, 'Checking your resume', 'process', { f: FEATURES.find(f => f.id === 'analyse-resume'), pane: 'process' });
     later(() => flowNow && !leavesFlow(r) ? processDone() : openTool('ats', r.path), 2600);
   }
@@ -5680,10 +5655,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     wire: (label, path, id, opts = {}) => ({ label, wire: true, match: `route:${path}#${opts.pane || 'main'}`, run: () => openWire(path, label, id, opts) }),
     route: (label, path, pane) => ({ label, tag: pane === 'progress' ? 'progress' : '', match: 'route:' + path + (pane && pane !== 'progress' ? '#' + pane : ''), run: () => openRoute(findRoute(path), false, pane) }),
     wireTool: (label, path, pane) => ({ label, wire: pane === 'main', match: 'route:' + path + '#' + pane, run: () => openRoute(findRoute(path), false, pane) }),
-    // a tool's CV when there is none: the method screen, then the building screen, then the tool (askCv)
+    // a tool's CV when there is none: the method screen, which hands it straight to the tool (askCv)
     cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
-    cvMake: path => ({ label: 'Building screen · ' + BUILD_AS[findRoute(path).buildCv].head, match: 'screen:loading', run: () => buildFor(findRoute(path)) }),
-    cvBuild: path => ({ label: 'Building screen · your resume', match: 'screen:loading', run: () => { const r = findRoute(path); cvNext = () => openRoute(r); showBuilding('upload'); routeNow = r; markRoutes(); setHash(path); } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
     build: (id = 'ai', as) => ({ label: 'Building screen' + (as ? ' · ' + as.head : ''), match: 'screen:loading', run: () => { showBuilding(id, as); if (as) buildNext = as.done; } }),
     // sec: the section it opens at (what the feature wrote)
@@ -5708,17 +5681,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { n: 3, title: 'Input given before', stages: ['process', 'state', 'dest'] },
     { n: 4, title: 'Straight to the app', stages: ['dest'] }
   ];
-  /* A tool that needs a CV: the method screen and the building screen when there is none, then its own form (if it asks anything).
-     A buildCv tool skips that building screen: its own (cvMake) comes after the form, as its processing (cvRun). */
+  /* A tool that needs a CV: the method screen when there is none (no building screen: the CV goes straight to the tool),
+     then its own form (if it asks anything); its processing is always its own loading */
   const toolPrep = (path, label) => () => {
-    const r = findRoute(path), ask = cvUploaded ? [] : r.buildCv ? [S.cv(path)] : [S.cv(path), S.cvBuild(path)];
+    const r = findRoute(path), ask = cvUploaded ? [] : [S.cv(path)];
     return [...ask, ...(r.run ? [] : [r.wire ? S.wireTool(label, path, 'main') : S.route(label, path, 'main')])];  // a tool with nothing to ask has no screen of its own
   };
-  const cvRun = path => ({ process: () => cvUploaded ? [] : [S.cvMake(path)] });
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
-    process: () => cvUploaded ? [S.route('Tailoring', path, 'process')] : [S.cvMake(path)],
-    state: () => cvUploaded ? [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }] : []
+    process: [S.route('Tailoring', path, 'process')],
+    state: [{ label: 'Done! or Something went wrong', tag: 'tld-end', match: `route:${path}#process`, run: () => { tldJump = true; openRoute(findRoute(path), false, 'process'); } }]
   });
   const signUp = S.auth('Sign up', 'signup');
   const landing = (what, note) => S.auth('Sign up · ' + what, 'signup', note || `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
@@ -5735,7 +5707,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
-      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), ...cvRun('/dashboard/analyse-resume/'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
+      ['ats', 'Pass the ATS check', '/dashboard/analyse-resume/', { prep: toolPrep('/dashboard/analyse-resume/', 'Analyse resume'), dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me', '/jobs/matcher/', { prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' }]]
       .map(([goal, title, path, o]) => ({ id: 'goal-' + goal, goal, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, ...o })),
 
@@ -5756,7 +5728,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // the method screen and its own Analyzing screen come first), the others open their page (Flow 4), Translate
     // resume after a landing page that took the CV and the language
     { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
-    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], process: [S.cvMake('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], noun: 'ATS report' },
+    { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
     { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
       dest: [S.tool('Proofread & Translate', 'proof', '/dashboard/translate-resume/')] },
@@ -5866,7 +5838,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const f = FEATURES.find(x => x.id === id);
     flowPick[f.flow] = id;
     setCv(runsWithCv(f));
-    cvNext = cvDefer = cvMade = buildNext = null;  // nothing from an earlier run carries over
+    cvNext = buildNext = null;  // nothing from an earlier run carries over
     flowNow = buildFlow(f); renderFlowsPanel();
     flowGo(0);
   }
@@ -5979,10 +5951,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (b && !b.disabled) return flowGo(+b.dataset.flowStep);
     if (e.target.closest('[data-flow-end]')) endFlow();
   });
-  /* After the building screen: the screen that asked for a CV (askCv), or the editor, unless the running flow
-     has something before it (a failed result, a sign-up wall) */
+  /* After the building screen: the editor (or the section a writer wrote), unless the running flow has something
+     before it (a failed result, a sign-up wall) */
   function afterBuild() {
-    if (cvNext) { const then = cvNext; if (!cvUploaded) setCv(true); return then(); }
     const next = buildNext; buildNext = null;
     if (flowNow && flowNow.steps.some(s => s.match === 'screen:loading')) {
       const k = afterProcessAt(), nx = flowNow.steps[k];
