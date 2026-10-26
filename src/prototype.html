@@ -2685,7 +2685,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.15">v2.15</div>
+<div class="proto-ver" aria-label="Prototype version 2.16">v2.16</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3497,6 +3497,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const ascii = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
       p.email = [ascii(p.first), ascii(p.last)].filter(Boolean).join('.') + '@email.com';
       p.work[0].title = p.jobTitle;
+      if (opts.company && opts.company.trim()) p.work[0].org = opts.company.trim();
       p.profile = `${p.jobTitle} with 7 years of experience delivering work people rely on every day. Known for turning messy problems into clear plans and for working closely with the people around me.`;
     }
     if (id === 'linkedin' && opts) {
@@ -3518,15 +3519,32 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     later(() => {
       // left in the meantime (Back, Cancel, ×, the card closed): nothing is made and the button comes back
       if (current !== at || !form.isConnected || form.closest('[inert]')) { btn.innerHTML = label; btn.disabled = false; btn.style.minWidth = ''; return; }
-      person = buildPerson(id, opts);
+      // a section writer (opts.as, Generate work experience / objective) changes only its section of a resume that is
+      // already there; with none, the AI drafts a resume around it
+      const as = opts && opts.as;
+      person = as && cvUploaded ? withSection(person, opts) : buildPerson(id, opts);
       if (id === 'upload') setCv(true, ((form._file || {}).name || '').replace(/\.[^.]+$/, ''));
-      if (!cvNext || !cvDefer) return showBuilding(id);
+      if (!cvNext || !cvDefer) { showBuilding(id, as); if (as) buildNext = as.done; return; }
       // a tool that makes the resume in its own building screen (buildCv) gets it now, with no building screen here
       const then = cvNext;
       cvMade = { method: id, path: cvDefer.path };
       if (!cvUploaded) setCv(true);
       then();
     }, 450);
+  }
+  /* The section writers' building screen: what they write, in which section the editor opens afterwards */
+  const SECTION_AS = {
+    experience: { own: true, head: 'Writing your work experience', sub: 'The AI writes it from your job title and puts it in your resume.', steps: ['Reading your job title', 'Writing the bullet points', 'Adding it to your resume'], ready: 'Your work experience is ready!', done: () => openEditorAt('work') },
+    objective: { own: true, head: 'Writing your resume objective', sub: 'The AI writes it for the role you’re aiming for and puts it in your resume.', steps: ['Reading the role', 'Writing your objective', 'Adding it to your resume'], ready: 'Your objective is ready!', done: () => openEditorAt('profile') }
+  };
+  function withSection(p, opts) {
+    const q = JSON.parse(JSON.stringify(p)), title = opts.title.trim();
+    if (opts.as === SECTION_AS.experience) {
+      // the most recent job gets what was written (its dates and place stay)
+      Object.assign(q.work[0], { title, org: (opts.company || '').trim() || q.work[0].org,
+        bullets: [`Owned the ${title.toLowerCase()} work end to end, from first research to shipped results.`, 'Planned and prioritised with the team so every release landed on time.'] });
+    } else q.profile = `${title} who turns messy problems into clear plans and works closely with the people around them. Looking for a ${title.toLowerCase()} role where that makes a difference.`;
+    return q;
   }
   /* A tool's own building screen (buildCv routes), when the resume was only just given on the method screen:
      it makes the resume and does the tool's job in one go, then goes straight to the result (done) */
@@ -3554,7 +3572,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     document.getElementById('loading-sub').textContent = as ? as.sub : SUBTITLE[id];
     const badge = screens.loading.querySelector('.ld-badge');
     badge.classList.remove('is-on'); badge.style.opacity = ''; badge.getAnimations().forEach(a => a.cancel());  // a celebration cut short
-    document.getElementById('loading-steps').innerHTML = (as ? [STEPS[id][0], ...as.steps] : STEPS[id]).map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
+    document.getElementById('loading-steps').innerHTML = (as ? (as.own ? as.steps : [STEPS[id][0], ...as.steps]) : STEPS[id]).map(s => `<li class="step"><span class="dot">${icon('check')}</span>${s}</li>`).join('');
     const paper = screens.loading.querySelector('.ld-paper');
     paper.classList.remove('is-done');
     paper.querySelectorAll('.ld-group').forEach(g => g.classList.remove('is-filled'));
@@ -3569,6 +3587,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const groups = [...paper.querySelectorAll('.ld-group')];
     const fills = [[0], [1, 2], [3]];
     const T = 900, start = 420;
+    // a run's processing set to fail (More options › Result) stops on its second step, with no "ready" and no
+    // confetti, and goes on to the processing state that says so
+    if (procResult !== 'ok' && flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process') {
+      steps.slice(0, 2).forEach((st, i) => later(() => { if (i) steps[0].classList.replace('is-active', 'is-done'); st.classList.add('is-active'); }, start + i * T));
+      return later(afterBuild, start + 1.6 * T);
+    }
     steps.forEach((st, i) => later(() => {
       if (i) { steps[i - 1].classList.replace('is-active', 'is-done'); fills[i - 1].forEach(g => groups[g].classList.add('is-filled')); }
       st.classList.add('is-active');
@@ -3875,6 +3899,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* Building screen → editor. The page you watched being built travels into the
      preview pane and becomes the real resume; the editor chrome settles in around it. */
+  // the editor with one section open (what a section writer just wrote)
+  async function openEditorAt(sec) { await openEditor(); if (current === 'editor') editSection(sec); }
   async function openEditor() {
     if (screenRun) screenRun.finish();
     const ldPaper = screens.loading.querySelector('.ld-paper');
@@ -4081,6 +4107,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tailored: { ok: ['Your tailored resume is ready', 'Open it in the editor to check every change.'],
       fail: ['That job post didn’t work', 'Check the link, or paste the job post instead.'],
       error: ['Tailoring didn’t finish', 'It broke on our side. Nothing you entered is lost.'] },
+    tailoredJob: { fail: ['We couldn’t read this job post', 'Go back and try again in a moment.'] },  // from a job page: no link or post to fix
     tool: {
       'rewrite-resume': ['How should we rewrite it?', 'Pick a tone and the AI rewrites your resume in it.'],
       'summary-generator': ['What role is the summary for?', 'The AI writes a few summaries for you to pick from.'],
@@ -4487,7 +4514,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     form.addEventListener('submit', e => {
       e.preventDefault();
       if (!needFilled([form.elements.title])) return;
-      startCreation(form, 'ai', { name: [person.first, person.last].filter(Boolean).join(' '), title: form.elements.title.value });
+      startCreation(form, 'ai', { name: [person.first, person.last].filter(Boolean).join(' '), title: form.elements.title.value,
+        company: form.elements.company ? form.elements.company.value : '', as: SECTION_AS[form.dataset.kind] });
     });
   }
 
@@ -4652,8 +4680,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       e.preventDefault();
       check();
       if (go.disabled) return;
-      // the resume was only just given on the method screen (or there is none): one building screen makes and tailors it
-      if (needsBuild(r)) return runBuildFor(r);
+      // the resume was only just given on the method screen (or there is none): one building screen makes and tailors it;
+      // so does a second go in a run laid out that way (after its processing state's "Change the input")
+      if (needsBuild(r) || (!!flowNow && flowNow.steps.some((s, k) => k > flowAt && s.match === 'screen:loading'))) return runBuildFor(r);
       // the tailoring is this route's next pane: a running flow's bar moves on, and Close comes back to what was typed
       flowTo(`route:${r.path}#process`);
       showPane(root, 'process', 1);
@@ -4755,7 +4784,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       pics.forEach((p, k) => p.classList.toggle('is-on', k === 3));
       bars.forEach(b => { b.classList.add('is-done'); b.firstElementChild.removeAttribute('style'); });
       say(...TLD_END[procResult]);
-      if (live()) setRouteHead(HEADS.tailored[procResult]);
+      if (live()) setRouteHead((/^\/jobs\//.test(path) && HEADS.tailoredJob[procResult]) || HEADS.tailored[procResult]);
       wait.hidden = true; cont.hidden = !ok; retry.hidden = ok; x.hidden = ok;
       hideNote();
       flowSeen('tld-end');
@@ -5452,7 +5481,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   window.addEventListener('resize', fitPrev);
   /* The editor at its own URL (/edit/): a returning user's latest resume */
   // the editor under a URL of its own (/edit/, /guest-edit-start/)
-  function editorAt(path) { jumpEditor(); routeNow = findRoute(path); markRoutes(); setHash(path); }
+  function editorAt(path) { const opening = jumpEditor(); routeNow = findRoute(path); markRoutes(); setHash(path); return opening; }
   function openEdit() { editorAt('/edit/'); }
 
   /* ---------- Select your template (/dashboard/create-resume/) ----------
@@ -5656,8 +5685,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cvMake: path => ({ label: 'Building screen · ' + BUILD_AS[findRoute(path).buildCv].head, match: 'screen:loading', run: () => buildFor(findRoute(path)) }),
     cvBuild: path => ({ label: 'Building screen · your resume', match: 'screen:loading', run: () => { const r = findRoute(path); cvNext = () => openRoute(r); showBuilding('upload'); routeNow = r; markRoutes(); setHash(path); } }),
     screen: (label, s) => ({ label, match: 'screen:' + s, run: () => go(s) }),
-    build: (id = 'ai') => ({ label: 'Building screen', match: 'screen:loading', run: () => showBuilding(id) }),
-    editor: (label, path) => ({ label: label || 'Editor', match: 'screen:editor', run: path ? () => editorAt(path) : jumpEditor }),
+    build: (id = 'ai', as) => ({ label: 'Building screen' + (as ? ' · ' + as.head : ''), match: 'screen:loading', run: () => { showBuilding(id, as); if (as) buildNext = as.done; } }),
+    // sec: the section it opens at (what the feature wrote)
+    editor: (label, path, sec) => ({ label: label || 'Editor', match: 'screen:editor', run: () => { const opening = path ? editorAt(path) : jumpEditor(); if (sec) opening.then(() => { if (current === 'editor') editSection(sec); }); } }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
     tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
@@ -5696,12 +5726,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const TOOL_DEST = {
     'rewrite-resume': ['Rewriting your resume', 'rewritten resume', () => S.editor('Editor · the rewritten copy')],
     'tailor-resume': ['Tailoring your resume', 'tailored resume', () => S.editor('Editor · the tailored copy')],
-    'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary')]
+    'summary-generator': ['Writing your summary', 'summary', () => S.editor('Editor · Profile summary', undefined, 'profile')]
   };
   /* Every URL, paired with its flow: { flow, group (the URL checklist's), title, path, entry, prep, process, dest,
      verb + psteps (the processing wording), noun (the result), cv (start with or without a CV), guest (sign-up wall),
      state (its own processing state instead of the shared one) } */
-  const resumeOut = (label = 'Editor · Fill In') => [S.editor(label)];
+  const resumeOut = (label = 'Editor · Fill In', sec) => [S.editor(label, undefined, sec)];
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: [S.build()], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' }],
@@ -5713,8 +5743,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ['create-website', 'website', 'Building your website', [S.dest('Website editor', '/dashboard/create-website/', 'site')]]]
       .map(([t, kind, verb, dest]) => ({ id: t, flow: 2, group: '3 · Start from a template', title: `New ${kind}`, path: `/dashboard/${t}/`, prep: [t === 'create-resume' ? S.tpl() : S.wire('Pick a template', `/dashboard/${t}/`, 'templates', { kind })], dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun: kind })),
     { id: 'ai-resume', flow: 2, group: '4 · Generate with AI', title: 'Create Resume with AI', path: '/dashboard/create-ai-resume/', prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
-    { id: 'ai-experience', flow: 2, group: '4 · Generate with AI', title: 'Generate work experience', path: '/ai/resume/experience/', prep: [S.route('Generate work experience', '/ai/resume/experience/')], process: [S.build('ai')], dest: resumeOut('Editor · Work experience'), verb: 'Writing your experience', noun: 'resume' },
-    { id: 'ai-objective', flow: 2, group: '4 · Generate with AI', title: 'Generate resume objective', path: '/ai/resume/general/', prep: [S.route('Generate resume objective', '/ai/resume/general/')], process: [S.build('ai')], dest: resumeOut('Editor · Profile'), verb: 'Writing your objective', noun: 'resume' },
+    { id: 'ai-experience', flow: 2, group: '4 · Generate with AI', title: 'Generate work experience', path: '/ai/resume/experience/', prep: [S.route('Generate work experience', '/ai/resume/experience/')], process: [S.build('ai', SECTION_AS.experience)], dest: resumeOut('Editor · Work experience', 'work'), verb: 'Writing your experience', noun: 'work experience' },
+    { id: 'ai-objective', flow: 2, group: '4 · Generate with AI', title: 'Generate resume objective', path: '/ai/resume/general/', prep: [S.route('Generate resume objective', '/ai/resume/general/')], process: [S.build('ai', SECTION_AS.objective)], dest: resumeOut('Editor · Profile', 'profile'), verb: 'Writing your objective', noun: 'resume objective' },
     { id: 'ai-cover', flow: 2, group: '4 · Generate with AI', title: 'AI Cover Letter Writer', path: '/dashboard/create-ai-cover-from-job/', prep: [S.route('AI Cover Letter Writer', '/dashboard/create-ai-cover-from-job/')], dest: [S.dest('Cover letter', '/dashboard/create-ai-cover-from-job/', 'doc')], verb: 'Writing your cover letter', psteps: ['Reading the job post', 'Matching it to your experience', 'Writing the letter'], noun: 'cover letter' },
     { id: 'ai-resign', flow: 2, group: '4 · Generate with AI', title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], dest: [S.dest('Resignation letter', '/ai/resignation/', 'doc')], verb: 'Writing your letter', noun: 'letter' },
     { id: 'ai-interview', flow: 2, group: '4 · Generate with AI', title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], dest: [S.dest('Interview questions', '/dashboard/create-interview/', 'list')], verb: 'Preparing your questions', psteps: ['Reading the role', 'Picking likely questions', 'Writing model answers'], noun: 'interview questions' },
@@ -5725,7 +5755,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // the tools with nothing to ask start on the CV straight away: Analyse resume processes it (Flow 3; without a CV
     // the method screen and its own Analyzing screen come first), the others open their page (Flow 4), Translate
     // resume after a landing page that took the CV and the language
-    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'analyse-resume', flow: 3, group: '5 · Bring a resume to a tool', title: 'Analyse resume', path: '/dashboard/analyse-resume/', cv: true, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
     { id: 'analyse-resume-new', flow: 2, group: '5 · Bring a resume to a tool', title: 'Analyse resume · no CV yet', path: '/dashboard/analyse-resume/', cv: false, prep: [S.cv('/dashboard/analyse-resume/')], process: [S.cvMake('/dashboard/analyse-resume/')], dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], noun: 'ATS report' },
     { id: 'translate-resume', flow: 4, group: '5 · Bring a resume to a tool', title: 'Translate resume', path: '/dashboard/translate-resume/', cv: false,
       entry: landing('CV and language', 'Flow 4: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the translate page opens straight away.'),
@@ -5735,25 +5765,25 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'jobs-tailor', flow: 2, group: '7 · Jobs', title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
     { id: 'jobs-matcher', flow: 2, group: '7 · Jobs', title: 'Job matcher', path: '/jobs/matcher/', prep: [S.wire('Job matcher', '/jobs/matcher/', 'jobs-matcher')], dest: [S.wire('Job matches', '/jobs/', 'jobs')], verb: 'Finding jobs that fit you', psteps: ['Reading your resume', 'Searching open roles', 'Scoring each match'], noun: 'job matches' },
     { id: 'career-map', flow: 2, group: '8 · Career planning', title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map' },
-    { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
+    { id: 'guest-ai', flow: 2, group: 'Guest, no account yet', title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, prep: [S.route('Create Resume with AI', '/dashboard/create-ai-resume/')], process: [S.build('ai')], dest: resumeOut(), verb: 'Building your resume', noun: 'resume' },
     { id: 'guest-tailor', flow: 2, group: 'Guest, no account yet', title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy'), noun: 'tailored resume' },
 
-    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
-    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
+    { id: 'landing-cv', flow: 3, group: 'Input given on a landing page', title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: false, redo: 'upload', process: [S.route('Uploading your resume', '/dashboard/upload-resume/', 'progress'), S.build('upload')], dest: resumeOut(), verb: 'Uploading your resume', noun: 'resume', fail: 'Please upload a valid file' },
+    { id: 'landing-ats', flow: 3, group: 'Input given on a landing page', title: 'ATS check of a CV from the landing page', path: '/dashboard/analyse-resume/', entry: landing('CV attached'), cv: false, redo: 'analyse-resume-new', dest: () => [S.tool('ATS checker', 'ats', '/dashboard/analyse-resume/')], verb: 'Checking your resume', psteps: ['Reading your resume', 'Checking format and sections', 'Scoring keywords'], noun: 'ATS report' },
     ...[['create-resume', 'Resume with a chosen template', 'Setting up your resume', 'resume', resumeOut()], ['create-cover', 'Cover letter with a chosen template', 'Setting up your cover letter', 'cover letter', [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')]],
       ['create-website', 'Website with a chosen template', 'Building your website', 'website', [S.dest('Website editor', '/dashboard/create-website/modern/', 'site')]]]
-      .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
-    { id: 'sample', flow: 3, group: '3 · Start from a template', title: 'Resume from a sample', path: '/dashboard/create/marketing-manager/', url: '/dashboard/create/{sample}/', dest: resumeOut(), verb: 'Copying the sample', psteps: ['Copying the sample', 'Putting your name on it'], noun: 'resume' },
+      .map(([t, title, verb, noun, dest]) => ({ id: t + '-tpl', flow: 3, group: '3 · Start from a template', title, redo: t, path: `/dashboard/${t}/modern/`, url: `/dashboard/${t}/{template}`, dest, verb, psteps: ['Applying the template', 'Filling in what we know about you'], noun })),
+    { id: 'sample', flow: 3, group: '3 · Start from a template', title: 'Resume from a sample', redo: 'create-resume', path: '/dashboard/create/marketing-manager/', url: '/dashboard/create/{sample}/', dest: resumeOut(), verb: 'Copying the sample', psteps: ['Copying the sample', 'Putting your name on it'], noun: 'resume' },
 
     { id: 'login', flow: 4, group: '1 · Sign up / log in', title: 'Log in', path: '/login/', entry: S.auth('Log in', 'login'), dest: [S.dash()] },
     { id: 'dashboard', flow: 4, group: '1 · Sign up / log in', title: 'Dashboard', path: '/dashboard/', dest: [S.dash()] },
-    { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', dest: [S.editor('Editor (guest)', '/guest-edit-start/')] },
+    { id: 'guest-edit', flow: 4, group: '2 · Guest', title: 'Guest editor', path: '/guest-edit-start/', cv: false, dest: [S.editor('Editor (guest)', '/guest-edit-start/')] },
     { id: 'site-tpl', flow: 4, group: '3 · Start from a template', title: 'Website template', path: '/cv/creative/', url: '/cv/{website-template}/', dest: [S.dest('Website template', '/cv/creative/', 'site')] },
     { id: 'latest', flow: 4, group: '6 · Latest resume', title: 'Latest resume, returning user', path: '/latest-resume/', cv: true, dest: [S.latest('Editor (/edit/)', '/latest-resume/', true, 'screen:editor')] },
     { id: 'latest-new', flow: 4, group: '6 · Latest resume', title: 'Latest resume, no CV yet', path: '/latest-resume/', cv: false, dest: [S.latest('My Documents', '/latest-resume/', false, 'route:/dashboard/resumes/')] },
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].map(([t, label]) => ({ id: 'latest-' + t, flow: 4, group: '6 · Latest resume', title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] })),
     { id: 'docs', flow: 4, group: '6 · Latest resume', title: 'My Documents', path: '/dashboard/resumes/', dest: [S.docs()] },
-    { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', dest: [S.editor('Editor', '/edit/')] },
+    { id: 'edit', flow: 4, group: '6 · Latest resume', title: 'Editor', path: '/edit/', cv: true, dest: [S.editor('Editor', '/edit/')] },
     ...[['/jobs/', 'Jobs', 'jobs'], ['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/'], ['/jobs/job-tracker/', 'Job Tracker', 'tracker']]
       .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, group: '7 · Jobs', title, path, url, dest: [S.wire(title, path, w)] })),
     ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, group: '9 · Upgrade', title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] }))
@@ -5906,7 +5936,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return toast('Run a flow (More options › Flows) to move on from here.');
     const first = st => flowNow.steps.findIndex(s => s.stage === st);
     if (w === 'state-next') flowNext();
-    else if (w === 'state-retry') { const prep = flowNow.steps.findLastIndex(s => s.stage === 'prep'); flowGo(prep >= 0 ? prep : first('process')); }  // the input just given
+    else if (w === 'state-retry') {
+      // back to the input just given; a run whose input came before it (Flow 3: a landing page's CV, a template in
+      // the URL) has no screen for it, so it goes on as the feature's own run that asks for it (redo)
+      const prep = flowNow.steps.findLastIndex(s => s.stage === 'prep');
+      if (prep >= 0) flowGo(prep); else if (flowNow.f.redo) startFeature(flowNow.f.redo); else flowGo(first('process'));
+    }
     else flowGo(first('process'));
   }
   function setResult(r) {
@@ -5962,7 +5997,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (APPS[current]) { APPS[current].hidden = true; APPS[current].innerHTML = ''; topbarEl.hidden = false; pageEl.hidden = false; }
     Object.entries(screens).forEach(([k, sc]) => { sc.hidden = k !== 'loading'; });
     setCurrent('loading');
-    openEditor();
+    return openEditor();
   }
 
   /* Accepts links with or without https:// and www., mobile (m.) and country subdomains,
