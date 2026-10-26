@@ -2767,11 +2767,21 @@ body.has-note .au-main { padding-bottom: 96px; }
 /* The four flow templates: stage chips coloured like the flow board (preparation grey, processing sand,
    destination green, dashboard blue), a feature (URL) picker and what that feature puts in the stages */
 #pm-flows { display: grid; gap: 8px; }
-/* Flows: one card per flow (its name, its stages as a strip coloured like the flow bar, then the feature, the CV and
-   Run on one row); the settings for every run under them */
-.pmf-list { display: grid; gap: 6px; }
-.pmf { display: grid; gap: 8px; padding: 10px; border-radius: 10px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); transition: background var(--dur-fast), box-shadow var(--dur-fast); }
+/* Flows: one card that works like the app will: Open (the URL), From (where the person comes from), CV, and under
+   them the flow that makes (its name, its stages as a strip coloured like the flow bar) with the steps it shows, then
+   Run. Result and Look for every run sit under the card. */
+.pmf { display: grid; gap: 8px; padding: 12px; border-radius: 10px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); transition: background var(--dur-fast), box-shadow var(--dur-fast); }
 .pmf[aria-current="true"] { background: rgba(255, 255, 255, .09); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
+.pmf-row { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 8px; }
+.pmf-row > .seg, .pmf-row > .pmf-cv { justify-self: start; }
+.pmf-url { margin: -5px 0 0 48px; font: 10.5px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; overflow-wrap: anywhere; }
+.proto-more .pmf-from button { padding: 0 8px; }
+.pmf-from .sh { display: none; }
+@media (max-width: 480px) { .pmf-row { grid-template-columns: 34px minmax(0, 1fr); } .pmf-url { margin-left: 42px; } .proto-more .pmf-from button { padding: 0 6px; } .pmf-from .lg { display: none; } .pmf-from .sh { display: inline; } }
+@media (max-width: 340px) { .proto-more .pmf-from button { padding: 0 3px; font-size: 11px; } .pmf-row { gap: 4px; } }
+.proto-more .pmf-from button[aria-disabled="true"] { opacity: .35; cursor: default; }
+.proto-more .pmf-from button[aria-disabled="true"]:hover { background: none; color: inherit; }
+.pmf-out { display: grid; gap: 6px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .1); }
 .pmf-top { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; }
 .pmf-top b { font-weight: 500; white-space: nowrap; }
 .pmf-top > span:not(.pmf-stages) { flex: 1; min-width: 0; color: #8a93ab; font-size: 12px; }
@@ -2782,9 +2792,13 @@ body.has-note .au-main { padding-bottom: 96px; }
 .st-process, .st-state { background: rgba(251, 225, 168, .16); color: #f3d9a4; }
 .st-dest { background: rgba(143, 214, 184, .16); color: #9fe0c4; }
 .st-entry { background: none; color: #8a93ab; box-shadow: inset 0 0 0 1px rgba(138, 147, 171, .5); }
-.pmf-set { display: flex; align-items: center; gap: 6px; }
+.pmf-seq { display: flex; flex-wrap: wrap; gap: 0 4px; margin: 0; padding: 0; list-style: none; font-size: 11px; line-height: 16px; color: #c9cde0; }
+.pmf-seq li + li::before { content: "›"; margin-right: 4px; color: #59617a; }
+.pmf-seq [data-st="entry"] { color: #8a93ab; }
+.pmf-seq [data-st="process"], .pmf-seq [data-st="state"] { color: #f3d9a4; }
+.pmf-seq [data-st="dest"] { color: #9fe0c4; }
 .pmf-cv {
-  position: relative; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px; border: 0; border-radius: 8px;
+  position: relative; display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px; border: 0; border-radius: 8px;
   background: rgba(255, 255, 255, .1); color: #c9cde0; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast);
 }
 .pmf-cv:hover:not([aria-disabled="true"]) { background: rgba(255, 255, 255, .16); }
@@ -2796,15 +2810,15 @@ body.has-note .au-main { padding-bottom: 96px; }
 .pmf-cv[aria-disabled="true"] { cursor: default; opacity: .5; }
 .pmf-cv:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
 .pm-opts { gap: 2px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, .1); }
-/* the flow's own CV: the person starts the run with or without one (unless the URL decides), then Run */
+/* the URLs view's CV, for the screens opened from there */
 .pm-url-cv { min-height: 34px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
-.pmf-set select {
-  flex: 1; width: 0; min-width: 0;  /* no say in the panel's width: the longest URL title would widen it past a phone */ height: 30px; padding: 0 26px 0 8px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; color: var(--kr-white); cursor: pointer;
+.pmf select {
+  width: 100%; min-width: 0;  /* no say in the panel's width: the longest URL title would widen it past a phone */ height: 30px; padding: 0 26px 0 8px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; color: var(--kr-white); cursor: pointer;
   -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, .1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9cde0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center / 14px;
 }
-.pmf-set select option, .pmf-set select optgroup { color: var(--kr-grey-100); background: var(--kr-white); }
-.pmf-set select:focus-visible, .pmf-run:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
-.pmf-run { position: relative; display: grid; place-items: center; flex: none; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); cursor: pointer; }
+.pmf select option, .pmf select optgroup { color: var(--kr-grey-100); background: var(--kr-white); }
+.pmf select:focus-visible, .pmf-run:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pmf-run { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 32px; margin-top: 2px; padding: 0; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
 .pmf-run:hover { background: #e4e7f0; }
 .pmf-run svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
 .proto-more-panel { width: min(360px, calc(100vw - 24px)); max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
@@ -2926,7 +2940,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.22">v2.22</div>
+<div class="proto-ver" aria-label="Prototype version 2.23">v2.23</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -2960,7 +2974,7 @@ body.has-note .au-main { padding-bottom: 96px; }
       <button class="pm-tab" type="button" role="tab" id="pm-tab-urls" aria-controls="pm-view-urls" aria-selected="false" tabindex="-1" data-pm-tab="urls">URLs <span class="pm-count" id="pm-count"></span></button>
     </div>
     <div class="pm-view" id="pm-view-flows" role="tabpanel" aria-labelledby="pm-tab-flows">
-      <div class="pmf-list" id="pm-flows"></div>
+      <div id="pm-flows"></div>
       <div class="pm-sec pm-opts">
         <div class="pm-row"><span class="pm-key">Result</span>
           <div class="seg pm-seg">
@@ -6476,45 +6490,78 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   let flowNow = null, flowAt = 0, procResult = 'ok';
 
-  /* More options › Flows: one card per flow, its name and stages, then what to run in it (the feature or URL), whether
-     the person has a CV, and Run. Each flow keeps its own CV choice (one for all of them couldn't fit every flow); a
-     feature that decides it itself (a landing page's CV, Latest resume, a tool that needs one) shows it fixed. The run's
-     steps show in the flow bar once it runs. */
-  const pmFlows = document.getElementById('pm-flows'), flowPick = {}, flowCv = { 1: false, 2: false, 3: false, 4: false };
-  const runsWithCv = f => f.cv ?? flowCv[f.flow];
+  /* More options › Flows: one card that works the way the app will. The URL says where the person ends up; where they
+     come from and whether they have a CV decide which of the four flows that makes, and so which steps they see:
+     Open (the URL) · From (Sign up, App, Landing page, Guest) · CV → Flow N and its steps → Run. FEATURES has an entry
+     per URL and arrival (fromOf); a URL's CV is the person's to choose only when it runs both ways from there. */
+  const pmFlows = document.getElementById('pm-flows');
+  const FROM = [
+    ['signup', 'Sign up', 'New user from /register: we ask what they want first (the goal screen)'],
+    ['app', 'App', 'From the app menu, the dashboard, an email or the URL itself'],
+    ['lp', '<span class="lg">Landing page</span><span class="sh">Landing</span>', 'A landing page took the CV (for tailoring also the job) before sign-up'],
+    ['guest', 'Guest', 'No account yet: sign-up comes after the result']
+  ];
+  const fromOf = f => f.flow === 1 ? 'signup' : f.id.startsWith('landing-') || f.id === 'translate-resume' ? 'lp' : f.guest || f.id === 'guest-edit' ? 'guest' : 'app';
+  let pmKey = '', pmFrom = 'signup', pmCvOn = false;  // the URL (a feature's path; '' is Build my resume, only the goal screen leads there)
+  const runsWithCv = f => f.cv ?? pmCvOn;
+  const pmList = (key = pmKey, from = pmFrom) => FEATURES.filter(f => f.path === key && fromOf(f) === from);
+  const pmCvFree = list => list.some(f => f.cv === undefined) || (list.some(f => f.cv === true) && list.some(f => f.cv === false));
+  function pmFeature() { const list = pmList(); return list.find(f => f.cv === pmCvOn) || list.find(f => f.cv === undefined) || list[0]; }
+  // the steps a run shows with the CV it starts with
+  function pmSteps(f) { const had = cvUploaded; cvUploaded = runsWithCv(f); const st = buildFlow(f).steps; cvUploaded = had; return st; }
+  // the URL picker: one entry per URL, named after the app's feature there (else the first), grouped like the URL checklist
+  const PM_URLS = [...new Set(FEATURES.map(f => f.path))].map(key => {
+    const all = FEATURES.filter(f => f.path === key), main = all.find(f => fromOf(f) === 'app') || all[0];
+    return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Build my resume', group: key ? main.group : 'Onboarding' };
+  });
+  const PM_GROUPS = [...new Set(PM_URLS.map(u => u.group))].sort((a, b) => (a === 'Onboarding' ? 0 : parseInt(a) || 99) - (b === 'Onboarding' ? 0 : parseInt(b) || 99));
   function renderFlowsPanel() {
-    pmFlows.innerHTML = FLOW_T.map(T => {
-      const list = FEATURES.filter(f => f.flow === T.n), sel = flowPick[T.n] || list[0].id, stages = T.stages.map(st => STAGE[st]);
-      return `<div class="pmf" data-flow-card="${T.n}" role="group" aria-label="Flow ${T.n}, ${T.title}">
+    const f = pmFeature(), T = FLOW_T[f.flow - 1], stages = T.stages.map(st => STAGE[st]), fixed = !pmCvFree(pmList());
+    const avail = new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf));
+    pmFlows.innerHTML = `<div class="pmf" role="group" aria-label="Run a flow"${flowNow && flowNow.f === f ? ' aria-current="true"' : ''}>
+      <div class="pmf-row"><span class="pm-key" id="pmf-open">Open</span><select data-pm-url aria-labelledby="pmf-open">${PM_GROUPS.map(g => `<optgroup label="${g}">${PM_URLS.filter(u => u.group === g).map(u => `<option value="${u.key}"${u.key === pmKey ? ' selected' : ''}>${u.title}</option>`).join('')}</optgroup>`).join('')}</select></div>
+      <code class="pmf-url">${pmFrom === 'signup' ? '/register/ → ' : ''}${pmKey || 'goal screen → Build my resume'}</code>
+      <div class="pmf-row"><span class="pm-key" id="pmf-from">From</span><div class="seg pm-seg pmf-from" role="group" aria-labelledby="pmf-from">${FROM.map(([v, l, tip]) => {
+        const ok = avail.has(v);
+        return `<button type="button" data-pm-from="${v}" aria-pressed="${v === pmFrom}"${ok ? '' : ' aria-disabled="true"'} data-tip="${ok ? tip : 'Not for this URL'}">${l}</button>`;
+      }).join('')}</div></div>
+      <div class="pmf-row"><span class="pm-key">CV</span><button class="pmf-cv" type="button" role="switch" data-pm-cv aria-checked="${runsWithCv(f)}" aria-label="The person has a CV${fixed ? ' (set by where they come from)' : ''}"${fixed ? ' aria-disabled="true" data-tip="Set by where they come from"' : ''}><i aria-hidden="true"></i>${runsWithCv(f) ? 'Has a CV' : 'No CV'}</button></div>
+      <div class="pmf-out">
         <div class="pmf-top"><b>Flow ${T.n}</b><span>${T.title}</span><span class="pmf-stages" role="img" aria-label="Stages: ${stages.join(', ')}" data-tip="${stages.join(' → ')}${T.skip ? ' · Skip → Dashboard' : ''}">${T.stages.map(st => `<i class="st-${st}"></i>`).join('')}</span></div>
-        <div class="pmf-set"><select data-flow-pick="${T.n}" aria-label="Flow ${T.n}: the feature or URL to run">${[...new Set(list.map(f => f.group))].map(g => `<optgroup label="${g}">${list.filter(f => f.group === g).map(f => `<option value="${f.id}"${f.id === sel ? ' selected' : ''}>${f.title}</option>`).join('')}</optgroup>`).join('')}</select>${pmCv(list.find(f => f.id === sel))}<button class="pmf-run" type="button" data-flow-run="${T.n}" aria-label="Run flow ${T.n}" data-tip="Run"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></button></div>
-      </div>`;
-    }).join('');
-  }
-  // the flow's CV switch: on = the person has a CV; dimmed when the feature decides it
-  function pmCv(f) {
-    const n = f.flow, fixed = f.cv !== undefined;
-    return `<button class="pmf-cv" type="button" role="switch" data-flow-cv="${n}" aria-checked="${runsWithCv(f)}" aria-label="Flow ${n}: the person has a CV${fixed ? ' (set by this URL)' : ''}"${fixed ? ' aria-disabled="true" data-tip="Set by this URL"' : ' data-tip="Does the person have a CV?"'}><i aria-hidden="true"></i>CV</button>`;
+        <ol class="pmf-seq" aria-label="Steps">${pmSteps(f).map(st => `<li data-st="${st.stage}">${st.label}</li>`).join('')}</ol>
+        <button class="pmf-run" type="button" data-flow-run data-feature="${f.id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button>
+      </div>
+    </div>`;
   }
   renderFlowsPanel();
-  // a new pick redraws that flow's CV switch (not the picker, which may still have the focus)
+  // the card is drawn anew after the click has finished (a clicked button taken out of the page would count as a click
+  // outside the panel), with the focus back on the same control
+  function pmRedraw(sel) {
+    setTimeout(() => { renderFlowsPanel(); if (sel) pmFlows.querySelector(sel)?.focus({ preventScroll: true }); });
+  }
   pmFlows.addEventListener('change', e => {
-    const sel = e.target.closest('[data-flow-pick]'); if (!sel) return;
-    flowPick[sel.dataset.flowPick] = sel.value;
-    sel.closest('.pmf').querySelector('.pmf-cv').outerHTML = pmCv(FEATURES.find(x => x.id === sel.value));
+    if (!e.target.matches('[data-pm-url]')) return;
+    pmKey = e.target.value;
+    const avail = new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf));
+    if (!avail.has(pmFrom)) pmFrom = avail.has('app') ? 'app' : [...avail][0];
+    pmRedraw('[data-pm-url]');
   });
-  // (the switch changes in place: a clicked button taken out of the page would count as a click outside the panel)
   pmFlows.addEventListener('click', e => {
-    const b = e.target.closest('[data-flow-cv]'); if (!b || b.getAttribute('aria-disabled') === 'true') return;
-    flowCv[b.dataset.flowCv] = b.getAttribute('aria-checked') !== 'true';
-    b.setAttribute('aria-checked', String(flowCv[b.dataset.flowCv]));
+    const fr = e.target.closest('[data-pm-from]'), cv = e.target.closest('[data-pm-cv]');
+    if (fr && fr.getAttribute('aria-disabled') !== 'true') { pmFrom = fr.dataset.pmFrom; pmRedraw(`[data-pm-from="${pmFrom}"]`); }
+    if (cv && cv.getAttribute('aria-disabled') !== 'true') { pmCvOn = !pmCvOn; pmRedraw('[data-pm-cv]'); }
   });
+  // the panel follows the run: the URL, where the person came from and the CV of the feature that runs
+  function pmShow(f) {
+    pmKey = f.path; pmFrom = fromOf(f);
+    if (f.cv !== undefined && pmCvFree(pmList())) pmCvOn = f.cv;
+    renderFlowsPanel();
+  }
   function startFeature(id) {
     const f = FEATURES.find(x => x.id === id);
-    flowPick[f.flow] = id;
     setCv(runsWithCv(f));
     cvNext = buildNext = null; tailored = null;  // nothing from an earlier run carries over
-    flowNow = buildFlow(f); renderFlowsPanel();
+    flowNow = buildFlow(f); pmShow(f);
     flowGo(0);
   }
 
@@ -6523,7 +6570,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // the bar is drawn anew: focus on one of its buttons comes back to the same button (or the step now on)
     const had = flowBar.contains(document.activeElement) && document.activeElement, was = had && (had.matches('.fb-dot') ? '' : had.getAttribute('aria-label'));
     flowBar.hidden = !flowNow;
-    document.querySelectorAll('.pmf').forEach(c => c.setAttribute('aria-current', String(!!flowNow && +c.dataset.flowCard === flowNow.n)));
+    pmFlows.querySelector('.pmf')?.setAttribute('aria-current', String(!!flowNow && flowNow.f === pmFeature()));
     if (!flowNow) { flowLive.textContent = ''; if (had) pmBtn.focus(); return; }
     const st = flowNow.steps[flowAt], groups = [];
     flowNow.steps.forEach((s, i) => { const g = groups.at(-1); if (g && g.stage === s.stage) g.items.push([s, i]); else groups.push({ stage: s.stage, items: [[s, i]] }); });
@@ -6551,8 +6598,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   function flowGoal(id) {
     if (!flowNow || flowNow.n !== 1 || flowNow.f.goal === id) return;
     const at = flowAt;
-    flowNow = buildFlow(FEATURES.find(f => f.flow === 1 && f.goal === id)); flowAt = at; flowPick[1] = flowNow.f.id;
-    renderFlowsPanel(); renderFlowBar();
+    flowNow = buildFlow(FEATURES.find(f => f.flow === 1 && f.goal === id)); flowAt = at;
+    pmShow(flowNow.f); renderFlowBar();
   }
   /* A step a screen reaches on its own (uploading starts): mark it in the bar */
   function flowSeen(tag) {
@@ -6836,7 +6883,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const cvb = e.target.closest('[data-cv]');
     if (cvb) return setCv(cvb.dataset.cv === 'yes');  // the URLs view's: the CV the screens opened from there start with
     const run = e.target.closest('[data-flow-run]');
-    if (run) return startFeature(run.closest('.pmf').querySelector('select').value);
+    if (run) return startFeature(run.dataset.feature);
     const res = e.target.closest('[data-result]');
     if (res && !res.closest('.rt-wire')) return setResult(res.dataset.result);
     const el = e.target.closest('[data-action]');
