@@ -2967,7 +2967,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.24">v2.24</div>
+<div class="proto-ver" aria-label="Prototype version 2.25">v2.25</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4499,6 +4499,19 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     wall: () => { const noun = (flowNow && flowNow.f.noun) || 'resume'; return [`Sign up to see your ${noun}`, `It’s free, and your ${noun} opens right after.`]; }
   };
   const TRL_HEAD = { url: { main: HEADS.tailor, process: HEADS.tailoring }, job: { main: HEADS.tailorJob, process: HEADS.tailoring } };
+  /* The six groups both link lists use (More options › Flows' Open and the URLs view): what a feature takes in and
+     gives back, so the features in one group ask for the same data, load the same way and end in the same kind of
+     place. Every URL is in exactly one; '' is Build my resume (only the goal screen leads there). */
+  const KINDS = [
+    ['Get a resume', ['', '/dashboard/create-resume/', '/dashboard/create-resume/modern/', '/dashboard/create/marketing-manager/', '/dashboard/create-ai-resume/', '/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/guest-edit-start/']],
+    ['Improve my resume', ['/dashboard/tailor-resume/', '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', '/dashboard/summary-generator/', '/ai/resume/', '/ai/resume/experience/', '/ai/resume/general/']],
+    ['Check my resume', ['/dashboard/analyse-resume/', '/dashboard/proofreading/', '/dashboard/translate-resume/', '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/']],
+    ['Write something new', ['/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/', '/dashboard/create-cover/', '/dashboard/create-cover/modern/', '/dashboard/create-website/', '/dashboard/create-website/modern/', '/cv/creative/']],
+    ['Find jobs', ['/jobs/search/', '/jobs/', '/jobs/matcher/', '/jobs/job/1234/', '/jobs/organization/kickresume/', '/jobs/job-tracker/']],
+    ['Just open', ['/register/', '/login/', '/dashboard/', '/dashboard/resumes/', '/edit/', '/latest-resume/', ...PLAN_NAMES.map(pl => `/upgrade/${pl}/`)]]
+  ];
+  const kindOf = path => (KINDS.find(([, paths]) => paths.includes(path)) || KINDS.at(-1))[0];
+  const kindAt = path => KINDS.flatMap(([, paths]) => paths).indexOf(path);  // the order within a group
   const ROUTES = [
     { group: '1 · Sign up / log in', path: '/register/', title: 'Sign up', run: () => openAuth('signup') },
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
@@ -4548,8 +4561,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
   document.getElementById('pm-count').textContent = ROUTES.length;
-  document.getElementById('pm-routes').innerHTML = [...new Set(ROUTES.map(r => r.group))].map(g => `<span class="pm-sub">${g}</span>` +
-    ROUTES.filter(r => r.group === g).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
+  document.getElementById('pm-routes').innerHTML = KINDS.map(([g]) => g).filter(g => ROUTES.some(r => kindOf(r.path) === g)).map(g => `<span class="pm-sub">${g}</span>` +
+    ROUTES.filter(r => kindOf(r.path) === g).sort((a, b) => kindAt(a.path) - kindAt(b.path)).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
   /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
      ATS check get a resume on the method screen first when there is none; see openRoute) */
   function pickGoal(id, el) {
@@ -6541,12 +6554,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const pmFeature = () => pmPickOf(pmList(), pmCvOn);
   // the steps a run shows with the CV it starts with
   function pmSteps(f) { const had = cvUploaded; cvUploaded = runsWithCv(f); const st = buildFlow(f).steps; cvUploaded = had; return st; }
-  // the URL list: one entry per URL, named after the app's feature there (else the first), grouped like the URL checklist
-  const PM_URLS = [...new Set(FEATURES.map(f => f.path))].map(key => {
+  // the URL list: one entry per URL, named after the app's feature there (else the first), in the six groups (KINDS)
+  const PM_URLS = KINDS.flatMap(([group, paths]) => paths.filter(key => FEATURES.some(f => f.path === key)).map(key => {
     const all = FEATURES.filter(f => f.path === key), main = all.find(f => fromOf(f) === 'app') || all[0];
-    return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Build my resume', group: key ? main.group : 'Onboarding' };
-  });
-  const PM_GROUPS = [...new Set(PM_URLS.map(u => u.group))].sort((a, b) => (a === 'Onboarding' ? 0 : parseInt(a) || 99) - (b === 'Onboarding' ? 0 : parseInt(b) || 99));
+    return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Build my resume', group };
+  }));
+  const PM_GROUPS = KINDS.map(([g]) => g).filter(g => PM_URLS.some(u => u.group === g));
   const chev = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   function renderFlowsPanel() {
     let n = 0;
