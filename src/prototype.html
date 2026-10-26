@@ -2774,17 +2774,49 @@ body.has-note .au-main { padding-bottom: 96px; }
 .pmf[aria-current="true"] { background: rgba(255, 255, 255, .09); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
 .pmf-row { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 8px; }
 .pmf-row > .seg, .pmf-row > .pmf-cv { justify-self: start; }
-.pmf-url { margin: -5px 0 0 48px; font: 10.5px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; overflow-wrap: anywhere; }
+.pmf-url { display: block; font: 10.5px/14px ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a93ab; overflow-wrap: anywhere; }
+.pmf-check { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; }
+/* Open: a button and its own list (fixed, so the panel's scrolling never clips it) */
+.pmf-dd { min-width: 0; }
+.pmf-ddbtn {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; height: 30px; padding: 0 7px 0 8px; border: 0; border-radius: 8px;
+  background: rgba(255, 255, 255, .1); color: var(--kr-white); font: inherit; font-size: 12px; text-align: left; cursor: pointer; transition: background var(--dur-fast);
+}
+.pmf-ddbtn:hover, .pmf-ddbtn[aria-expanded="true"] { background: rgba(255, 255, 255, .16); }
+.pmf-ddbtn:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pmf-ddbtn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pmf-ddbtn svg { flex: none; width: 14px; height: 14px; fill: none; stroke: #c9cde0; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur-fast) var(--ease-standard); }
+.pmf-ddbtn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.pmf-ddlist {
+  position: fixed; z-index: 5; overflow-y: auto; overscroll-behavior: contain; padding: 4px; border-radius: 10px; background: var(--kr-blue-dark);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), var(--kr-shadow-dropdown); scrollbar-width: thin;
+}
+.pmf-ddlist:focus { outline: none; }
+.pmf-ddg { padding: 8px 8px 3px; font-size: 11px; line-height: 14px; color: #8a93ab; }
+.pmf-ddo { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 6px; font-size: 12px; line-height: 16px; color: #d6dae4; cursor: pointer; }
+.pmf-ddo.is-active { background: rgba(255, 255, 255, .1); color: var(--kr-white); }
+.pmf-ddlist:focus-visible .pmf-ddo.is-active { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45); }
+.pmf-ddo[aria-selected="true"] { color: var(--kr-white); font-weight: 500; }
+.pmf-ddo[aria-selected="true"]::after { content: ""; flex: none; width: 10px; height: 6px; margin: -3px 2px 0 0; border: solid #9fe0c4; border-width: 0 0 2px 2px; transform: rotate(-45deg); }
+/* the run's steps, folded until asked for */
+.pmf-more summary { display: inline-flex; align-items: center; gap: 5px; border-radius: 4px; font-size: 11px; line-height: 16px; color: #8a93ab; cursor: pointer; list-style: none; }
+.pmf-more summary::-webkit-details-marker { display: none; }
+.pmf-more summary::before { content: ""; border-left: 4px solid currentColor; border-block: 3.5px solid transparent; transition: transform var(--dur-fast) var(--ease-standard); }
+.pmf-more[open] summary::before { transform: rotate(90deg); }
+.pmf-more summary:hover { color: #c9cde0; }
+.pmf-more summary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pmf-more[open] > summary { margin-bottom: 6px; }
+.pmf-more .pmf-seq { margin-top: 4px; }
 .proto-more .pmf-from button { padding: 0 8px; }
 .pmf-from .sh { display: none; }
-@media (max-width: 480px) { .pmf-row { grid-template-columns: 34px minmax(0, 1fr); } .pmf-url { margin-left: 42px; } .proto-more .pmf-from button { padding: 0 6px; } .pmf-from .lg { display: none; } .pmf-from .sh { display: inline; } }
+@media (max-width: 480px) { .pmf-row { grid-template-columns: 34px minmax(0, 1fr); } .proto-more .pmf-from button { padding: 0 6px; } .pmf-from .lg { display: none; } .pmf-from .sh { display: inline; } }
 @media (max-width: 340px) { .proto-more .pmf-from button { padding: 0 3px; font-size: 11px; } .pmf-row { gap: 4px; } }
 .proto-more .pmf-from button[aria-disabled="true"] { opacity: .35; cursor: default; }
 .proto-more .pmf-from button[aria-disabled="true"]:hover { background: none; color: inherit; }
 .pmf-out { display: grid; gap: 6px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .1); }
 .pmf-top { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; }
 .pmf-top b { font-weight: 500; white-space: nowrap; }
-.pmf-top > span:not(.pmf-stages) { flex: 1; min-width: 0; color: #8a93ab; font-size: 12px; }
+.pmf-name { flex: 1; min-width: 0; color: #8a93ab; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pmf-stages { position: relative; display: flex; gap: 3px; }
 .pmf-stages i { width: 12px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .28); }
 .pmf-stages .st-process, .pmf-stages .st-state { background: #f3d9a4; }
@@ -2812,13 +2844,8 @@ body.has-note .au-main { padding-bottom: 96px; }
 .pm-opts { gap: 2px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, .1); }
 /* the URLs view's CV, for the screens opened from there */
 .pm-url-cv { min-height: 34px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
-.pmf select {
-  width: 100%; min-width: 0;  /* no say in the panel's width: the longest URL title would widen it past a phone */ height: 30px; padding: 0 26px 0 8px; border: 0; border-radius: 8px; font: inherit; font-size: 12px; color: var(--kr-white); cursor: pointer;
-  -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, .1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9cde0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center / 14px;
-}
-.pmf select option, .pmf select optgroup { color: var(--kr-grey-100); background: var(--kr-white); }
-.pmf select:focus-visible, .pmf-run:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
-.pmf-run { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 32px; margin-top: 2px; padding: 0; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
+.pmf-run:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.pmf-run { position: relative; display: flex; align-items: center; gap: 5px; flex: none; height: 28px; margin-left: 4px; padding: 0 10px 0 8px; border: 0; border-radius: 8px; background: var(--kr-white); color: var(--kr-blue-dark); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
 .pmf-run:hover { background: #e4e7f0; }
 .pmf-run svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
 .proto-more-panel { width: min(360px, calc(100vw - 24px)); max-height: calc(100vh - 72px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
@@ -2940,7 +2967,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.23">v2.23</div>
+<div class="proto-ver" aria-label="Prototype version 2.24">v2.24</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4410,6 +4437,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     dashEl.innerHTML = dashHTML(); dashEl.hidden = false;
     setCurrent('dashboard');
+    if (routesReady) setTimeout(() => checkerAdopt('/dashboard/'));  // the flow checker: the dashboard as a run of its own
     window.scrollTo(0, 0); device.scrollTop = 0;
     landFocus(dashEl);
     const items = [...dashEl.querySelectorAll('.ed-mbar, .ed-side, .dash-head, .dash-main > .panel, .dash-mid > .panel, .dash-pair > .panel')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
@@ -4515,6 +4543,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
   const findRoute = h => { const p = normPath(h); return p ? ROUTES.find(r => [r.path, ...(r.also || [])].some(x => normPath(x) === p)) || null : null; };
   function setHash(path) {
+    if (routesReady && path) setTimeout(() => checkerAdopt(path));  // the flow checker: a new task opened in the app
     if (path && findRoute(location.hash) && findRoute(location.hash) === findRoute(path)) return;
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
@@ -6492,8 +6521,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* More options › Flows: one card that works the way the app will. The URL says where the person ends up; where they
      come from and whether they have a CV decide which of the four flows that makes, and so which steps they see:
-     Open (the URL) · From (Sign up, App, Landing page, Guest) · CV → Flow N and its steps → Run. FEATURES has an entry
-     per URL and arrival (fromOf); a URL's CV is the person's to choose only when it runs both ways from there. */
+     Open (the URL) · From (Sign up, App, Landing page, Guest) · CV → Flow N and Run, its steps folded under it.
+     FEATURES has an entry per URL and arrival (fromOf); a URL's CV is the person's to choose only when it runs both
+     ways from there. The card is drawn once and updated in place (pmUpdate), so it never jumps; Open is a list of its
+     own (the native one fills a Mac's screen with 46 URLs) that scrolls inside itself. */
   const pmFlows = document.getElementById('pm-flows');
   const FROM = [
     ['signup', 'Sign up', 'New user from /register: we ask what they want first (the goal screen)'],
@@ -6506,57 +6537,158 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const runsWithCv = f => f.cv ?? pmCvOn;
   const pmList = (key = pmKey, from = pmFrom) => FEATURES.filter(f => f.path === key && fromOf(f) === from);
   const pmCvFree = list => list.some(f => f.cv === undefined) || (list.some(f => f.cv === true) && list.some(f => f.cv === false));
-  function pmFeature() { const list = pmList(); return list.find(f => f.cv === pmCvOn) || list.find(f => f.cv === undefined) || list[0]; }
+  const pmPickOf = (list, cv) => list.find(f => f.cv === cv) || list.find(f => f.cv === undefined) || list[0];
+  const pmFeature = () => pmPickOf(pmList(), pmCvOn);
   // the steps a run shows with the CV it starts with
   function pmSteps(f) { const had = cvUploaded; cvUploaded = runsWithCv(f); const st = buildFlow(f).steps; cvUploaded = had; return st; }
-  // the URL picker: one entry per URL, named after the app's feature there (else the first), grouped like the URL checklist
+  // the URL list: one entry per URL, named after the app's feature there (else the first), grouped like the URL checklist
   const PM_URLS = [...new Set(FEATURES.map(f => f.path))].map(key => {
     const all = FEATURES.filter(f => f.path === key), main = all.find(f => fromOf(f) === 'app') || all[0];
     return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Build my resume', group: key ? main.group : 'Onboarding' };
   });
   const PM_GROUPS = [...new Set(PM_URLS.map(u => u.group))].sort((a, b) => (a === 'Onboarding' ? 0 : parseInt(a) || 99) - (b === 'Onboarding' ? 0 : parseInt(b) || 99));
+  const chev = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   function renderFlowsPanel() {
-    const f = pmFeature(), T = FLOW_T[f.flow - 1], stages = T.stages.map(st => STAGE[st]), fixed = !pmCvFree(pmList());
-    const avail = new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf));
-    pmFlows.innerHTML = `<div class="pmf" role="group" aria-label="Run a flow"${flowNow && flowNow.f === f ? ' aria-current="true"' : ''}>
-      <div class="pmf-row"><span class="pm-key" id="pmf-open">Open</span><select data-pm-url aria-labelledby="pmf-open">${PM_GROUPS.map(g => `<optgroup label="${g}">${PM_URLS.filter(u => u.group === g).map(u => `<option value="${u.key}"${u.key === pmKey ? ' selected' : ''}>${u.title}</option>`).join('')}</optgroup>`).join('')}</select></div>
-      <code class="pmf-url">${pmFrom === 'signup' ? '/register/ → ' : ''}${pmKey || 'goal screen → Build my resume'}</code>
-      <div class="pmf-row"><span class="pm-key" id="pmf-from">From</span><div class="seg pm-seg pmf-from" role="group" aria-labelledby="pmf-from">${FROM.map(([v, l, tip]) => {
-        const ok = avail.has(v);
-        return `<button type="button" data-pm-from="${v}" aria-pressed="${v === pmFrom}"${ok ? '' : ' aria-disabled="true"'} data-tip="${ok ? tip : 'Not for this URL'}">${l}</button>`;
-      }).join('')}</div></div>
-      <div class="pmf-row"><span class="pm-key">CV</span><button class="pmf-cv" type="button" role="switch" data-pm-cv aria-checked="${runsWithCv(f)}" aria-label="The person has a CV${fixed ? ' (set by where they come from)' : ''}"${fixed ? ' aria-disabled="true" data-tip="Set by where they come from"' : ''}><i aria-hidden="true"></i>${runsWithCv(f) ? 'Has a CV' : 'No CV'}</button></div>
+    let n = 0;
+    pmFlows.innerHTML = `<div class="pmf-check"><span class="pm-key" id="pmf-check">Flow checker</span><button class="pmf-cv" type="button" role="switch" data-pm-check aria-checked="${checkerOn}" aria-labelledby="pmf-check" data-tip="Start as a new user on Sign up; the bar shows the flow you’re in"><i aria-hidden="true"></i><span>${checkerOn ? 'On' : 'Off'}</span></button></div>
+      <div class="pmf" role="group" aria-label="Run a flow">
+      <div class="pmf-row"><span class="pm-key" id="pmf-open">Open</span>
+        <div class="pmf-dd"><button class="pmf-ddbtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="pmf-open pmf-ddval"><span id="pmf-ddval"></span>${chev}</button>
+          <div class="pmf-ddlist" role="listbox" tabindex="-1" aria-labelledby="pmf-open" hidden>${PM_GROUPS.map((g, gi) => `<div role="group" aria-labelledby="pmf-g${gi}"><div class="pmf-ddg" id="pmf-g${gi}">${g}</div>${PM_URLS.filter(u => u.group === g).map(u => `<div class="pmf-ddo" role="option" id="pmf-o${n++}" data-key="${u.key}" aria-selected="false">${u.title}</div>`).join('')}</div>`).join('')}</div>
+        </div></div>
+      <div class="pmf-row"><span class="pm-key" id="pmf-from">From</span><div class="seg pm-seg pmf-from" role="group" aria-labelledby="pmf-from">${FROM.map(([v, l]) => `<button type="button" data-pm-from="${v}" aria-pressed="false">${l}</button>`).join('')}</div></div>
+      <div class="pmf-row"><span class="pm-key">CV</span><button class="pmf-cv" type="button" role="switch" data-pm-cv aria-checked="false"><i aria-hidden="true"></i><span></span></button></div>
       <div class="pmf-out">
-        <div class="pmf-top"><b>Flow ${T.n}</b><span>${T.title}</span><span class="pmf-stages" role="img" aria-label="Stages: ${stages.join(', ')}" data-tip="${stages.join(' → ')}${T.skip ? ' · Skip → Dashboard' : ''}">${T.stages.map(st => `<i class="st-${st}"></i>`).join('')}</span></div>
-        <ol class="pmf-seq" aria-label="Steps">${pmSteps(f).map(st => `<li data-st="${st.stage}">${st.label}</li>`).join('')}</ol>
-        <button class="pmf-run" type="button" data-flow-run data-feature="${f.id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button>
+        <div class="pmf-top"><b></b><span class="pmf-name"></span><span class="pmf-stages" role="img"></span><button class="pmf-run" type="button" data-flow-run><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>Run</button></div>
+        <details class="pmf-more"><summary>Steps</summary><code class="pmf-url"></code><ol class="pmf-seq" aria-label="Steps"></ol></details>
       </div>
     </div>`;
+    pmUpdate();
   }
-  renderFlowsPanel();
-  // the card is drawn anew after the click has finished (a clicked button taken out of the page would count as a click
-  // outside the panel), with the focus back on the same control
-  function pmRedraw(sel) {
-    setTimeout(() => { renderFlowsPanel(); if (sel) pmFlows.querySelector(sel)?.focus({ preventScroll: true }); });
+  function pmUpdate() {
+    const c = pmFlows.querySelector('.pmf'), f = pmFeature(), T = FLOW_T[f.flow - 1], stages = T.stages.map(st => STAGE[st]);
+    const avail = new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf)), fixed = !pmCvFree(pmList()), on = runsWithCv(f);
+    const dis = (el, off) => off ? el.setAttribute('aria-disabled', 'true') : el.removeAttribute('aria-disabled');
+    c.setAttribute('aria-current', String(!!flowNow && flowNow.f === f));
+    c.querySelector('#pmf-ddval').textContent = PM_URLS.find(u => u.key === pmKey).title;
+    c.querySelectorAll('.pmf-ddo').forEach(o => o.setAttribute('aria-selected', String(o.dataset.key === pmKey)));
+    FROM.forEach(([v, , tip]) => {
+      const bt = c.querySelector(`[data-pm-from="${v}"]`);
+      bt.setAttribute('aria-pressed', String(v === pmFrom)); dis(bt, !avail.has(v)); bt.dataset.tip = avail.has(v) ? tip : 'Not for this URL';
+    });
+    const sw = c.querySelector('[data-pm-cv]');
+    sw.setAttribute('aria-checked', String(on)); sw.querySelector('span').textContent = on ? 'Has a CV' : 'No CV'; dis(sw, fixed);
+    sw.setAttribute('aria-label', 'The person has a CV' + (fixed ? ' (set by where they come from)' : ''));
+    if (fixed) sw.dataset.tip = 'Set by where they come from'; else delete sw.dataset.tip;
+    c.querySelector('.pmf-top b').textContent = 'Flow ' + T.n;
+    c.querySelector('.pmf-name').textContent = T.title;
+    const sg = c.querySelector('.pmf-stages');
+    sg.setAttribute('aria-label', 'Stages: ' + stages.join(', ')); sg.dataset.tip = stages.join(' → ') + (T.skip ? ' · Skip → Dashboard' : '');
+    sg.innerHTML = T.stages.map(st => `<i class="st-${st}"></i>`).join('');
+    const run = c.querySelector('[data-flow-run]'); run.dataset.feature = f.id; run.setAttribute('aria-label', `Run flow ${T.n}: ${f.title}`);
+    c.querySelector('.pmf-url').textContent = (pmFrom === 'signup' ? '/register/ → ' : pmFrom === 'lp' ? 'landing page → ' : '') + (pmKey || 'goal screen → Build my resume');
+    c.querySelector('.pmf-seq').innerHTML = pmSteps(f).map(st => `<li data-st="${st.stage}">${st.label}</li>`).join('');
   }
-  pmFlows.addEventListener('change', e => {
-    if (!e.target.matches('[data-pm-url]')) return;
-    pmKey = e.target.value;
+  /* Open's list: below the button (above it when there's more room there), as tall as the window allows, scrolling
+     inside itself; arrow keys, Home / End, Page Up / Down, a letter, Enter or Space, Escape */
+  const ddEls = () => { const d = pmFlows.querySelector('.pmf-dd'); return { d, btn: d.querySelector('.pmf-ddbtn'), list: d.querySelector('.pmf-ddlist') }; };
+  function ddActive(o, center) {
+    const { list } = ddEls();
+    list.querySelector('.is-active')?.classList.remove('is-active');
+    if (!o) return;
+    o.classList.add('is-active'); list.setAttribute('aria-activedescendant', o.id);
+    const top = o.offsetTop, bot = top + o.offsetHeight;
+    if (center) list.scrollTop = top - (list.clientHeight - o.offsetHeight) / 2;
+    else if (top - 26 < list.scrollTop) list.scrollTop = top - 26;  // with its group's name when there is one above
+    else if (bot > list.scrollTop + list.clientHeight) list.scrollTop = bot - list.clientHeight + 4;
+  }
+  function ddOpen() {
+    const { btn, list } = ddEls(), r = btn.getBoundingClientRect(), w = Math.max(r.width, 220);
+    const below = innerHeight - r.bottom - 12, above = r.top - 12, down = below >= 260 || below >= above;
+    Object.assign(list.style, { left: Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px', width: w + 'px', maxHeight: Math.min(380, down ? below : above) + 'px',
+      top: down ? r.bottom + 4 + 'px' : 'auto', bottom: down ? 'auto' : innerHeight - r.top + 4 + 'px' });
+    list.hidden = false; btn.setAttribute('aria-expanded', 'true');
+    ddActive(list.querySelector('[aria-selected="true"]'), true);
+    list.focus({ preventScroll: true });
+  }
+  function ddClose(refocus) {
+    const { btn, list } = ddEls();
+    if (list.hidden) return;
+    list.hidden = true; btn.setAttribute('aria-expanded', 'false'); list.removeAttribute('aria-activedescendant');
+    if (refocus) btn.focus({ preventScroll: true });
+  }
+  function pmPick(key) {
+    pmKey = key;
     const avail = new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf));
     if (!avail.has(pmFrom)) pmFrom = avail.has('app') ? 'app' : [...avail][0];
-    pmRedraw('[data-pm-url]');
-  });
+    ddClose(true); pmUpdate();
+  }
   pmFlows.addEventListener('click', e => {
-    const fr = e.target.closest('[data-pm-from]'), cv = e.target.closest('[data-pm-cv]');
-    if (fr && fr.getAttribute('aria-disabled') !== 'true') { pmFrom = fr.dataset.pmFrom; pmRedraw(`[data-pm-from="${pmFrom}"]`); }
-    if (cv && cv.getAttribute('aria-disabled') !== 'true') { pmCvOn = !pmCvOn; pmRedraw('[data-pm-cv]'); }
+    const fr = e.target.closest('[data-pm-from]'), cv = e.target.closest('[data-pm-cv]'), opt = e.target.closest('.pmf-ddo'), btn = e.target.closest('.pmf-ddbtn');
+    if (e.target.closest('[data-pm-check]')) return setChecker(!checkerOn);
+    if (btn) return ddEls().list.hidden ? ddOpen() : ddClose(true);
+    if (opt) return pmPick(opt.dataset.key);
+    if (fr && fr.getAttribute('aria-disabled') !== 'true') { pmFrom = fr.dataset.pmFrom; pmUpdate(); }
+    if (cv && cv.getAttribute('aria-disabled') !== 'true') { pmCvOn = !pmCvOn; pmUpdate(); }
   });
+  pmFlows.addEventListener('pointermove', e => { const o = e.target.closest('.pmf-ddo'); if (o && !o.classList.contains('is-active')) ddActive(o); });
+  pmFlows.addEventListener('keydown', e => {
+    if (e.target.closest('.pmf-ddbtn') && ['ArrowDown', 'ArrowUp'].includes(e.key)) { e.preventDefault(); return ddOpen(); }
+    const list = e.target.closest('.pmf-ddlist'); if (!list) return;
+    const opts = [...list.querySelectorAll('.pmf-ddo')], i = opts.indexOf(list.querySelector('.is-active'));
+    const to = k => { e.preventDefault(); ddActive(opts[Math.max(0, Math.min(opts.length - 1, k))]); };
+    if (e.key === 'ArrowDown') to(i + 1); else if (e.key === 'ArrowUp') to(i - 1);
+    else if (e.key === 'Home') to(0); else if (e.key === 'End') to(opts.length - 1);
+    else if (e.key === 'PageDown') to(i + 8); else if (e.key === 'PageUp') to(i - 8);
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (opts[i]) pmPick(opts[i].dataset.key); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); ddClose(true); }
+    else if (e.key === 'Tab') ddClose();
+    else if (e.key.length === 1 && /\S/.test(e.key)) {  // the next URL starting with that letter
+      const k = e.key.toLowerCase(), next = [...opts.slice(i + 1), ...opts.slice(0, i + 1)].find(o => o.textContent.trim().toLowerCase().startsWith(k));
+      if (next) { e.preventDefault(); ddActive(next); }
+    }
+  });
+  // a press outside the list, leaving it with Tab, scrolling the panel or resizing the window closes it
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('.pmf-dd')) ddClose(); });
+  pmFlows.addEventListener('focusout', e => { if (e.target.closest('.pmf-ddlist') && !pmFlows.querySelector('.pmf-dd').contains(e.relatedTarget)) ddClose(); });
+  document.getElementById('proto-more-panel').addEventListener('scroll', () => ddClose());
+  window.addEventListener('resize', () => ddClose());
   // the panel follows the run: the URL, where the person came from and the CV of the feature that runs
   function pmShow(f) {
     pmKey = f.path; pmFrom = fromOf(f);
     if (f.cv !== undefined && pmCvFree(pmList())) pmCvOn = f.cv;
-    renderFlowsPanel();
+    pmUpdate();
   }
+
+  /* Flow checker (More options › Flows): you go through the prototype as a new user. On, it starts on Sign up as
+     Flow 1 (the goal you pick decides the rest); once a run has reached its destination, or the person skipped to the
+     dashboard, whatever they open in the app becomes its own run (checkerAdopt), so the bar always says which flow and
+     step they're in. Restart starts on Sign up again; it is remembered. Off ends the run. */
+  let checkerOn = false;
+  try { checkerOn = localStorage.getItem('kr-flow-checker') === 'on'; } catch (e) {}
+  function setChecker(on) {
+    checkerOn = on;
+    try { localStorage.setItem('kr-flow-checker', on ? 'on' : 'off'); } catch (e) {}
+    const sw = pmFlows.querySelector('[data-pm-check]');
+    sw.setAttribute('aria-checked', String(on)); sw.querySelector('span').textContent = on ? 'On' : 'Off';
+    markMore();
+    if (on) startChecker(); else endFlow();
+  }
+  function startChecker() { setCv(false); setResult('ok'); startFeature('goal-build'); }
+  function checkerAdopt(path) {
+    if (!checkerOn || !path) return;
+    const r = findRoute(path), key = r ? r.path : path, at = s => s.match.split('#')[0] === 'route:' + key;
+    if (key === '/dashboard/' && flowNow && flowNow.skipped) return;  // Flow 1's Skip personalization says so itself
+    // a new task: no run, a skipped one, or a screen the run doesn't have (once it has reached its destination, any
+    // screen but that one)
+    const st = flowNow && flowNow.steps, last = st && flowAt === st.length - 1;
+    if (flowNow && !flowNow.skipped && (last ? at(st[flowAt]) : st.some(at))) return;
+    const list = FEATURES.filter(f => f.path === key && fromOf(f) === 'app'); if (!list.length) return;
+    const f = pmPickOf(list, cvUploaded);
+    if (flowNow && flowNow.f === f && !flowNow.skipped) return;
+    flowNow = buildFlow(f); flowAt = 0; pmShow(f); renderFlowBar(); flowSync();
+  }
+  renderFlowsPanel();
   function startFeature(id) {
     const f = FEATURES.find(x => x.id === id);
     setCv(runsWithCv(f));
@@ -6891,7 +7023,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const a = el.dataset.action;
     const form = el.closest('form');
     if (a === 'pick-intent') pickGoal(el.dataset.goal, el);
-    else if (a === 'restart') { clearTimers(); endFlow(); go('intent'); }
+    else if (a === 'restart') { clearTimers(); endFlow(); if (checkerOn) startChecker(); else go('intent'); }
     else if (a === 'toggle') toggleA(el.closest('.mcard'));
     else if (a === 'open') { if (el.getAttribute('aria-disabled') !== 'true') openB(el.closest('.mcard').dataset.id); }
     else if (a === 'back') backB();
@@ -7032,6 +7164,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   if (startRoute) openRoute(startRoute, true);
   else if (hash.split(/[-,]/).includes('dashboard') || normPath(hash) === '/dashboard/') openDashboard();
   routesReady = true;
+  if (checkerOn && !startRoute) startChecker();
   if (/editor/.test(hash)) {
     screens.intent.hidden = true; screens.loading.hidden = false; setCurrent('loading');
     openEditor();
