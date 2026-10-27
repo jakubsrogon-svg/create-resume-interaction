@@ -2975,7 +2975,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.27">v2.27</div>
+<div class="proto-ver" aria-label="Prototype version 2.27.1">v2.27.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4659,10 +4659,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const tld = screens.route.querySelector('.tld');
     if (tld && tld._start && !tld.closest('[hidden]')) tld._start();
   }
-  /* Back to where the person came from (×, Cancel): the screen they were on, or the goal screen */
-  function goBack(where, route) {
-    if (where === 'dashboard') return openDashboard();
-    if (where === 'auth') return openAuth(authKind);
+  /* Back to where the person came from (×, Cancel, Back): the screen they were on, or the goal screen. Someone who has
+     signed up or logged in is never sent back to Sign up, nor in a run (only a guest has no account) to the goal
+     screen, which is for new users: they land on the dashboard (the user's rule), and the run's bar says they left it
+     there. Only Flow 1's method screen goes Back to the goal screen (its board); its × goes to the dashboard too. */
+  function goBack(where, route, close) {
+    if (where === 'auth' || (where === 'intent' && flowNow && !flowNow.f.guest && (close || flowNow.n !== 1))) where = 'dashboard';
+    if (where === 'dashboard') {
+      // left a run's setup for the dashboard: the bar says so (Flow 1: Skip personalization), and a step brings it back
+      if (flowNow && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = flowNow.n === 1 ? true : 'closed'; renderFlowBar(); }
+      return openDashboard();
+    }
     if (where === 'upgrade') return openUpgrade(upgStudent ? 'student' : upgPlan);
     if (where === 'docs') return openDocs();
     if (where === 'editor') return jumpEditor();
@@ -4671,7 +4678,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (where === 'route' && route) return openRoute(route);
     go(where === 'create' ? 'create' : 'intent');
   }
-  function closeRoute() { goBack(routeBack); }
+  function closeRoute() { goBack(routeBack, null, true); }
   /* Steps inside a route screen (upload → tool, step 1 → step 2) move like screens do, sideways */
   /* The route screen's headline and subheadline for the pane on screen (route.head[pane]: [headline, subheadline],
      or a function giving them); a step inside a pane without its own (nested) keeps the pane's */
@@ -5774,7 +5781,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     syncUpg(); enterUpg();
   }
   /* × on the plans: back where the person came from; on the student page: back to the plans if they came from there */
-  function closeUpgrade() { goBack(upgBack, upgBackRoute); }
+  function closeUpgrade() { goBack(upgBack, upgBackRoute, true); }
   upgEl.addEventListener('click', e => {
     const p = e.target.closest('.upg-plan');
     if (p) return p.getAttribute('aria-checked') === 'true' || openUpgrade(p.dataset.plan);
@@ -6229,7 +6236,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     return enterApp(tplEl, () => { tplEl.innerHTML = tpsHTML(); }, 'tpl', '/dashboard/create-resume/');
   }
   tplEl.addEventListener('click', e => {
-    if (e.target.closest('[data-tps="close"]')) return goBack(tplBack, tplBackRoute);
+    if (e.target.closest('[data-tps="close"]')) return goBack(tplBack, tplBackRoute, true);
     const c = e.target.closest('.tps-chip');
     if (!c || c.dataset.cat === tpsCat) return;
     // another filter: the chips swap, the templates fade over
@@ -6760,14 +6767,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const st = flowNow.steps[flowAt], groups = [];
     flowNow.steps.forEach((s, i) => { const g = groups.at(-1); if (g && g.stage === s.stage) g.items.push([s, i]); else groups.push({ stage: s.stage, items: [[s, i]] }); });
     const dot = ([s, i]) => `<button class="fb-dot${s.wire ? ' is-wire' : ''}${i === flowAt ? ' is-on' : ''}${i < flowAt ? ' is-past' : ''}" type="button" data-flow-step="${i}"${i === flowAt ? ' aria-current="step"' : ''} aria-label="Step ${i + 1}, ${STAGE[s.stage]}: ${s.label}${s.wire ? ' (wireframe)' : ''}" data-tip="${STAGE[s.stage]} · ${s.label}${s.wire ? ' · wireframe' : ''}"></button>`;
-    const now = flowNow.skipped ? 'Skipped personalization → Dashboard' : `${flowAt + 1}/${flowNow.steps.length} · ${STAGE[st.stage]} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}`;
+    const left = flowNow.skipped === 'closed' ? 'Closed → Dashboard' : 'Skipped personalization → Dashboard';
+    const now = flowNow.skipped ? left : `${flowAt + 1}/${flowNow.steps.length} · ${STAGE[st.stage]} · ${st.label}${st.wire ? ' <i>wireframe</i>' : ''}`;
     flowBar.innerHTML = `<b class="fb-name">Flow ${flowNow.n} · ${flowNow.title}</b>
       <span class="fb-steps">${groups.map(g => `<span class="fb-grp st-${g.stage}">${g.items.map(dot).join('')}</span>`).join('')}</span>
       <span class="fb-now">${now}</span>
       <button class="fb-nav" type="button" data-flow-step="${flowAt - 1}" aria-label="Previous step"${flowAt ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav fb-next" type="button" data-flow-step="${flowAt + 1}" aria-label="Next step"${flowAt < flowNow.steps.length - 1 ? '' : ' disabled'}>${icon('arrowLeft')}</button>
       <button class="fb-nav" type="button" data-flow-end aria-label="End the flow">${rtIc(RT_IC.x)}</button>`;
-    flowLive.textContent = flowNow.skipped ? 'Skipped personalization, on the dashboard' : `Step ${flowAt + 1} of ${flowNow.steps.length}, ${STAGE[st.stage]}: ${st.label}`;
+    flowLive.textContent = flowNow.skipped ? left.replace(' → Dashboard', ', on the dashboard') : `Step ${flowAt + 1} of ${flowNow.steps.length}, ${STAGE[st.stage]}: ${st.label}`;
     if (had) (was && flowBar.querySelector(`[aria-label="${was}"]:not(:disabled)`) || flowBar.querySelector('.fb-dot.is-on')).focus({ preventScroll: true });
   }
   function flowGo(i) {
@@ -6852,7 +6860,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
     const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#main` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
-    if (i > flowAt) { flowAt = i; renderFlowBar(); }
+    if (i > flowAt || (i === flowAt && flowNow.skipped)) { flowAt = i; flowNow.skipped = false; renderFlowBar(); }  // back in the run
   }
   flowBar.addEventListener('click', e => {
     const b = e.target.closest('[data-flow-step]');
