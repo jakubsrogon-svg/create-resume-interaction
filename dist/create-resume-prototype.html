@@ -2986,7 +2986,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.28.1">v2.28.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.28.2">v2.28.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -6650,7 +6650,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      writers' details may come with it too (data): then their form is skipped and the run is Flow 3. */
   const LP_UPM = S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress');
   const LP_NONE = ['', '/login/', '/guest-edit-start/', '/latest-resume/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/'];
-  const LP_CV = ['/dashboard/create-resume/', '/dashboard/create-resume/modern/', '/dashboard/create-ai-resume/', '/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/dashboard/tailor-resume/',
+  // not the resume-building URLs (New resume, a template, Create Resume with AI): someone there has no resume yet, and
+  // a landing page with an upload block leads to Upload resume (the user's rule)
+  const LP_CV = ['/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/dashboard/tailor-resume/',
     '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', ATS, '/dashboard/proofreading/', TR, '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', JM, '/edit/',
     '/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/'];
   function lpVariant(base, cv, data) {
@@ -6658,7 +6660,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const f = { ...base, id: `lp-${base.id}-${cv ? 'cv' : 'nocv'}${data ? '-data' : ''}`, lp: true, cv, data, redo: undefined,
       title: `${base.title.replace(/(, | · )(returning user|no CV yet)$/, '')} from a landing page${cv ? (li ? ', with a profile' : ', with a CV') : LP_CV.includes(base.path) ? ', no CV' : ''}${data ? ' and the ' + base.given.toLowerCase() : ''}` };
     if (cv && li) Object.assign(f, { flow: 3, prep: undefined, ...upmRun('/dashboard/linkedin-import/', 'Importing') });
-    else if (cv && base.id === 'create-resume') Object.assign(f, { flow: 3, prep: undefined, ...upmRun('/dashboard/upload-resume/') });
     else if (cv && (data || !base.prep)) Object.assign(f, base.flow === 4 ? { flow: 3, ...upmRun('/dashboard/upload-resume/') } : { flow: 3, prep: undefined, process: [LP_UPM, ...(list(base.process).length ? list(base.process) : [S.process(base)])] });
     else if (cv) f.prep = () => [LP_UPM, ...list(base.prep)];
     else if (data) Object.assign(f, { flow: 3, prep: undefined });
