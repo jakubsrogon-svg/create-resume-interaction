@@ -2792,6 +2792,12 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 .wf-check--on::before,.wf-radio--on::before{background:var(--ink);box-shadow:inset 0 0 0 3px var(--paper)}
 /* containers */
 .wf-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--radius-sm)}
+/* the editor's Design tab (a wireframe beside the real preview) */
+.ed-design{display:flex;flex-direction:column;gap:var(--space-4);margin-top:8px}
+.ed-design .wf-spread{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)}
+.ed-design button.wf-card{cursor:pointer;font:inherit;color:inherit;text-align:left}
+.ed-design .dz-sw{width:36px;padding:0;border:1px solid var(--line);cursor:pointer}
+.ed-design [aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
 .wf-badge{display:inline-flex;align-items:center;height:20px;padding:0 var(--space-2);border:1px solid var(--line-soft);border-radius:var(--radius-pill);background:var(--fill);font-size:12px;font-weight:600;line-height:16px;white-space:nowrap}
 .wf-overlay{display:flex;align-items:center;justify-content:center;padding:var(--space-8);background:var(--scrim)}
 .wf-dialog{width:100%;max-width:400px;gap:var(--space-4);padding:var(--space-6);border-color:var(--line)}
@@ -3178,7 +3184,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.31.2">v2.31.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.32">v2.32</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4233,15 +4239,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* The app's menu: the same left sidebar on every page inside the app (editor, dashboard, My Documents, the
      resume tools), and the same top bar on phones. `at` marks the page: dashboard, docs, fill (the editor), ats,
-     proof or coach. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
-  const NAV_SOON = { design: 'Design', download: 'Download &amp; Share' };
+     design (the editor's Design tab), proof or coach. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
+  const NAV_SOON = { download: 'Download &amp; Share' };
   function appNavHTML(at) {
     const P = person, logo = document.querySelector('#topbar .logo').innerHTML;
     const here = key => at === key ? ' is-active" aria-current="page' : '';
     const item = (ic, label, key, extra = '') => `<li><button class="nav-item${here(key)}" type="button"${at === key ? '' : ` data-nav="${key}"`}>${icon(ic)}${label}${extra}</button></li>`;
     const sub = (label, key, nav = key) => `<button class="nav-item nav-sub${here(key)}" type="button"${at === key ? '' : ` data-nav="${nav}"`}>${label}</button>`;
-    const doc = ['fill', 'ats', 'proof', 'coach'].includes(at) || cvUploaded ? `<li class="nav-doc">
-        <button class="nav-item" type="button"${at === 'fill' ? ' aria-current="true"' : ' data-nav="edit"'}>${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
+    const doc = ['fill', 'design', 'ats', 'proof', 'coach'].includes(at) || cvUploaded ? `<li class="nav-doc">
+        <button class="nav-item" type="button"${['fill', 'design'].includes(at) ? ' aria-current="true"' : ' data-nav="edit"'}>${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
         ${sub('Fill In', 'fill', 'edit')}${sub('Design', 'design')}${sub('ATS Checker', 'ats')}${sub('Proofread &amp; Translate', 'proof')}${sub('Download &amp; Share', 'download')}
       </li>` : '';
     return `
@@ -4267,6 +4273,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (n === 'dashboard') openDashboard();
     else if (n === 'docs') openDocs();
     else if (n === 'edit') openEdit();
+    else if (n === 'design') openDesign();
     else if (n === 'ats' || n === 'proof') openTool(n);
     else if (n === 'career-map') openRoute(findRoute('/career-map/'));
     else if (n === 'interviews') openRoute(findRoute('/dashboard/create-interview/'));
@@ -4383,6 +4390,32 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     }
   });
 
+  /* The editor's Design tab (template, colours, fonts, layout). A new resume always opens here (the user's rule):
+     whatever made it (the method screen's upload modal or building screen, a template, a sample, Create Resume with AI,
+     Upload resume, LinkedIn import) ends on Design, not Fill In. Opening a resume that already exists (/edit/, the
+     latest resume, the menu's Fill In), a section writer, a letter, a tailored or rewritten copy and the guest editor
+     stay on Fill In. No design yet: the panel is a Wire wireframe beside the real preview. */
+  let edView = 'fill', designNext = false;
+  const DESIGN_TPL = ['dotts', 'stanford', 'rectangular', 'visibility', 'ribbon', 'square'];
+  const DESIGN_NOTE = 'The editor’s Design tab: a new resume opens here (pick a template, colours, fonts, layout). No design yet.';
+  function designHTML() {
+    const pick = (what, label, on) => `<button class="wf-card wf-stack wf-gap-sm" type="button" data-action="toast" data-msg="Picking ${what} changes the resume’s design in the preview."${on ? ' aria-pressed="true"' : ''}>${label}</button>`;
+    return `<div class="wf ed-design">
+        <section class="wf-card wf-stack" aria-labelledby="dz-tpl"><div class="wf-spread"><h2 class="t-heading" id="dz-tpl">Template</h2><button class="wf-btn wf-btn--sm" type="button" data-action="toast" data-msg="All templates open here, with the ATS Friendly, Popular and Creative filters.">See all</button></div>
+          <div class="wf-grid" style="--cols:3">${DESIGN_TPL.map((k, i) => pick('a template', `<span class="wf-ph wf-ph--square">[${TPS_T[k][0]}]</span><span class="t-small">${TPS_T[k][0]}${i ? '' : ' · current'}</span>`, !i)).join('')}</div></section>
+        <section class="wf-card wf-stack" aria-labelledby="dz-col"><h2 class="t-heading" id="dz-col">Colours</h2>
+          <div class="wf-row">${[1, 2, 3, 4, 5, 6].map(i => `<button class="wf-ph wf-ph--circle dz-sw" type="button" data-action="toast" data-msg="The accent colour changes in the preview." aria-label="Colour ${i}"${i === 1 ? ' aria-pressed="true"' : ''}></button>`).join('')}</div></section>
+        <section class="wf-card wf-stack" aria-labelledby="dz-font"><h2 class="t-heading" id="dz-font">Fonts</h2>
+          <div class="wf-input wf-input--select">Lato</div><div class="wf-row"><span class="t-small">Size</span>${['S', 'M', 'L'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div></section>
+        <section class="wf-card wf-stack" aria-labelledby="dz-lay"><h2 class="t-heading" id="dz-lay">Layout</h2>
+          <div class="wf-row">${['One column', 'Two columns'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div>
+          <div class="wf-row"><span class="t-small">Spacing</span>${['Compact', 'Normal', 'Airy'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div>
+          <div class="wf-row"><span class="wf-check wf-check--on">Show picture</span><span class="wf-check wf-check--on">Section icons</span></div></section>
+      </div>`;
+  }
+  // a new resume: the editor on its Design tab
+  function madeEditor() { designNext = true; return jumpEditor(); }
+  function openDesign() { designNext = true; return editorAt('/edit/'); }
   function editorHTML() {
     const P = person, tab = tailored ? edTab : 'preview';
     const f = (k, label, cls, ph) => `<div class="f${cls ? ' ' + cls : ''}"><label for="ed-${k}">${label}</label><input class="input sm" id="ed-${k}" data-k="${k}" value="${esc(P[k])}"${ph ? ` placeholder="${ph}"` : ''}></div>`;
@@ -4397,9 +4430,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       `<button class="add-row" type="button" data-action="toast" data-msg="A new empty ${what} would appear here.">${icon('plus')}Add ${what}</button>`;
     const chips = key => `<div class="chips">${person[key].map((c, i) => `<span class="chip">${esc(Array.isArray(c) ? c[1] : c)}<button type="button" data-action="chip-remove" data-list="${key}" data-i="${i}" aria-label="Remove ${esc(Array.isArray(c) ? c[1] : c)}">${icon('x')}</button></span>`).join('')}</div>`;
 
-    return `${appNavHTML('fill')}
+    return `${appNavHTML(edView)}
       <div class="ed-tabs"><div class="seg-light" role="group" aria-label="Editor view">
-        <button type="button" data-action="pane" data-pane="edit" aria-pressed="false">Fill In</button>
+        <button type="button" data-action="pane" data-pane="edit" aria-pressed="false">${edView === 'design' ? 'Design' : 'Fill In'}</button>
         <button type="button" data-action="pane" data-pane="preview" aria-pressed="true">Preview</button>
       </div></div>
       <div class="ed-main">
@@ -4420,7 +4453,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             </ul></div></div>
           </div>
           <p class="doc-line">Document: <b data-out="docname">${esc(docName())}</b></p>
-          <div class="ecard" data-sec="analysis">
+          ${edView === 'design' ? designHTML() : `<div class="ecard" data-sec="analysis">
             <button class="ehead analysis" type="button" data-action="ecard" aria-expanded="false">Section Analysis<span class="meta">2 suggestions</span><span class="chev-d">${icon('eye')}</span></button>
             <div class="acc" inert><div class="acc-inner"><div class="ebody"><ul class="hint-list">
               <li><span class="hd" style="background:var(--kr-mint)"></span>Personal information is complete.</li>
@@ -4459,7 +4492,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           ${ecard('education', 'cap', 'Education', `${P.education.length} school`, entries(P.education, 'school'))}
           ${ecard('skills', 'star', 'Strengths', `<span data-out="skillcount">${P.skills.length}</span>`, `<div data-out="skills">${chips('skills')}</div>
             <div class="f"><label for="ed-skill-new">Add a strength</label><input class="input sm" id="ed-skill-new" data-add="skills" placeholder="Type and press Enter"></div>`)}
-          ${ecard('hobbies', 'heart', 'Hobbies', `<span data-out="hobbycount">${P.hobbies.length}</span>`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}`}
+          ${ecard('hobbies', 'heart', 'Hobbies', `<span data-out="hobbycount">${P.hobbies.length}</span>`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}`}`}
         </div>
       </div>
       <aside class="ed-preview" aria-label="Resume preview">
@@ -4524,12 +4557,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // the page travels in from the building screen's, or from `from` (the upload modal)
   async function openEditor(from) {
     if (screenRun) screenRun.finish();
+    edView = designNext && !isLetter() ? 'design' : 'fill'; designNext = false;
     const r0 = (from || screens.loading.querySelector('.ld-paper')).getBoundingClientRect();
     editorEl.innerHTML = editorHTML();
     setPane('preview');
     topbarEl.hidden = true; pageEl.hidden = true; editorEl.hidden = false;
     Object.values(screens).forEach(sc => { sc.hidden = true; });
     setCurrent('editor');
+    syncNote();
     scroller().scrollTo({ top: 0 });
     landFocus(editorEl);
     if (reduce) { editorEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard }); return; }
@@ -4760,7 +4795,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: () => editorAt('/guest-edit-start/') },
     // no template pickers for now (the user's rule: everyone gets the default template; SHOW_TPL_PICKERS brings them back)
-    { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: SHOW_TPL_PICKERS ? 'New resume · select your template' : 'New resume', run: () => SHOW_TPL_PICKERS ? openTemplates() : askCv(() => jumpEditor()) },  // the method screen makes it
+    { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: SHOW_TPL_PICKERS ? 'New resume · select your template' : 'New resume', run: () => SHOW_TPL_PICKERS ? openTemplates() : askCv(madeEditor) },  // the method screen makes it
     ...[['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => (!SHOW_TPL_PICKERS ? { group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title, run: () => openWire(`/dashboard/create-${k}/`, `${k === 'cover' ? 'Cover letter' : 'Website'} editor`, 'dest', { title: `${k === 'cover' ? 'Cover letter' : 'Website'} editor`, kind: k === 'cover' ? 'doc' : 'site', pane: 'dest' }) } : { group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', head: { main: HEADS.aiResume }, html: aiModalHTML, init: initAiModal },
     // the section writers: Fill In opens, then the writer pops up over it (openWriter)
@@ -5386,7 +5421,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ['Creating a copy...', 'Your original resume stays untouched. Find it in the Documents tab.'],
     ['Scanning resume & job post...', 'Finding the skills and keywords the employer cares about.'],
     ['Tailoring...', 'Rewriting and restructuring your resume to match the job post.'],
-    ['Finishing up...', 'Go to the Design tab if you want to pick different templates, layouts, or fonts.']
+    ['Finishing up...', 'It opens in the Design tab, where you can pick a different template, layout or fonts.']
   ];
   const TLD_END = {
     ok: ['Done!', TLD_STEPS[3][1]],
@@ -5704,7 +5739,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const k = flowNow ? flowNow.steps.findIndex((s, i) => i > flowAt && !s.alt && !s.result && s.tag !== 'upm-end') : -1;
     if (k >= 0 && flowNow.steps[k].match !== 'screen:editor') return flowGo(k);
     if (k >= 0) { flowAt = k; renderFlowBar(); }
-    openEditor(card);
+    designNext = true; openEditor(card);  // a new resume: the Design tab
   }
   /* On the method screen: the methods (and Back) make way for the modal, under the method screen's headline */
   const upmSlot = document.getElementById('create-upm'), createBackEl = screens.create.querySelector(':scope > .center');
@@ -6950,7 +6985,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       d ? d.run() : notYet(b, 'Working…', 'The result screen isn’t designed yet.');
     }
     else if (w === 'upgrade') toast('Checkout isn’t part of this prototype.');
-    else if (w === 'tpl') jumpEditor();
+    else if (w === 'tpl') madeEditor();
     else if (w === 'job') openRoute(findRoute('/jobs/job/1234/'));
     else if (w === 'company') openRoute(findRoute('/jobs/organization/kickresume/'));
     else if (w === 'track') openJobs('tracker');
@@ -6993,8 +7028,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         const fromJob = !!flowNow && flowNow.f.path === '/jobs/job/1234/tailor/';
         tailored = tailored || { title: fromJob ? TRL_JOB.title : TRT.job, fromJob }; edTab = 'tailoring';
       }
+      if (sec === 'design') designNext = true;
       const opening = path ? editorAt(path) : jumpEditor();
-      if (sec && sec !== 'tailoring') opening.then(() => { if (current === 'editor') editSection(sec); });
+      if (sec && sec !== 'tailoring' && sec !== 'design') opening.then(() => { if (current === 'editor') editSection(sec); });
     } }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
@@ -7046,7 +7082,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      result), cv (start with or without a CV), data (a landing page already gave the feature's data), guest (no
      account), state (its own processing state instead of the shared one) }. The App runs are written here, the
      landing-page runs are made from them below (lpVariant). */
-  const resumeOut = (label = 'Editor · Fill In', sec) => [S.editor(label, undefined, sec)];
+  // a new resume ends on the editor's Design tab; a given label (a tailored or rewritten copy) keeps Fill In
+  const resumeOut = (label, sec) => [S.editor(label || 'Editor · Design', undefined, label ? sec : 'design')];
   // the upload modal on the Upload or LinkedIn import screen as the processing, and its result as the processing state
   const upmRun = (path, verb = 'Uploading') => ({
     process: [S.route(`Upload modal · ${verb} resume...`, path, 'progress')],
@@ -7636,7 +7673,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const note = document.getElementById('proto-note');
     const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
     const src = wire && wire.querySelector(':scope > .wf-note-src');
-    const text = src ? src.innerHTML : current === 'auth' ? authNote : '';  // a designed page only when its flow step gives one
+    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'editor' && edView === 'design' ? DESIGN_NOTE : '';  // a designed page only when its flow step gives one
     note.hidden = !text; document.body.classList.toggle('has-note', !!text);
     if (text) note.querySelector('.pn-text').innerHTML = text;
   }
@@ -7663,7 +7700,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
     }
-    if (next) next(); else openEditor();
+    if (next) next(); else { designNext = true; openEditor(); }  // a new resume: the Design tab
   }
   /* Straight into the editor (a returning user, or a flow step) */
   function jumpEditor(doc) {
