@@ -50,6 +50,10 @@ A new resume always opens on the editor's Design tab, not Fill In (the user's ru
 
 The AI Cover Letter Writer and the Resignation letter end in Fill In with the letter instead of the resume (the user's rule), after the building screen (as a resume's): `edDoc` (`resume`, `cover`, `resign`), `LETTER` (name, recipient, body), `LETTER_AS` (their building screen), `letterFor(kind, role, company)` (fields on `person`), `writeLetter`, `letterHTML` (the preview), `letterRun(kind)` (a run's processing and destination). `jumpEditor(doc)` opens the resume unless a letter is asked for.
 
+## Career Map
+
+`/career-map/` is from Figma (concepting-KR › Career Map, 294:22071): an app screen with its own background (`APPS.cm`, `openCareer(state)`, `cmHTML`), one card with the stepper (`cmStepsHTML`) and the step (`cmRightHTML`); `cmState` is `welcome`, `cv` (the person's resumes, `cmResumes`, or a LinkedIn username: `cmLi`; without a CV only LinkedIn, since the app never makes a resume), `q1`–`q5` (`CM_Q`, picked → next), `ind1` / `ind2` (`CM_IND`, `cmInd`), `ready` and `dest` (the map, an app page with the app menu: `cmMapHTML`, `CM_ROLES`, `cmFit` scales it). `cmGo` moves a run on (after the industries or Skip, to its processing: `flowGo`; View Career Map: `processDone`); Skip Customization asks first (`cmSkip`). The flow bar reads `route:/career-map/#<state>` (`S.cm`); the run's steps match `#q` and `#ind` for the questions and the industries.
+
 ## Job Tracker
 
 `/jobs/job-tracker/` is the jobs app's `tracker` view (`openJobs('tracker')`, `jtHTML`, from Figma concepting-KR › 285:1410): `JT_ST` the statuses and their icon colours, `JT_IC` the Lucide icons, `JT_JOBS0` the design's jobs (`jtJobs` the live list), `JT_MORE` the design's counts for the jobs not shown, `jtTab` the tab (All Jobs first) and `jtOpen` the open status menu.

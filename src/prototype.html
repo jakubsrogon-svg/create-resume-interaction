@@ -848,8 +848,8 @@ body.is-mobile .editor { min-height: 100%; }
 .ed-plan b { font-weight: 700; font-style: italic; color: var(--kr-grey-100); }
 .nav-item.is-active, .nav-item.is-active:hover { background: var(--kr-grey-100); color: var(--kr-white); }
 /* the same menu on the dashboard, My Documents, the resume tools and the jobs pages: first column; on phones the top bar spans the page */
-:is(.dash, .mdoc, .tl, .jobs) > .ed-side { grid-area: auto; grid-column: 1; grid-row: 1; }
-:is(.dash, .mdoc, .tl, .jobs) > .ed-mbar { grid-area: auto; grid-column: 1 / -1; }
+:is(.dash, .mdoc, .tl, .jobs, .cmp) > .ed-side { grid-area: auto; grid-column: 1; grid-row: 1; }
+:is(.dash, .mdoc, .tl, .jobs, .cmp) > .ed-mbar { grid-area: auto; grid-column: 1 / -1; }
 
 .ed-mbar { display: none; grid-area: mbar; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--kr-white); border-bottom: 1px solid var(--kr-grey-60); }
 .ed-mbar .logo svg { width: 116px; }
@@ -1297,6 +1297,132 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Career Map (Figma concepting-KR › Career Map, 294:22071): its own page, then the map (an app page) ---------- */
+.cmp { position: relative; margin-inline: -16px; min-height: calc(var(--vh) * 100); overflow: clip; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 120px 24px 96px; background: var(--kr-grey-20); color: var(--kr-grey-100); }
+body.has-note .cmp, body:has(.flow-bar:not([hidden])) .cmp { padding-bottom: 164px; }
+.cmp button { font-family: var(--font-sans); }
+.cmp button:focus-visible, .cmp input:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.cm-bg { position: absolute; left: calc(50% - 497px); top: 0; pointer-events: none; }
+.cm-logo { position: absolute; left: 39px; top: 35px; display: flex; }
+.cm-logo svg, .cm-logo2 svg { width: 152px; height: 24px; display: block; }
+.cm-card { position: relative; display: flex; width: min(885px, 100%); height: 613px; border-radius: 24px; filter: drop-shadow(0 326px 65px rgba(0, 0, 0, .01)) drop-shadow(0 183px 55px rgba(0, 0, 0, .05)) drop-shadow(0 81px 40.5px rgba(0, 0, 0, .09)) drop-shadow(0 20px 22.5px rgba(0, 0, 0, .1)); }
+.cm-left { flex: none; width: 340px; display: flex; flex-direction: column; padding: 40px 24px 40px 40px; background: var(--kr-background); border-radius: 24px 0 0 24px; }
+.cm-logo2 { display: flex; margin-bottom: 40px; }
+.cm-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.cm-step { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 10px; }
+.cm-step:has(.cm-subs) { align-items: flex-start; }
+.cm-step.is-on { background: var(--kr-white); filter: drop-shadow(1px 2px 5px rgba(0, 0, 0, .1)); }
+.cm-step > div { display: flex; flex-direction: column; min-width: 0; }
+.cm-step b { font: 500 14px/20px var(--font-sans); }
+.cm-step > div > span { font: 400 12px/18px var(--font-sans); color: var(--kr-grey-80); }
+.cm-num { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border: 2px solid var(--kr-grey-100); border-radius: 99px; font: 500 12px/20px var(--font-sans); }
+.cm-num.is-done { border-color: #05af49; color: #05af49; }
+.cm-subs { list-style: none; margin: 0; padding: 0; }
+.cm-subs li { display: flex; gap: 4px; align-items: center; font: 400 12px/18px var(--font-sans); color: var(--kr-grey-80); }
+.cm-subs li > i { width: 16px; height: 16px; flex: none; }
+.cm-back { margin-top: auto; align-self: flex-start; display: inline-flex; gap: 10px; align-items: center; padding: 9px 24px; border: 1px solid var(--kr-grey-100); border-radius: 10px; background: none; color: var(--kr-grey-100); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.cm-back:hover { background: rgba(0, 0, 0, .04); }
+.cm-right { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; padding: 40px; background: var(--kr-white); border-radius: 0 24px 24px 0; }
+.cm-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+.cm-head h1 { margin: 0; font: 500 30px/40px var(--font-sans); letter-spacing: normal; }
+.cm-head.is-q { margin-bottom: 24px; }
+.cm-head.is-q h1 { min-height: 78px; line-height: 1.3; }
+.cm-head p { margin: 0; font: 400 14px/20px var(--font-sans); color: var(--kr-grey-80); }
+.cm-body { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+.cm-body.is-end { justify-content: flex-end; gap: 50px; }
+.cm-acts { margin-top: auto; display: flex; justify-content: flex-end; align-items: center; gap: 17px; }
+.cm-acts.is-split { justify-content: space-between; }
+.cm-acts.is-skip { justify-content: flex-start; padding-inline: 16px; }
+.cm-btn { min-width: 150px; padding: 10px 32px; border: 0; border-radius: 10px; background: var(--kr-primary); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.cm-btn:hover:not(:disabled) { background: var(--kr-primary-hover); }
+.cm-btn:disabled { opacity: .5; cursor: default; }
+.cm-btn.cm-ghost { background: none; color: var(--kr-grey-100); }
+.cm-btn.cm-ghost:hover { background: rgba(0, 0, 0, .04); }
+.cm-skip, .cm-link { padding: 0; border: 0; background: none; text-decoration: underline; cursor: pointer; text-align: left; }
+.cm-skip { font: 400 14px/normal var(--font-sans); color: var(--kr-grey-80); }
+.cm-link { align-self: flex-start; margin-top: 16px; font: 400 12px/normal var(--font-sans); color: var(--kr-grey-100); }
+/* the little map (welcome, ready) */
+.cm-mini { position: relative; height: 284px; flex: none; overflow: hidden; border-radius: 24px; background: var(--kr-grey-20); }
+.cm-mini-you { position: absolute; left: calc(50% - 13.75px); top: 16px; transform: translateX(-50%); width: 116.6px; padding: 13.4px 16.3px; border-radius: 7.4px; background: var(--kr-grey-40); text-align: center; font: 500 11.88px/17.82px var(--font-sans); filter: drop-shadow(.74px 1.49px 3.71px rgba(0, 0, 0, .1)); }
+.cm-mini-lines { position: absolute; left: 117.1px; top: 64.3px; }
+.cm-mini-role { position: absolute; height: 38.6px; display: grid; place-items: center; padding: 0 8px; border-radius: 7.4px; background: var(--kr-white); white-space: nowrap; font: 500 10.4px/14.85px var(--font-sans); filter: drop-shadow(.74px 1.49px 3.71px rgba(0, 0, 0, .1)); }
+/* Select a resume */
+.cm-cvs { display: flex; gap: 24px; padding: 4px; margin: -4px; overflow-x: auto; scrollbar-width: none; }
+.cm-cv { flex: none; width: 200px; height: 280px; display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 20px; background: var(--kr-white); overflow: hidden; cursor: pointer; filter: drop-shadow(1px 2px 5px rgba(0, 0, 0, .1)); }
+.cm-cv img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; object-position: top; border: 2px solid transparent; border-bottom: 0; border-radius: 20px 20px 0 0; }
+.cm-cv span { padding: 10px 8px; border-top: 1px solid var(--kr-grey-60); font: 400 14px/20px var(--font-sans); color: var(--kr-grey-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cm-cv[aria-checked="true"] { filter: none; }
+.cm-cv[aria-checked="true"] img { border-color: #ff5e58; box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); }
+.cm-cv[aria-checked="true"] span { background: var(--kr-primary); border-color: var(--kr-primary); color: var(--kr-white); font-weight: 500; }
+.cm-li { display: flex; align-items: center; height: 42px; padding: 0 12px; border: 1px solid var(--kr-grey-100); border-radius: 4px; font: 400 14px/20px var(--font-sans); cursor: text; }
+.cm-li-pre { flex: none; color: var(--kr-grey-100); }
+.cm-li input { flex: 1 1 0; min-width: 0; border: 0; padding: 0; background: none; font: inherit; color: var(--kr-grey-100); outline: none; }
+.cm-li input::placeholder { color: var(--kr-grey-80); }
+.cm-li:focus-within { box-shadow: var(--kr-focus-ring); }
+/* the questions */
+.cm-opts { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; margin: -3px; padding: 3px; }
+.cm-opt { display: flex; gap: 8px; align-items: center; min-height: 48px; padding: 4px 16px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); text-align: left; cursor: pointer; }
+.cm-opt:hover { border-color: var(--kr-grey-80); }
+.cm-radio { flex: none; width: 16px; height: 16px; border: 1px solid var(--kr-grey-100); border-radius: 50%; background: var(--kr-white); }
+.cm-opt[aria-checked="true"] { border-color: var(--kr-primary); }
+.cm-opt[aria-checked="true"] .cm-radio { border: 5px solid var(--kr-primary); }
+/* the industries */
+.cm-inds { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; align-content: start; overflow-y: auto; margin: -3px -3px 13px; padding: 3px 10px 3px 3px; scrollbar-color: var(--kr-grey-80) transparent; }
+.cm-ind { display: flex; gap: 16px; align-items: center; padding: 9px 16px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); color: var(--kr-grey-100); font: 400 14px/20px var(--font-sans); text-align: left; cursor: pointer; }
+.cm-ind:hover:not(:disabled) { border-color: var(--kr-grey-80); }
+.cm-ind:disabled { opacity: .4; cursor: default; }
+.cm-box { flex: none; width: 16px; height: 16px; display: grid; place-items: center; border: 1px solid var(--kr-grey-100); border-radius: 4px; background: var(--kr-white); }
+.cm-box svg { visibility: hidden; }
+.cm-ind[aria-checked="true"] .cm-box { border-color: #f74c4a; background: #f74c4a; }
+.cm-ind[aria-checked="true"] .cm-box svg { visibility: visible; }
+/* Skip customization? */
+.cm-pop { z-index: 19; }
+.cm-modal { position: relative; width: min(393px, 100%); display: flex; flex-direction: column; align-items: flex-end; gap: 24px; padding: 24px 32px; border-radius: 20px; background: var(--kr-white); }
+.cm-modal h2 { align-self: stretch; margin: 0 0 -8px; font: 500 18px/24px var(--font-sans); color: var(--kr-grey-100); }
+.cm-modal p { align-self: stretch; margin: 0; font: 400 14px/20px var(--font-sans); color: var(--kr-grey-80); }
+.cm-modal-acts { display: flex; gap: 16px; }
+.cm-modal .cm-btn { min-width: 0; padding: 7px 32px; }
+/* the map (an app page) */
+.cmp.is-map { display: grid; grid-template-columns: 232px minmax(0, 1fr); align-items: start; place-items: stretch; padding: 0; background: var(--kr-grey-20); }
+.cm-map { position: relative; min-height: calc(var(--vh) * 100); overflow: hidden; }
+.cm-tools { position: absolute; left: 32px; top: 32px; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+.cm-tool { width: 152px; display: flex; gap: 8px; align-items: center; padding: 10px 14px; border: 0; border-radius: 10px; background: var(--kr-grey-40); color: var(--kr-grey-100); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.cm-tool:hover { background: var(--kr-grey-60); }
+.cm-stage { --k: 1; position: absolute; left: 50%; top: 40px; width: 720px; height: 620px; transform: translateX(-50%) scale(var(--k)); transform-origin: top center; }
+.cm-back-lines { position: absolute; left: 91.5px; top: 122.5px; }
+.cm-front-lines { position: absolute; left: 142.5px; top: 122px; }
+.cm-you { position: absolute; left: 318.5px; top: 39px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 18px 22px; border-radius: 10px; background: var(--kr-grey-40); white-space: nowrap; }
+.cm-you span { font: 500 14px/20px var(--font-sans); color: var(--kr-grey-80); }
+.cm-you b { font: 500 16px/24px var(--font-sans); }
+.cm-role { position: absolute; padding: 16px 24px; border: 0; border-radius: 10px; background: var(--kr-white); color: var(--kr-grey-100); font: 500 14px/20px var(--font-sans); white-space: nowrap; cursor: pointer; filter: drop-shadow(1px 2px 5px rgba(0, 0, 0, .1)); }
+.cm-role:hover { filter: drop-shadow(1px 2px 2.5px rgba(0, 0, 0, .2)) drop-shadow(1px 2px 5px rgba(0, 0, 0, .1)); }
+.cm-role.is-locked span { filter: blur(10px); }
+@media (max-width: 960px) {
+  .cmp:not(.is-map) { padding: 88px 16px 120px; place-items: start center; }
+  .cm-logo { left: 16px; top: 24px; }
+  .cm-card { flex-direction: column; height: auto; }
+  .cm-left { width: auto; padding: 24px; border-radius: 24px 24px 0 0; }
+  .cm-logo2, .cm-step > div > span, .cm-subs { display: none; }
+  .cm-body { flex: 1 0 auto; }
+  .cm-steps { flex-direction: row; gap: 4px; }
+  .cm-step { flex: 1 1 0; padding: 6px; }
+  .cm-step b { font-size: 12px; line-height: 16px; }
+  .cm-back { margin-top: 16px; }
+  .cm-right { flex: none; padding: 24px; border-radius: 0 0 24px 24px; min-height: 480px; }
+  .cm-head h1 { font-size: 24px; line-height: 32px; }
+  .cm-head.is-q h1 { min-height: 0; }
+  .cm-inds { max-height: 360px; }
+  .cm-step { align-items: flex-start; }
+  .cm-num { width: 20px; height: 20px; font-size: 11px; line-height: 16px; }
+  .cm-cv { width: 160px; height: 230px; }
+}
+@media (max-width: 560px) {
+  .cm-mini { zoom: .74; }
+  .cmp.is-map { grid-template-columns: minmax(0, 1fr); }
+  .cm-tools { left: 16px; top: 16px; flex-direction: row; }
+  .cm-tool { width: auto; }
+  .cm-stage { top: 80px; }
+}
 /* ---------- The editor's Design tab (Figma concepting-KR › Design tab, 294:19823) ---------- */
 .ed-design { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
 .dz-tabs { display: flex; gap: 8px; padding: 4px; margin-inline: 8px; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 12px; }
@@ -3202,6 +3328,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <div class="tl" id="screen-tool" hidden></div>
 <div class="tps" id="screen-tpl" hidden></div>
 <div class="jobs" id="screen-jobs" hidden></div>
+<div class="cmp" id="screen-cm" hidden></div>
 </div>
 </div>
 
@@ -3212,7 +3339,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.33">v2.33</div>
+<div class="proto-ver" aria-label="Prototype version 2.34">v2.34</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4303,7 +4430,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (n === 'edit') openEdit();
     else if (n === 'design') openDesign();
     else if (n === 'ats' || n === 'proof') openTool(n);
-    else if (n === 'career-map') openRoute(findRoute('/career-map/'));
+    else if (n === 'career-map') openCareer();
     else if (n === 'interviews') openRoute(findRoute('/dashboard/create-interview/'));
     else if (n === 'jobs') openJobs('match');
     else if (n === 'tracker') openJobs('tracker');
@@ -4847,7 +4974,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     },
     templates: o => ['Pick a template', `Start your ${o.kind} from a design you like. You can switch it anytime.`],
     jobBoard: ['Find a job you’ll love.', '3,380,973 jobs waiting for you'],
-    'cm-onboarding': ['Where do you want your career to go?', 'A few questions, then we map the roles your experience can lead to.'],
     process: o => [o.f.verb, 'This takes a few seconds.'],
     state: o => stateView(o.f).slice(0, 2),
     wall: () => { const noun = (flowNow && flowNow.f.noun) || 'resume'; return [`Sign up to see your ${noun}`, `It’s free, and your ${noun} opens right after.`]; }
@@ -4912,7 +5038,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', shown: '/jobs/job/1234/', hidden: true, title: 'Tailor resume to this job', needsCv: true, noX: true, cvThen: () => openJobs('job', 'setup'), head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', run: () => openJobs('tracker') },
-    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, head: { main: HEADS['cm-onboarding'] }, html: () => WIRE['cm-onboarding']() },
+    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', run: () => openCareer() },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
   let routeNow = null, routeBack = 'intent';
@@ -6986,14 +7112,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tool: o => { const [title, fields, cta, note] = WIRE_TOOLS[o.tool];
       const body = `<div class="wf-card wf-stack">${wLines(2)}${fields.map(([l, v, k]) => wField(l, v, k)).join('')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="tool">${cta}</button></div></div>`;
       return wShell(title, body, wNote(note), 520); },
-    'cm-onboarding': () => wShell('Career Map onboarding', `<div class="wf-card wf-stack">
-        <ol class="wf-steps"><li class="wf-step wf-step--active">Your role</li><li class="wf-step">Experience</li><li class="wf-step">Goals</li></ol>
-        ${wLines(2)}${wField('Current job title', '')}
-        <button class="wf-btn wf-btn--primary" type="button" data-wire="cm-next">Continue</button>
-      </div>`, wNote('Career Map’s feature personalization (Flow 2): its own onboarding. Design will come later; this is a stand-in.'), 520),
-    tlang: () => wShell('Translate resume · target language', `<div class="wf-card wf-stack">${wField('Translate into', 'Spanish', 'select')}<div class="wf-row wf-spread"><button class="wf-btn wf-btn--ghost" type="button" data-action="route-close">Cancel</button><button class="wf-btn wf-btn--primary" type="button" data-wire="translate">Translate</button></div></div>`,
-      wNote('Translate resume’s setup: the language to translate into. A landing page always gives it, so only a run from the app shows this. No design yet.'), 440),
-    cm: () => wShell('Career Map', `<div class="wf-card wf-stack"><h1 class="t-title">Your Career Map</h1><span class="wf-ph wf-ph--wide">[map of roles and match scores]</span><div class="wf-grid" style="--cols:3"><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div><div class="wf-card">${wLines(2)}</div></div></div>`, wNote('Roles the person’s experience leads to, with a match score.'), 640),
     /* The flow stages every feature shares (see FLOW_T): one screen each, only the wording changes */
     process: o => wShell('Data processing', `<div class="wf-card wf-stack">
         <div class="wf-progress" style="--value:55%"></div>
@@ -7053,7 +7171,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if ((w === 'signup' || w === 'login') && guestBack) { const back = guestBack; guestBack = null; endFlow(); return back(); }  // a guest's work opens again
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
-    else if (w === 'cm-next') openWire('/career-map/', 'Career Map', 'cm');
     else if (w === 'translate') openTool('proof', TR);
     else if (w === 'tool') {
       // a tool's button opens what it makes (its feature's destination), when that exists
@@ -7078,6 +7195,154 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
        4 destination (the URL opens an app screen)
      Sign up, Log in or a landing page can come before (Entry). Run one from the dock (bottom right); the bar at the
      bottom shows the stages and their steps (hollow dots are wireframes) and jumps between them. */
+  /* ---------- Career Map (/career-map/) ----------
+     From Figma (concepting-KR › Career Map, 294:22071): its own page (the dashed-line background and the logo, APPS.cm)
+     with one card: Welcome → Select a resume (the person's resumes, or a LinkedIn profile: the only way without a CV,
+     since the app never makes a resume) → Customize your preferences (five questions that move on when picked, then the
+     industries to prefer and to avoid; Skip Customization asks first) → Your career map is ready! → the map itself, an
+     app page with the app menu. `cmState` is the step; the flow bar reads route:/career-map/#<state>. */
+  const cmEl = document.getElementById('screen-cm');
+  APPS.cm = cmEl;
+  const CM_Q = [
+    ['Expectations', 'What do you expect from this tool?', ['I want to explore my career options.', 'I want to advance in my current career.', 'I want to change career.', 'I’m not sure.']],
+    ['Lifestyle', 'What is your ideal lifestyle?', ['My job gives me a lot of free time to enjoy life.', 'My job and my personal life are equally important.', 'I love my job and devote a lot of time to it.', 'I’m not sure.']],
+    ['Career goals', 'Who do you want to become?', ['An expert in my field, known for my specialized skills.', 'A jack of all trades with a wide range of skills in many fields.', 'Running my own business.', 'I’m not sure.']],
+    ['Income', 'What is your dream income?', ['I indulge in luxury, supported by a generous income.', 'I lead a comfortable life thanks to a moderate, stable income.', 'Earning money isn\'t my primary concern, I focus on other aspects of life.', 'I’m not sure.']],
+    ['Recognition', 'Pick one quality you want to be known for.', ['Leadership', 'Expertise in a specific field', 'Creativity and/or knack for innovation', 'Interpersonal skills', 'Social impact', 'Not sure']]
+  ];
+  const CM_IND = ['Accounting / Finance', 'Administrative', 'Art / Design', 'Business / Sales', 'Education', 'Engineering', 'Food Production', 'Healthcare', 'Human Resources', 'IT', 'Legal', 'Management', 'Manufacturing', 'Marketing / PR', 'Retail & Customer Service', 'Science', 'Software Engineering', 'Transportation / Logistics', 'Hospitality', 'Government'];
+  // the welcome card's and the ready card's little map: [label, colour, left, top, width]
+  const CM_MINI = [['🧑‍🎨 Creative Director', '#52bab1', 57, 119.21, 133.65], ['✍️ UX Writer', '#9058d7', 77.79, 217.96, 96.53], ['👨‍💼 Brand Manager', '#e78c49', 272.33, 111.04, 124.74], ['📚 Senior Editor', '#5ecb42', 293.12, 225.39, 113.6], ['📈 Digital Marketing Director', '#3c81e8', 144.62, 168.22, 176.72]];
+  // the map: [role, left, top, blurred (not unlocked yet)], in the design's 1440 × 900 frame
+  const CM_ROLES = [['Product Manager', 443, 341], ['Data Analyst', 525, 449], ['Anarchist', 610, 561, 1], ['President', 832, 528, 1], ['Back-end Developer', 766, 641, 1], ['Clown', 426, 528, 1], ['Robo Human', 485, 657, 1], ['Front-end Developer', 854, 325], ['Farmer', 692, 398], ['Archeologist', 834, 433]];
+  const CM_SVG = {
+    bg: '<svg class="cm-bg" width="1217" height="1024" viewBox="0 0 1217 1024" fill="none" stroke="#D4D4D4" stroke-width="2.24535" stroke-linecap="square" stroke-dasharray="4.49 8.98" aria-hidden="true"><path d="M193.987 -52.9998C193.987 436.5 837.487 598.5 837.487 1065.5"/><path d="M778.487 653.5C778.487 467.5 918.886 224.5 918.886 -208"/><path d="M854.987 -49.0004C759.987 127.001 257.987 228.5 194.987 435"/><path d="M527.987 361C527.987 280 612.987 88.0005 612.987 -36.4997"/><path d="M164.987 1106.5C164.987 920.5 299.513 732 299.513 642"/><path d="M1303.49 708.001C1303.49 521 519.987 576.5 519.987 486.5"/><path d="M1340.49 568.5C1340.49 381.5 530.487 772 530.487 682"/></svg>',
+    mini: '<svg class="cm-mini-lines" width="227" height="163" viewBox="0 0 227 163" fill="none" stroke="#D4D4D4" stroke-width="1.48503" stroke-linecap="square" stroke-dasharray="2.97 5.94" aria-hidden="true"><path d="M101.353 1.48511C101.353 32.6707 0.742493 26.3594 0.742493 56.06"/><path d="M101.724 1.11377C101.724 33.4132 212.359 12.6228 212.359 48.2635"/><path d="M101.353 0.742432C101.353 44.1796 107.293 55.6885 107.293 104.695"/><path d="M101.353 1.48511C101.353 58.6588 4.0838 117.317 4.0838 154.072"/><path d="M101.353 1.48511C101.353 49.7486 225.725 127.713 225.725 161.497"/></svg>',
+    back: '<svg class="cm-back-lines" width="418" height="417" viewBox="0 0 418 417" fill="none" stroke="#E9E9E9" stroke-width="2" stroke-linecap="square" stroke-dasharray="2 8" aria-hidden="true"><path d="M228.5 1C228.5 48.5 1 220 1 286.5"/><path d="M195 319.5C195 265 229 105 229 1"/><path d="M416.5 286C416.5 233.5 228.5 94 228.5 1"/><path d="M388 399C388 338 229 131 229 1"/><path d="M81 416C81 361.5 228.5 105 228.5 1"/></svg>',
+    front: '<svg class="cm-front-lines" width="428" height="209" viewBox="0 0 428 209" fill="none" stroke="#E9E9E9" stroke-width="2" stroke-linecap="square" stroke-dasharray="2 8" aria-hidden="true"><path d="M177 2C177 44 1 59.5 1 99.5"/><path d="M177.5 1.5C177.5 45 426.5 35 426.5 83"/><path d="M177 1C177 59.5 217 90.5 217 156.5"/><path d="M177 2C177 79 70.5 158.5 70.5 208"/><path d="M177 2C177 67 380 147 380 192.5"/></svg>',
+    back20: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 15.833 4.167 10 10 4.167M15.833 10H4.167"/></svg>',
+    check: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#05AF49" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.333 4 6 11.333 2.667 8"/></svg>',
+    tick: '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 4.5 8.5 2 6"/></svg>',
+    sliders: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.667 14V9.333M2.667 6.667V2M8 14V8M8 5.333V2M13.333 14v-3.333M13.333 8V2M.667 9.333h4M6 5.333h4M11.333 10.667h4"/></svg>',
+    plus: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.667"/><path d="M8 5.333v5.334M5.333 8h5.334"/></svg>'
+  };
+  let cmState = 'welcome', cmPick = -1, cmLi = false, cmUser = '', cmAns = [], cmInd = [new Set(), new Set()];
+  const cmKey = s => s === 'dest' ? 'dest' : s;
+  const cmLogo = () => document.querySelector('#topbar .logo').innerHTML;
+  const cmResumes = () => cvUploaded ? [docName(), 'Human Resources Intern Awesome', 'Marketing Manager'] : [];
+  function cmStepsHTML() {
+    const s = cmState, at = s === 'welcome' ? 0 : s === 'cv' ? 1 : /^(q|ind)/.test(s) ? 2 : 3, w = s === 'welcome';
+    const qi = s[0] === 'q' ? +s[1] - 1 : s.startsWith('ind') ? 5 : -1;
+    const num = (n, done) => `<span class="cm-num${done ? ' is-done' : ''}">${n}</span>`;
+    const step = (n, title, sub, extra = '') => `<li class="cm-step${at === n ? ' is-on' : ''}"${at === n ? ' aria-current="step"' : ''}>${num(n, at > n && !w)}<div><b>${title}</b>${extra || `<span>${sub}</span>`}</div></li>`;
+    const subs = `<ul class="cm-subs">${[...CM_Q.map(q => q[0]), 'Industries'].map((t, i) => `<li>${i < qi ? CM_SVG.check : '<i></i>'}${t}</li>`).join('')}</ul>`;
+    return `<ol class="cm-steps">
+        ${step(1, 'Select your resume', w ? 'Your career paths will start from here.' : 'We need it to discover career paths.')}
+        ${step(2, 'Customize your preferences', 'Tailor your career map to your liking.', at === 2 ? subs : '')}
+        ${step(3, w ? 'Explore your career map' : 'View your career map', w ? 'Discover your options and set goals.' : 'Identify opportunities and milestones.')}
+      </ol>`;
+  }
+  const cmMiniHTML = () => `<div class="cm-mini" aria-hidden="true"><span class="cm-mini-you">You</span>${CM_SVG.mini}${CM_MINI.map(([t, c, l, tp, w]) => `<span class="cm-mini-role" style="color:${c};left:${l}px;top:${tp}px;width:${w}px">${t}</span>`).join('')}</div>`;
+  function cmRightHTML() {
+    const s = cmState;
+    if (s === 'welcome') return `<div class="cm-head"><h1>Welcome to your career map!</h1><p>Map out your career trajectory with ease. Our Career Map feature helps you see where you've been, where you are, and where you want to go. Identify opportunities and milestones to reach your career aspirations.</p></div>
+        <div class="cm-body is-end">${cmMiniHTML()}<div class="cm-acts"><button class="cm-btn" type="button" data-cm="next">Continue</button></div></div>`;
+    if (s === 'cv') {
+      const list = cmResumes(), li = cmLi || !list.length;
+      return `<div class="cm-head"><h1>Select a resume</h1><p>We will use that resume to learn more about you and draw more personalized career paths.</p></div>
+        <div class="cm-body">${li ? `<label class="cm-li"><span class="cm-li-pre">linkedin.com/in/</span><input id="cm-li" value="${esc(cmUser)}" placeholder="yourusername" autocomplete="off" aria-label="Your LinkedIn username"></label>
+          ${list.length ? '<button class="cm-link" type="button" data-cm="list">Or select one of your existing resumes.</button>' : ''}`
+          : `<div class="cm-cvs" role="radiogroup" aria-label="Your resumes">${list.map((n, i) => `<button class="cm-cv" type="button" role="radio" aria-checked="${i === cmPick}" tabindex="${i === Math.max(cmPick, 0) ? 0 : -1}" data-cm-cv="${i}"><img src="${TL_IMG.resume}" alt=""><span>${esc(n)}</span></button>`).join('')}</div>
+          <button class="cm-link" type="button" data-cm="li">Or import your LinkedIn profile instead</button>`}
+          <div class="cm-acts">${li && list.length ? '<button class="cm-btn cm-ghost" type="button" data-cm="list">Cancel</button>' : ''}<button class="cm-btn" type="button" data-cm="next"${(li ? cmUser.trim() : cmPick >= 0) ? '' : ' disabled'}>Continue</button></div></div>`;
+    }
+    if (s[0] === 'q') {
+      const [, q, opts] = CM_Q[+s[1] - 1], a = cmAns[+s[1] - 1];
+      return `<div class="cm-head is-q"><h1>${q}</h1></div>
+        <div class="cm-body"><div class="cm-opts" role="radiogroup" aria-label="${esc(q)}">${opts.map((o, i) => `<button class="cm-opt" type="button" role="radio" aria-checked="${i === a}" tabindex="${i === (a ?? 0) ? 0 : -1}" data-cm-a="${i}"><i class="cm-radio"></i>${o}</button>`).join('')}</div>
+          <div class="cm-acts is-skip"><button class="cm-skip" type="button" data-cm="skip">Skip Customization</button></div></div>`;
+    }
+    if (s.startsWith('ind')) {
+      const k = s === 'ind1' ? 0 : 1, set = cmInd[k];
+      return `<div class="cm-head is-q"><h1>${k ? 'What industries do you want to avoid?' : 'What are your preferred industries?'}</h1></div>
+        <div class="cm-body"><div class="cm-inds" role="group" aria-label="Industries">${CM_IND.map((t, i) => { const off = k && cmInd[0].has(i); return `<button class="cm-ind" type="button" role="checkbox" aria-checked="${set.has(i)}" data-cm-i="${i}"${off ? ' disabled' : ''}><i class="cm-box">${CM_SVG.tick}</i>${esc(t)}</button>`; }).join('')}</div>
+          <div class="cm-acts is-split">${k ? '<span></span>' : '<button class="cm-skip" type="button" data-cm="skip">Skip Customization</button>'}<button class="cm-btn" type="button" data-cm="next">Continue</button></div></div>`;
+    }
+    return `<div class="cm-head"><h1>Your career map is ready!</h1><p>You can change the resume your map is based on as well as your customization via preferences.</p></div>
+        <div class="cm-body is-end">${cmMiniHTML()}<div class="cm-acts"><button class="cm-btn" type="button" data-cm="next">View Career Map</button></div></div>`;
+  }
+  function cmMapHTML() {
+    return `${appNavHTML('career-map')}<main class="cm-map" aria-label="Career Map">
+        <div class="cm-tools"><button class="cm-tool" type="button" data-cm="prefs">${CM_SVG.sliders}Preferences</button><button class="cm-tool" type="button" data-cm="more">${CM_SVG.plus}More positions</button></div>
+        <div class="cm-stage">${CM_SVG.back}${CM_SVG.front}
+          <div class="cm-you"><span>${esc([person.first, person.last].join(' '))}</span><b>${esc(person.jobTitle || 'Product Designer')}</b></div>
+          ${CM_ROLES.map(([t, l, tp, blur]) => `<button class="cm-role${blur ? ' is-locked' : ''}" type="button" data-cm-role="${esc(t)}" style="left:${l - 380}px;top:${tp - 120}px"${blur ? ' aria-label="A locked position"' : ''}><span>${esc(t)}</span></button>`).join('')}
+        </div></main>`;
+  }
+  function cmHTML() {
+    if (cmState === 'dest') return cmMapHTML();
+    const back = cmState === 'welcome' ? 'Dashboard' : 'Back';
+    return `${CM_SVG.bg}<div class="cm-logo" aria-hidden="true">${cmLogo()}</div>
+      <section class="cm-card" aria-labelledby="cm-h">
+        <div class="cm-left"><div class="cm-logo2">${cmLogo()}</div>${cmStepsHTML()}
+          ${cmState === 'ready' ? '' : `<button class="cm-back" type="button" data-cm="back">${CM_SVG.back20}${back}</button>`}</div>
+        <div class="cm-right">${cmRightHTML().replace('<h1>', '<h1 id="cm-h">')}</div>
+      </section>`;
+  }
+  const CM_ORDER = ['welcome', 'cv', 'q1', 'q2', 'q3', 'q4', 'q5', 'ind1', 'ind2', 'ready', 'dest'];
+  function cmFit() {
+    const st = cmEl.querySelector('.cm-stage'); if (!st) return;
+    const w = st.parentElement.clientWidth; st.style.setProperty('--k', Math.min(1, (w - 32) / 720));
+  }
+  async function openCareer(state = 'welcome') {
+    const fill = () => { cmState = state; cmEl.className = 'cmp' + (state === 'dest' ? ' is-map' : ''); cmEl.innerHTML = cmHTML(); requestAnimationFrame(cmFit); };
+    if (current !== 'cm' || (state === 'dest') !== (cmState === 'dest')) return enterApp(cmEl, fill, 'cm', '/career-map/');
+    // from one step to the next: the card stays, its content changes
+    fill(); syncApp('/career-map/'); landFocus(cmEl);
+  }
+  // the next step: in a run whose next stage starts there, the run moves on (its steps match route:/career-map/#…)
+  function cmGo(state) {
+    const st = flowNow && flowNow.steps[flowAt];
+    // Continue after the industries, or Skip: the run's processing (a landing page's upload first, then the ready card)
+    if (state === 'ready' && st && st.stage === 'prep') { const k = flowNow.steps.findIndex((x, i) => i > flowAt && x.stage === 'process'); if (k >= 0) return flowGo(k); }
+    if (state === 'dest' && st && st.stage === 'process') return processDone();  // Completed: the map; Failed or Error: the processing state
+    openCareer(state);
+  }
+  function cmSkip() {
+    const pop = document.createElement('div');
+    pop.className = 'wr-pop cm-pop';
+    pop.innerHTML = `<div class="wr-back" data-cmp="cancel"></div><div class="cm-modal" role="dialog" aria-modal="true" aria-labelledby="cm-skip-h"><h2 id="cm-skip-h">Skip customization?</h2><p>This will take you directly to your career map. Keep in mind that skipping customization may lead to lower-quality results.</p>
+      <div class="cm-modal-acts"><button class="cm-btn cm-ghost" type="button" data-cmp="cancel">Cancel</button><button class="cm-btn" type="button" data-cmp="skip">Skip</button></div></div>`;
+    cmEl.appendChild(pop);
+    const close = () => pop.remove();
+    pop.addEventListener('click', e => { const b = e.target.closest('[data-cmp]'); if (!b) return; close(); if (b.dataset.cmp === 'skip') cmGo('ready'); });
+    pop.addEventListener('keydown', e => { if (e.key === 'Escape') { close(); cmEl.querySelector('[data-cm="skip"]')?.focus(); } });
+    pop.querySelector('[data-cmp="skip"]').focus();
+  }
+  cmEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-cm], [data-cm-cv], [data-cm-a], [data-cm-i], [data-cm-role]');
+    if (!b || b.disabled) return;
+    const at = CM_ORDER.indexOf(cmState);
+    if (b.dataset.cmCv) { cmPick = +b.dataset.cmCv; cmEl.querySelectorAll('.cm-cv').forEach((c, i) => { c.setAttribute('aria-checked', String(i === cmPick)); c.tabIndex = i === cmPick ? 0 : -1; }); cmEl.querySelector('[data-cm="next"]').disabled = false; return; }
+    if (b.dataset.cmA) {
+      cmAns[+cmState[1] - 1] = +b.dataset.cmA;
+      cmEl.querySelectorAll('.cm-opt').forEach(o => o.setAttribute('aria-checked', String(o === b)));
+      const from = cmState;
+      return later(() => { if (current === 'cm' && cmState === from) cmGo(CM_ORDER[at + 1]); }, 250);
+    }
+    if (b.dataset.cmI) { const set = cmInd[cmState === 'ind1' ? 0 : 1], i = +b.dataset.cmI; set.has(i) ? set.delete(i) : set.add(i); b.setAttribute('aria-checked', String(set.has(i))); return; }
+    if (b.dataset.cmRole) return toast(b.classList.contains('is-locked') ? 'More positions open as you set goals on your map.' : `${b.dataset.cmRole}: the path from your role, its skills and salary open here.`);
+    const a = b.dataset.cm;
+    if (a === 'next') { if (cmState === 'cv' && cmLi) cmUser = cmEl.querySelector('#cm-li').value; return cmGo(CM_ORDER[at + 1]); }
+    if (a === 'back') return cmState === 'welcome' ? goBack() : openCareer(CM_ORDER[at - 1]);
+    if (a === 'li' || a === 'list') { cmLi = a === 'li'; return openCareer('cv'); }
+    if (a === 'skip') return cmSkip();
+    if (a === 'prefs') return openCareer('q1');
+    if (a === 'more') return toast('More positions would add roles further from yours.');
+  });
+  cmEl.addEventListener('input', e => { if (e.target.id === 'cm-li') { cmUser = e.target.value; cmEl.querySelector('[data-cm="next"]').disabled = !cmUser.trim(); } });
+  window.addEventListener('resize', () => { if (current === 'cm') cmFit(); });
+
   const S = {
     wire: (label, path, id, opts = {}) => ({ label, wire: true, match: `route:${path}#${opts.pane || 'main'}`, run: () => openWire(path, label, id, opts) }),
     // pane progress / progress-end: the upload modal on the Upload or LinkedIn import screen, uploading / with its result
@@ -7114,6 +7379,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tool: (label, kind, path = TOOL_PATH[kind]) => ({ label, match: `route:${path}#main`, run: () => { setCv(true); openTool(kind, path); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
+    cm: (label, state) => ({ label, match: `route:/career-map/#${state}`, run: () => openCareer(state) }),
     jobs: (label, view, state = 'main') => ({ label, match: `route:${JOBS_PATH[view]}#${state}`, run: () => openJobs(view, state) }),
     latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } }),
     // the shared stages, worded for the feature: processing (moves on by itself) and its result
@@ -7340,7 +7606,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ...letterRun('cover'), noun: 'cover letter', given: 'Job details' },
     { id: 'ai-interview', flow: 2, title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], process: [IQ_STEP('process')], dest: [IQ_STEP('dest')], verb: 'Preparing your questions', noun: 'interview questions', given: 'The role' },
     { id: 'ai-resign', flow: 2, title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], ...letterRun('resign'), noun: 'resignation letter', given: 'Letter details' },
-    { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map', given: 'Career answers' },
+    { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.cm('Career Map · Welcome', 'welcome'), S.cm('Select a resume (or LinkedIn)', 'cv'), S.cm('Preferences · five questions', 'q'), S.cm('Industries · preferred, to avoid', 'ind')], process: [S.cm('Your career map is ready!', 'ready')], dest: [S.cm('Career Map', 'dest')], noun: 'Career Map', given: 'Career answers' },
     // no template pickers (the user's rule): a new cover letter or website opens with the default template
     { id: 'create-cover', flow: 4, title: 'New cover letter', path: '/dashboard/create-cover/', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')] },
     { id: 'create-cover-tpl', flow: 4, title: 'Cover letter with a chosen template', path: '/dashboard/create-cover/modern/', url: '/dashboard/create-cover/{template}', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')] },
@@ -7758,7 +8024,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard' && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : current === 'cm' ? `route:/career-map/#${cmState}` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt || (i === flowAt && flowNow.skipped)) { flowAt = i; flowNow.skipped = false; renderFlowBar(); }  // back in the run
   }
