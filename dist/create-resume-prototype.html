@@ -3339,7 +3339,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.34">v2.34</div>
+<div class="proto-ver" aria-label="Prototype version 2.34.1">v2.34.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -7379,7 +7379,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     tool: (label, kind, path = TOOL_PATH[kind]) => ({ label, match: `route:${path}#main`, run: () => { setCv(true); openTool(kind, path); } }),
     auth: (label, kind, note) => ({ label, note, match: 'route:' + AUTH[kind].path, run: () => openAuth(kind, note) }),
     upgrade: (label, plan) => ({ label, match: `route:/upgrade/${plan}/`, run: () => openUpgrade(plan) }),
-    cm: (label, state) => ({ label, match: `route:/career-map/#${state}`, run: () => openCareer(state) }),
+    // state: the step's states start with it (q: q1–q5, ind: ind1–ind2); open: the one it opens
+    cm: (label, state, open = state) => ({ label, match: `route:/career-map/#${state}`, run: () => openCareer(open) }),
     jobs: (label, view, state = 'main') => ({ label, match: `route:${JOBS_PATH[view]}#${state}`, run: () => openJobs(view, state) }),
     latest: (label, path, cv, match) => ({ label, match: match || 'route:' + path, run: () => { setCv(cv); openRoute(findRoute(path)); } }),
     // the shared stages, worded for the feature: processing (moves on by itself) and its result
@@ -7606,7 +7607,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ...letterRun('cover'), noun: 'cover letter', given: 'Job details' },
     { id: 'ai-interview', flow: 2, title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], process: [IQ_STEP('process')], dest: [IQ_STEP('dest')], verb: 'Preparing your questions', noun: 'interview questions', given: 'The role' },
     { id: 'ai-resign', flow: 2, title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], ...letterRun('resign'), noun: 'resignation letter', given: 'Letter details' },
-    { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.cm('Career Map · Welcome', 'welcome'), S.cm('Select a resume (or LinkedIn)', 'cv'), S.cm('Preferences · five questions', 'q'), S.cm('Industries · preferred, to avoid', 'ind')], process: [S.cm('Your career map is ready!', 'ready')], dest: [S.cm('Career Map', 'dest')], noun: 'Career Map', given: 'Career answers' },
+    { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.cm('Career Map · Welcome', 'welcome'), S.cm('Select a resume (or LinkedIn)', 'cv'), S.cm('Preferences · five questions', 'q', 'q1'), S.cm('Industries · preferred, to avoid', 'ind', 'ind1')], process: [S.cm('Your career map is ready!', 'ready')], dest: [S.cm('Career Map', 'dest')], noun: 'Career Map', given: 'Career answers' },
     // no template pickers (the user's rule): a new cover letter or website opens with the default template
     { id: 'create-cover', flow: 4, title: 'New cover letter', path: '/dashboard/create-cover/', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')] },
     { id: 'create-cover-tpl', flow: 4, title: 'Cover letter with a chosen template', path: '/dashboard/create-cover/modern/', url: '/dashboard/create-cover/{template}', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')] },
