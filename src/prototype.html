@@ -2132,6 +2132,106 @@ body.has-note .jobs, body:has(.flow-bar:not([hidden])) .jobs { padding-bottom: 1
 :where(.jobs) :where(button) { font: inherit; color: inherit; }
 .jobs button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .jobs.is-tracker { background: var(--kr-background); }
+/* The job page (/jobs/job/{id}/, Figma concepting-KR › 294:3680): the job, Back to Search, and Prepare for this job */
+.jobs.is-job { background: linear-gradient(var(--kr-background), var(--kr-white)) 0 0 / 100% 384px no-repeat, var(--kr-grey-20); }
+.rv.is-cover .cl-to { display: flex; flex-direction: column; margin-top: 18px; font-size: 9px; line-height: 13px; }
+.rv.is-cover .cl-body { margin-top: 16px; font-size: 9px; line-height: 14px; }
+.rv.is-cover .cl-body p { margin: 0 0 9px; }
+.cl-ta { min-height: 240px; }
+/* Resume rewrite's loading (Figma concepting-KR › 294:5202): In progress… with the sections ticking off, then Resume
+   rewrite done! with Continue; a click beside it while it runs asks to wait */
+.rw { --w: 600px; position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 600px; max-width: 100%; height: 480px; overflow: hidden; padding: 0; }
+.rw-l { position: relative; display: grid; place-items: center; padding: 24px 32px; background: var(--kr-background); }
+.rw-l img { width: 188px; height: 258.5px; border-radius: 8px; object-fit: cover; object-position: top; filter: blur(6px); box-shadow: 4.7px 9.4px 23.5px rgba(0, 0, 0, .1); }
+.rw-beta { position: absolute; left: 32px; top: 24px; padding: 2px 8px; border-radius: 4px; background: linear-gradient(90deg, #4aa2ff, #0f6df2); color: var(--kr-white); font: 500 10px/16px var(--font-sans); }
+.rw-r { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding: 24px 32px; }
+.rw-h { display: flex; align-items: center; gap: 8px; margin: 0; font: 500 18px/24px var(--font-sans); }
+.rw-h svg { flex: none; width: 24px; height: 24px; animation: iq-spin 1s steps(8) infinite; }
+.rw[data-state="done"] .rw-h svg { display: none; }
+.rw-r > p { margin: -9px 0 0; font: 400 14px/20px var(--font-sans); color: var(--kr-grey-80); }
+.rw-list { flex: 1; display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.rw-list li { display: flex; align-items: center; gap: 8px; font: 400 14px/20px var(--font-sans); }
+.rw-list li[hidden] { display: none; }
+.rw-list svg { width: 20px; height: 20px; }
+.rw-foot { display: flex; justify-content: flex-end; }
+.rw-go { padding: 10px 32px; border: 0; border-radius: 10px; background: var(--kr-primary); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.rw-go:hover { background: var(--kr-primary-hover); }
+.rw-go:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.rw-wait { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); padding: 8px 16px; border-radius: 4px; background: var(--kr-grey-100); color: var(--kr-white); font: 400 14px/20px var(--font-sans); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--dur-fast); }
+.rw-wait.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .rw-h svg { animation: none; } }
+@media (max-width: 640px) { .rw { grid-template-columns: 1fr; height: auto; } .rw-l { display: none; } .rw-r { min-height: 360px; } .rw-wait { white-space: normal; width: calc(100% - 32px); } }
+.jd-main { min-width: 0; display: flex; flex-direction: column; align-items: center; padding: 21px 32px 80px; }
+.jd-col { width: 1000px; max-width: 100%; }
+.jd-h { margin: 0 0 24px; padding-right: 24px; font: 400 32px/40px var(--font-display); }
+.jd-back { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 24px; padding: 10px 24px; border: 0; border-radius: 10px; background: none; font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.jd-back:hover { background: rgba(0, 0, 0, .04); }
+.jd-back svg { width: 20px; height: 20px; }
+.jd-row { display: flex; align-items: flex-start; gap: 24px; }
+.jd-card { flex: 1; min-width: 0; border-radius: 16px; background: var(--kr-white); box-shadow: 0 13px 15px rgba(0, 0, 0, .06), 0 53px 27px rgba(0, 0, 0, .04); }
+.jd-top { display: flex; flex-direction: column; gap: 10px; padding: 32px 32px 16px; }
+.jd-id { display: flex; align-items: flex-start; gap: 16px; }
+.jd-id img { flex: none; width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.jd-name { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.jd-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 16px/24px var(--font-sans); }
+.jd-co { align-self: flex-start; padding: 0; border: 0; background: none; font: 400 14px/20px var(--font-sans); text-decoration: underline; cursor: pointer; }
+.jd-acts { display: flex; align-items: center; gap: 16px; }
+.jd-save { display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 13px; border: 1px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.jd-save:hover { border-color: var(--kr-grey-80); }
+.jd-save svg { width: 16px; height: 16px; }
+.jd-save[aria-pressed="true"] svg path { fill: var(--kr-primary); stroke: var(--kr-primary); }
+.jd-apply { height: 40px; padding: 0 32px; border: 0; border-radius: 10px; background: var(--kr-primary); color: var(--kr-white); font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.jd-apply:hover { background: var(--kr-primary-hover); }
+.jd-pay { font: 400 16px/24px var(--font-sans); }
+.jd-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -2px; }
+.jd-chips span { display: inline-flex; align-items: center; gap: 4px; padding: 2px; border-radius: 4px; background: var(--kr-grey-40); font: 400 12px/18px var(--font-sans); white-space: pre; }
+.jd-chips svg { width: 16px; height: 16px; }
+.jd-text { padding: 0 32px 32px; font: 400 14px/20px var(--font-sans); }
+.jd-text p { margin: 0; }
+.jd-text ul { margin: 0; padding-left: 21px; }
+.jd-prep { position: sticky; top: 16px; flex: none; display: flex; flex-direction: column; gap: 16px; width: 300px; padding: 24px; border-radius: 16px; background: var(--kr-background); box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
+.jd-prep h2 { margin: 0 0 8px; font: 500 18px/24px var(--font-sans); }
+.jd-prep > div > p { margin: 0; font: 400 12px/18px var(--font-sans); }
+.jd-items { display: flex; flex-direction: column; gap: 8px; }
+.jd-item { border-radius: 10px; background: var(--kr-white); }
+.jd-item > button { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 8px; border: 0; border-radius: 10px; background: none; font: 500 14px/20px var(--font-sans); text-align: left; cursor: pointer; }
+.jd-item > button:hover { background: var(--kr-grey-20); }
+.jd-item > button svg { width: 20px; height: 20px; }
+.jd-item.is-open > button { display: none; }
+.jd-item:not(.is-open) .jd-body { display: none; }
+.jd-body { display: flex; flex-direction: column; gap: 24px; padding: 10px 8px; border-radius: 10px; background: #fffbf2; }  /* white under 10% of #ffc75c */
+.jd-body > div { display: flex; flex-direction: column; gap: 16px; padding: 0 8px; color: #b28b40; }
+.jd-body b { font: 500 18px/24px var(--font-sans); }
+.jd-body p { margin: -8px 0 0; font: 400 14px/20px var(--font-sans); }
+.jd-go { height: 40px; padding: 0 32px; border: .5px solid var(--kr-white); border-radius: 10px; background: rgba(255, 255, 255, .6); box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); color: #b28b40; font: 500 14px/20px var(--font-sans); cursor: pointer; }
+.jd-go:hover { background: var(--kr-white); }
+/* the tailoring picture: a resume glowing behind "Tailoring completed!" (drawn here: Figma's export is a raster) */
+.jd-pic { position: relative; overflow: hidden; width: 220px; height: 100px; border-radius: 10px; background: rgba(255, 210, 122, .3); }
+.jd-pic::before { content: ""; position: absolute; left: 89px; top: 50px; width: 68px; height: 68px; border-radius: 50%; background: rgba(255, 211, 124, .55); filter: blur(14px); }
+.jd-pic img { position: absolute; left: 99px; top: 11px; width: 109px; height: 157px; border-radius: 5px; object-fit: cover; object-position: top; box-shadow: 0 0 22px rgba(255, 211, 124, .75), 0 0 6px rgba(255, 211, 124, .75); }
+.jd-tag { position: absolute; left: calc(50% - 29.5px); top: calc(50% + 12.5px); transform: translate(-50%, -50%); display: flex; gap: 8px; width: 120px; padding: 6px; border-radius: 4px; background: var(--kr-white); box-shadow: 0 2px 4px rgba(0, 0, 0, .2); }
+.jd-tag > img { position: static; flex: none; width: 16px; height: 16px; border-radius: 2px; box-shadow: none; object-fit: contain; background: #f3f3f3; padding: 2px; }
+.jd-tag > span { display: flex; flex-direction: column; gap: 4px; font: 500 6.6px/8.6px var(--font-sans); color: var(--kr-grey-100); }
+.jd-tag i { white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; align-self: flex-start; padding: 2px 5px 2px 4px; border: .5px solid #48ad43; border-radius: 2px; color: #48ad43; font-style: normal; }
+.jd-tag i svg { width: 8px; height: 8px; }
+@media (max-width: 1100px) { .jd-row { flex-direction: column; } .jd-prep { position: static; width: 100%; } }
+@media (max-width: 760px) { .jd-main { padding: 16px 16px 80px; } .jd-h { font-size: 26px; line-height: 32px; } .jd-id { flex-wrap: wrap; } .jd-acts { width: 100%; } .jd-top, .jd-text { padding-inline: 20px; } }
+/* Tailoring from a job page: Pick a resume to tailor, then Tailor your resume to a job, as modals over the page (the user's rule) */
+.tj-box { width: min(600px, 100%); }
+.tj-pick { display: flex; flex-direction: column; gap: 24px; padding: 32px; border-radius: 20px; background: var(--kr-white); box-shadow: var(--kr-shadow-modal); }
+.tj-pick h2 { margin: 0; font: 500 24px/32px var(--font-sans); }
+.tj-pick > p { margin: -12px 0 0; font: 400 16px/24px var(--font-sans); color: var(--kr-grey-80); }
+.tj-cvs { display: flex; flex-wrap: wrap; gap: 16px; }
+.tj-cv { display: flex; flex-direction: column; width: 192px; padding: 0; overflow: hidden; border: 1px solid var(--kr-grey-60); border-radius: 16px; background: var(--kr-white); box-shadow: 0 4px 12px rgba(0, 0, 0, .06); text-align: left; cursor: pointer; }
+.tj-cv:hover { border-color: var(--kr-grey-80); }
+.tj-cv[aria-checked="true"] { border-color: var(--kr-primary); box-shadow: 0 0 0 1px var(--kr-primary); }
+.tj-cv img { display: block; width: 100%; height: 220px; object-fit: cover; object-position: top; border-bottom: 1px solid var(--kr-grey-40); }
+.tj-cv span { overflow: hidden; padding: 14px 16px; font: 500 16px/24px var(--font-sans); text-overflow: ellipsis; white-space: nowrap; }
+.tj-foot { display: flex; justify-content: flex-end; gap: 8px; }
+.tj-foot .rt-btn { height: 42px; padding: 0 32px; border-radius: 10px; }
+.tj-trl { border-color: transparent; border-radius: 20px; box-shadow: var(--kr-shadow-modal); }
+@media (max-width: 560px) { .tj-cv { width: calc(50% - 8px); } .tj-cv img { height: 160px; } }
+
 /* Job Tracker (Figma concepting-KR › 285:1410, My Jobs): tabs by status, the jobs table, a status menu per job */
 .jt-main { min-width: 0; padding: 56px 32px 80px; }
 .jt-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
@@ -3078,7 +3178,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.30.3">v2.30.3</div>
+<div class="proto-ver" aria-label="Prototype version 2.31">v2.31</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3947,6 +4047,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let buildingAs = null;
   function showBuilding(id, as) {
     buildingAs = as || null;
+    edDoc = as && as.letter ? as.letter : as && as.own ? 'resume' : 'resume';  // a section writer adds to the resume; a letter is its own document
     if (!as || !as.own) tailored = null;  // a new resume (a section writer only adds to the one there is)
     document.getElementById('loading-h').textContent = as ? as.head : 'Building your resume';
     document.getElementById('loading-sub').textContent = as ? as.sub : SUBTITLE[id];
@@ -4076,7 +4177,38 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- Editor ---------- */
   const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const fullName = () => [person.titleBefore, person.first, person.last].filter(Boolean).join(' ') + (person.titleAfter ? ', ' + person.titleAfter : '');
-  const docName = () => `${[person.first, person.last].filter(Boolean).join(' ') || 'Untitled'} Resume`;
+  /* The editor's document: the resume, or the cover letter the AI Cover Letter Writer wrote (edDoc 'cover': its
+     destination is Fill In with the letter instead of the CV, the user's rule). The letter's fields live on person
+     (letterTo, letterCompany, letterRole, letterBody); COVER_AS words its building screen, the same one a resume has. */
+  let edDoc = 'resume';
+  const isLetter = () => edDoc !== 'resume';
+  // the letters: their name, building screen (LETTER_AS) and what the AI writes
+  const LETTER = {
+    cover: { name: 'Cover Letter', what: 'cover letter', to: 'Hiring Manager', greet: 'Dear', role: 'Server Administrator', company: 'Cisco',
+      body: (role, co) => `I’m writing to apply for the ${role} position at ${co}. ${person.profile || ''}\n\nIn my recent roles I planned and shipped work end to end, kept the people around me in the loop and turned unclear problems into clear plans. I’d bring the same care to your team.\n\nThank you for your time. I’d be glad to talk about how I can help ${co}.` },
+    resign: { name: 'Resignation Letter', what: 'resignation letter', to: 'Martin Kováč, Head of Product', greet: 'Dear', role: person.jobTitle || 'Product Designer', company: 'Lumen Health',
+      body: (role, co) => `Please accept this letter as formal notice of my resignation from my position as ${role} at ${co}. My last working day will be in four weeks, in line with my notice period.\n\nThank you for the support and the opportunities I’ve had here. I’m proud of what we built together and grateful to the team.\n\nI’ll do everything I can to hand over my work smoothly during the next weeks, and I’m happy to help find and train my replacement.` }
+  };
+  const docName = () => `${[person.first, person.last].filter(Boolean).join(' ') || 'Untitled'} ${isLetter() ? LETTER[edDoc].name : 'Resume'}`;
+  const LETTER_AS = Object.fromEntries(Object.entries(LETTER).map(([k, L]) => [k, { own: true, letter: k, head: `Writing your ${L.what}`, sub: 'The AI writes it from what you gave it. You can edit everything after.',
+    steps: ['Reading your details', 'Picking the right tone', `Writing your ${L.what}`], ready: `Your ${L.what} is ready!`, done: () => openEditor() }]));
+  const COVER_AS = LETTER_AS.cover;
+  // the letter's fields, written once per letter kind (a new Generate rewrites them)
+  function letterFor(kind = 'cover', role, company) {
+    const L = LETTER[kind];
+    role = role || (person.letterKind === kind && person.letterRole) || L.role; company = company || (person.letterKind === kind && person.letterCompany) || L.company;
+    Object.assign(person, { letterKind: kind, letterTo: L.to, letterCompany: company, letterRole: role, letterBody: L.body(role, company) });
+  }
+  // a writer's Generate: the building screen, then Fill In with the letter
+  function writeLetter(kind, role, company) { letterFor(kind, role, company); showBuilding('ai', LETTER_AS[kind]); }
+  function letterHTML() {
+    const P = person, paras = (P.letterBody || '').split(/\n+/).filter(Boolean);
+    return `<div class="rv-sec" data-action="rv-sec" data-sec="personal" tabindex="0" role="button" aria-label="Edit personal information">
+        <h2 class="rv-name">${esc(fullName()) || '&nbsp;'}</h2>${P.jobTitle ? `<p class="rv-role">${esc(P.jobTitle)}</p>` : ''}
+        <div class="rv-details">${[P.phone, P.email, P.web].filter(Boolean).map(v => `<div>${esc(v)}</div>`).join('')}</div></div>
+      <div class="rv-sec cl-to" data-action="rv-sec" data-sec="letter-to" tabindex="0" role="button" aria-label="Edit the recipient"><b>${esc(P.letterTo || '')}</b><span>${esc(P.letterCompany || '')}</span><span>Re: ${edDoc === 'resign' ? 'Resignation, ' : ''}${esc(P.letterRole || '')}</span></div>
+      <div class="rv-sec cl-body" data-action="rv-sec" data-sec="letter" tabindex="0" role="button" aria-label="Edit the letter"><p>Dear ${esc((P.letterTo || 'Hiring Manager').split(',')[0])},</p>${paras.map(t => `<p>${esc(t)}</p>`).join('')}<p>Sincerely,<br>${esc(fullName())}</p></div>`;
+  }
 
   function resumeHTML() {
     const P = person;
@@ -4278,7 +4410,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="ed-col">
           <div class="premium">
             <button class="premium-head" type="button" data-action="premium" aria-expanded="false">
-              <span class="txt kr-text-premium-gradient">This resume uses 3 premium features. Upgrade to Premium to download it as is.</span><span class="chev-d">${icon('down')}</span>
+              <span class="txt kr-text-premium-gradient">This ${isLetter() ? LETTER[edDoc].what : 'resume'} uses 3 premium features. Upgrade to Premium to download it as is.</span><span class="chev-d">${icon('down')}</span>
             </button>
             <div class="acc" inert><div class="acc-inner"><ul class="premium-list">
               <li><span class="pdot">${icon('check')}</span>Timeline template</li>
@@ -4319,17 +4451,19 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
               <button class="add-fields" type="button" data-action="toast" data-msg="Custom fields let you add things like a driving licence.">+ Add Custom Fields</button>
             </div></div>
             <button class="more-toggle" type="button" data-action="more-toggle" aria-expanded="true">Hide Additional Fields</button>`, true)}
+          ${isLetter() ? ecard('letter-to', 'briefcase', 'Recipient', '', `<div class="fgrid">${f('letterTo', 'Recipient')}${f('letterCompany', 'Company')}${f('letterRole', 'Job title', 'full')}</div>`, true)
+            + ecard('letter', 'pen', 'Letter', '', `<div class="f"><label for="ed-letterBody" class="sr-only">Letter</label><textarea class="textarea sm cl-ta" id="ed-letterBody" data-k="letterBody">${esc(P.letterBody || '')}</textarea></div>`, true) : `
           ${ecard('profile', 'gauge', 'Profile', '', `<p>Two or three sentences about who you are and what you’re great at.</p>
             <div class="f"><label for="ed-profile" class="sr-only">Profile</label><textarea class="textarea sm" id="ed-profile" data-k="profile">${esc(P.profile)}</textarea></div>`)}
           ${ecard('work', 'briefcase', 'Work Experience', `${P.work.length} positions`, entries(P.work, 'position'))}
           ${ecard('education', 'cap', 'Education', `${P.education.length} school`, entries(P.education, 'school'))}
           ${ecard('skills', 'star', 'Strengths', `<span data-out="skillcount">${P.skills.length}</span>`, `<div data-out="skills">${chips('skills')}</div>
             <div class="f"><label for="ed-skill-new">Add a strength</label><input class="input sm" id="ed-skill-new" data-add="skills" placeholder="Type and press Enter"></div>`)}
-          ${ecard('hobbies', 'heart', 'Hobbies', `<span data-out="hobbycount">${P.hobbies.length}</span>`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}
+          ${ecard('hobbies', 'heart', 'Hobbies', `<span data-out="hobbycount">${P.hobbies.length}</span>`, `<div data-out="hobbies">${chips('hobbies')}</div>`)}`}
         </div>
       </div>
       <aside class="ed-preview" aria-label="Resume preview">
-        <div class="pv-tabs${tailored ? ' has-trt' : ''}">${[['preview', TRT_IC.eye, 'Edit Preview'], ['tailoring', TRT_IC.target, 'Resume Tailoring'], ['help', TRT_IC.help, 'Help Center']].map(([k, ic, l]) =>
+        <div class="pv-tabs${tailored ? ' has-trt' : ''}">${[['preview', TRT_IC.eye, 'Edit Preview'], ['tailoring', TRT_IC.target, 'Resume Tailoring'], ['help', TRT_IC.help, 'Help Center']].filter(([k]) => !(isLetter() && k === 'tailoring')).map(([k, ic, l]) =>
           `<button class="pv-tab${k === tab ? ' is-active' : ''}" type="button" data-pv-tab="${k}"${k === 'help' ? '' : ` aria-current="${k === tab}"`}>${ic}${l}</button>`).join('')}</div>
         ${tailored ? `<div class="trt"${tab === 'tailoring' ? '' : ' hidden'}>${trtHTML()}</div>` : ''}
         <div class="pv-body"${tab === 'preview' ? '' : ' hidden'}>
@@ -4337,7 +4471,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             <button class="icon-sq" type="button" data-action="toast" data-msg="Full-screen preview opens here." aria-label="Full-screen preview">${icon('eye')}</button>
             <button class="icon-sq" type="button" data-action="toast" data-msg="Download is a Premium feature for this template." aria-label="Download">${icon('download')}</button>
           </div>
-          <div class="pv-paper-wrap"><div class="rv" id="rv">${resumeHTML()}</div></div>
+          <div class="pv-paper-wrap"><div class="rv${isLetter() ? ' is-cover' : ''}" id="rv">${isLetter() ? letterHTML() : resumeHTML()}</div></div>
         </div>
       </aside>`;
   }
@@ -4350,7 +4484,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let saveTimer = 0;
   function syncEditor() {
     const rv = editorEl.querySelector('#rv');
-    if (rv) rv.innerHTML = resumeHTML();
+    if (rv) rv.innerHTML = isLetter() ? letterHTML() : resumeHTML();
     editorEl.querySelectorAll('[data-out="docname"]').forEach(el => el.textContent = docName());
     editorEl.querySelectorAll('[data-out="fullname"]').forEach(el => el.textContent = [person.first, person.last].join(' '));
     editorEl.querySelectorAll('[data-out="initial"]').forEach(el => el.textContent = (person.first || '?')[0]);
@@ -4661,8 +4795,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/search/', title: 'Jobs · search results (All Jobs)', run: () => openJobs('search') },
     // Jobs for You: the shared CV step (the method screen) when there is none, then Analyzing your resume…
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Jobs for You (job matcher)', run: () => cvUploaded ? openJobs('match') : askCvFor(findRoute('/jobs/matcher/')), cvThen: () => openJobs('match', 'process') },
-    { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, noX: true, head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', run: () => openJobs('job') },
+    // tailoring from a job page: its modals are the job page's (tjOpen); this route is its tailoring screen (and the
+    // setup's full-screen version), shown under the job page's URL, and not a URL of its own (hidden)
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', shown: '/jobs/job/1234/', hidden: true, title: 'Tailor resume to this job', needsCv: true, noX: true, cvThen: () => openJobs('job', 'setup'), head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', run: () => openJobs('tracker') },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, head: { main: HEADS['cm-onboarding'] }, html: () => WIRE['cm-onboarding']() },
@@ -4676,9 +4812,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (path && findRoute(location.hash) && findRoute(location.hash) === findRoute(path)) return;
     try { history.replaceState(history.state, '', path ? '#' + path : location.href.split('#')[0]); } catch (e) {}
   }
-  document.getElementById('pm-count').textContent = ROUTES.length;
+  document.getElementById('pm-count').textContent = ROUTES.filter(r => !r.hidden).length;
   document.getElementById('pm-routes').innerHTML = KINDS.map(([g]) => g).filter(g => ROUTES.some(r => kindOf(r.path) === g)).map(g => `<span class="pm-sub">${g}</span>` +
-    ROUTES.filter(r => kindOf(r.path) === g).sort((a, b) => kindAt(a.path) - kindAt(b.path)).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
+    ROUTES.filter(r => !r.hidden && kindOf(r.path) === g).sort((a, b) => kindAt(a.path) - kindAt(b.path)).map(r => `<button class="pm-route${r.wire ? ' is-todo' : ''}" type="button" data-route="${r.path}"><b>${r.title}</b><code>${[r.path, ...(r.also || [])].join(' · ')}</code></button>`).join('')).join('');
   /* A goal card opens its feature's first screen: Build the method screen, the others their tool (Tailor and the
      ATS check get a resume on the method screen first when there is none; see openRoute) */
   function pickGoal(id, el) {
@@ -4711,7 +4847,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // × on the tool goes back to where the person asked for it, not to the method or the building screen
     const from = current === 'loading' ? 'intent' : current;
     createFrom = { where: from, route: routeNow }; createFromSet = current !== 'create'; syncBackLinks();
-    routeNow = r; markRoutes(); setHash(r.path);
+    routeNow = r; markRoutes(); setHash(r.shown || r.path);
     if (r.cvThen) return () => { routeBack = from; return r.cvThen(); };  // Jobs for You's analysis, Translate's language
     return () => { const opening = openRoute(r); routeBack = from; return opening; };
   }
@@ -4719,7 +4855,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   async function backToRoute(r, then) {
     await go('route', null, 1);
     if (current !== 'route') return;
-    routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
+    routeNow = r; markRoutes(); setHash(r.shown || r.path); flowSync(); syncNote();
     then();
   }
   function setCv(on, name) {
@@ -4752,12 +4888,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant, pane) {
     setMore(false); clearTimers();
-    if (r.run) { setHash(r.path); return r.run(); }
+    if (r.run) { setHash(r.shown || r.path); return r.run(); }
     if (r.needsCv && !cvUploaded && !pane) return askCvFor(r, instant);
     if (current === 'route') {
       // already on a route screen: swap its content in place
       if (screenRun) screenRun.finish();
-      fillRoute(r, pane); syncBackLinks(); routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
+      fillRoute(r, pane); syncBackLinks(); routeNow = r; markRoutes(); setHash(r.shown || r.path); flowSync(); syncNote();
       scroller().scrollTo({ top: 0 }); landFocus(screens.route);
       if (!reduce) play(screens.route.querySelector('.rt-item'), [{ opacity: 0, transform: 'translateX(32px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard })
         .finished.catch(() => {}).then(() => screens.route.querySelector('.rt-item')?.getAnimations().forEach(a => a.cancel()));
@@ -4771,7 +4907,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setCurrent('route');
     } else await go('route', null, current === 'loading' ? 1 : 0);
     if (current !== 'route') return;
-    routeNow = r; markRoutes(); setHash(r.path); flowSync(); syncNote();
+    routeNow = r; markRoutes(); setHash(r.shown || r.path); flowSync(); syncNote();
     const tld = screens.route.querySelector('.tld');
     if (tld && tld._start && !tld.closest('[hidden]')) tld._start();
   }
@@ -5130,12 +5266,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (form.dataset.mode === 'personalized') return form.querySelector('.aiw-next').click();
       if (!needFilled(required())) return;
       if (kind === 'interview') { iqRole = form.elements.title.value.trim() || iqRole; if (!flowOn()) openInterview('process'); return; }  // Job Interviews: its loading, then the questions
+      if (kind === 'cover') { if (!flowOn()) writeLetter('cover', form.elements.title.value.trim()); else letterFor('cover', form.elements.title.value.trim()); return; }  // its building screen, then Fill In with the letter
       if (!flowOn()) notYet(form.querySelector('[type="submit"]'), 'Writing…', `The ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
     const sel = root.querySelector('.sel');
     sel.addEventListener('click', e => {
       const it = e.target.closest('.sel-item'); if (it) return sel.querySelectorAll('.sel-item').forEach(x => x.setAttribute('aria-checked', String(x === it)));
       if (e.target.closest('.sel-back')) showPane(root, 's1', -1);
+      if (e.target.closest('.sel-go') && kind === 'cover') { const t = form.elements.title.value.trim(); if (!flowOn()) writeLetter('cover', t); else letterFor('cover', t); return; }
       if (e.target.closest('.sel-go') && kind === 'interview') { iqRole = form.elements.title.value.trim() || iqRole; if (!flowOn()) openInterview('process'); return; }
       if (e.target.closest('.sel-go') && !flowOn()) notYet(e.target.closest('.sel-go'), 'Writing…', `The personalized ${result} would open here; that screen isn’t part of the prototype yet.`);
     });
@@ -5158,8 +5296,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ];
   const TRL_POST_MAX = 6000;
   // the job a job page passes on (the design's sample)
-  const TRL_JOB = { title: 'Back-end super long text Developer', company: 'Atlasian', logo: '__ASSET:jobs/atlassian.png__',
-    meta: [['clock', '8 days ago'], ['pin', 'United States +3'], ['fading', 'Full-time +1'], ['brief', 'Remote']] };
+  // the job the job page shows (Figma concepting-KR › 294:3680), the one tailoring from it uses
+  const TRL_JOB = { title: 'Server Administrator', company: 'Cisco', logo: '__ASSET:jobs/cisco.png__',
+    meta: [['clock', '5 days ago'], ['pin', 'United States +2'], ['fading', 'Part-time +2'], ['brief', 'Remote']] };
   const TRL_SWITCH = { url: 'No URL? Paste job description', manual: 'Got URL? Paste it instead' };
   function trlHTML(fromJob) {
     const field = (id, label, input) => `<div class="trl-field"><label for="trl-${id}">${label}</label>${input}</div>`;
@@ -5639,7 +5778,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     initLang(form.querySelector('.aim-lang-wrap'));
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if (needFilled([form.elements.title]) && !flowOn()) notYet(form.querySelector('.rsg-go'), 'Writing…', 'The resignation letter would open here; that screen isn’t part of the prototype yet.');
+      if (!needFilled([form.elements.title])) return;
+      const t = form.elements.title.value.trim();
+      if (!flowOn()) writeLetter('resign', t); else letterFor('resign', t);  // its building screen, then Fill In with the letter
     });
   }
 
@@ -6199,7 +6340,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open an app page (My Documents, a tool) the way the dashboard opens; its URL goes in the address bar */
   const syncApp = path => { routeNow = findRoute(path); markRoutes(); setHash(path); flowSync(); syncNote(); };
   function riseIn(el, keepSide) {
-    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev, .tps-head > *, .tps-card, .jbs-col > *, .jm-col > *, .jt-main > *, .iq-h, .iq-list, .iq-view, .iq-load')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
+    const items = [...el.querySelectorAll(':scope > .ed-mbar, :scope > .ed-side, .md-panel, .tl-ats-h, .tl-col > *, .tl-prev, .tps-head > *, .tps-card, .jbs-col > *, .jm-col > *, .jd-col > *, .jt-main > *, .iq-h, .iq-list, .iq-view, .iq-load')].filter(x => shown(x) && !(keepSide && x.matches('.ed-side')));
     const anims = items.map((x, i) => play(x, reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: x.matches('.ed-side') ? 'translateX(-12px)' : 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
       { duration: DUR.base + 60, delay: Math.min(i, 8) * (STAGGER + 15), easing: EASE.standard }));
     Promise.all(anims.map(a => a.finished.catch(() => {}))).then(() => anims.forEach(a => a.cancel()));
@@ -6301,7 +6442,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ['Product Manager', 'Innovatech', 90, ['1 day ago', 'France +2', 'Full-time +1', 'On-site']],
     ['System Administrator', 'NetSolutions', 84, ['2 weeks ago', 'India +3', 'Full-time +2', 'Remote']]
   ];
-  const JOBS_PATH = { search: '/jobs/search/', match: '/jobs/matcher/', tracker: '/jobs/job-tracker/' };
+  const JOBS_PATH = { search: '/jobs/search/', match: '/jobs/matcher/', tracker: '/jobs/job-tracker/', job: '/jobs/job/1234/' };
   let jobsView = 'match', jobsState = 'main', jobsQuery = 'Frontend developer';  // state: main (the page, or Upload), process (Analyzing), dest (matches)
   const jbLogo = k => `<img class="jb-logo" src="${JB_LOGO[k]}" alt="" width="40" height="40">`;
 
@@ -6433,19 +6574,151 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const list = [...(tab ? jobsEl.querySelectorAll('[data-jt-tab]') : jobsEl.querySelectorAll('.jt-menu button'))], k = (list.indexOf(tab || item) + step + list.length) % list.length;
     if (tab) list[k].click(); else list[k].focus();
   });
-  function jobsHTML() { return jobsView === 'tracker' ? `${appNavHTML('tracker')}<main class="jt-main">${jtHTML()}</main>` : `${appNavHTML('jobs')}<main class="jbs-main">${jobsView === 'search' ? jbsHTML() : jmHTML()}</main>`; }
+
+  /* ---------- The job page (/jobs/job/{id}/, Figma concepting-KR › 294:3680) ----------
+     A jobs app page (jobsView 'job'): the job with Save Job and Apply, Back to Search, and Prepare for this job (Tailor
+     Your Resume open; Practice Job Interview and Write a Cover Letter fold out in its place). Tailor Your Resume opens
+     two modals over the page (the user's rule): Pick a resume to tailor (jobsState 'pick'), then Tailor your resume to
+     a job ('setup', the tailoring setup's job version); Tailor Now goes on to the tailoring screen (JTP's process pane,
+     shown under the job page's URL). Without a CV the method screen comes first and the setup follows (cvThen). */
+  const JTP = '/jobs/job/1234/tailor/';  // the tailoring's route: an inner key, its address is the job page's (shown)
+  const JD_IC = {
+    back: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 15.833 4.167 10 10 4.167M15.833 10H4.167"/></svg>',
+    heart: '<svg viewBox="0 0 16 16" fill="none" stroke="#3F3F3F" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.333 6.333a3.667 3.667 0 0 1 6.394-2.451.37.37 0 0 0 .545 0 3.66 3.66 0 0 1 6.395 2.451c0 1.527-1 2.667-2 3.667l-3.661 3.542a1.333 1.333 0 0 1-2 .012L3.333 10c-1-1-2-2.133-2-3.667Z"/></svg>',
+    chev: '<svg viewBox="0 0 20 20" fill="none" stroke="#3F3F3F" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg>',
+    check: '<svg viewBox="0 0 8 8" fill="none" stroke="#48AD43" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.667 2 3 5.667 1.333 4"/></svg>',
+    pin: TRL_IC.pin, clock: TRL_IC.clock, fading: TRL_IC.fading, brief: TRL_IC.brief,
+    star: '<path d="M10.7 8.41a.67.67 0 0 1 1.27.02l.49.97c.05.09.12.17.2.24.09.06.19.1.29.12l1.09.17a.67.67 0 0 1 .39 1.2l-.78.78a.67.67 0 0 0-.19.58l.17 1.07a.67.67 0 0 1-1.03.76l-.98-.5a.67.67 0 0 0-.6 0l-.98.5a.67.67 0 0 1-1.03-.76l.17-1.07a.67.67 0 0 0-.19-.58l-.77-.77a.67.67 0 0 1 .38-1.21l1.09-.17c.1-.02.2-.06.29-.12.08-.07.15-.15.2-.24l.5-.98ZM5.333 10h-.666A2.667 2.667 0 0 0 2 12.667V14"/><circle cx="6.667" cy="4.667" r="2.667"/>',
+    visa: '<path d="M9 5.334H7M10 1.334l-.667 1.333h2a1.333 1.333 0 0 1 1.334 1.334v9.333a1.333 1.333 0 0 1-1.334 1.333H4.667a1.333 1.333 0 0 1-1.334-1.333V4.001a1.333 1.333 0 0 1 1.334-1.334h2M11.266 14.668a3.333 3.333 0 0 0-6.533 0M6 1.334l2 4"/><circle cx="8" cy="10" r="2"/>'
+  };
+  const JD = { title: 'Server Administrator', company: 'Cisco', logo: '__ASSET:jobs/cisco.png__', pay: '$20,000 - $25,000',
+    chips: [['pin', 'United States |  London | United Arab Emirates'], ['clock', '5 days ago'], ['fading', 'Part-time | Full-time | Any-time'], ['brief', 'Remote'], ['star', 'Senior Level'], ['visa', 'Visa Sponsorship']],
+    resp: ['Support the Store Manager in day-to-day store operations', 'Establish and maintain high standards of Guest Services', 'Maximize sales and profitability through staff development', 'Control expenses and minimize shrinkage', 'Oversee merchandising and inventory control in line with company policies', 'Ensure compliance with all Company procedures and standards'],
+    req: ['Minimum age of 18', 'Ability to stand, walk, climb ladders, and lift up to 50 pounds for over 8 hours', 'Prior retail and/or management experience required'] };
+  // Prepare for this job: [id, header, title, line, button]
+  const JD_PREP = [['tailor', 'Tailor Your Resume', 'Be the perfect match.', 'Have your resume tailored to this job post in seconds.', 'Tailor Your Resume'],
+    ['interview', 'Practice Job Interview', 'Walk in prepared.', 'Practice the questions this job is most likely to ask.', 'Practice Interview'],
+    ['cover', 'Write a Cover Letter', 'Increase your chances.', 'Tailor your cover letter to a specific job, get hired faster.', 'Tailor a Cover Letter']];
+  let jdOpen = 'tailor', jdSaved = false;
+  const jdIc = k => `<svg viewBox="0 0 16 16" fill="none" stroke="#3F3F3F" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${JD_IC[k]}</svg>`;
+  function jdHTML() {
+    const ul = items => `<ul>${items.map(t => `<li>${t}</li>`).join('')}</ul>`;
+    const text = `<p>Assistant Store Manager</p><p>&nbsp;</p><p>Responsibilities:</p>${ul(JD.resp)}<p>Requirements:</p>${ul([...JD.req, ...JD.resp, ...JD.req, ...JD.resp, ...JD.req])}`;
+    const pic = `<div class="jd-pic" aria-hidden="true"><img src="__ASSET:tailor/rectangular.webp__" alt=""><span class="jd-tag"><img src="__ASSET:jobs/microsoft.png__" alt=""><span>Front-End developer at Microsoft<i>${JD_IC.check}Tailoring completed!</i></span></span></div>`;
+    return `<div class="jd-col"><h1 class="jd-h">Job detail for ${JD.title}</h1>
+      <button class="jd-back" type="button" data-jd="back">${JD_IC.back}Back to Search</button>
+      <div class="jd-row"><article class="jd-card" aria-label="${JD.title} at ${JD.company}"><div class="jd-top">
+          <div class="jd-id"><img src="${JD.logo}" alt=""><div class="jd-name"><b>${JD.title}</b><button class="jd-co" type="button" data-jd="company">${JD.company}</button></div>
+            <div class="jd-acts"><button class="jd-save" type="button" data-jd="save" aria-pressed="${jdSaved}">${JD_IC.heart}${jdSaved ? 'Saved' : 'Save Job'}</button><button class="jd-apply" type="button" data-jd="apply">Apply</button></div></div>
+          <div class="jd-pay">${JD.pay}</div>
+          <div class="jd-chips">${JD.chips.map(([ic, t]) => `<span>${jdIc(ic)}${t}</span>`).join('')}</div></div>
+        <div class="jd-text">${text}</div></article>
+        <aside class="jd-prep" aria-labelledby="jd-prep-h"><div><h2 id="jd-prep-h">Prepare for this job</h2><p>Use Kickresume to increase your chances.</p></div>
+          <div class="jd-items">${JD_PREP.map(([id, head, title, line, cta]) => `<div class="jd-item${id === jdOpen ? ' is-open' : ''}" data-jd-item="${id}">
+            <button type="button" data-jd="open" aria-expanded="${id === jdOpen}">${head}${JD_IC.chev}</button>
+            <div class="jd-body"><div><b>${title}</b><p>${line}</p>${id === 'tailor' ? pic : ''}</div><button class="jd-go" type="button" data-jd="${id}">${cta}</button></div></div>`).join('')}</div></aside></div></div>`;
+  }
+  // the person's resumes to tailor (My Documents' ones)
+  const tjCvs = () => [[docName(), '__ASSET:docs/resume-thumb.webp__'], ['[Rewritten] ' + docName(), '__ASSET:tools/resume.webp__']];
+  function tjOpen(step) {
+    tjClose(true);
+    const pop = document.createElement('div');
+    pop.className = 'wr-pop tj-pop';
+    const inner = step === 'pick'
+      ? `<div class="tj-pick" role="dialog" aria-modal="true" aria-labelledby="tj-h"><h2 id="tj-h">Pick a resume to tailor</h2>
+          <p>Kickresume creates a tailored version of your resume that fits this role perfectly using your experience and the job details.</p>
+          <div class="tj-cvs" role="radiogroup" aria-labelledby="tj-h">${tjCvs().map(([name, img], i) => `<button class="tj-cv" type="button" role="radio" aria-checked="false" tabindex="${i ? -1 : 0}"><img src="${img}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+          <div class="tj-foot"><button class="rt-btn rt-ghost" type="button" data-tj="cancel">Cancel</button><button class="rt-btn rt-ai" type="button" data-tj="continue" disabled>Continue</button></div></div>`
+      : trlHTML(true).replace('class="rt-card trl"', 'class="rt-card trl tj-trl" role="dialog" aria-modal="true"');
+    pop.innerHTML = `<div class="wr-back" data-tj="cancel"></div><div class="wr-box tj-box">${inner}</div>`;
+    document.body.appendChild(pop);
+    if (step === 'setup') {
+      const form = pop.querySelector('form'), desc = form.querySelector('.trl-desc');
+      const setLevel = opt => { form.querySelectorAll('.trl-opt').forEach(o => { o.setAttribute('aria-checked', String(o === opt)); o.tabIndex = o === opt ? 0 : -1; }); desc.textContent = TRL_LEVELS.find(l => l[0] === opt.dataset.level)[3]; };
+      form.addEventListener('click', e => { const o = e.target.closest('.trl-opt'); if (o) setLevel(o); if (e.target.closest('.trl-cancel')) tjCancel(); });
+      form.querySelector('.trl-seg').addEventListener('keydown', e => {
+        const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!k) return;
+        e.preventDefault(); const opts = [...form.querySelectorAll('.trl-opt')], at = opts.findIndex(o => o.getAttribute('aria-checked') === 'true'), nx = opts[(at + k + opts.length) % opts.length]; setLevel(nx); nx.focus();
+      });
+      form.addEventListener('submit', e => { e.preventDefault(); tjTailor(); });
+    }
+    pop.addEventListener('click', e => {
+      const cv = e.target.closest('.tj-cv'), b = e.target.closest('[data-tj]');
+      if (cv) { pop.querySelectorAll('.tj-cv').forEach(c => { c.setAttribute('aria-checked', String(c === cv)); c.tabIndex = c === cv ? 0 : -1; }); pop.querySelector('[data-tj="continue"]').disabled = false; return; }
+      if (!b) return;
+      if (b.dataset.tj === 'cancel') return tjCancel();
+      if (b.dataset.tj === 'continue') { if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].match === `route:${JOBS_PATH.job}#pick` && flowNext()) return; jobsState = 'setup'; tjOpen('setup'); flowSync(); }
+    });
+    pop.addEventListener('keydown', e => {
+      if (e.key === 'Escape') return tjCancel();
+      const cv = e.target.closest('.tj-cv'), k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!cv || !k) return;
+      e.preventDefault(); const all = [...pop.querySelectorAll('.tj-cv')], nx = all[(all.indexOf(cv) + k + all.length) % all.length]; nx.click(); nx.focus();
+    });
+    (pop.querySelector('.tj-cv, .trl-go')).focus();
+    if (!reduce) pop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+  }
+  function tjClose(instant) {
+    const pop = document.querySelector('.tj-pop');
+    if (!pop) return;
+    if (instant || reduce) return pop.remove();
+    pop.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}).then(() => pop.remove());
+  }
+  // Cancel, Escape or the backdrop: back to the job page (in a run, to its job page step)
+  function tjCancel() {
+    tjClose(); jobsState = 'main';
+    const i = flowNow ? flowNow.steps.findIndex(st => st.match === `route:${JOBS_PATH.job}#main`) : -1;
+    if (i >= 0 && i < flowAt) { flowAt = i; flowNow.skipped = false; renderFlowBar(); }
+    if (current === 'jobs') { setHash(JOBS_PATH.job); jobsEl.querySelector('[data-jd="tailor"]')?.focus(); }
+  }
+  // Tailor Now: the tailoring screen (a run's next step, or the tailoring route's process pane)
+  function tjTailor() {
+    tjClose(); jobsState = 'main';
+    if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].match === `route:${JOBS_PATH.job}#setup` && flowNext()) return;
+    openRoute(findRoute(JTP), false, 'process');
+  }
+  // Tailor Your Resume: pick a resume, or without one make it first (the setup follows: the route's cvThen)
+  function tjStart() {
+    if (asGuest()) return signupPop('tailor your resume');
+    if (!cvUploaded) return askCvFor(findRoute(JTP));
+    jobsState = 'pick'; tjOpen('pick'); flowSync();
+  }
+  function jdClick(e) {
+    const b = e.target.closest('[data-jd]'); if (!b) return;
+    const a = b.dataset.jd;
+    if (a === 'back') return openJobs('search');
+    if (a === 'company') return openRoute(findRoute('/jobs/organization/kickresume/'));
+    if (a === 'save') { if (asGuest()) return signupPop('save jobs to your Job Tracker'); jdSaved = !jdSaved; b.setAttribute('aria-pressed', String(jdSaved)); b.lastChild.textContent = jdSaved ? 'Saved' : 'Save Job'; return toast(jdSaved ? 'Saved to your Job Tracker.' : 'Removed from your Job Tracker.'); }
+    if (a === 'apply') return toast('Applying isn’t part of this prototype.');
+    if (a === 'open') { jdOpen = b.closest('[data-jd-item]').dataset.jdItem; jobsEl.querySelectorAll('[data-jd-item]').forEach(it => { const on = it.dataset.jdItem === jdOpen; it.classList.toggle('is-open', on); it.firstElementChild.setAttribute('aria-expanded', String(on)); }); return jobsEl.querySelector(`[data-jd-item="${jdOpen}"] .jd-go`).focus(); }
+    if (a === 'tailor') return tjStart();
+    if (a === 'interview') return openRoute(findRoute('/dashboard/create-interview/'));
+    if (a === 'cover') return openRoute(findRoute('/dashboard/create-ai-cover-from-job/'));
+  }
+  function jobsHTML() { return jobsView === 'job' ? `${appNavHTML('jobs')}<main class="jd-main">${jdHTML()}</main>` : jobsView === 'tracker' ? `${appNavHTML('tracker')}<main class="jt-main">${jtHTML()}</main>` : `${appNavHTML('jobs')}<main class="jbs-main">${jobsView === 'search' ? jbsHTML() : jmHTML()}</main>`; }
 
   /* Open a jobs page (or one of its states); between them the page stays and its content fades over */
   async function openJobs(view, state) {
+    // on the job page, its modals open and close over it (no redraw)
+    if (current === 'jobs' && jobsView === 'job' && view === 'job' && jobsEl.querySelector('.jd-main')) {
+      jobsState = state || 'main'; syncApp(JOBS_PATH.job);
+      if (jobsState === 'pick' || jobsState === 'setup') tjOpen(jobsState); else tjClose();
+      return;
+    }
+    tjClose(true);
     jobsView = view;
     jobsState = state || (view === 'match' && cvUploaded ? 'dest' : 'main');
     const fill = () => { jobsEl.className = 'jobs is-' + view; jobsEl.innerHTML = jobsHTML(); if (jobsState === 'process') runMatching(); };
-    if (current !== 'jobs') return enterApp(jobsEl, fill, 'jobs', JOBS_PATH[view]);
-    clearTimers(); setMore(false);
-    await leaveOut(jobsEl, true);
-    fill(); placeVer(); window.scrollTo(0, 0); device.scrollTop = 0;
-    syncApp(JOBS_PATH[view]); riseIn(jobsEl, true); landFocus(jobsEl);
+    if (current !== 'jobs') await enterApp(jobsEl, fill, 'jobs', JOBS_PATH[view]);
+    else {
+      clearTimers(); setMore(false);
+      await leaveOut(jobsEl, true);
+      fill(); placeVer(); window.scrollTo(0, 0); device.scrollTop = 0;
+      syncApp(JOBS_PATH[view]); riseIn(jobsEl, true); landFocus(jobsEl);
+    }
+    if (view === 'job' && current === 'jobs' && (jobsState === 'pick' || jobsState === 'setup')) tjOpen(jobsState);
   }
+  jobsEl.addEventListener('click', e => { if (jobsView === 'job') jdClick(e); });
   // Analyzing your resume…: the bar fills, then the matches (or, in a run, what its Result leads to)
   function runMatching() {
     const bar = jobsEl.querySelector('.jm-bar > i'), pct = jobsEl.querySelector('.jm-pct'), T = 3200, t0 = performance.now();
@@ -6761,6 +7034,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
   // Job Interviews: its own loading and the questions page (Figma 285:361)
   const IQ_STEP = st => ({ label: st === 'process' ? 'Job Interviews · questions loading' : 'Job Interviews · your questions', match: `route:${IQ_PATH}#${st}`, run: () => openInterview(st) });
+  // a letter's processing and destination: the building screen, then Fill In with the letter (the user's rule)
+  const letterRun = kind => ({
+    process: [{ label: `Building screen · Writing your ${LETTER[kind].what}`, match: 'screen:loading', run: () => { if (person.letterKind !== kind) letterFor(kind); showBuilding('ai', LETTER_AS[kind]); } }],
+    dest: [{ label: `Fill In · the ${LETTER[kind].what}`, match: 'screen:editor', run: () => { if (person.letterKind !== kind) letterFor(kind); return jumpEditor(kind); } }]
+  });
   const signUp = S.auth('Sign up', 'signup');
   const landing = (what, note) => S.auth('Sign up · ' + what, 'signup', note || `Flow 3: the visitor gave ${what === 'CV attached' ? 'a CV (jana-cv.pdf)' : 'their input'} on a landing page, so after sign-up processing starts straight away.`);
   /* Every URL, paired with its flow in each situation (the user's doc "URLs by flow and situation"): { flow, group
@@ -6787,7 +7065,42 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ];
   // Rewrite resume: its loading straight away (it needs only a CV), then the rewritten copy in Fill In
   const REWRITE = { verb: 'Rewriting your resume', path: '/dashboard/rewrite-resume/', noun: 'rewritten resume' };
-  function rewriteNow() { openWire(REWRITE.path, REWRITE.verb, 'process', { f: REWRITE, pane: 'process' }); later(processDone, 2600); }
+  /* Its loading (Figma concepting-KR › 294:5202): the sections are rewritten one by one, then Resume rewrite done! and
+     Continue (the run's next step, else the rewritten copy in Fill In). A run set to fail stops early (processDone
+     shows the processing state). The design's upload variant isn't used: without a CV the method screen comes first. */
+  const RW_SECS = ['Work Experience', 'Education', 'Skills', 'Certificates'];
+  const RW_CHECK = '<svg viewBox="0 0 20 20" fill="none" stroke="#48AD43" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.667 5 7.5 14.167 3.333 10"/></svg>';
+  const rwHTML = () => `<div class="rt-card rw" data-state="run" role="status" aria-live="polite"><div class="rw-l" aria-hidden="true"><span class="rw-beta">Beta</span><img src="__ASSET:tailor/martinus.webp__" alt=""></div>
+    <div class="rw-r"><h2 class="rw-h">${IQ_IC.spinner}<span>In progress...</span></h2><p>Generating a revamped copy of your resume. This process can take up to 2 minutes.</p>
+      <ul class="rw-list">${RW_SECS.map((t, i) => `<li${i ? ' hidden' : ''}>${RW_CHECK}${t}</li>`).join('')}</ul>
+      <div class="rw-foot"><button class="rw-go" type="button" hidden>Continue</button></div></div>
+    <span class="rw-wait">Please wait for the rewrite to complete—it shouldn’t take much longer.</span></div>`;
+  const RW_ROUTE = { path: REWRITE.path, title: 'Rewrite resume', pane: 'process', html: rwHTML, head: { process: ['Rewriting your resume', 'A revamped copy of it opens in Fill In when it’s done.'] } };
+  async function rewriteNow() {
+    await openRoute(RW_ROUTE);
+    const card = screens.route.querySelector('.rw');
+    if (!card) return;
+    const items = [...card.querySelectorAll('.rw-list li')], go = card.querySelector('.rw-go');
+    const stopAt = procResult === 'ok' ? items.length : 2;
+    const tick = i => {
+      if (!card.isConnected) return;
+      if (i < stopAt) { items[i].hidden = false; return later(() => tick(i + 1), 1100); }
+      if (procResult !== 'ok') return processDone();  // Failed or Error: the processing state says so
+      card.dataset.state = 'done';
+      card.querySelector('.rw-h span').textContent = 'Resume rewrite done!';
+      card.querySelector('.rw-r > p').textContent = 'Note: Resume rewrite is still in beta, and it can make mistakes. Double-check your resume for errors.';
+      go.hidden = false; go.focus();
+    };
+    later(() => tick(1), 1100);
+    go.addEventListener('click', () => processDone());
+  }
+  // a click beside the card while it runs: please wait (the design's note)
+  document.addEventListener('click', e => {
+    const card = current === 'route' && screens.route.querySelector('.rw[data-state="run"]');
+    if (!card || card.contains(e.target) || e.target.closest('#proto-dock, #flow-bar, .proto, .proto-more')) return;
+    const note = card.querySelector('.rw-wait');
+    note.classList.add('is-on'); clearTimeout(note._t); note._t = setTimeout(() => note.classList.remove('is-on'), 2600);
+  });
   // a guest (no account) can browse the job board and its results; the app's menu and saving a job ask them to sign up
   const asGuest = () => !!(flowNow && flowNow.f.guest);
   /* The section writers (Summary generator, Generate work experience / objective): Fill In opens at their section,
@@ -6884,9 +7197,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     // Improve my resume
     { id: 'tailor-resume', flow: 2, title: 'Tailor resume', path: '/dashboard/tailor-resume/', prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
-    { id: 'jobs-tailor', flow: 2, title: 'Tailor resume to a job', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', entry: S.wire('Job page', '/jobs/job/1234/', 'job'), prep: toolPrep('/jobs/job/1234/tailor/', 'Tailor resume · this job'), ...trlRun('/jobs/job/1234/tailor/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
+    // from a job page (/jobs/job/{id}/): Tailor Your Resume → Pick a resume to tailor → Tailor your resume to a job (two
+    // modals over the page) → tailoring; without a CV the method screen makes it first and the setup follows
+    { id: 'jobs-tailor', flow: 2, title: 'Tailor resume to a job', path: JTP, url: '/jobs/job/{id}/ · Tailor Your Resume', entry: S.jobs('Job page', 'job'),
+      prep: () => cvUploaded ? [S.jobs('Pick a resume to tailor (modal)', 'job', 'pick'), S.jobs('Tailor your resume to a job (modal)', 'job', 'setup')]
+        : [S.cv(JTP), ...cvMade(JTP), S.jobs('Tailor your resume to a job (modal)', 'job', 'setup')],
+      ...trlRun(JTP), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
     // Rewrite resume: only a CV, then its loading (no setup screen; the user's rule)
-    ...needsCv('rewrite-resume', 'Rewrite resume', '/dashboard/rewrite-resume/', resumeOut('Editor · the rewritten copy'), { process: [S.process(REWRITE)], verb: REWRITE.verb, noun: REWRITE.noun }),
+    ...needsCv('rewrite-resume', 'Rewrite resume', '/dashboard/rewrite-resume/', resumeOut('Editor · the rewritten copy'), { process: [{ label: 'Resume rewrite · In progress… then done!', match: 'route:/dashboard/rewrite-resume/#process', run: () => rewriteNow() }], verb: REWRITE.verb, noun: REWRITE.noun }),
     { id: 'summary-generator', flow: 4, title: 'Summary generator', path: '/dashboard/summary-generator/', dest: writerAt('summary', 'Profile summary') },
     { id: 'ai-experience', flow: 4, title: 'Generate work experience', path: '/ai/resume/experience/', dest: writerAt('experience', 'Work experience') },
     { id: 'ai-objective', flow: 4, title: 'Generate resume objective', path: '/ai/resume/general/', dest: writerAt('objective', 'Profile') },
@@ -6902,9 +7220,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       { id: `latest-${t}-new`, flow: 4, title: `Latest resume · ${label}, no CV yet`, path: `/latest-resume/${t}/`, cv: false, dest: [S.latest('My Documents', `/latest-resume/${t}/`, false, 'route:/dashboard/resumes/')] }]),
 
     // Write something new: the writer's form is its data (a CV is optional, used if there)
-    { id: 'ai-cover', flow: 2, title: 'AI Cover Letter Writer', path: '/dashboard/create-ai-cover-from-job/', prep: [S.route('AI Cover Letter Writer', '/dashboard/create-ai-cover-from-job/')], dest: [S.dest('Cover letter', '/dashboard/create-ai-cover-from-job/', 'doc')], verb: 'Writing your cover letter', psteps: ['Reading the job post', 'Matching it to your experience', 'Writing the letter'], noun: 'cover letter', given: 'Job details' },
+    // its loading is the building screen (as for a resume) and it ends in Fill In with the cover letter (the user's rule)
+    { id: 'ai-cover', flow: 2, title: 'AI Cover Letter Writer', path: '/dashboard/create-ai-cover-from-job/', prep: [S.route('AI Cover Letter Writer', '/dashboard/create-ai-cover-from-job/')],
+      ...letterRun('cover'), noun: 'cover letter', given: 'Job details' },
     { id: 'ai-interview', flow: 2, title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], process: [IQ_STEP('process')], dest: [IQ_STEP('dest')], verb: 'Preparing your questions', noun: 'interview questions', given: 'The role' },
-    { id: 'ai-resign', flow: 2, title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], dest: [S.dest('Resignation letter', '/ai/resignation/', 'doc')], verb: 'Writing your letter', noun: 'letter', given: 'Letter details' },
+    { id: 'ai-resign', flow: 2, title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], ...letterRun('resign'), noun: 'resignation letter', given: 'Letter details' },
     { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.wire('Career Map onboarding', '/career-map/', 'cm-onboarding')], dest: [S.wire('Career Map', '/career-map/', 'cm', { pane: 'dest' })], verb: 'Mapping your career', psteps: ['Reading your experience', 'Finding where it can lead', 'Scoring each role'], noun: 'Career Map', given: 'Career answers' },
     // no template pickers (the user's rule): a new cover letter or website opens with the default template
     { id: 'create-cover', flow: 4, title: 'New cover letter', path: '/dashboard/create-cover/', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')] },
@@ -6920,7 +7240,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-results', flow: 4, title: 'Jobs · search results · guest', path: '/jobs/search/', guest: true, cv: false, dest: [S.jobs('Search results', 'search')] },
     { id: 'jobs-matcher', flow: 3, title: 'Jobs for You (job matcher)', path: JM, cv: true, process: JM_PROC, dest: JM_DEST, noun: 'job matches' },
     { id: 'jobs-matcher-new', flow: 2, title: 'Jobs for You · no CV yet', path: JM, cv: false, prep: [S.cv(JM), ...cvMade(JM)], process: JM_PROC, dest: JM_DEST, noun: 'job matches' },
-    ...[['/jobs/job/1234/', 'Job', 'job', '/jobs/job/{id}/'], ['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/']]
+    { id: 'jobs-job', flow: 4, title: 'Job', path: '/jobs/job/1234/', url: '/jobs/job/{id}/', dest: [S.jobs('Job page', 'job')] },
+    ...[['/jobs/organization/kickresume/', 'Company', 'company', '/jobs/organization/{company}/']]
       .map(([path, title, w, url]) => ({ id: 'jobs-' + w, flow: 4, title, path, url, dest: [S.wire(title, path, w)] })),
     { id: 'jobs-tracker', flow: 4, title: 'Job Tracker', path: '/jobs/job-tracker/', dest: [S.jobs('Job Tracker · My Jobs', 'tracker')] },
 
@@ -6946,7 +7267,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and the tailoring setup (the job post and Balanced) on a landing page, so after sign-up the CV is uploaded and tailoring starts straight away.'),
       ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/dashboard/tailor-resume/')),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
-    { id: 'landing-jobs-tailor', flow: 3, title: 'Tailoring to a job with a CV from the landing page', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', cv: true, data: true, lp: true, redo: 'jobs-tailor-new',
+    { id: 'landing-jobs-tailor', flow: 3, title: 'Tailoring to a job with a CV from the landing page', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/ · Tailor Your Resume', cv: true, data: true, lp: true, redo: 'jobs-tailor-new',
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) on a job’s landing page, which carries the job, so after sign-up the CV is uploaded and tailoring to that job starts straight away.'),
       ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/jobs/job/1234/tailor/')),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
@@ -7342,7 +7663,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (next) next(); else openEditor();
   }
   /* Straight into the editor (a returning user, or a flow step) */
-  function jumpEditor() {
+  function jumpEditor(doc) {
+    edDoc = doc || 'resume';
     if (screenRun) screenRun.finish();
     clearTimers();
     if (APPS[current]) { APPS[current].hidden = true; APPS[current].innerHTML = ''; topbarEl.hidden = false; pageEl.hidden = false; }
