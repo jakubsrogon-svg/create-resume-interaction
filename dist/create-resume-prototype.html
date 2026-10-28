@@ -2986,7 +2986,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.28">v2.28</div>
+<div class="proto-ver" aria-label="Prototype version 2.28.1">v2.28.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -6707,20 +6707,23 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const ENDS = [['ok', 'Completed', 'Processing goes straight on to the result', 'Done'], ['fail', 'Failed', 'The input can’t be used (an unreadable file, a private profile)'], ['error', 'Error', 'Something broke on our side; the person can try again']];
   let pmKey = '', pmFrom = 'signup', pmCvOn = false, pmDataOn = false;  // the URL (a feature's path; '' is Build my resume, only the goal screen leads there)
   const runsWithCv = f => f.cv ?? pmCvOn;
-  const pmList = (key = pmKey, from = pmFrom) => FEATURES.filter(f => f.path === key && fromOf(f) === from);
+  // Flow 1 lives on /register/ only (the user's rule): its goal runs are branches of Build my resume's entry, picked on
+  // the goal screen, never their tools' URLs
+  const dockPath = f => f.flow === 1 ? '' : f.path;
+  const pmList = (key = pmKey, from = pmFrom) => FEATURES.filter(f => dockPath(f) === key && fromOf(f) === from);
   const pmCvFree = list => list.some(f => f.cv === undefined) || (list.some(f => f.cv === true) && list.some(f => f.cv === false));
   // the entries for that CV (else the URL's either-way one), then the one with or without the landing page's data
   const pmPool = (list, cv) => [list.filter(f => f.cv === cv), list.filter(f => f.cv === undefined), list].find(p => p.length) || [];
   const pmPickOf = (list, cv, data = pmDataOn) => { const pool = pmPool(list, cv); return pool.find(f => !!f.data === data) || pool[0]; };
   const pmDataFree = list => { const pool = pmPool(list, runsWithCv(pmPickOf(list, pmCvOn))); return pool.some(f => f.data) && pool.some(f => !f.data); };
   const pmFeature = () => pmPickOf(pmList(), pmCvOn);
-  const pmAvail = () => new Set(FEATURES.filter(x => x.path === pmKey).map(fromOf));
+  const pmAvail = () => new Set(FEATURES.filter(x => dockPath(x) === pmKey).map(fromOf));
   // the steps a run shows with the CV it starts with
   function pmSteps(f) { const had = cvUploaded; cvUploaded = runsWithCv(f); const st = buildFlow(f).steps; cvUploaded = had; return st; }
   // Open's list: one entry per URL, named after the app's feature there (else the first), in the six groups (KINDS)
   const PM_URLS = KINDS.flatMap(([group, paths]) => paths.filter(key => FEATURES.some(f => f.path === key)).map(key => {
     const all = FEATURES.filter(f => f.path === key), main = all.find(f => fromOf(f) === 'app') || all[0];
-    return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Build my resume', group };
+    return { key, title: key ? main.title.replace(/, (returning user|no CV yet)$/, '') : 'Sign up (/register/)', group };
   }));
   const PM_GROUPS = KINDS.map(([g]) => g).filter(g => PM_URLS.some(u => u.group === g));
   const chev = '<svg class="dk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>';
@@ -6764,7 +6767,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     run.dataset.feature = f.id; run.querySelector('span').innerHTML = '<span class="dk-long">Flow </span>' + T.n;
     run.setAttribute('aria-label', `Run flow ${T.n}, ${T.title}: ${f.title}`);
     run.dataset.tip = `${T.title} · ${pmSteps(f).length} steps`;
-    run.classList.toggle('is-on', !!flowNow && flowNow.f === f);
+    run.classList.toggle('is-on', !!flowNow && (flowNow.f === f || (flowNow.n === 1 && f.flow === 1)));
   }
   /* the lists: above their button (below when there's more room), as tall as the window allows, scrolling inside
      themselves; arrow keys, Home / End, Page Up / Down, a letter, Enter or Space, Escape */
@@ -6836,7 +6839,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   window.addEventListener('resize', () => ddClose());
   // the dock follows the run: the URL, where the person came from and the CV of the feature that runs
   function pmShow(f) {
-    pmKey = f.path; pmFrom = fromOf(f);
+    pmKey = dockPath(f); pmFrom = fromOf(f);
     if (f.cv !== undefined && pmCvFree(pmList())) pmCvOn = f.cv;
     pmDataOn = !!f.data;
     dockUpdate();
@@ -6889,7 +6892,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // the bar is drawn anew: focus on one of its buttons comes back to the same button (or the step now on)
     const had = flowBar.contains(document.activeElement) && document.activeElement, was = had && (had.matches('.fb-dot') ? '' : had.getAttribute('aria-label'));
     flowBar.hidden = !flowNow;
-    dockEl.querySelector('.dk-run')?.classList.toggle('is-on', !!flowNow && flowNow.f === pmFeature());
+    dockEl.querySelector('.dk-run')?.classList.toggle('is-on', !!flowNow && (flowNow.f === pmFeature() || (flowNow.n === 1 && pmFeature().flow === 1)));
     if (!flowNow) { flowLive.textContent = ''; if (had) pmBtn.focus(); return; }
     const st = flowNow.steps[flowAt], groups = [];
     flowNow.steps.forEach((s, i) => { const g = groups.at(-1); if (g && g.stage === s.stage) g.items.push([s, i]); else groups.push({ stage: s.stage, items: [[s, i]] }); });
