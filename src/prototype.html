@@ -3178,7 +3178,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.31">v2.31</div>
+<div class="proto-ver" aria-label="Prototype version 2.31.1">v2.31.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4774,7 +4774,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '5 · Bring a resume to a tool', path: '/dashboard/linkedin-import/', title: 'LinkedIn import', head: { main: HEADS.linkedin, progress: HEADS.linkedin }, html: linkedinHTML, init: initLinkedin },
     // the resume tools: Tailor resume asks for the job first; Rewrite resume goes straight to its loading; Summary
     // generator is a section writer (the pop-up over Fill In); the others open their page (analyseNow, toolNow), and
-    // Translate resume asks for the language in a run (TR_LANG). Without a CV the method screen comes first.
+    // Translate resume opens its page straight away (the language is picked there, or came from a landing page). Without a CV the method screen comes first (from a landing page only).
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
       ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => { const path = `/dashboard/${t}/`, base = { group: '5 · Bring a resume to a tool', path, title };
@@ -7213,7 +7213,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ...needsCv('analyse-resume', 'Analyse resume', ATS, atsOut, { noun: 'ATS report' }),
     ...[['proofreading', 'Proofreading', 'Proofreading'], ['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach']]
       .flatMap(([t, title, label]) => needsCv(t, title, `/dashboard/${t}/`, [S.tool(label, TOOL_PAGE[t], `/dashboard/${t}/`)], { noun: label.toLowerCase() })),
-    { id: 'translate-app', flow: 2, title: 'Translate resume', path: TR, cv: true, prep: [TR_LANG], process: false, dest: TR_DEST, noun: 'translation' },
+    // in the app Translate is the document's Proofread & Translate (its second navigation), there only with a CV: like the
+    // ATS check it opens straight away (Flow 4), the language is picked on the page (the user's rule)
+    { id: 'translate-app', flow: 4, title: 'Translate resume', path: TR, cv: true, dest: TR_DEST, noun: 'translation' },
     { id: 'translate-app-new', flow: 2, title: 'Translate resume · no CV yet', path: TR, cv: false, prep: [S.cv(TR), ...cvMade(TR), TR_LANG], process: false, dest: TR_DEST, noun: 'translation' },
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].flatMap(([t, label]) => [
       { id: 'latest-' + t, flow: 4, title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] },
