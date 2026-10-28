@@ -3075,7 +3075,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.30">v2.30</div>
+<div class="proto-ver" aria-label="Prototype version 2.30.1">v2.30.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -6933,7 +6933,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // rule), and a CV for the Upload resume screen and the ATS check (Back after a failed upload: their own runs)
     { id: 'landing-cv', flow: 3, title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: true, lp: true, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
     { id: 'landing-ats', flow: 3, title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: true, lp: true, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
-    { id: 'landing-tailor', flow: 3, title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, data: true, lp: true, redo: 'tailor-resume',
+    { id: 'landing-tailor', flow: 3, title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, data: true, lp: true, redo: 'tailor-resume-new',
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and the tailoring setup (the job post and Balanced) on a landing page, so after sign-up the CV is uploaded and tailoring starts straight away.'),
       ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/dashboard/tailor-resume/')),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
@@ -6973,6 +6973,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     f.entry = [S.auth('Sign up · ' + what, 'signup', note), ...list(base.entry)];
     return f;
   }
+  // Tailor resume (and to a job) runs either way in the code; in the app it is offered with a CV only (the user's rule:
+  // the app never goes through resume creation), so its no-CV run is a copy kept for the landing pages and redo
+  ['tailor-resume', 'jobs-tailor'].forEach(id => { const f = FEATURES.find(x => x.id === id); f.cv = true; FEATURES.push({ ...f, id: id + '-new', title: f.title + ' · no CV yet', cv: false }); });
   FEATURES.push(...[...new Set(FEATURES.map(f => f.path))].filter(p => !LP_NONE.includes(p)).flatMap(path => {
     const app = FEATURES.filter(f => f.path === path && fromOf(f) === 'app'), here = FEATURES.filter(f => f.path === path && f.lp);
     if (!app.length || path === TR) return [];  // Translate's landing pages always give the language: written above
@@ -6980,10 +6983,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     return [false, true].filter(cv => !cv || LP_CV.includes(path)).flatMap(cv => [false, ...(pick(cv).given ? [true] : path === '/dashboard/tailor-resume/' && cv ? [true] : [])].map(data => [cv, data]))
       .filter(([cv, data]) => !here.some(f => f.cv === cv && !!f.data === data)).map(([cv, data]) => lpVariant(pick(cv), cv, data));
   }));
-  // the app shows the resume checks (ATS, Recruiter feedback, Career coach, Proofreading, Translate) only to someone
-  // who has a CV (the user's rule): their runs without one are not offered from the app; they stay as the landing-page
-  // runs' base and as a failed upload's way to give the CV again (redo)
-  const APP_CV_ONLY = ['analyse-resume-new', 'proofreading-new', 'recruiter-feedback-new', 'career-coach-new', 'translate-app-new'];
+  // in the app a feature that needs a CV runs only with one (the user's rule: the app never goes through resume
+  // creation). The resume checks (ATS, Recruiter feedback, Career coach, Proofreading, Translate) aren't even shown
+  // without a CV; Tailor, Rewrite, Jobs for You and the editor are shown but can't be reached without one. Their no-CV
+  // runs are not offered from the app; they stay as the landing-page runs' base and as a failed upload's redo
+  const APP_CV_ONLY = ['analyse-resume-new', 'proofreading-new', 'recruiter-feedback-new', 'career-coach-new', 'translate-app-new',
+    'tailor-resume-new', 'jobs-tailor-new', 'rewrite-resume-new', 'jobs-matcher-new', 'edit-new'];
   FEATURES.forEach(f => { if (APP_CV_ONLY.includes(f.id)) f.appOff = true; });
   FEATURES.forEach(f => { f.group = kindOf(f.path); });  // the six groups (the old checklist groups are gone)
   /* A feature's run through its flow's stages */
