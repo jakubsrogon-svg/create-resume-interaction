@@ -3178,7 +3178,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.31.1">v2.31.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.31.2">v2.31.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -7285,15 +7285,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const fromOf = f => f.flow === 1 ? 'signup' : f.lp ? 'lp' : f.guest || f.id === 'guest-edit' ? 'guest' : 'app';
   /* From a landing page (a new user, the doc's "New"): the App's run after Sign up. Landing pages collect a CV only
      for URLs that need or make one (the user's rule: none on the others, and none for Log in, the latest-resume links
-     or the guest editor). With a CV it is uploaded after sign-up (the upload modal; a LinkedIn profile is imported)
+     or the guest editor). The editor (/edit/) has no landing page: it only opens with a document (the user's rule:
+     uploaded, a sample…; /edit/ alone is a 404). With a CV it is uploaded after sign-up (the upload modal; a LinkedIn profile is imported)
      and the run goes on to the setup (Flow 2), or straight to the loading or page when there is none (Flow 3). The
      writers' details may come with it too (data): then their form is skipped and the run is Flow 3. */
   const LP_UPM = S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress');
-  const LP_NONE = ['', '/login/', '/guest-edit-start/', '/latest-resume/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/'];
+  const LP_NONE = ['', '/login/', '/edit/', '/guest-edit-start/', '/latest-resume/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/'];
   // not the resume-building URLs (New resume, a template, Create Resume with AI): someone there has no resume yet, and
   // a landing page with an upload block leads to Upload resume (the user's rule)
   const LP_CV = ['/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/dashboard/tailor-resume/',
-    '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', ATS, '/dashboard/proofreading/', TR, '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', JM, '/edit/',
+    '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', ATS, '/dashboard/proofreading/', TR, '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', JM,
     '/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/'];
   function lpVariant(base, cv, data) {
     const list = x => [].concat(typeof x === 'function' ? x() : x || []), li = base.id === 'linkedin';
