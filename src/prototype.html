@@ -3339,7 +3339,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.34.1">v2.34.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.35">v2.35</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -5038,7 +5038,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', shown: '/jobs/job/1234/', hidden: true, title: 'Tailor resume to this job', needsCv: true, noX: true, cvThen: () => openJobs('job', 'setup'), head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', run: () => openJobs('tracker') },
-    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', run: () => openCareer() },
+    { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', run: () => openCareer(), cvThen: () => openCareer('q1') },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
   let routeNow = null, routeBack = 'intent';
@@ -7333,7 +7333,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (b.dataset.cmI) { const set = cmInd[cmState === 'ind1' ? 0 : 1], i = +b.dataset.cmI; set.has(i) ? set.delete(i) : set.add(i); b.setAttribute('aria-checked', String(set.has(i))); return; }
     if (b.dataset.cmRole) return toast(b.classList.contains('is-locked') ? 'More positions open as you set goals on your map.' : `${b.dataset.cmRole}: the path from your role, its skills and salary open here.`);
     const a = b.dataset.cm;
-    if (a === 'next') { if (cmState === 'cv' && cmLi) cmUser = cmEl.querySelector('#cm-li').value; return cmGo(CM_ORDER[at + 1]); }
+    if (a === 'next') {
+      if (cmState === 'welcome' && !cvUploaded && !flowNow) return askCvFor(findRoute('/career-map/'));  // no CV: the shared CV step
+      if (cmState === 'cv' && cmLi) cmUser = cmEl.querySelector('#cm-li').value;
+      return cmGo(CM_ORDER[at + 1]);
+    }
     if (a === 'back') return cmState === 'welcome' ? goBack() : openCareer(CM_ORDER[at - 1]);
     if (a === 'li' || a === 'list') { cmLi = a === 'li'; return openCareer('cv'); }
     if (a === 'skip') return cmSkip();
@@ -7607,7 +7611,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ...letterRun('cover'), noun: 'cover letter', given: 'Job details' },
     { id: 'ai-interview', flow: 2, title: 'Job Interview Questions', path: '/dashboard/create-interview/', prep: [S.route('Job Interview Questions', '/dashboard/create-interview/')], process: [IQ_STEP('process')], dest: [IQ_STEP('dest')], verb: 'Preparing your questions', noun: 'interview questions', given: 'The role' },
     { id: 'ai-resign', flow: 2, title: 'Resignation letter', path: '/ai/resignation/', prep: [S.route('Resignation letter', '/ai/resignation/')], ...letterRun('resign'), noun: 'resignation letter', given: 'Letter details' },
-    { id: 'career-map', flow: 2, title: 'Career Map', path: '/career-map/', prep: [S.cm('Career Map · Welcome', 'welcome'), S.cm('Select a resume (or LinkedIn)', 'cv'), S.cm('Preferences · five questions', 'q', 'q1'), S.cm('Industries · preferred, to avoid', 'ind', 'ind1')], process: [S.cm('Your career map is ready!', 'ready')], dest: [S.cm('Career Map', 'dest')], noun: 'Career Map', given: 'Career answers' },
+    // the shared CV step (the user's rule for the primary features): no CV → the method screen, as everywhere; with one,
+    // Career Map's own Select a resume picks which. In the app it runs only with a CV (APP_CV_ONLY)
+    ...[true, false].map(cv => ({ id: cv ? 'career-map' : 'career-map-new', flow: 2, title: 'Career Map' + (cv ? '' : ' · no CV yet'), path: '/career-map/', cv,
+      prep: [S.cm('Career Map · Welcome', 'welcome'), ...(cv ? [S.cm('Select a resume', 'cv')] : [S.cv('/career-map/'), ...cvMade('/career-map/')]), S.cm('Preferences · five questions', 'q', 'q1'), S.cm('Industries · preferred, to avoid', 'ind', 'ind1')],
+      process: [S.cm('Your career map is ready!', 'ready')], dest: [S.cm('Career Map', 'dest')], noun: 'Career Map', given: 'Career answers',
+      ...(cv ? {} : { dataPrep: [S.cv('/career-map/'), ...cvMade('/career-map/')] }) })),
     // no template pickers (the user's rule): a new cover letter or website opens with the default template
     { id: 'create-cover', flow: 4, title: 'New cover letter', path: '/dashboard/create-cover/', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/', 'doc')] },
     { id: 'create-cover-tpl', flow: 4, title: 'Cover letter with a chosen template', path: '/dashboard/create-cover/modern/', url: '/dashboard/create-cover/{template}', dest: [S.dest('Cover letter editor', '/dashboard/create-cover/modern/', 'doc')] },
@@ -7682,11 +7691,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       title: `${base.title.replace(/(, | · )(returning user|no CV yet)$/, '')} from a landing page${cv ? (li ? ', with a profile' : ', with a CV') : LP_CV.includes(base.path) ? ', no CV' : ''}${data ? ' and the ' + base.given.toLowerCase() : ''}` };
     if (cv && li) Object.assign(f, { flow: 3, prep: undefined, ...upmRun('/dashboard/linkedin-import/', 'Importing') });
     else if (cv && (data || !base.prep)) Object.assign(f, base.flow === 4 ? { flow: 3, ...upmRun('/dashboard/upload-resume/') } : { flow: 3, prep: undefined, process: [LP_UPM, ...(list(base.process).length ? list(base.process) : [S.process(base)])] });
-    // still a setup to fill (Flow 2): the CV was given, so it is uploaded with the feature's processing, after the setup
-    else if (cv) f.process = [LP_UPM, ...(list(base.process).length ? list(base.process) : [S.process(base)])];
-    else if (data) Object.assign(f, { flow: 3, prep: undefined });
+    // still a setup to fill (Flow 2): the CV given is uploaded first, as every feature's CV step comes before its data
+    else if (cv) f.prep = [LP_UPM, ...list(base.prep)];
+    // the data skips the form, not a CV the feature needs (Career Map's answers: the CV step stays)
+    else if (data) Object.assign(f, { flow: base.dataPrep ? 2 : 3, prep: base.dataPrep });
     const what = cv ? (li ? 'LinkedIn profile' : data ? 'CV and ' + base.given.toLowerCase() : 'CV attached') : data ? base.given.toLowerCase() : LP_CV.includes(base.path) ? 'no CV' : 'from a landing page';
-    const note = `Flow ${f.flow}: the visitor came from a landing page${cv ? (li ? ' with their LinkedIn profile' : ' with a CV (jana-cv.pdf)') : LP_CV.includes(base.path) ? ' without a CV' : ''}${data ? ` and the ${base.given.toLowerCase()}` : ''}, so after sign-up ${cv && f.flow !== 2 ? `it is ${li ? 'imported' : 'uploaded'} and ` : ''}${f.flow === 3 ? 'the run goes straight on' : f.flow === 4 ? 'the page opens' : cv ? 'the setup comes first; the CV is uploaded with the processing after it' : 'the run goes on as in the app'}.`;
+    const note = `Flow ${f.flow}: the visitor came from a landing page${cv ? (li ? ' with their LinkedIn profile' : ' with a CV (jana-cv.pdf)') : LP_CV.includes(base.path) ? ' without a CV' : ''}${data ? ` and the ${base.given.toLowerCase()}` : ''}, so after sign-up ${cv ? `it is ${li ? 'imported' : 'uploaded'} and ` : ''}${f.flow === 3 ? 'the run goes straight on' : f.flow === 4 ? 'the page opens' : cv ? 'then the setup' : 'the run goes on as in the app'}.`;
     f.entry = [S.auth('Sign up · ' + what, 'signup', note), ...list(base.entry)];
     return f;
   }
@@ -7708,7 +7718,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // without a CV; Tailor, Rewrite, Jobs for You and the editor are shown but can't be reached without one. Their no-CV
   // runs are not offered from the app; they stay as the landing-page runs' base and as a failed upload's redo
   const APP_CV_ONLY = ['analyse-resume-new', 'proofreading-new', 'recruiter-feedback-new', 'career-coach-new', 'translate-app-new',
-    'tailor-resume-new', 'jobs-tailor-new', 'rewrite-resume-new', 'jobs-matcher-new', 'edit-new'];
+    'tailor-resume-new', 'jobs-tailor-new', 'rewrite-resume-new', 'jobs-matcher-new', 'edit-new', 'career-map-new'];
   FEATURES.forEach(f => { if (APP_CV_ONLY.includes(f.id)) f.appOff = true; });
   FEATURES.forEach(f => { f.group = kindOf(f.path); });  // the six groups (the old checklist groups are gone)
   /* A feature's run through its flow's stages */
