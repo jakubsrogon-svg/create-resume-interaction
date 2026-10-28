@@ -1666,8 +1666,11 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
   font-size: 14px; line-height: 20px; text-decoration: underline; text-underline-position: from-font; cursor: pointer;
 }
 .trl-switch:hover { color: var(--kr-grey-80); }
-.trl[data-mode="job"] .trl-switch { visibility: hidden; }
-.trl-foot { display: flex; justify-content: flex-end; }
+.trl[data-mode="job"] { min-height: 0; }  /* the product's job modal is compact: its buttons sit under the levels */
+.trl[data-mode="job"] .trl-switch { display: none; }
+.trl[data-mode="job"] .trl-foot { margin-top: 12px; }
+.trl-foot { display: flex; justify-content: flex-end; gap: 8px; }
+.trl-cancel { padding: 0 32px; border-radius: 10px; }  /* the job version, as in the product: Cancel back to the job page */
 .trl-go, .trl-go:disabled { padding: 0 32px; border-radius: 10px; background: linear-gradient(163.5deg, #5345ff, #9c3eff); }
 .trl-go:disabled { opacity: .5; }
 @container (max-width: 520px) {
@@ -3075,7 +3078,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.30.2">v2.30.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.30.3">v2.30.3</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4659,7 +4662,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // Jobs for You: the shared CV step (the method screen) when there is none, then Analyzing your resume…
     { group: '7 · Jobs', path: '/jobs/matcher/', title: 'Jobs for You (job matcher)', run: () => cvUploaded ? openJobs('match') : askCvFor(findRoute('/jobs/matcher/')), cvThen: () => openJobs('match', 'process') },
     { group: '7 · Jobs', path: '/jobs/job/1234/', title: 'Job (/jobs/job/{id}/)', wire: true, html: () => WIRE.job() },
-    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
+    { group: '7 · Jobs', path: '/jobs/job/1234/tailor/', title: 'Tailor resume to this job (/jobs/job/{id}/tailor/)', needsCv: true, noX: true, head: TRL_HEAD.job, html: () => trlHTML(true), init: initTrl, more: { process: tldHTML } },
     { group: '7 · Jobs', path: '/jobs/organization/kickresume/', title: 'Company (/jobs/organization/{company}/)', wire: true, html: () => WIRE.company() },
     { group: '7 · Jobs', path: '/jobs/job-tracker/', title: 'Job Tracker', run: () => openJobs('tracker') },
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', wire: true, head: { main: HEADS['cm-onboarding'] }, html: () => WIRE['cm-onboarding']() },
@@ -5176,11 +5179,17 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             `<button class="trl-opt" type="button" role="radio" aria-checked="${i === 1}" tabindex="${i === 1 ? 0 : -1}" aria-label="${name}" data-level="${id}">${rtIc(ic)}<span>${name}</span></button>`).join('')}</div>
           <p class="trl-desc" aria-live="polite">${TRL_LEVELS[1][3]}</p></div>
       </div>${fromJob ? '' : `<button class="trl-switch" type="button">${TRL_SWITCH.url}</button>`}</div>
-      <div class="trl-foot"><button class="rt-btn rt-ai trl-go" type="submit"${fromJob ? '' : ' disabled'}>Tailor Now</button></div></div>
+      <div class="trl-foot">${fromJob ? '<button class="rt-btn rt-ghost trl-cancel" type="button">Cancel</button>' : ''}<button class="rt-btn rt-ai trl-go" type="submit"${fromJob ? '' : ' disabled'}>Tailor Now</button></div></div>
     </form>`;
   }
   function initTrl(form, r) {
     const root = form.closest('.rt-panes'), go = form.querySelector('.trl-go'), desc = form.querySelector('.trl-desc');
+    // Cancel (the job version) goes back to the job page; in a run, to its job page step
+    form.querySelector('.trl-cancel')?.addEventListener('click', () => {
+      const i = flowNow ? flowNow.steps.findIndex(st => st.match.startsWith('route:/jobs/job/1234/#')) : -1;
+      if (i >= 0) return flowGo(i);
+      openRoute(findRoute('/jobs/job/1234/'));
+    });
     const val = n => (form.elements[n] ? form.elements[n].value.trim() : '');
     // Tailor Now needs the URL, or the job post when it's typed in; a job from a job page is enough on its own
     const check = () => { if (form.dataset.mode !== 'job') go.disabled = !val(form.dataset.mode === 'url' ? 'url' : 'post'); };
