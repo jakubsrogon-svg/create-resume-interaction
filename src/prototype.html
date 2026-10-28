@@ -1038,14 +1038,14 @@ body.is-mobile .editor { min-height: 100%; }
   background: var(--kr-primary); color: var(--kr-white); font-size: max(10px, 1.5cqw); line-height: 1.5; padding: .2cqw 1cqw; border-radius: 0 .6cqw 0 .6cqw;
 }
 .rv-sec:hover::after, .rv-sec:focus-visible::after { opacity: 1; }
-.rv-name { font-family: var(--font-display); font-weight: 400; color: var(--kr-green-apple); font-size: 5.4cqw; line-height: 1.12; letter-spacing: -.06cqw; margin: 0; }
+.rv-name { font-family: var(--font-display); font-weight: 400; color: var(--rv-accent, var(--kr-green-apple)); font-size: 5.4cqw; line-height: 1.12; letter-spacing: -.06cqw; margin: 0; }
 .rv-role { margin: .2cqw 0 1.4cqw; font-size: 2cqw; color: var(--kr-grey-80); }
 .rv-details { display: grid; gap: .25cqw; }
 .rv-details b { font-weight: 500; }
 .rv h3 { font-family: var(--font-display); font-weight: 400; font-size: 2.5cqw; line-height: 1.3; margin: 0 0 1cqw; display: flex; gap: 1.2cqw; align-items: baseline; }
-.rv h3 span { color: var(--kr-green-apple); font-size: 2.1cqw; }
+.rv h3 span { color: var(--rv-accent, var(--kr-green-apple)); font-size: 2.1cqw; }
 .rv h3::after { content: ""; flex: none; }
-.rv-ul { display: block; width: 9cqw; height: .25cqw; background: var(--kr-green-apple); margin: -.6cqw 0 1.2cqw; }
+.rv-ul { display: block; width: 9cqw; height: .25cqw; background: var(--rv-accent, var(--kr-green-apple)); margin: -.6cqw 0 1.2cqw; }
 .rv p { margin: 0; }
 .rv-entry { display: grid; gap: .2cqw; }
 .rv-entry + .rv-entry { margin-top: 1.6cqw; }
@@ -1054,7 +1054,7 @@ body.is-mobile .editor { min-height: 100%; }
 .rv-entry ul { margin: .4cqw 0 0; padding-left: 2.4cqw; }
 .rv-skills { display: flex; flex-wrap: wrap; gap: .6cqw 1.4cqw; list-style: none; margin: 0; padding: 0; }
 .rv-skills li { display: inline-flex; align-items: center; gap: 1.4cqw; }
-.rv-skills li::after { content: ""; width: .8cqw; height: .8cqw; border-radius: 50%; background: var(--kr-green-apple); }
+.rv-skills li::after { content: ""; width: .8cqw; height: .8cqw; border-radius: 50%; background: var(--rv-accent, var(--kr-green-apple)); }
 .rv-skills li:last-child::after { display: none; }
 .rv-hobbies { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.2cqw 2cqw; text-align: center; }
 .rv-hobbies div { display: grid; justify-items: center; gap: .8cqw; font-size: 1.5cqw; }
@@ -1297,6 +1297,39 @@ body .seg[data-screen-for]:hover, body .seg[data-screen-for]:focus-within { opac
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- The editor's Design tab (Figma concepting-KR › Design tab, 294:19823) ---------- */
+.ed-design { display: flex; flex-direction: column; gap: 32px; margin-top: 8px; }
+.dz-tabs { display: flex; gap: 8px; padding: 4px; margin-inline: 8px; background: var(--kr-white); border: 1px solid var(--kr-grey-60); border-radius: 12px; }
+.dz-tab { position: relative; flex: 1 1 0; max-width: 160px; margin-inline: auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 4px; border: 0; border-radius: 10px; background: none; font: 500 14px/20px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; }
+.dz-tab[aria-pressed="true"] { background: var(--kr-grey-100); color: var(--kr-white); }
+.dz-tab:not([aria-pressed="true"]):hover { background: var(--kr-grey-40); }
+.dz-tab:focus-visible, .dz-chip:focus-visible, .dz-sw:focus-visible, .dz-tpl:focus-visible, .dz-all:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
+.dz-new { position: absolute; left: calc(50% + 38px); top: -11px; padding: 1px 5px; border-radius: 4px; background: var(--kr-primary); color: var(--kr-white); font: 500 10px/normal var(--font-sans); }
+.dz-card { display: flex; flex-direction: column; gap: 16px; padding: 16px 16px 24px; border-radius: 20px; box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); background: linear-gradient(180deg, var(--kr-grey-40) 0, rgba(242, 242, 242, 0) 60px), var(--kr-white); }
+.dz-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.dz-chip { padding: 7px 16px; border: 2px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); font: 400 14px/20px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; }
+.dz-chip:hover { border-color: var(--kr-grey-80); }
+.dz-chip[aria-pressed="true"] { border-color: var(--kr-primary); }
+.dz-row { display: flex; align-items: center; gap: 8px; margin-bottom: -12px; }
+.dz-lbl { font: 400 12px/18px var(--font-sans); color: var(--kr-grey-100); }
+.dz-lbl b { font-weight: 500; }
+.dz-prem { font: italic 700 12px/normal var(--font-sans); }
+.dz-sws { display: flex; flex-wrap: wrap; gap: 8px; }
+.dz-sw { width: 40px; height: 40px; padding: 0; border-radius: 10px; border: 2px solid var(--kr-grey-60); background: linear-gradient(45deg, var(--d) 50%, var(--l) 50%) padding-box; cursor: pointer; }
+.dz-sw:hover { border-color: var(--kr-grey-80); }
+.dz-sw[aria-pressed="true"] { border-color: var(--kr-primary); }
+.dz-tplhead { margin: 0; }
+.dz-all { margin-left: auto; display: inline-flex; align-items: flex-end; gap: 8px; padding: 4px 8px; border: 0; border-radius: 10px; background: none; font: 400 12px/18px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; }
+.dz-all:hover { background: var(--kr-grey-40); }
+.dz-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 16px; }
+.dz-tpl { position: relative; padding: 0; aspect-ratio: 127 / 175; overflow: hidden; border: 1.62px solid var(--kr-grey-60); border-radius: 10px; background: var(--kr-white); cursor: pointer; }
+.dz-tpl:hover { border-color: var(--kr-grey-80); }
+.dz-tpl[aria-pressed="true"] { border: 2px solid var(--kr-primary); }
+.dz-tpl img { display: block; width: 100%; height: auto; }
+.dz-badges { position: absolute; left: 3px; bottom: 5px; display: flex; gap: 4px; filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .1)); }
+.dz-badge { padding: 1px 5.5px; border-radius: 4.5px; font: 500 11px/normal var(--font-sans); color: var(--kr-white); backdrop-filter: blur(1px); }
+.dz-badge.is-ats { background: rgba(72, 173, 67, .8); }
+.dz-badge.is-free { background: rgba(140, 140, 140, .8); }
 /* ---------- Route screens ----------
    Product screens recreated from screenshots. Each has its own URL (#/dashboard/create-ai-resume/)
    and a link under More options › URLs. They are full screens like the rest of the flow (logo bar,
@@ -2792,12 +2825,7 @@ background-image:linear-gradient(to top right,transparent calc(50% - 1px),var(--
 .wf-check--on::before,.wf-radio--on::before{background:var(--ink);box-shadow:inset 0 0 0 3px var(--paper)}
 /* containers */
 .wf-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--radius-sm)}
-/* the editor's Design tab (a wireframe beside the real preview) */
-.ed-design{display:flex;flex-direction:column;gap:var(--space-4);margin-top:8px}
-.ed-design .wf-spread{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)}
-.ed-design button.wf-card{cursor:pointer;font:inherit;color:inherit;text-align:left}
-.ed-design .dz-sw{width:36px;padding:0;border:1px solid var(--line);cursor:pointer}
-.ed-design [aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.dz-wire{display:flex;flex-direction:column;gap:var(--space-4)}
 .wf-badge{display:inline-flex;align-items:center;height:20px;padding:0 var(--space-2);border:1px solid var(--line-soft);border-radius:var(--radius-pill);background:var(--fill);font-size:12px;font-weight:600;line-height:16px;white-space:nowrap}
 .wf-overlay{display:flex;align-items:center;justify-content:center;padding:var(--space-8);background:var(--scrim)}
 .wf-dialog{width:100%;max-width:400px;gap:var(--space-4);padding:var(--space-6);border-color:var(--line)}
@@ -3184,7 +3212,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.32">v2.32</div>
+<div class="proto-ver" aria-label="Prototype version 2.33">v2.33</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4396,23 +4424,71 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      latest resume, the menu's Fill In), a section writer, a letter, a tailored or rewritten copy and the guest editor
      stay on Fill In. No design yet: the panel is a Wire wireframe beside the real preview. */
   let edView = 'fill', designNext = false;
-  const DESIGN_TPL = ['dotts', 'stanford', 'rectangular', 'visibility', 'ribbon', 'square'];
-  const DESIGN_NOTE = 'The editor’s Design tab: a new resume opens here (pick a template, colours, fonts, layout). No design yet.';
+  /* From Figma (concepting-KR › Design tab, 294:19823). Templates is designed: the filters, the colour (it recolours
+     the preview's accent) and the templates, which are the template picker's own pictures and filters (TPS_T, TPS_IMG)
+     so the filters work; Format and Layout have no design yet and are Wire wireframes (DESIGN_NOTE). */
+  const DZ_IC = {
+    roller: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.667 1.333h-8c-.737 0-1.334.597-1.334 1.334V4c0 .736.597 1.333 1.334 1.333h8C11.403 5.333 12 4.736 12 4V2.667c0-.737-.597-1.334-1.333-1.334Z"/><path d="M6.667 10.667V9.333A1.333 1.333 0 0 1 8 8h5.333a1.333 1.333 0 0 0 1.334-1.333v-2a1.333 1.333 0 0 0-1.334-1.334H12"/><path d="M7.333 10.667H6a.667.667 0 0 0-.667.666V14c0 .368.299.667.667.667h1.333A.667.667 0 0 0 8 14v-2.667a.667.667 0 0 0-.667-.666Z"/></svg>',
+    type: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.333 11c0 .184.15.333.334.333H10a1.333 1.333 0 0 1 0 2.667H6a1.333 1.333 0 0 1 0-2.667h.333A.333.333 0 0 0 6.667 11V5a.333.333 0 0 0-.334-.333h-2A.333.333 0 0 0 4 5v.333a1.333 1.333 0 0 1-2.667 0v-2A1.333 1.333 0 0 1 2.667 2h10.666a1.333 1.333 0 0 1 1.334 1.333v2a1.333 1.333 0 0 1-2.667 0V5a.333.333 0 0 0-.333-.333h-2A.333.333 0 0 0 9.333 5v6Z"/></svg>',
+    cols: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14H3.333A1.333 1.333 0 0 1 2 12.667V3.333A1.333 1.333 0 0 1 3.333 2h9.334A1.333 1.333 0 0 1 14 3.333V7"/><path d="m9.533 13.067.667-.267M10 2v5m.133 4.266-.6-.2m1.533 3.4.2-.6m-.066-3.666-.267-.667m1.8.6.2-.6m.133 4.934-.266-.667m1-2.6.666-.267m0 2-.6-.2M6 2v12"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>',
+    grid: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="4.667" height="4.667" rx=".667"/><rect x="9.333" y="2" width="4.667" height="4.667" rx=".667"/><rect x="9.333" y="9.333" width="4.667" height="4.667" rx=".667"/><rect x="2" y="9.333" width="4.667" height="4.667" rx=".667"/></svg>'
+  };
+  // the design's swatches (dark, light); the last one repeats in the design to fill the row
+  const DZ_COLORS = [['Cherry', '#FF0000', '#FF8F8F'], ['Sky Blue', '#0500FF', '#8F9AFF'], ['Forest', '#1A993E', '#AED37F'], ['Sunflower', '#FAC02C', '#FFE0A3'],
+    ['Coral', '#FA512C', '#F9E0D2'], ['Violet', '#7233F5', '#51F27E'], ['Teal', '#36B4A5', '#51F2DF'], ['Orchid', '#9D2D9F', '#EF51F2']];
+  const DZ_FILTERS = [['all', 'All templates'], ['ats', 'ATS Friendly'], ['popular', 'Popular'], ['creative', 'Creative']];
+  const DZ_FREE = ['ios', 'square'];
+  let dzTab = 'templates', dzCat = 'all', dzColor = 1, dzTpl = 'dotts';
+  const dzList = () => Object.keys(TPS_T).filter(k => dzCat === 'all' || TPS_T[k][1].split(' ').includes(dzCat));
+  const dzTplsHTML = () => dzList().map(k => `<button class="dz-tpl" type="button" data-dz-tpl="${k}" aria-pressed="${k === dzTpl}" aria-label="${TPS_T[k][0]} template"><img src="${TPS_IMG[k]}" alt="" width="300" height="413">${DZ_FREE.includes(k) || /ats/.test(TPS_T[k][1]) ? `<span class="dz-badges">${DZ_FREE.includes(k) ? '<span class="dz-badge is-free">FREE</span>' : ''}${/ats/.test(TPS_T[k][1]) ? '<span class="dz-badge is-ats">ATS</span>' : ''}</span>` : ''}</button>`).join('');
+  const rvAccent = () => `--rv-accent:${DZ_COLORS[dzColor][1]}`;
   function designHTML() {
-    const pick = (what, label, on) => `<button class="wf-card wf-stack wf-gap-sm" type="button" data-action="toast" data-msg="Picking ${what} changes the resume’s design in the preview."${on ? ' aria-pressed="true"' : ''}>${label}</button>`;
-    return `<div class="wf ed-design">
-        <section class="wf-card wf-stack" aria-labelledby="dz-tpl"><div class="wf-spread"><h2 class="t-heading" id="dz-tpl">Template</h2><button class="wf-btn wf-btn--sm" type="button" data-action="toast" data-msg="All templates open here, with the ATS Friendly, Popular and Creative filters.">See all</button></div>
-          <div class="wf-grid" style="--cols:3">${DESIGN_TPL.map((k, i) => pick('a template', `<span class="wf-ph wf-ph--square">[${TPS_T[k][0]}]</span><span class="t-small">${TPS_T[k][0]}${i ? '' : ' · current'}</span>`, !i)).join('')}</div></section>
-        <section class="wf-card wf-stack" aria-labelledby="dz-col"><h2 class="t-heading" id="dz-col">Colours</h2>
-          <div class="wf-row">${[1, 2, 3, 4, 5, 6].map(i => `<button class="wf-ph wf-ph--circle dz-sw" type="button" data-action="toast" data-msg="The accent colour changes in the preview." aria-label="Colour ${i}"${i === 1 ? ' aria-pressed="true"' : ''}></button>`).join('')}</div></section>
-        <section class="wf-card wf-stack" aria-labelledby="dz-font"><h2 class="t-heading" id="dz-font">Fonts</h2>
-          <div class="wf-input wf-input--select">Lato</div><div class="wf-row"><span class="t-small">Size</span>${['S', 'M', 'L'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div></section>
-        <section class="wf-card wf-stack" aria-labelledby="dz-lay"><h2 class="t-heading" id="dz-lay">Layout</h2>
-          <div class="wf-row">${['One column', 'Two columns'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div>
-          <div class="wf-row"><span class="t-small">Spacing</span>${['Compact', 'Normal', 'Airy'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div>
-          <div class="wf-row"><span class="wf-check wf-check--on">Show picture</span><span class="wf-check wf-check--on">Section icons</span></div></section>
+    const tab = (k, ic, label, extra = '') => `<button class="dz-tab" type="button" data-dz-tab="${k}" aria-pressed="${k === dzTab}">${DZ_IC[ic]}${label}${extra}</button>`;
+    const prem = '<span class="dz-prem kr-text-premium-gradient">PREMIUM</span>';
+    const body = dzTab === 'templates' ? `<div class="dz-card">
+          <div class="dz-chips" role="group" aria-label="Filter templates">${DZ_FILTERS.map(([k, l]) => `<button class="dz-chip" type="button" data-dz-cat="${k}" aria-pressed="${k === dzCat}">${l}</button>`).join('')}</div>
+          <div class="dz-row"><span class="dz-lbl">Color: <b data-dz-out="color">${DZ_COLORS[dzColor][0]}</b></span>${prem}</div>
+          <div class="dz-sws" role="group" aria-label="Colour">${DZ_COLORS.map(([n, d, l], i) => `<button class="dz-sw" type="button" data-dz-color="${i}" aria-pressed="${i === dzColor}" aria-label="${n}" style="--d:${d};--l:${l}"></button>`).join('')}</div>
+          <div class="dz-row dz-tplhead"><span class="dz-lbl">Template: <b data-dz-out="tpl">${TPS_T[dzTpl][0]}</b></span>${prem}<button class="dz-all" type="button" data-dz-all>${DZ_IC.grid}View all</button></div>
+          <div class="dz-tpls" data-dz-out="tpls">${dzTplsHTML()}</div>
+        </div>` : `<div class="wf dz-wire">${dzTab === 'format' ? `
+          <section class="wf-card wf-stack"><h2 class="t-heading">Font</h2><div class="wf-input wf-input--select">Lato</div>
+            <div class="wf-row"><span class="t-small">Size</span>${['S', 'M', 'L'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div>
+            <div class="wf-row"><span class="t-small">Line spacing</span>${['Tight', 'Normal', 'Airy'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div></section>
+          <section class="wf-card wf-stack"><h2 class="t-heading">Page</h2><div class="wf-row"><span class="wf-check wf-check--on">Show picture</span><span class="wf-check wf-check--on">Section icons</span></div></section>` : `
+          <section class="wf-card wf-stack"><h2 class="t-heading">Columns</h2><div class="wf-row">${['One column', 'Two columns'].map((t, i) => `<span class="wf-radio${i === 1 ? ' wf-radio--on' : ''}">${t}</span>`).join('')}</div></section>
+          <section class="wf-card wf-stack"><h2 class="t-heading">Section order</h2>${['Profile', 'Work Experience', 'Education', 'Strengths', 'Hobbies'].map(t => `<div class="wf-row"><span class="wf-ph wf-ph--icon"></span><span class="t-small">${t}</span></div>`).join('')}</section>`}
+        </div>`;
+    return `<div class="ed-design">
+        <div class="dz-tabs" role="group" aria-label="Design">${tab('templates', 'roller', 'Templates')}${tab('format', 'type', 'Format')}${tab('layout', 'cols', 'Layout', '<span class="dz-new">NEW</span>')}</div>
+        ${body}
       </div>`;
   }
+  function dzRedraw() {
+    const box = editorEl.querySelector('.ed-design');
+    if (box) box.outerHTML = designHTML();
+    syncNote();
+  }
+  editorEl.addEventListener('click', e => {
+    const t = e.target.closest('[data-dz-tab], [data-dz-cat], [data-dz-color], [data-dz-tpl], [data-dz-all]');
+    if (!t) return;
+    if (t.dataset.dzTab) { dzTab = t.dataset.dzTab; return dzRedraw(); }
+    if (t.dataset.dzCat) { dzCat = t.dataset.dzCat; editorEl.querySelectorAll('[data-dz-cat]').forEach(b => b.setAttribute('aria-pressed', String(b === t))); editorEl.querySelector('[data-dz-out="tpls"]').innerHTML = dzTplsHTML(); return; }
+    if (t.dataset.dzColor) {
+      dzColor = +t.dataset.dzColor;
+      editorEl.querySelectorAll('[data-dz-color]').forEach(b => b.setAttribute('aria-pressed', String(b === t)));
+      editorEl.querySelector('[data-dz-out="color"]').textContent = DZ_COLORS[dzColor][0];
+      const rv = editorEl.querySelector('#rv'); if (rv) rv.style.cssText = rvAccent();
+      return;
+    }
+    if (t.dataset.dzTpl) {
+      dzTpl = t.dataset.dzTpl;
+      editorEl.querySelectorAll('[data-dz-tpl]').forEach(b => b.setAttribute('aria-pressed', String(b === t)));
+      editorEl.querySelector('[data-dz-out="tpl"]').textContent = TPS_T[dzTpl][0];
+      return toast(`${TPS_T[dzTpl][0]} picked. The preview keeps this prototype’s one template.`);
+    }
+    if (t.hasAttribute('data-dz-all')) { dzCat = 'all'; return dzRedraw(); }
+  });
   // a new resume: the editor on its Design tab
   function madeEditor() { designNext = true; return jumpEditor(); }
   function openDesign() { designNext = true; return editorAt('/edit/'); }
@@ -4452,7 +4528,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
               <li><button class="btn btn-gradient" type="button" data-action="toast" data-msg="Upgrade opens the plans page.">See Premium plans</button></li>
             </ul></div></div>
           </div>
-          <p class="doc-line">Document: <b data-out="docname">${esc(docName())}</b></p>
+          ${edView === 'design' ? '' : `<p class="doc-line">Document: <b data-out="docname">${esc(docName())}</b></p>`}
           ${edView === 'design' ? designHTML() : `<div class="ecard" data-sec="analysis">
             <button class="ehead analysis" type="button" data-action="ecard" aria-expanded="false">Section Analysis<span class="meta">2 suggestions</span><span class="chev-d">${icon('eye')}</span></button>
             <div class="acc" inert><div class="acc-inner"><div class="ebody"><ul class="hint-list">
@@ -4504,7 +4580,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
             <button class="icon-sq" type="button" data-action="toast" data-msg="Full-screen preview opens here." aria-label="Full-screen preview">${icon('eye')}</button>
             <button class="icon-sq" type="button" data-action="toast" data-msg="Download is a Premium feature for this template." aria-label="Download">${icon('download')}</button>
           </div>
-          <div class="pv-paper-wrap"><div class="rv${isLetter() ? ' is-cover' : ''}" id="rv">${isLetter() ? letterHTML() : resumeHTML()}</div></div>
+          <div class="pv-paper-wrap"><div class="rv${isLetter() ? ' is-cover' : ''}" id="rv" style="${rvAccent()}">${isLetter() ? letterHTML() : resumeHTML()}</div></div>
         </div>
       </aside>`;
   }
@@ -7673,7 +7749,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const note = document.getElementById('proto-note');
     const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
     const src = wire && wire.querySelector(':scope > .wf-note-src');
-    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'editor' && edView === 'design' ? DESIGN_NOTE : '';  // a designed page only when its flow step gives one
+    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'editor' && edView === 'design' && dzTab !== 'templates' ? `The Design tab’s ${dzTab === 'format' ? 'Format' : 'Layout'}: no design yet.` : '';  // a designed page only when its flow step gives one
     note.hidden = !text; document.body.classList.toggle('has-note', !!text);
     if (text) note.querySelector('.pn-text').innerHTML = text;
   }
