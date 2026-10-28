@@ -3075,7 +3075,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.30.1">v2.30.1</div>
+<div class="proto-ver" aria-label="Prototype version 2.30.2">v2.30.2</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -6937,6 +6937,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and the tailoring setup (the job post and Balanced) on a landing page, so after sign-up the CV is uploaded and tailoring starts straight away.'),
       ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/dashboard/tailor-resume/')),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
+    { id: 'landing-jobs-tailor', flow: 3, title: 'Tailoring to a job with a CV from the landing page', path: '/jobs/job/1234/tailor/', url: '/jobs/job/{id}/tailor/', cv: true, data: true, lp: true, redo: 'jobs-tailor-new',
+      entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) on a job’s landing page, which carries the job, so after sign-up the CV is uploaded and tailoring to that job starts straight away.'),
+      ...(t => ({ process: [S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress'), ...t.process], state: t.state }))(trlRun('/jobs/job/1234/tailor/')),
+      dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
     { id: 'translate-resume', flow: 3, title: 'Translate resume from a landing page, with a CV', path: TR, cv: true, data: true, lp: true,
       entry: landing('CV and language', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the CV is uploaded and the translate page opens.'),
       ...upmRun('/dashboard/upload-resume/'), dest: TR_DEST, noun: 'translation' },
@@ -6980,7 +6984,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const app = FEATURES.filter(f => f.path === path && fromOf(f) === 'app'), here = FEATURES.filter(f => f.path === path && f.lp);
     if (!app.length || path === TR) return [];  // Translate's landing pages always give the language: written above
     const pick = cv => app.find(f => f.cv === cv) || app.find(f => f.cv === undefined) || app[0];
-    return [false, true].filter(cv => !cv || LP_CV.includes(path)).flatMap(cv => [false, ...(pick(cv).given ? [true] : path === '/dashboard/tailor-resume/' && cv ? [true] : [])].map(data => [cv, data]))
+    // Tailor, like Translate, is one landing-page flow: a landing page that takes the CV takes the job too (the user's
+    // rule), so with a CV there is only the run with the data (landing-tailor, landing-jobs-tailor)
+    const both = cv => cv && ['/dashboard/tailor-resume/', '/jobs/job/1234/tailor/'].includes(path);
+    return [false, true].filter(cv => !cv || LP_CV.includes(path)).flatMap(cv => (both(cv) ? [true] : [false, ...(pick(cv).given ? [true] : [])]).map(data => [cv, data]))
       .filter(([cv, data]) => !here.some(f => f.cv === cv && !!f.data === data)).map(([cv, data]) => lpVariant(pick(cv), cv, data));
   }));
   // in the app a feature that needs a CV runs only with one (the user's rule: the app never goes through resume
