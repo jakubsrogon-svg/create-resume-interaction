@@ -53,6 +53,7 @@ const AUD = FIXTURES; const fs = require('fs'), crypto = require('crypto'); cons
       if (atEnd && sc === 'route' && /dest|main/.test(s.pane) && await vis('#screen-route .rt-wire') && !(await vis('#screen-route [data-wire="signup"]'))) break;
       if (same > 14) { log.push('  !! STUCK'); break; }
       // the screen's own primary action
+      if (await vis('.cvp-pop .tj-cv')) { await click('.cvp-pop .tj-cv:not(.cvp-new)'); await p.waitForTimeout(150); acted = (await click('.cvp-pop [data-cvp="continue"]')) ? 'Pick a resume: Continue' : ''; await p.waitForTimeout(1300); continue; }
       if (sc === 'auth') { await p.evaluate(() => { const c = document.getElementById('au-consent'); if (c) c.checked = true; }); acted = (await click('.au-em[data-wire="signup"]')) ? 'Sign up with email' : (await click('.au-submit')) ? 'Log In' : ''; }
       else if (sc === 'intent') { const g = id === 'goal-matcher' ? 'jobs' : id.startsWith('goal-') ? id.slice(5) : null; acted = g && await click(`#screen-intent [data-goal="${g}"]`) ? 'goal ' + g : ''; }
       else if (sc === 'create' && await vis('#create-upm .upm')) { acted = await upm('#create-upm'); if (acted === 'wait') { acted = ''; continue; } }

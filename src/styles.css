@@ -2289,6 +2289,62 @@ body.has-note .jobs, body:has(.flow-bar:not([hidden])) .jobs { padding-bottom: 1
 :where(.jobs) :where(button) { font: inherit; color: inherit; }
 .jobs button:focus-visible { outline: none; box-shadow: var(--kr-focus-ring); }
 .jobs.is-tracker { background: var(--kr-background); }
+/* The jobs landing page for a visitor (/jobs/ without an account; Figma concepting-KR › 432:2424): no app menu, its own
+   top bar, the pink hero (Gradient #fff4f3 → #ffe7e5, 398px) with floating company cards, then 1000px of content */
+.jobs.is-lp { display: block; }
+.jl { position: relative; padding-bottom: 40px; }
+.jl-top { position: absolute; z-index: 2; top: 11px; left: 22px; right: 24px; display: flex; align-items: center; justify-content: space-between; }
+.jl-logo { display: block; width: 152px; height: 24px; }
+.jl-logo svg { display: block; }
+.jl-logo path { fill: var(--kr-grey-100); }
+.jl-btns { display: flex; gap: 12px; }
+.jl-btns button { height: 40px; padding: 8px 24px; border: 1px solid var(--kr-grey-100); border-radius: 10px; background: none; font: 500 14px/16px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast); }
+.jl-btns .jl-create { padding-inline: 10px; border-color: transparent; }
+.jl-btns button:hover { background: rgba(63, 63, 63, .1); }
+.jl-hero { position: relative; display: grid; justify-items: center; padding: 232px 16px 0; background: linear-gradient(#fff4f3, #ffe7e5) 0 0 / 100% 398px no-repeat; text-align: center; }
+.jl-floats { position: absolute; inset: 0 0 auto; height: 398px; overflow: hidden; pointer-events: none; }
+.jl-float { position: absolute; left: calc(50% + var(--x) - 50px); top: calc(var(--y) - 50px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 100px; height: 100px; border-radius: 10px; background: var(--kr-white); font: 400 14px/20px var(--font-sans); color: var(--kr-grey-100); transform: rotate(var(--r)) scale(var(--s)); }
+.jl-float img { width: 40px; height: 40px; border-radius: 8px; }
+.jl-float:last-child img { width: 60px; height: 60px; border-radius: 12px; }  /* Meta's logo is bigger in the design */
+.jl-float.is-far { opacity: .25; filter: blur(var(--b)); }
+.jl-h { position: relative; margin: 0; font: 400 48px/56px var(--font-display); color: var(--kr-grey-100); }
+.jl-h:focus { outline: none; }
+.jl-sub { position: relative; margin: 16px 0; font: 500 16px/24px var(--font-sans); color: var(--kr-grey-80); }
+.jl-search { position: relative; }
+.jl-sec { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding-top: 40px; }
+.jl-sec h2 { margin: 0 0 16px; font: 400 16px/24px var(--font-sans); color: var(--kr-grey-100); }
+.jl-cos { display: flex; flex-wrap: wrap; gap: 24px; }
+.jl-co { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 100px; height: 100px; padding: 0; border: 0; border-radius: 10px; background: var(--kr-white); font: 400 14px/20px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast); }
+.jl-co img { width: 40px; height: 40px; border-radius: 8px; }
+.jl-trends { display: flex; flex-wrap: wrap; gap: 8px; }
+.jl-trend { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; border-radius: 10px; background: var(--kr-white); font: 500 14px/20px var(--font-sans); color: var(--kr-grey-100); cursor: pointer; transition: background var(--dur-fast); }
+.jl-trend span { font-size: 16px; line-height: 24px; }
+.jl-co:hover, .jl-trend:hover { background: var(--kr-grey-40); }
+.jl-jobs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.jl-job { position: relative; display: flex; align-items: center; gap: 16px; min-height: 80px; padding: 15px; border: 1px solid var(--kr-grey-40); border-radius: 16px; background: var(--kr-white); transition: box-shadow var(--dur-fast); }
+.jl-job:hover { box-shadow: 1px 2px 10px rgba(0, 0, 0, .1); }
+.jl-job .jb-logo { align-self: flex-start; margin-top: 2px; border-radius: 5px; }
+.jl-name { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.jl-name .jb-open { font-size: 18px; color: var(--kr-grey-100); }
+.jl-name span { font: 400 14px/20px var(--font-sans); }
+.jl-meta { flex: none; width: calc(50% - 72px); display: flex; flex-wrap: wrap; justify-content: flex-end; align-content: center; gap: 8px 16px; padding-left: 16px; text-align: right; }
+.jl-pay { flex-basis: 100%; font: 400 14px/20px var(--font-sans); }
+.jl-meta:not(:has(.jl-pay)) { align-self: flex-end; }
+.jl-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px; }
+.jl-tag { display: inline-flex; align-items: center; gap: 4px; font: 400 12px/18px var(--font-sans); color: var(--kr-grey-80); white-space: nowrap; }
+.jl-tag svg { flex: none; }
+.jl-more { display: flex; justify-content: center; margin-top: 16px; }
+.jl-more button { height: 40px; padding: 0 24px; border: 0; border-radius: 10px; background: none; font: 500 14px/20px var(--font-sans); color: var(--kr-grey-100); text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+@media (max-width: 1000px) { .jl-floats { display: none; } }
+@media (max-width: 760px) {
+  .jl-top { left: 16px; right: 16px; }
+  .jl-logo { width: 114px; overflow: hidden; } .jl-logo svg { width: 114px; height: 18px; }
+  .jl-btns { gap: 4px; } .jl-btns button { padding-inline: 12px; font-size: 13px; } .jl-btns .jl-create { padding-inline: 8px; }
+  .jl-hero { padding-top: 120px; background-size: 100% 300px; }
+  .jl-h { font-size: 32px; line-height: 40px; }
+  .jl-cos { gap: 8px; } .jl-co { width: 76px; height: 84px; font-size: 12px; }
+  .jl-job { flex-wrap: wrap; } .jl-meta { box-sizing: border-box; width: 100%; justify-content: flex-start; padding-left: 56px; text-align: left; } .jl-tags { justify-content: flex-start; }
+}
 /* The job page (/jobs/job/{id}/, Figma concepting-KR › 294:3680): the job, Back to Search, and Prepare for this job */
 .jobs.is-job { background: linear-gradient(var(--kr-background), var(--kr-white)) 0 0 / 100% 384px no-repeat, var(--kr-grey-20); }
 .rv.is-cover .cl-to { display: flex; flex-direction: column; margin-top: 18px; font-size: 9px; line-height: 13px; }
@@ -2386,6 +2442,9 @@ body.has-note .jobs, body:has(.flow-bar:not([hidden])) .jobs { padding-bottom: 1
 .tj-cv span { overflow: hidden; padding: 14px 16px; font: 500 16px/24px var(--font-sans); text-overflow: ellipsis; white-space: nowrap; }
 .tj-foot { display: flex; justify-content: flex-end; gap: 8px; }
 .tj-foot .rt-btn { height: 42px; padding: 0 32px; border-radius: 10px; }
+.cvp-box { width: min(680px, 100%); }  /* Pick a resume (cvPick): three tiles in a row */
+.tj-cv .cvp-plus { display: grid; place-items: center; height: 220px; padding: 0; border-bottom: 1px solid var(--kr-grey-40); background: var(--kr-grey-20); font: 300 56px/1 var(--font-sans); color: var(--kr-grey-80); }
+@media (max-width: 560px) { .tj-cv .cvp-plus { height: 160px; } }
 .tj-trl { border-color: transparent; border-radius: 20px; box-shadow: var(--kr-shadow-modal); }
 @media (max-width: 560px) { .tj-cv { width: calc(50% - 8px); } .tj-cv img { height: 160px; } }
 

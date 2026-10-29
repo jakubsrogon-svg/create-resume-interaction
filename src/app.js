@@ -1639,7 +1639,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '8 · Career planning', path: '/career-map/', title: 'Career Map', run: () => openCareer() },
     ...PLAN_NAMES.map(pl => ({ group: '9 · Upgrade', path: `/upgrade/${pl}/`, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, run: () => openUpgrade(pl) }))
   ];
-  let routeNow = null, routeBack = 'intent';
+  /* A logged-in person with a CV picks which one a feature uses, or creates a new one (the user's rule; cvPick): the
+     features that need a CV, but not Career Map and the job page, which have their own picker */
+  const PICK_VERB = { '/dashboard/analyse-resume/': 'to check', '/dashboard/proofreading/': 'to proofread', '/dashboard/translate-resume/': 'to translate',
+    '/dashboard/recruiter-feedback/': 'for recruiter feedback', '/dashboard/career-coach/': 'for career coaching', '/dashboard/rewrite-resume/': 'to rewrite',
+    '/dashboard/tailor-resume/': 'to tailor', '/jobs/matcher/': 'to match jobs to' };
+  ROUTES.forEach(r => { if (PICK_VERB[r.path]) r.pick = true; });
+  let routeNow = null, routeBack = 'intent', pickPass = false, pickOpen = null;  // pickPass: the CV is picked or just made; pickOpen: the picker's URL
   const normPath = h => { const v = String(h || '').replace(/^#/, '').trim().toLowerCase(); return v.startsWith('/') ? v.replace(/\/*$/, '/') : null; };
   const findRoute = h => { const p = normPath(h); return p ? ROUTES.find(r => [r.path, ...(r.also || [])].some(x => normPath(x) === p)) || null : null; };
   function setHash(path) {
@@ -1688,7 +1694,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     routeNow = r; markRoutes(); setHash(r.shown || r.path);
     // forPath: what the CV is for (afterBuild's ATS analysis, the upload modal's version)
     const then = r.cvThen ? () => { routeBack = from; return r.cvThen(); }  // Jobs for You's analysis, Translate's page
-      : () => { const opening = openRoute(r); routeBack = from; return opening; };
+      : () => { pickPass = true; try { const opening = openRoute(r); routeBack = from; return opening; } finally { pickPass = false; } };  // the CV just made: no picker
     then.forPath = r.path; return then;
   }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
@@ -1728,6 +1734,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant, pane) {
     setMore(false); clearTimers();
+    // a feature that needs a CV, opened with one: which resume first (not on a later pane, nor once picked or made)
+    if (r.pick && cvUploaded && !pickPass && !pane) { routeNow = r; markRoutes(); setHash(r.shown || r.path); return cvPick(r.path, () => { pickPass = true; try { return openRoute(r, instant); } finally { pickPass = false; } }); }
     if (r.run) { routeNow = r; markRoutes(); setHash(r.shown || r.path); return r.run(); }  // routeNow: no earlier screen's route lingers (the ATS analysis, the upload modal's version)
     if (r.needsCv && !cvUploaded && !pane) return askCvFor(r, instant);
     if (current === 'route') {
@@ -3263,7 +3271,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   const jobsEl = document.getElementById('screen-jobs');
   APPS.jobs = jobsEl;
-  const JB_LOGO = { cisco: '__ASSET:jobs/cisco.png__', figma: '__ASSET:jobs/figma.png__', openai: '__ASSET:jobs/openai.png__', atlassian: '__ASSET:jobs/atlassian.png__', yahoo: '__ASSET:jobs/yahoo.png__', microsoft: '__ASSET:jobs/microsoft.png__', tesla: '__ASSET:jobs/tesla.png__' };
+  const JB_LOGO = { cisco: '__ASSET:jobs/cisco.png__', figma: '__ASSET:jobs/figma.png__', openai: '__ASSET:jobs/openai.png__', atlassian: '__ASSET:jobs/atlassian.png__', yahoo: '__ASSET:jobs/yahoo.png__', microsoft: '__ASSET:jobs/microsoft.png__', tesla: '__ASSET:jobs/tesla.png__', snapchat: '__ASSET:jobs/snapchat.png__', meta: '__ASSET:jobs/meta.png__' };
   const JB_TRENDS = [['📋', 'Project Manager'], ['🎯', 'Product Manager'], ['💻', 'Software Developer'], ['📊', 'Data Analyst']];
   const JB_FILTERS = ['United States+1', 'Full-time', 'Remote'];
   // the search results: [logo, title, company, salary, [place, type, site, posted]]
@@ -3285,7 +3293,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     ['Product Manager', 'Innovatech', 90, ['1 day ago', 'France +2', 'Full-time +1', 'On-site']],
     ['System Administrator', 'NetSolutions', 84, ['2 weeks ago', 'India +3', 'Full-time +2', 'Remote']]
   ];
-  const JOBS_PATH = { search: '/jobs/search/', match: '/jobs/matcher/', tracker: '/jobs/job-tracker/', job: '/jobs/job/1234/' };
+  const JOBS_PATH = { lp: '/jobs/', search: '/jobs/search/', match: '/jobs/matcher/', tracker: '/jobs/job-tracker/', job: '/jobs/job/1234/' };
   let jobsView = 'match', jobsState = 'main', jobsQuery = 'Frontend developer';  // state: main (the page, or Upload), process (Analyzing), dest (matches)
   const jbLogo = k => `<img class="jb-logo" src="${JB_LOGO[k]}" alt="" width="40" height="40">`;
 
@@ -3305,6 +3313,46 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const search = text => { jobsQuery = text.trim() || 'Frontend developer'; if (!flowOn()) openJobs('search'); };
     form.addEventListener('submit', e => { e.preventDefault(); search(q.value); });
     root.querySelector('.jb-trends').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) { q.value = b.dataset.q; search(b.dataset.q); } });
+  }
+
+  /* The jobs landing page for a visitor (/jobs/ without an account; Figma concepting-KR › 432:2424, "Search - Start
+     (visitor)"): its own top bar (Log In, Create My Resume), the pink hero with the search, popular companies, trending
+     positions and the latest jobs. Everything opens the search results or the job page; no account needed. */
+  // the hero's floating company cards: [logo, name, centre x from the page's middle, centre y, scale, turn, faded]
+  const JL_FLOAT = [['openai', 'OpenAI', -470, 241, 1.25, -11.47], ['yahoo', 'Yahoo', -157, 83, .75, -2.71, 1.5], ['microsoft', 'Microsoft', 205, 59, .5, 29.71, 1], ['meta', 'Meta', 427, 238, 1, 5.36]];
+  const JL_COS = [['cisco', 'Cisco'], ['atlassian', 'Atlassian'], ['openai', 'OpenAI'], ['yahoo', 'Yahoo'], ['microsoft', 'Microsoft'], ['snapchat', 'Snapchat'], ['meta', 'Meta']];
+  const JL_TRENDS = [['📋', 'Project Manager'], ['💻', 'Software Developer'], ['📊', 'Data Analyst'], ['📈', 'Business Analyst'], ['💰', 'Sales Manager']];
+  // [logo, title, company, salary, posted, place, type]
+  const JL_JOBS = [
+    ['cisco', 'Server Administrator', 'Cisco', '$20,000 - $25,000', '5 days ago', 'Santa Clara, CA', 'Part-time'],
+    ['figma', 'Server Administrator', 'Figma', '', '7 days ago', 'San Antonio, Tx', 'Part-time'],
+    ['atlassian', 'Back-end Developer', 'Atlassian', '$20,000 - $25,000', '8 days ago', 'United States, California', 'Full-time'],
+    ['openai', 'Innovative front-end developer with a focus on user experience', 'OpenAI', '$70,000 - $85,000', '15 days ago', 'United States, New York', 'Remote'],
+    ['yahoo', 'Data scientist with machine learning expertise', 'Yahoo', '', '10 days ago', 'United States, Texas', 'Contract'],
+    ['microsoft', 'Graphic designer specializing in branding and digital media', 'Microsoft', '$50,000 - $65,000', '5 days ago', 'United States, Florida', 'Part-time']
+  ];
+  function jlHTML() {
+    const co = ([k, name]) => `<img src="${JB_LOGO[k]}" alt="" width="40" height="40"><span>${name}</span>`;
+    const meta = (ic, t) => `<span class="jl-tag">${JB_IC[ic]}${t}</span>`;
+    return `<header class="jl-top"><span class="jl-logo" role="img" aria-label="Kickresume">${document.querySelector('#topbar .logo').innerHTML}</span>
+        <div class="jl-btns"><button class="jl-login" type="button" data-jobs="login">Log In</button><button class="jl-create" type="button" data-jobs="signup">Create My Resume</button></div></header>
+      <div class="jl-hero">
+        <div class="jl-floats" aria-hidden="true">${JL_FLOAT.map(([k, name, x, y, sc, turn, blur]) => `<span class="jl-float${blur ? ' is-far' : ''}" style="--x:${x}px;--y:${y}px;--s:${sc};--r:${turn}deg${blur ? `;--b:${blur}px` : ''}">${co([k, name])}</span>`).join('')}</div>
+        <h1 class="jl-h" tabindex="-1">Find a job you’ll love.</h1>
+        <p class="jl-sub">3,380,973 jobs waiting for you</p>
+        <form class="jb-search jl-search" role="search" novalidate>
+          <div class="jb-box">${JB_IC.search24}<label class="sr-only" for="jl-q">Job title or keyword</label><input id="jl-q" type="search" placeholder="Enter job title or keyword" autocomplete="off"><button class="jb-go" type="submit">Search</button></div>
+        </form>
+      </div>
+      <section class="jl-sec" aria-labelledby="jl-cos"><h2 id="jl-cos">Popular companies</h2>
+        <div class="jl-cos">${JL_COS.map(c => `<button class="jl-co" type="button" data-q="${c[1]}">${co(c)}</button>`).join('')}</div></section>
+      <section class="jl-sec" aria-labelledby="jl-trends"><h2 id="jl-trends">Trending positions</h2>
+        <div class="jl-trends">${JL_TRENDS.map(([e, t]) => `<button class="jl-trend" type="button" data-q="${t}"><span aria-hidden="true">${e}</span>${t}</button>`).join('')}</div></section>
+      <section class="jl-sec" aria-labelledby="jl-latest"><h2 id="jl-latest">Latest jobs</h2>
+        <ul class="jl-jobs">${JL_JOBS.map(([k, title, company, pay, when, place, type]) => `<li class="jl-job">${jbLogo(k)}
+          <div class="jl-name"><button class="jb-open" type="button" data-jobs="job">${esc(title)}</button><span>${company}</span></div>
+          <div class="jl-meta">${pay ? `<span class="jl-pay">${pay}</span>` : ''}<span class="jl-tags">${meta('clock', when)}${meta('mapPin', place)}${meta('clockFading', type)}</span></div></li>`).join('')}</ul>
+        <div class="jl-more"><button type="button" data-jobs="all">Discover More Jobs</button></div></section>`;
   }
 
   /* The search results (All Jobs) */
@@ -3501,6 +3549,48 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     (pop.querySelector('.tj-cv, .trl-go')).focus();
     if (!reduce) pop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
   }
+  /* Pick a resume (the user's rule: a logged-in person with a CV): their resumes or a new one, in the job page's modal.
+     go: what opens with the resume picked; a new one goes to CV creation (in a run, the feature's no-CV run) */
+  function cvPick(path, go) {
+    cvPickClose(true); pickOpen = path;
+    const pop = document.createElement('div');
+    pop.className = 'wr-pop tj-pop cvp-pop';
+    const tile = ([name, img], i) => `<button class="tj-cv" type="button" role="radio" aria-checked="false" tabindex="${i ? -1 : 0}"><img src="${img}" alt=""><span>${esc(name)}</span></button>`;
+    pop.innerHTML = `<div class="wr-back" data-cvp="cancel"></div><div class="wr-box tj-box cvp-box"><div class="tj-pick" role="dialog" aria-modal="true" aria-labelledby="cvp-h">
+      <h2 id="cvp-h">Pick a resume ${PICK_VERB[path] || 'to use'}</h2><p>Use one of your resumes, or create a new one.</p>
+      <div class="tj-cvs" role="radiogroup" aria-labelledby="cvp-h">${tjCvs().map(tile).join('')}<button class="tj-cv cvp-new" type="button" role="radio" aria-checked="false" tabindex="-1" data-new><span class="cvp-plus" aria-hidden="true">+</span><span>New resume</span></button></div>
+      <div class="tj-foot"><button class="rt-btn rt-ghost" type="button" data-cvp="cancel">Cancel</button><button class="rt-btn rt-ai" type="button" data-cvp="continue" disabled>Continue</button></div></div></div>`;
+    document.body.appendChild(pop);
+    const step = () => flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].match === `route:${path}#pick`;
+    pop.addEventListener('click', e => {
+      const cv = e.target.closest('.tj-cv'), b = e.target.closest('[data-cvp]');
+      if (cv) { pop.querySelectorAll('.tj-cv').forEach(c => { c.setAttribute('aria-checked', String(c === cv)); c.tabIndex = c === cv ? 0 : -1; }); pop.querySelector('[data-cvp="continue"]').disabled = false; return; }
+      if (!b) return;
+      if (b.dataset.cvp === 'cancel') { cvPickClose(); return flowSync(); }
+      const fresh = !!pop.querySelector('.cvp-new[aria-checked="true"]');
+      const inRun = step(); cvPickClose();
+      if (!fresh) return inRun ? flowNext() : go();
+      // a new resume: CV creation, then the feature (a run goes on as the feature's run without a CV)
+      const nocv = inRun && FEATURES.find(f => f.path === path && fromOf(f) === 'app' && f.cv === false);
+      if (nocv) return startFeature(nocv.id);
+      askCvFor(findRoute(path));
+    });
+    pop.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { cvPickClose(); return flowSync(); }
+      const cv = e.target.closest('.tj-cv'), k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!cv || !k) return;
+      e.preventDefault(); const all = [...pop.querySelectorAll('.tj-cv')], nx = all[(all.indexOf(cv) + k + all.length) % all.length]; nx.click(); nx.focus();
+    });
+    pop.querySelector('.tj-cv').focus();
+    if (!reduce) pop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR.base, easing: EASE.standard });
+    flowSync();
+  }
+  function cvPickClose(instant) {
+    const pop = document.querySelector('.cvp-pop'); pickOpen = null;
+    if (!pop) return;
+    if (instant || reduce) return pop.remove();
+    pop.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {}).then(() => pop.remove());
+  }
   function tjClose(instant) {
     const pop = document.querySelector('.tj-pop');
     if (!pop) return;
@@ -3538,7 +3628,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (a === 'interview') return openRoute(findRoute('/dashboard/create-interview/'));
     if (a === 'cover') return openRoute(findRoute('/dashboard/create-ai-cover-from-job/'));
   }
-  function jobsHTML() { return jobsView === 'job' ? `${appNavHTML('jobs')}<main class="jd-main">${jdHTML()}</main>` : jobsView === 'tracker' ? `${appNavHTML('tracker')}<main class="jt-main">${jtHTML()}</main>` : `${appNavHTML('jobs')}<main class="jbs-main">${jobsView === 'search' ? jbsHTML() : jmHTML()}</main>`; }
+  function jobsHTML() { return jobsView === 'lp' ? `<main class="jl">${jlHTML()}</main>` : jobsView === 'job' ? `${appNavHTML('jobs')}<main class="jd-main">${jdHTML()}</main>` : jobsView === 'tracker' ? `${appNavHTML('tracker')}<main class="jt-main">${jtHTML()}</main>` : `${appNavHTML('jobs')}<main class="jbs-main">${jobsView === 'search' ? jbsHTML() : jmHTML()}</main>`; }
 
   /* Open a jobs page (or one of its states); between them the page stays and its content fades over */
   async function openJobs(view, state) {
@@ -3580,12 +3670,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowOn()) openJobs('match', 'process');
   }
   jobsEl.addEventListener('click', e => {
-    const b = e.target.closest('[data-jobs], .jm-save, .jbs-chip');
+    const b = e.target.closest('[data-jobs], [data-q], .jm-save, .jbs-chip');
     if (!b) return;
     if (b.matches('.jm-save') && asGuest()) return openAuth('signup');
     if (b.matches('.jm-save')) { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'Saved' : 'Save'; return; }
     if (b.matches('.jbs-chip')) return b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
     const a = b.dataset.jobs;
+    if (b.dataset.q) { jobsQuery = b.dataset.q; return openJobs('search'); }  // the landing page's companies and positions
+    if (a === 'login') { guestBack = () => openRoute(findRoute('/jobs/')); return openAuth('login'); }  // back to the job board, signed in
+    if (a === 'signup') return openAuth('signup');
     if (a === 'job') openRoute(findRoute('/jobs/job/1234/'));
     else if (a === 'all') openJobs('search');
     else if (a === 'upload' || a === 'drop') jobsEl.querySelector('.jm-file').click();
@@ -3598,6 +3691,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
   jobsEl.addEventListener('change', e => { if (e.target.matches('.jm-file') && e.target.files[0]) jmUpload(e.target.files[0]); });
   jobsEl.addEventListener('submit', e => {
+    if (e.target.matches('.jl-search')) { e.preventDefault(); jobsQuery = e.target.querySelector('input').value.trim() || 'Frontend developer'; return openJobs('search'); }
     if (!e.target.matches('.jbs-box')) return;
     e.preventDefault();
     const q = e.target.querySelector('input').value.trim();
@@ -3982,6 +4076,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (sec && sec !== 'tailoring' && sec !== 'design') opening.then(() => { if (current === 'editor') editSection(sec); });
     } }),
     dash: label => ({ label: label || 'Dashboard', match: 'screen:dashboard', run: openDashboard }),
+    // which resume a logged-in person with a CV uses: the picker over the dashboard, where they opened the feature
+    pick: path => ({ label: 'Pick a resume (modal)', tag: 'pick', match: `route:${path}#pick`, run: () => openDashboard().then(() => { routeNow = findRoute(path); setHash(path); cvPick(path, () => {}); }) }),  // over the dashboard, under the feature's URL
     docs: label => ({ label: label || 'My Documents', match: 'route:/dashboard/resumes/#main', run: openDocs }),
     tpl: () => ({ label: 'Select your template', match: 'route:/dashboard/create-resume/#main', run: openTemplates }),
     tool: (label, kind, path = TOOL_PATH[kind]) => ({ label, match: `route:${path}#main`, run: () => { setCv(true); openTool(kind, path); } }),
@@ -4273,7 +4369,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // Find jobs: the board and the pages need nothing; a guest can browse the board and its results
     { id: 'jobs-board', flow: 4, title: 'Job board', path: '/jobs/', dest: BOARD, noun: 'job board' },
     { id: 'jobs-results', flow: 4, title: 'Jobs · search results', path: '/jobs/search/', dest: [S.jobs('Search results', 'search')] },
-    { id: 'guest-jobs', flow: 4, title: 'Job board · guest', path: '/jobs/', guest: true, cv: false, dest: BOARD },
+    { id: 'guest-jobs', flow: 4, title: 'Jobs landing page · guest', path: '/jobs/', guest: true, cv: false, dest: [S.jobs('Jobs landing page · Find a job you’ll love', 'lp')] },
     { id: 'guest-results', flow: 4, title: 'Jobs · search results · guest', path: '/jobs/search/', guest: true, cv: false, dest: [S.jobs('Search results', 'search')] },
     { id: 'jobs-matcher', flow: 3, title: 'Jobs for You (job matcher)', path: JM, cv: true, process: JM_PROC, dest: JM_DEST, noun: 'job matches' },
     { id: 'jobs-matcher-new', flow: 2, title: 'Jobs for You · no CV yet', path: JM, cv: false, prep: [S.cv(JM), ...cvMade(JM)], process: JM_PROC, dest: JM_DEST, noun: 'job matches' },
@@ -4369,8 +4465,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // creation). The resume checks (ATS, Recruiter feedback, Career coach, Proofreading, Translate) aren't even shown
   // without a CV; Tailor, Rewrite, Jobs for You and the editor are shown but can't be reached without one. Their no-CV
   // runs are not offered from the app; they stay as the landing-page runs' base and as a failed upload's redo
-  const APP_CV_ONLY = ['analyse-resume-new', 'proofreading-new', 'recruiter-feedback-new', 'career-coach-new', 'translate-app-new',
-    'tailor-resume-new', 'jobs-tailor-new', 'rewrite-resume-new', 'jobs-matcher-new', 'edit-new'];
+  // the app runs without a CV now go through CV creation (the user's rule), except the editor's: /edit/ needs a document
+  const APP_CV_ONLY = ['edit-new'];
+  // and with a CV, the features that need one start with Pick a resume (the user's rule): Flow 2 in the app
+  FEATURES.forEach(f => {
+    if (!PICK_VERB[f.path] || f.lp || f.cv !== true || fromOf(f) !== 'app') return;
+    const prep = f.prep, list = () => [].concat(typeof prep === 'function' ? prep() : prep || []);
+    Object.assign(f, { flow: 2, prep: typeof prep === 'function' ? () => [S.pick(f.path), ...list()] : [S.pick(f.path), ...list()] });
+    if (!f.process) f.process = false;  // the checks still open their page straight away: no loading of their own
+  });
   FEATURES.forEach(f => { if (APP_CV_ONLY.includes(f.id)) f.appOff = true; });
   FEATURES.forEach(f => { f.group = kindOf(f.path); });  // the six groups (the old checklist groups are gone)
   /* A feature's run through its flow's stages */
@@ -4687,7 +4790,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard' && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : atsBusy ? 'process' : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : current === 'cm' ? `route:/career-map/#${cmState}` : 'screen:' + current;
+    const key = pickOpen ? `route:${pickOpen}#pick` : current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : atsBusy ? 'process' : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : current === 'cm' ? `route:/career-map/#${cmState}` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt || (i === flowAt && flowNow.skipped)) { flowAt = i; flowNow.skipped = false; renderFlowBar(); }  // back in the run
   }
