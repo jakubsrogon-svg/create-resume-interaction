@@ -3342,7 +3342,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.38">v2.38</div>
+<div class="proto-ver" aria-label="Prototype version 2.38.1">v2.38.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4343,7 +4343,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const fullName = () => [person.titleBefore, person.first, person.last].filter(Boolean).join(' ') + (person.titleAfter ? ', ' + person.titleAfter : '');
   /* The editor's document: the resume, or the cover letter the AI Cover Letter Writer wrote (edDoc 'cover': its
      destination is Fill In with the letter instead of the CV, the user's rule). The letter's fields live on person
-     (letterTo, letterCompany, letterRole, letterBody); COVER_AS words its building screen, the same one a resume has. */
+     (letterTo, letterCompany, letterRole, letterBody); LETTER_AS words its building screen, the same one a resume has. */
   let edDoc = 'resume';
   const isLetter = () => edDoc !== 'resume';
   // the letters: their name, building screen (LETTER_AS) and what the AI writes
@@ -4356,7 +4356,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const docName = () => `${[person.first, person.last].filter(Boolean).join(' ') || 'Untitled'} ${isLetter() ? LETTER[edDoc].name : 'Resume'}`;
   const LETTER_AS = Object.fromEntries(Object.entries(LETTER).map(([k, L]) => [k, { own: true, letter: k, head: `Writing your ${L.what}`, sub: 'The AI writes it from what you gave it. You can edit everything after.',
     steps: ['Reading your details', 'Picking the right tone', `Writing your ${L.what}`], ready: `Your ${L.what} is ready!`, done: () => openEditor() }]));
-  const COVER_AS = LETTER_AS.cover;
   // the letter's fields, written once per letter kind (a new Generate rewrites them)
   function letterFor(kind = 'cover', role, company) {
     const L = LETTER[kind];
@@ -5088,8 +5087,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const from = current === 'loading' ? 'intent' : current;
     createFrom = { where: from, route: routeNow }; createFromSet = current !== 'create'; syncBackLinks();
     routeNow = r; markRoutes(); setHash(r.shown || r.path);
-    if (r.cvThen) return () => { routeBack = from; return r.cvThen(); };  // Jobs for You's analysis, Translate's language
-    return () => { const opening = openRoute(r); routeBack = from; return opening; };
+    // forPath: what the CV is for (afterBuild's ATS analysis, the upload modal's version)
+    const then = r.cvThen ? () => { routeBack = from; return r.cvThen(); }  // Jobs for You's analysis, Translate's page
+      : () => { const opening = openRoute(r); routeBack = from; return opening; };
+    then.forPath = r.path; return then;
   }
   /* Back to a route screen that was left for the method screen: its panes are still as they were */
   async function backToRoute(r, then) {
@@ -5128,7 +5129,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* Open a route screen the way every other screen opens (go), or straight away on page load */
   async function openRoute(r, instant, pane) {
     setMore(false); clearTimers();
-    if (r.run) { setHash(r.shown || r.path); return r.run(); }
+    if (r.run) { routeNow = r; markRoutes(); setHash(r.shown || r.path); return r.run(); }  // routeNow: no earlier screen's route lingers (the ATS analysis, the upload modal's version)
     if (r.needsCv && !cvUploaded && !pane) return askCvFor(r, instant);
     if (current === 'route') {
       // already on a route screen: swap its content in place
@@ -5165,7 +5166,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!routesReady) return;  // flowNow isn't there yet
     const set = (el, where) => { if (el) el.textContent = ['intent', 'create'].includes(backTo(where)) ? 'Back' : 'Skip personalization'; };
     set(document.querySelector('[data-action="create-back"]'), createFrom.where);
-    document.querySelectorAll('.jb-back').forEach(el => set(el, routeBack === 'intent' ? backTo('intent', true) : routeBack));
+    document.querySelectorAll('.jb-back').forEach(el => { set(el, routeBack === 'intent' ? backTo('intent', true) : routeBack); el.hidden = asGuest(); });  // a guest has no app to go back to
   }
   function goBack(where, route, close, skip) {
     where = backTo(where, close);
@@ -5871,7 +5872,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const UPM_FAIL = { error: 'The server is taking too long to respond.', upload: 'We couldn’t read your resume. Try uploading it in a different file format (e.g. .docx).', linkedin: 'We couldn’t read this profile. Check that it’s public.' };
   const UPM_SPIN = `<svg class="upm-spin" aria-hidden="true" viewBox="0 0 24 24" fill="#3f3f3f"><path fill-opacity=".4" d="M12 1.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0V2c0-.53.43-.96.96-.96Z"/><path d="M12 17.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0v-4c0-.53.43-.96.96-.96ZM4.25 4.25a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36L4.25 5.61a.96.96 0 0 1 0-1.36ZM15.56 15.56a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36l-2.83-2.83a.96.96 0 0 1 0-1.36ZM1.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92H2A.96.96 0 0 1 1.04 12ZM17.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92h-4a.96.96 0 0 1-.96-.96ZM8.44 15.56a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/><path fill-opacity=".2" d="M19.75 4.25a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/></svg>`;
   let upmSeq = 0;
-  const upmKind = () => UPM_FOR[((cvNext && routeNow) || (flowNow && flowNow.f) || {}).path] || 'upload';
+  const upmKind = () => UPM_FOR[(cvNext && (cvNext.forPath || (routeNow && routeNow.path))) || (flowNow && flowNow.f.path)] || 'upload';
   function upmHTML(o) {
     const [pic, line] = UPM[o.kind], id = 'upm-h' + ++upmSeq;
     return `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="${id}">
@@ -5889,7 +5890,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const title = card.querySelector('.upm-h span'), infoEl = card.querySelector('.upm-info'), info = infoEl.querySelector('span');
     const live = card.querySelector('[aria-live]'), goBtn = card.querySelector('[data-upm="go"]'), back = card.querySelector('[data-upm="back"]');
     const steps = o.id === 'linkedin' ? UPM_RUN.slice(1) : UPM_RUN;
-    let waiting = false;  // Continue pressed while it uploads: go on as soon as it's done
     const swapTitle = t => {
       if (title.textContent === t) return;
       title.textContent = t;
@@ -5911,11 +5911,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       set(ok ? 'done' : 'fail', instant);
       live.textContent = ok ? 'Upload successful!' : `Upload failed. ${info.textContent}`;
       flowSeen('upm-end');  // the run's processing state, when it shows one
-      if (ok && waiting) later(() => upmDone(card, o), 500);
     };
     const run = () => {
+      if (card.contains(document.activeElement)) { const h = card.querySelector('.upm-h'); h.tabIndex = -1; h.focus(); }  // Retry hides with the foot
       if (card.dataset.state !== 'run') set('run');
-      waiting = false;
       // a failed result stops on Importing resume..., the step that reads the resume
       const n = procResult === 'ok' ? steps.length : steps.length - 1;
       steps.slice(0, n).forEach((t, i) => later(() => { swapTitle(t); live.textContent = t; }, i * UPM_MS));
@@ -5925,7 +5924,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const b = e.target.closest('[data-upm]'), st = card.dataset.state;
       if (!b) return;
       if (b.dataset.upm === 'back') return o.back();
-      if (st === 'run') { waiting = true; live.textContent = 'We’ll continue as soon as the upload is done.'; return; }
+      if (st === 'run') return;  // no Continue while it uploads
       if (st === 'done') return upmDone(card, o);
       if (procResult === 'fail') return o.back();  // a file or profile that can't be read: try another
       if (flowNow) { const i = flowNow.steps.findIndex(s => s.tag === 'upm'); if (i >= 0 && i !== flowAt) { flowAt = i; renderFlowBar(); } }
@@ -7230,7 +7229,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     plus: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.667"/><path d="M8 5.333v5.334M5.333 8h5.334"/></svg>'
   };
   let cmState = 'welcome', cmPick = -1, cmLi = false, cmUser = '', cmAns = [], cmInd = [new Set(), new Set()];
-  const cmKey = s => s === 'dest' ? 'dest' : s;
   const cmLogo = () => document.querySelector('#topbar .logo').innerHTML;
   const cmResumes = () => cvUploaded ? [docName(), 'Human Resources Intern Awesome', 'Marketing Manager'] : [];
   function cmStepsHTML() {
@@ -7442,7 +7440,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   });
   // Jobs for You: the shared CV step when there is none (the user's rule), then Analyzing your resume…, then the matches
   const JM = '/jobs/matcher/', JM_PROC = [S.jobs('Analyzing your resume', 'match', 'process')], JM_DEST = [S.jobs('Jobs for You · top matches', 'match', 'dest')];
-  const TR = '/dashboard/translate-resume/', TR_DEST = [S.tool('Proofread & Translate', 'proof', TR)], TR_FILL = [S.editor('Fill In · the translated copy')], TR_LANG = S.wire('Target language', TR, 'tlang');
+  const TR = '/dashboard/translate-resume/', TR_DEST = [S.tool('Proofread & Translate', 'proof', TR)], TR_FILL = [S.editor('Fill In · the translated copy')];  // the language is picked on the page (WIRE.tlang, the old language step, stays unused)
   const BOARD = [S.route('Job board · Find a job you’ll love', '/jobs/')];
   // a URL that needs a CV: the person's own (Flow 4, or 3 with its loading), else the method screen first (Flow 2)
   const needsCv = (id, title, path, dest, o = {}) => [
@@ -7466,14 +7464,15 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* The ATS check's loading after a CV written on the building screen (the user's rule): an uploaded one has it in
      the upload modal's Analytics version, which says it is being analysed, so only a created one gets this card */
   const ATS_RUN = ['Analyzing your resume...', 'Checking it the way ATS read it...', 'Calculating your score...'];
-  const atsLoadHTML = () => `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="atl-h">
-      <div class="upm-head"><h2 class="upm-h" id="atl-h">${UPM_SPIN}<span>${ATS_RUN[0]}</span></h2>
-        <div class="upm-info">${TL_IC.info}<span>We read your resume the way applicant tracking systems do.</span></div></div>
+  const ATL_INFO = 'We read your resume the way applicant tracking systems do.';
+  const atsLoadHTML = () => { const id = 'atl-h' + ++upmSeq; return `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="${id}">
+      <div class="upm-head"><h2 class="upm-h" id="${id}" tabindex="-1">${UPM_SPIN}<span>${ATS_RUN[0]}</span></h2>
+        <div class="upm-info">${TL_IC.info}<span>${ATL_INFO}</span></div></div>
       <img class="upm-pic" src="${UPM.ats[0]}" alt="" width="329" height="175">
       <p class="upm-line">${UPM.ats[1]}</p>
       <div class="upm-foot"><button class="rt-btn rt-coral" type="button" data-atl="retry">Retry</button></div>
       <p class="sr-only" aria-live="polite"></p>
-    </div>`;
+    </div>`; };
   // in the app, on the ATS page itself (the user's rule): its heading, the card in the report's place, the resume beside
   const atlMainHTML = () => `<h1 class="tl-h tl-ats-h">ATS Metrics<img src="${TL_IMG.premiumWord}" alt="Premium"></h1><div class="tl-atl">${atsLoadHTML()}</div>`;
   async function atsAnalyze() {
@@ -7481,9 +7480,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     await openTool('ats', ATS, true);
     const card = toolEl.querySelector('.tl-atl .upm'), title = card && card.querySelector('.upm-h span');
     if (!card) return;
-    const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span');
+    const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span'), btn = card.querySelector('[data-atl="retry"]');
     const run = () => {
-      card.dataset.state = 'run'; title.textContent = ATS_RUN[0]; card.querySelector('.upm-info').classList.remove('is-err');
+      // Retry is about to hide with the foot: its focus moves to the card's heading
+      if (card.contains(document.activeElement)) card.querySelector('.upm-h').focus();
+      card.dataset.state = 'run'; title.textContent = ATS_RUN[0]; info.textContent = ATL_INFO; card.querySelector('.upm-info').classList.remove('is-err');
       const n = procResult === 'ok' ? ATS_RUN.length : 2;
       ATS_RUN.slice(0, n).forEach((t, i) => later(() => { if (card.isConnected) { title.textContent = t; live.textContent = t; } }, i * UPM_MS));
       later(() => {
@@ -7491,17 +7492,20 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         if (procResult === 'ok') {  // the report takes the card's place
           atsBusy = false;
           const main = toolEl.querySelector('.tl-main');
-          main.innerHTML = atsHTML(); riseIn(toolEl, true); flowSync(); return;
+          main.innerHTML = atsHTML(); riseIn(toolEl, true); flowSync(); landFocus(toolEl); return;
         }
+        // a resume that can't be read (Failed) needs another one, as the upload modal's Retry does; an Error, a retry
+        const failed = procResult === 'fail';
         morphHeight(card, () => {
           card.dataset.state = 'fail'; title.textContent = 'Analysis failed.';
-          info.textContent = procResult === 'error' ? UPM_FAIL.error : 'We couldn’t read your resume. Try again in a moment.';
+          info.textContent = failed ? 'We couldn’t read your resume. Try another one.' : UPM_FAIL.error;
           card.querySelector('.upm-info').classList.add('is-err');
+          btn.textContent = failed ? 'Try another resume' : 'Retry';
         });
         live.textContent = 'Analysis failed. ' + info.textContent;
       }, n * UPM_MS);
     };
-    card.querySelector('[data-atl="retry"]').addEventListener('click', run);
+    btn.addEventListener('click', () => procResult === 'fail' ? askCvFor(findRoute(ATS)) : run());
     run();
   }
   const RW_ROUTE = { path: REWRITE.path, title: 'Rewrite resume', pane: 'process', html: rwHTML, head: { process: ['Rewriting your resume', 'A revamped copy of it opens in Fill In when it’s done.'] } };
@@ -7645,7 +7649,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // in the app Translate is the document's Proofread & Translate (its second navigation), there only with a CV: like the
     // ATS check it opens straight away (Flow 4), the language is picked on the page (the user's rule)
     { id: 'translate-app', flow: 4, title: 'Translate resume', path: TR, cv: true, dest: TR_DEST, noun: 'translation' },
-    { id: 'translate-app-new', flow: 2, title: 'Translate resume · no CV yet', path: TR, cv: false, prep: [S.cv(TR), ...cvMade(TR), TR_LANG], process: false, dest: TR_DEST, noun: 'translation' },
+    { id: 'translate-app-new', flow: 2, title: 'Translate resume · no CV yet', path: TR, cv: false, prep: [S.cv(TR), ...cvMade(TR)], process: false, dest: TR_DEST, noun: 'translation' },
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].flatMap(([t, label]) => [
       { id: 'latest-' + t, flow: 4, title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] },
       { id: `latest-${t}-new`, flow: 4, title: `Latest resume · ${label}, no CV yet`, path: `/latest-resume/${t}/`, cv: false, dest: [S.latest('My Documents', `/latest-resume/${t}/`, false, 'route:/dashboard/resumes/')] }]),
@@ -7693,8 +7697,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'guest-ai', flow: 4, title: 'Create Resume with AI · guest', path: '/dashboard/create-ai-resume/', guest: true, cv: false, dest: [S.editor('Editor (guest) · AI asks to sign up', '/dashboard/create-ai-resume/')] },
     { id: 'guest-tailor', flow: 4, title: 'Tailor resume · guest', path: '/dashboard/tailor-resume/', guest: true, cv: false, dest: [S.editor('Editor (guest) · Resume Tailoring asks to sign up', '/dashboard/tailor-resume/')] },
 
-    // landing pages that gave more than a CV: tailoring with the job, Translate with the language (always: the user's
-    // rule), and a CV for the Upload resume screen and the ATS check (Back after a failed upload: their own runs)
+    // landing pages that gave more than a CV: tailoring with the job, Translate with the language (a Translate landing
+    // page takes both or neither: the user's rule), and a CV for the Upload resume screen and the ATS check (Back after
+    // a failed upload: their own runs)
     { id: 'landing-cv', flow: 3, title: 'CV given on the landing page', path: '/dashboard/upload-resume/', entry: landing('CV attached'), cv: true, lp: true, redo: 'upload', ...upmRun('/dashboard/upload-resume/'), dest: resumeOut(), noun: 'resume' },
     { id: 'landing-ats', flow: 3, title: 'ATS check of a CV from the landing page', path: ATS, entry: landing('CV attached'), cv: true, lp: true, redo: 'analyse-resume-new', ...upmRun('/dashboard/upload-resume/'), dest: atsOut, noun: 'ATS report' },
     { id: 'landing-tailor', flow: 3, title: 'Tailoring with a CV and a job from the landing page', path: '/dashboard/tailor-resume/', cv: true, data: true, lp: true, redo: 'tailor-resume-new',
@@ -7705,7 +7710,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       entry: landing('CV and job', 'Flow 3: the visitor gave a CV (jana-cv.pdf) on a job’s landing page, which carries the job, so after sign-up the CV is uploaded and tailoring to that job starts straight away.'),
       ...trlRun('/jobs/job/1234/tailor/'),
       dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' },
-    { id: 'translate-resume', flow: 3, title: 'Translate resume from a landing page, with a CV', path: TR, cv: true, data: true, lp: true,
+    { id: 'translate-resume', flow: 3, title: 'Translate resume from a landing page, with a CV', path: TR, cv: true, data: true, lp: true, redo: 'translate-app-new',
       entry: landing('CV and language', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the CV is uploaded and the translated copy opens in Fill In.'),
       ...upmRun('/dashboard/upload-resume/'), dest: TR_FILL, noun: 'translation' },
     // without a CV the landing page has no language either (the user's rule): the CV first, then Proofread & Translate,
@@ -7753,7 +7758,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ['tailor-resume', 'jobs-tailor'].forEach(id => { const f = FEATURES.find(x => x.id === id); f.cv = true; FEATURES.push({ ...f, id: id + '-new', title: f.title + ' · no CV yet', cv: false }); });
   FEATURES.push(...[...new Set(FEATURES.map(f => f.path))].filter(p => !LP_NONE.includes(p)).flatMap(path => {
     const app = FEATURES.filter(f => f.path === path && fromOf(f) === 'app'), here = FEATURES.filter(f => f.path === path && f.lp);
-    if (!app.length || path === TR) return [];  // Translate's landing pages always give the language: written above
+    if (!app.length || path === TR) return [];  // Translate's landing runs are written above (with the CV and the language, or neither)
     const pick = cv => app.find(f => f.cv === cv) || app.find(f => f.cv === undefined) || app[0];
     // Tailor, like Translate, is one landing-page flow: a landing page that takes the CV takes the job too (the user's
     // rule), so with a CV there is only the run with the data (landing-tailor, landing-jobs-tailor)
@@ -7967,7 +7972,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // screen but that one)
     const st = flowNow && flowNow.steps, last = st && flowAt === st.length - 1;
     if (flowNow && !flowNow.skipped && (last ? at(st[flowAt]) : st.some(at))) return;
-    const list = FEATURES.filter(f => f.path === key && fromOf(f) === 'app'); if (!list.length) return;
+    const list = FEATURES.filter(f => f.path === key && fromOf(f) === 'app' && !f.appOff); if (!list.length) return;
     const f = pmPickOf(list, cvUploaded, false);
     if (flowNow && flowNow.f === f && !flowNow.skipped) return;
     flowNow = buildFlow(f); flowAt = 0; pmShow(f); renderFlowBar(); flowSync();
@@ -8097,7 +8102,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      wall, the ATS checker) */
   function afterBuild() {
     const next = buildNext; buildNext = null;
-    if (next && routeNow && routeNow.path === ATS) return atsAnalyze();  // the ATS check's loading
+    if (next && next.forPath === ATS && (procResult === 'ok' || !flowNow)) return atsAnalyze();  // the ATS check's loading
     if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process' && flowNow.steps[flowAt].match === 'screen:loading') {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
