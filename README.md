@@ -55,7 +55,7 @@ Content column is 950px, method cards are 500px.
 
 The side rail lists its everyday settings in flow order: goal-screen layout (grid/list), method-screen variant (A/B), desktop/mobile, restart. A setting that doesn't affect the current screen is dimmed; clicking it applies it and takes you to the screen it changes. Less-used settings sit in a small panel behind an almost invisible More options button in the bottom-right corner (just a very light grey flask icon), which shows a faint dot while variant C, the 3D look or the Flow checker is on. Flows are picked and run from the run dock beside it (see Four flow templates). The panel has two views, picked at its top (the last one picked comes back): **Flows** – the Flow checker and the goal and method screens' look (Flat / 3D, variant C); **URLs** – every route screen at its URL (they open with the dock's CV).
 
-- Source: `src/prototype.html`
-- Build (inlines brand fonts, logo and the images in `assets/`): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
+- Source: `src/prototype.html` (markup), `src/styles.css` and `src/app.js`
+- Build (joins the three, inlines brand fonts, logo and the images in `assets/`): `python3 build.py` → `dist/create-resume-prototype.html` (self-contained, open in any browser)
 - Version: shown bottom left (v1.3, v1.3.1, …); small changes bump the patch number, bigger ones the minor, the major only on request (see `CLAUDE.md`).
 - Deep links: `#a` / `#b` / `#c` open a variant (an old `#d` link opens B in the 3D look), add `-3d` or `-flat` for the look, add `-mobile` for the phone view and `-list` for the list layout, `#editor` / `#dashboard` jump straight to those screens. Route screens use their path: `#/dashboard/create-ai-resume/` (and `#/dashboard/` opens the dashboard). The URL follows the route while it's on screen.

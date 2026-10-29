@@ -1,8 +1,11 @@
-"""Inline brand fonts and logo into src/prototype.html -> dist/create-resume-prototype.html."""
+"""Join src/prototype.html, src/styles.css and src/app.js, inline the fonts, logos and assets -> dist/create-resume-prototype.html."""
 import base64, pathlib, re
 
 root = pathlib.Path(__file__).parent
 html = (root / "src/prototype.html").read_text()
+# the markup holds the styles (src/styles.css) and the script (src/app.js) as placeholders
+html = html.replace("__STYLES__", (root / "src/styles.css").read_text().rstrip("\n"), 1)
+html = html.replace("__APP_JS__", (root / "src/app.js").read_text().rstrip("\n"), 1)
 
 def data_uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((root / path).read_bytes()).decode()

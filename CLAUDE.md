@@ -1,5 +1,9 @@
 # Notes for Claude
 
+## Files
+
+The source is three files that `python3 build.py` joins into `dist/create-resume-prototype.html` (with the fonts, logos and `__ASSET:…__` images inlined): `src/prototype.html` (the markup, with `__STYLES__` and `__APP_JS__` where the other two go), `src/styles.css` (all the CSS) and `src/app.js` (all the script). Below, a constant or function is in `src/app.js` and a selector's rules in `src/styles.css` unless the markup is meant. The checks are in `tests/` (see its README): run them before publishing.
+
 ## Prototype version number
 
 The prototype shows its version in the bottom-left corner: the `.proto-ver` element in `src/prototype.html` (its text and its `aria-label`). Format: `vMAJOR.MINOR` or `vMAJOR.MINOR.PATCH`.
@@ -16,15 +20,15 @@ Start the commit subject with the new version (e.g. `v1.3.1: …`) and mention i
 
 ## Variant C visibility
 
-Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src/prototype.html` controls it: `true` shows its button in the More options panel (bottom-right corner, Flows view) and lets `#c` open it (current state); `false` hides that row and sends `#c` links and a remembered C choice to A, while all of C's markup, styles and logic stay in place. When hiding it, also add a "hidden for now" note to C in the README; when showing it, remove that note.
+Variant C ("picture on top") can be hidden without removing it. `SHOW_C` in `src/app.js` controls it: `true` shows its button in the More options panel (bottom-right corner, Flows view) and lets `#c` open it (current state); `false` hides that row and sends `#c` links and a remembered C choice to A, while all of C's markup, styles and logic stay in place. When hiding it, also add a "hidden for now" note to C in the README; when showing it, remove that note.
 
 ## Hidden decorations in the 3D look
 
-The 3D look's resume fragments (the four faded pages in the side margins of the method screen) are hidden, not removed. `SHOW_3D_PAPERS = false` in `src/prototype.html` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_3D_PAPERS = true` (and update the README's look description); nothing else needs to change.
+The 3D look's resume fragments (the four faded pages in the side margins of the method screen) are hidden, not removed. `SHOW_3D_PAPERS = false` in `src/app.js` adds `no-papers` to the backdrop, which hides them; their markup and styles stay in place. To bring them back, set `SHOW_3D_PAPERS = true` (and update the README's look description); nothing else needs to change.
 
 ## Goal cards
 
-The goal screen's four cards come from Figma (Kickresume 3.0 › Intent screen [new], 61797:3677) and the user's choose-goal page. `GOALS` in `src/prototype.html` holds each card's copy, its list-layout icon and its picture: `.ga-*` markup on a 156px stage, scaled to 72px on phones. The hover and focus motion is CSS only (`.intent:is(:hover, :focus-visible) .ga-…`). `pickGoal(id)` decides where each goal leads.
+The goal screen's four cards come from Figma (Kickresume 3.0 › Intent screen [new], 61797:3677) and the user's choose-goal page. `GOALS` in `src/app.js` holds each card's copy, its list-layout icon and its picture: `.ga-*` markup on a 156px stage, scaled to 72px on phones. The hover and focus motion is CSS only (`.intent:is(:hover, :focus-visible) .ga-…`). `pickGoal(id)` decides where each goal leads.
 
 ## Flow 1 (Figma Kickresume 3.0 › Flow 1, 62207:3265)
 
@@ -78,7 +82,7 @@ After tailoring, the editor opens on its right pane's **Resume Tailoring** tab (
 
 ## Route screens (recreated product screens)
 
-The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/prototype.html`:
+The user sends screenshots of product screens (mostly modals) to recreate pixel for pixel, each under a URL path such as `/dashboard/create-ai-resume/` or `/ai-career-map`. They live in `src/app.js` (markup functions and behaviour) and `src/styles.css`:
 
 - Register each one in `ROUTES` (`group` = its group in the user's URL checklist (kept as data; the URLs list is grouped by `KINDS`), `path`, `also` = more paths for the same screen, `title`, `html` = its markup function, `init` = its behaviour, `needsCv` = without a CV, the method screen comes first and hands the CV to this screen once it is made (`askCvFor` / `askCv` set `cvNext`; the upload modal's Continue or the building screen's end (`buildNext`) runs it; the URL stays the screen's; see "Upload modal or building screen"), `upload` = the screen is Upload your resume itself, then the upload modal and the editor, `wire` = no design yet: its `html` returns a Wire wireframe from `WIRE`, `run` = do something instead of showing a screen, e.g. open the editor, `more` = panes that follow the main one, `{ name: markup function }`, such as Tailor resume's `process`, `head` = the screen's headline and subheadline per pane, `{ pane: [headline, subheadline] }` or a function giving them, shown above the card like the onboarding screens' `.page-head` (`routeHead` / `setRouteHead`; nested steps such as a writer's `s2` can have their own). Every personalization, processing and processing-state screen has one, so its content starts where the goal, method and building screens' does: write the copy in `HEADS` (wireframes opened by `wireRoute` get `HEADS[<WIRE id>]`, and their card drops the title the headline now carries)). That alone adds its link under More options › URLs and makes `#<path>` open it (also on `hashchange`).
 - A screenshot of a whole page with its own top bar (Sign up and Log in, `openAuth`; My Documents, `openDocs`; the resume tools, `openTool`; the template picker, `openTemplates`) or its own background (the purple Upgrade and student pages, `openUpgrade`) can't sit in `#screen-route`: it is an app screen like the dashboard (`APPS.auth`, `APPS.upgrade`, `APPS.docs`, `APPS.tool`, `APPS.tpl`, which hide the logo bar and page) and its route uses `run`. `enterApp` opens one; give it the URL it shows. Images live in `assets/`; write `__ASSET:<path under assets/>__` where the page needs one and `build.py` inlines it as a data URI (the auth photos still use their own placeholders).
