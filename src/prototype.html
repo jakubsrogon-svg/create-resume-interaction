@@ -2590,6 +2590,8 @@ body.has-note .tl, body:has(.flow-bar:not([hidden])) .tl { padding-bottom: 108px
 :where(.tl) :where(svg) { display: block; flex: none; }
 /* the middle column */
 .tl-main { grid-column: 2; grid-row: 1; min-width: 0; padding: 28px 32px 80px; }
+.tl-atl { display: flex; justify-content: center; padding-top: 56px; }  /* the ATS page analysing a CV (atsAnalyze) */
+.tl-atl .upm { width: 100%; max-width: 393px; }
 .tl-col { display: grid; gap: 24px; width: 490px; max-width: 100%; }
 .is-proof .tl-col { gap: 40px; width: 500px; }
 .is-coach .tl-col { gap: 32px; width: 498px; }
@@ -3340,7 +3342,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.37">v2.37</div>
+<div class="proto-ver" aria-label="Prototype version 2.38">v2.38</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -6362,7 +6364,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const docsEl = document.getElementById('screen-docs'), toolEl = document.getElementById('screen-tool');
   APPS.docs = docsEl; APPS.tool = toolEl;
   const TOOL_PATH = { ats: '/latest-resume/analyze/', proof: '/latest-resume/proofread/', coach: '/latest-resume/recruiter-feedback/' };
-  let toolKind = 'ats', toolPath = TOOL_PATH.ats;  // the tool page on screen and the URL it shows
+  let toolKind = 'ats', toolPath = TOOL_PATH.ats, atsBusy = false;  // the tool page on screen and the URL it shows; atsBusy: the ATS page analysing a CV (atsAnalyze)
 
   /* My Documents: the "create" card, then the resumes (only with a CV) and their pages */
   function docsHTML() {
@@ -6571,7 +6573,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function toolHTML(kind) {
     if (kind === 'iq') return `${appNavHTML('interviews')}<main class="tl-main">${iqHTML()}</main>`;
-    const main = kind === 'ats' ? atsHTML() : kind === 'proof' ? proofHTML() : coachHTML();
+    const main = kind === 'ats' ? (atsBusy ? atlMainHTML() : atsHTML()) : kind === 'proof' ? proofHTML() : coachHTML();
     return `${appNavHTML(kind)}<main class="tl-main">${main}</main>${tlPrevHTML(kind)}`;
   }
 
@@ -6599,8 +6601,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   }
   const openDocs = () => enterApp(docsEl, () => { docsEl.innerHTML = docsHTML(); }, 'docs', '/dashboard/resumes/');
   // path: the URL it shows (a tool's own, e.g. /dashboard/translate-resume/; the latest-resume one otherwise)
-  async function openTool(kind, path = TOOL_PATH[kind]) {
-    toolKind = kind; toolPath = path; tlCat = 0;
+  async function openTool(kind, path = TOOL_PATH[kind], busy = false) {
+    atsBusy = busy; toolKind = kind; toolPath = path; tlCat = 0;
     const fill = () => { toolEl.className = 'tl is-' + kind; toolEl.innerHTML = toolHTML(kind); requestAnimationFrame(fitPrev); };
     if (current !== 'tool') { await enterApp(toolEl, fill, 'tool', path); return toolAt(path); }
     // from one tool to another: the page stays, its content fades over
@@ -7472,11 +7474,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <div class="upm-foot"><button class="rt-btn rt-coral" type="button" data-atl="retry">Retry</button></div>
       <p class="sr-only" aria-live="polite"></p>
     </div>`;
-  const ATL_ROUTE = { path: ATS, title: 'Analyse resume', pane: 'process', html: atsLoadHTML, head: { process: ['Analyzing your resume', 'Your ATS report opens when it’s done.'] } };
+  // in the app, on the ATS page itself (the user's rule): its heading, the card in the report's place, the resume beside
+  const atlMainHTML = () => `<h1 class="tl-h tl-ats-h">ATS Metrics<img src="${TL_IMG.premiumWord}" alt="Premium"></h1><div class="tl-atl">${atsLoadHTML()}</div>`;
   async function atsAnalyze() {
     cvNext = null;
-    await openRoute(ATL_ROUTE);
-    const card = screens.route.querySelector('.upm'), title = card && card.querySelector('.upm-h span');
+    await openTool('ats', ATS, true);
+    const card = toolEl.querySelector('.tl-atl .upm'), title = card && card.querySelector('.upm-h span');
     if (!card) return;
     const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span');
     const run = () => {
@@ -7485,7 +7488,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ATS_RUN.slice(0, n).forEach((t, i) => later(() => { if (card.isConnected) { title.textContent = t; live.textContent = t; } }, i * UPM_MS));
       later(() => {
         if (!card.isConnected) return;
-        if (procResult === 'ok') return openTool('ats', ATS);
+        if (procResult === 'ok') {  // the report takes the card's place
+          atsBusy = false;
+          const main = toolEl.querySelector('.tl-main');
+          main.innerHTML = atsHTML(); riseIn(toolEl, true); flowSync(); return;
+        }
         morphHeight(card, () => {
           card.dataset.state = 'fail'; title.textContent = 'Analysis failed.';
           info.textContent = procResult === 'error' ? UPM_FAIL.error : 'We couldn’t read your resume. Try again in a moment.';
@@ -7717,7 +7724,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      and the run goes on to the setup (Flow 2), or straight to the loading or page when there is none (Flow 3). The
      writers' details may come with it too (data): then their form is skipped and the run is Flow 3. */
   const LP_UPM = S.route('Upload modal · Uploading resume...', '/dashboard/upload-resume/', 'progress');
-  const LP_NONE = ['', '/login/', '/edit/', '/guest-edit-start/', '/latest-resume/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/'];
+  // the job board and its results need no account (the user's rule: the jobs landing page is the board itself), so
+  // a visitor from a landing page is a guest there (guest-jobs, guest-results), never sent to Sign up first
+  const LP_NONE = ['', '/login/', '/edit/', '/guest-edit-start/', '/latest-resume/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/', '/jobs/', '/jobs/search/'];
   // not the resume-building URLs (New resume, a template, Create Resume with AI): someone there has no resume yet, and
   // a landing page with an upload block leads to Upload resume (the user's rule)
   const LP_CV = ['/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/dashboard/tailor-resume/',
@@ -8074,7 +8083,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!flowNow) return;
     if (flowNow.n === 1 && current === 'dashboard' && ['intent', 'prep'].includes(flowNow.steps[flowAt].stage)) { flowNow.skipped = true; return renderFlowBar(); }  // Skip personalization
     const pane = current === 'route' && screens.route.querySelector('.rt-item > .rt-pane:not([hidden])');
-    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : current === 'cm' ? `route:/career-map/#${cmState}` : 'screen:' + current;
+    const key = current === 'route' ? `route:${routeNow ? routeNow.path : ''}#${pane ? pane.dataset.pane : ''}` : current === 'auth' ? `route:${AUTH[authKind].path}#main` : current === 'upgrade' ? `route:${upgPath()}#main` : current === 'docs' ? 'route:/dashboard/resumes/#main' : current === 'tool' ? `route:${toolPath}#${toolKind === 'iq' ? iqState : atsBusy ? 'process' : 'main'}` : current === 'tpl' ? 'route:/dashboard/create-resume/#main' : current === 'jobs' ? `route:${JOBS_PATH[jobsView]}#${jobsState}` : current === 'cm' ? `route:/career-map/#${cmState}` : 'screen:' + current;
     const i = flowNow.steps.findIndex((s, k) => k >= flowAt && key.startsWith(s.match));
     if (i > flowAt || (i === flowAt && flowNow.skipped)) { flowAt = i; flowNow.skipped = false; renderFlowBar(); }  // back in the run
   }
