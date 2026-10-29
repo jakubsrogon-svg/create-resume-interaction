@@ -4999,7 +4999,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '1 · Sign up / log in', path: '/login/', title: 'Log in', run: () => openAuth('login') },
     { group: '2 · Guest', path: '/guest-edit-start/', title: 'Guest editor (straight to the app)', run: () => editorAt('/guest-edit-start/') },
     // no template pickers for now (the user's rule: everyone gets the default template; SHOW_TPL_PICKERS brings them back)
-    { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: SHOW_TPL_PICKERS ? 'New resume · select your template' : 'New resume', run: () => SHOW_TPL_PICKERS ? openTemplates() : askCv(madeEditor) },  // the method screen makes it
+    { group: '3 · Start from a template', path: '/dashboard/create-resume/', title: SHOW_TPL_PICKERS ? 'New resume · select your template' : 'New resume', run: () => SHOW_TPL_PICKERS ? openTemplates() : askCv(madeEditor, false, '/dashboard/create-resume/') },  // the method screen makes it
     ...[['cover', 'New cover letter'], ['website', 'New website']].map(([k, title]) => (!SHOW_TPL_PICKERS ? { group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title, run: () => openWire(`/dashboard/create-${k}/`, `${k === 'cover' ? 'Cover letter' : 'Website'} editor`, 'dest', { title: `${k === 'cover' ? 'Cover letter' : 'Website'} editor`, kind: k === 'cover' ? 'doc' : 'site', pane: 'dest' }) } : { group: '3 · Start from a template', path: `/dashboard/create-${k}/`, title: title + ' · pick a template', wire: true, head: { main: HEADS.templates({ kind: k === 'cover' ? 'cover letter' : k }) }, html: () => WIRE.templates({ kind: k === 'cover' ? 'cover letter' : k }) })),
     { group: '4 · Generate with AI', path: '/dashboard/create-ai-resume/', title: 'Create Resume with AI', head: { main: HEADS.aiResume }, html: aiModalHTML, init: initAiModal },
     // the section writers: Fill In opens, then the writer pops up over it (openWriter)
@@ -5072,7 +5072,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   let cvUploaded = false, cvName = '';
   /* No CV yet: the method screen gets one (any of its methods) and hands it to `then`, the screen that asked, once it
      is made: after the upload modal (uploaded or imported) or the building screen (created); see startCreation */
-  function askCv(then, instant) {
+  /* then: what opens once the CV is made; forPath: the URL the CV is for (the upload modal's version, the ATS analysis);
+     cvFor's hand-offs carry their own */
+  function askCv(then, instant, forPath) {
+    if (forPath) then.forPath = forPath;
     cvNext = then;
     if (!instant) return go('create');
     renderCreate();
@@ -5498,7 +5501,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         return;
       }
       // step 2 picks one of the person's resumes: without one, the method screen makes it first and step 2 follows
-      if (e.target.closest('.aiw-next') && needFilled(required())) { const r = routeNow; cvUploaded ? toStepTwo() : askCv(() => backToRoute(r, toStepTwo)); }
+      if (e.target.closest('.aiw-next') && needFilled(required())) { const r = routeNow; cvUploaded ? toStepTwo() : askCv(() => backToRoute(r, toStepTwo), false, r.path); }
     });
     form.addEventListener('input', e => { if (e.target.name === 'post') e.target.parentElement.closest('.aim-field').querySelector('.aim-count').textContent = `${e.target.value.length}/${e.target.maxLength}`; });
     form.addEventListener('submit', e => {
@@ -5872,7 +5875,16 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const UPM_FAIL = { error: 'The server is taking too long to respond.', upload: 'We couldn’t read your resume. Try uploading it in a different file format (e.g. .docx).', linkedin: 'We couldn’t read this profile. Check that it’s public.' };
   const UPM_SPIN = `<svg class="upm-spin" aria-hidden="true" viewBox="0 0 24 24" fill="#3f3f3f"><path fill-opacity=".4" d="M12 1.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0V2c0-.53.43-.96.96-.96Z"/><path d="M12 17.04c.53 0 .96.43.96.96v4a.96.96 0 0 1-1.92 0v-4c0-.53.43-.96.96-.96ZM4.25 4.25a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36L4.25 5.61a.96.96 0 0 1 0-1.36ZM15.56 15.56a.96.96 0 0 1 1.36 0l2.83 2.83a.96.96 0 0 1-1.36 1.36l-2.83-2.83a.96.96 0 0 1 0-1.36ZM1.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92H2A.96.96 0 0 1 1.04 12ZM17.04 12c0-.53.43-.96.96-.96h4a.96.96 0 0 1 0 1.92h-4a.96.96 0 0 1-.96-.96ZM8.44 15.56a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/><path fill-opacity=".2" d="M19.75 4.25a.96.96 0 0 1 0 1.36l-2.83 2.83a.96.96 0 0 1-1.36-1.36l2.83-2.83a.96.96 0 0 1 1.36 0Z"/></svg>`;
   let upmSeq = 0;
-  const upmKind = () => UPM_FOR[(cvNext && (cvNext.forPath || (routeNow && routeNow.path))) || (flowNow && flowNow.f.path)] || 'upload';
+  /* A loading card's steps (the upload modal, the ATS analysis): each title for UPM_MS, then done(); a failed result
+     stops a step early, on the one that reads the resume. Retry's focus goes to the card's heading before its foot
+     hides, and a card no longer on screen does nothing. */
+  function cardSteps(card, steps, show, done) {
+    if (card.contains(document.activeElement)) { const h = card.querySelector('.upm-h'); h.tabIndex = -1; h.focus(); }
+    const n = procResult === 'ok' ? steps.length : steps.length - 1;
+    steps.slice(0, n).forEach((t, i) => later(() => { if (card.isConnected) show(t); }, i * UPM_MS));
+    later(() => { if (card.isConnected) done(); }, n * UPM_MS);
+  }
+  const upmKind = () => UPM_FOR[(cvNext && cvNext.forPath) || (flowNow && flowNow.f.path)] || 'upload';
   function upmHTML(o) {
     const [pic, line] = UPM[o.kind], id = 'upm-h' + ++upmSeq;
     return `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="${id}">
@@ -5913,12 +5925,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       flowSeen('upm-end');  // the run's processing state, when it shows one
     };
     const run = () => {
-      if (card.contains(document.activeElement)) { const h = card.querySelector('.upm-h'); h.tabIndex = -1; h.focus(); }  // Retry hides with the foot
+      cardSteps(card, steps, t => { swapTitle(t); live.textContent = t; }, () => end());  // a failure stops on Importing resume...
       if (card.dataset.state !== 'run') set('run');
-      // a failed result stops on Importing resume..., the step that reads the resume
-      const n = procResult === 'ok' ? steps.length : steps.length - 1;
-      steps.slice(0, n).forEach((t, i) => later(() => { swapTitle(t); live.textContent = t; }, i * UPM_MS));
-      later(() => end(), n * UPM_MS);
     };
     card.addEventListener('click', e => {
       const b = e.target.closest('[data-upm]'), st = card.dataset.state;
@@ -7169,7 +7177,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (w === 'cover-sample') return openWire('/dashboard/create-cover/', 'Cover letter samples', 'coverSamples');
     if (w === 'cover-sample-pick') { coverEd(); return toast('The sample is in your cover letter.'); }
     if (w === 'site-cv' && cvUploaded) return toast('Your website is filled in from your resume.');
-    if (w === 'site-cv' || w === 'site-linkedin') return askCv(siteEd);  // the method screen (LinkedIn import is one of its ways)
+    if (w === 'site-cv' || w === 'site-linkedin') return askCv(siteEd, false, '/dashboard/create-website/');  // the method screen (LinkedIn import is one of its ways)
     if ((w === 'signup' || w === 'login') && guestBack) { const back = guestBack; guestBack = null; endFlow(); return back(); }  // a guest's work opens again
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
@@ -7482,13 +7490,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!card) return;
     const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span'), btn = card.querySelector('[data-atl="retry"]');
     const run = () => {
-      // Retry is about to hide with the foot: its focus moves to the card's heading
-      if (card.contains(document.activeElement)) card.querySelector('.upm-h').focus();
-      card.dataset.state = 'run'; title.textContent = ATS_RUN[0]; info.textContent = ATL_INFO; card.querySelector('.upm-info').classList.remove('is-err');
-      const n = procResult === 'ok' ? ATS_RUN.length : 2;
-      ATS_RUN.slice(0, n).forEach((t, i) => later(() => { if (card.isConnected) { title.textContent = t; live.textContent = t; } }, i * UPM_MS));
-      later(() => {
-        if (!card.isConnected) return;
+      cardSteps(card, ATS_RUN, t => { title.textContent = t; live.textContent = t; }, () => {
         if (procResult === 'ok') {  // the report takes the card's place
           atsBusy = false;
           const main = toolEl.querySelector('.tl-main');
@@ -7503,7 +7505,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
           btn.textContent = failed ? 'Try another resume' : 'Retry';
         });
         live.textContent = 'Analysis failed. ' + info.textContent;
-      }, n * UPM_MS);
+      });
+      card.dataset.state = 'run'; title.textContent = ATS_RUN[0]; info.textContent = ATL_INFO; card.querySelector('.upm-info').classList.remove('is-err');
     };
     btn.addEventListener('click', () => procResult === 'fail' ? askCvFor(findRoute(ATS)) : run());
     run();
