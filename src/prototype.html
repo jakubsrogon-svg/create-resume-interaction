@@ -3340,7 +3340,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.36">v2.36</div>
+<div class="proto-ver" aria-label="Prototype version 2.37">v2.37</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -7410,6 +7410,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   // the ATS check has no loading of its own: the CV made on the method screen is its processing, the ATS checker next
   const ATS = '/dashboard/analyse-resume/', atsOut = () => [S.tool('ATS checker', 'ats', ATS)];
+  // after the building screen (not the upload modal, whose Analytics version is the analysis): Analyzing your resume
+  const ATS_LOAD = { label: 'Analyzing your resume (a CV from the building screen)', alt: true, match: `route:${ATS}#process`, run: () => atsAnalyze() };
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
     process: [S.route('Tailoring', path, 'process')],
@@ -7445,7 +7447,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id, flow: o.process ? 3 : 4, title, path, cv: true, dest, ...o },
     { id: id + '-new', flow: 2, title: title + ' · no CV yet', path, cv: false, dest, ...o,
       // the CV made on the method screen is the loading of a page that has none of its own (the ATS check)
-      ...(o.process ? { prep: [S.cv(path), ...cvMade(path)] } : { prep: [S.cv(path)], process: cvMade(path) }) }
+      ...(o.process ? { prep: [S.cv(path), ...cvMade(path)] } : { prep: [S.cv(path)], process: [...cvMade(path), ...(path === ATS ? [ATS_LOAD] : [])] }) }
   ];
   // Rewrite resume: its loading straight away (it needs only a CV), then the rewritten copy in Fill In
   const REWRITE = { verb: 'Rewriting your resume', path: '/dashboard/rewrite-resume/', noun: 'rewritten resume' };
@@ -7459,6 +7461,42 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       <ul class="rw-list">${RW_SECS.map((t, i) => `<li${i ? ' hidden' : ''}>${RW_CHECK}${t}</li>`).join('')}</ul>
       <div class="rw-foot"><button class="rw-go" type="button" hidden>Continue</button></div></div>
     <span class="rw-wait">Please wait for the rewrite to complete—it shouldn’t take much longer.</span></div>`;
+  /* The ATS check's loading after a CV written on the building screen (the user's rule): an uploaded one has it in
+     the upload modal's Analytics version, which says it is being analysed, so only a created one gets this card */
+  const ATS_RUN = ['Analyzing your resume...', 'Checking it the way ATS read it...', 'Calculating your score...'];
+  const atsLoadHTML = () => `<div class="rt-card upm" data-state="run" role="group" aria-labelledby="atl-h">
+      <div class="upm-head"><h2 class="upm-h" id="atl-h">${UPM_SPIN}<span>${ATS_RUN[0]}</span></h2>
+        <div class="upm-info">${TL_IC.info}<span>We read your resume the way applicant tracking systems do.</span></div></div>
+      <img class="upm-pic" src="${UPM.ats[0]}" alt="" width="329" height="175">
+      <p class="upm-line">${UPM.ats[1]}</p>
+      <div class="upm-foot"><button class="rt-btn rt-coral" type="button" data-atl="retry">Retry</button></div>
+      <p class="sr-only" aria-live="polite"></p>
+    </div>`;
+  const ATL_ROUTE = { path: ATS, title: 'Analyse resume', pane: 'process', html: atsLoadHTML, head: { process: ['Analyzing your resume', 'Your ATS report opens when it’s done.'] } };
+  async function atsAnalyze() {
+    cvNext = null;
+    await openRoute(ATL_ROUTE);
+    const card = screens.route.querySelector('.upm'), title = card && card.querySelector('.upm-h span');
+    if (!card) return;
+    const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span');
+    const run = () => {
+      card.dataset.state = 'run'; title.textContent = ATS_RUN[0]; card.querySelector('.upm-info').classList.remove('is-err');
+      const n = procResult === 'ok' ? ATS_RUN.length : 2;
+      ATS_RUN.slice(0, n).forEach((t, i) => later(() => { if (card.isConnected) { title.textContent = t; live.textContent = t; } }, i * UPM_MS));
+      later(() => {
+        if (!card.isConnected) return;
+        if (procResult === 'ok') return openTool('ats', ATS);
+        morphHeight(card, () => {
+          card.dataset.state = 'fail'; title.textContent = 'Analysis failed.';
+          info.textContent = procResult === 'error' ? UPM_FAIL.error : 'We couldn’t read your resume. Try again in a moment.';
+          card.querySelector('.upm-info').classList.add('is-err');
+        });
+        live.textContent = 'Analysis failed. ' + info.textContent;
+      }, n * UPM_MS);
+    };
+    card.querySelector('[data-atl="retry"]').addEventListener('click', run);
+    run();
+  }
   const RW_ROUTE = { path: REWRITE.path, title: 'Rewrite resume', pane: 'process', html: rwHTML, head: { process: ['Rewriting your resume', 'A revamped copy of it opens in Fill In when it’s done.'] } };
   async function rewriteNow() {
     await openRoute(RW_ROUTE);
@@ -7564,7 +7602,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const FEATURES = [
     ...[['build', 'Build my resume', '', { prep: [S.screen('Method screen', 'create')], process: cvMade(), dest: resumeOut(), verb: 'Building your resume', noun: 'resume' }],
       ['tailor', 'Tailor my resume', '/dashboard/tailor-resume/', { prep: toolPrep('/dashboard/tailor-resume/', 'Tailor resume'), ...trlRun('/dashboard/tailor-resume/'), dest: resumeOut('Editor · the tailored copy', 'tailoring'), noun: 'tailored resume' }],
-      ['ats', 'Pass the ATS check', ATS, { prep: [S.cv(ATS)], process: cvMade(ATS), dest: atsOut, noun: 'ATS report' }],
+      ['ats', 'Pass the ATS check', ATS, { prep: [S.cv(ATS)], process: [...cvMade(ATS), ATS_LOAD], dest: atsOut, noun: 'ATS report' }],
       ['jobs', 'Find jobs that fit me · Job board', '/jobs/', { process: false, dest: BOARD, noun: 'job board' }],
       ['matcher', 'Find jobs that fit me · Jobs for You', JM, { goal: 'jobs', prep: [S.cv(JM), ...cvMade(JM)], process: JM_PROC, dest: JM_DEST, noun: 'job matches' }]]
       .map(([id, title, path, o]) => ({ id: 'goal-' + id, goal: id, flow: 1, group: 'Goal picked on the goal screen', title, path, url: '/register/', entry: signUp, cv: false, ...o })),
@@ -7663,9 +7701,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'translate-resume', flow: 3, title: 'Translate resume from a landing page, with a CV', path: TR, cv: true, data: true, lp: true,
       entry: landing('CV and language', 'Flow 3: the visitor gave a CV (jana-cv.pdf) and picked a language (Spanish) on a landing page, so after sign-up the CV is uploaded and the translated copy opens in Fill In.'),
       ...upmRun('/dashboard/upload-resume/'), dest: TR_FILL, noun: 'translation' },
-    { id: 'translate-lp-new', flow: 2, title: 'Translate resume from a landing page, no CV', path: TR, cv: false, data: true, lp: true,
-      entry: landing('language', 'Flow 2: the visitor picked a language (Spanish) on a landing page but gave no CV, so after sign-up they make one first, then the translated copy opens in Fill In.'),
-      prep: [S.cv(TR), ...cvMade(TR)], process: false, dest: TR_FILL, noun: 'translation' }
+    // without a CV the landing page has no language either (the user's rule): the CV first, then Proofread & Translate,
+    // where the language is picked
+    { id: 'translate-lp-new', flow: 2, title: 'Translate resume from a landing page, no CV', path: TR, cv: false, lp: true,
+      entry: landing('no CV', 'Flow 2: the visitor came from a Translate landing page without a CV, so nothing to translate and no language yet: after sign-up they make the CV first, then Proofread & Translate asks for the language.'),
+      prep: [S.cv(TR), ...cvMade(TR)], process: false, dest: TR_DEST, noun: 'translation' }
   ];
   /* Where the person comes from (the dock's From): Sign up (a new user, Flow 1's goal screen), a landing page (lp),
      no account yet (guest) or the app */
@@ -8048,6 +8088,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      wall, the ATS checker) */
   function afterBuild() {
     const next = buildNext; buildNext = null;
+    if (next && routeNow && routeNow.path === ATS) return atsAnalyze();  // the ATS check's loading
     if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process' && flowNow.steps[flowAt].match === 'screen:loading') {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
