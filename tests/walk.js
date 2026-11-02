@@ -1,7 +1,7 @@
 // Every run the dock offers, driven through the screens' own buttons (not the bar), as a person would: each screen,
 // what was clicked to leave it, '!! STUCK' when nothing moves, then any JS errors.
 // node tests/walk.js [cv: no|yes] [ends: ok|fail|error] [only: ids, comma-separated, or -] [shard: i/n]
-// SHOTS=dir saves a screenshot of each new screen there; GOALS=1 walks Flow 1's goal branches; METHOD=paste|upload|ai|linkedin
+// SHOTS=dir saves a screenshot of each new screen there (and <run id>.json, its steps with their pictures); GOALS=1 walks Flow 1's goal branches; METHOD=paste|upload|ai|linkedin
 const { chromium, PAGE: URL, FIXTURES } = require('./env.js');
 const { listFeatures, runFeature, setEnd } = require('./dock.js');
 const [cvArg = 'no', result = 'ok', only, shard = '0/1'] = process.argv.slice(2);
@@ -110,6 +110,7 @@ const AUD = FIXTURES; const fs = require('fs'), crypto = require('crypto'); cons
       await p.waitForTimeout(1300);
     }
     console.log('\n' + id + '\n  ' + log.join('\n  '));
+    if (SHOTS) fs.writeFileSync(SHOTS + '/' + id + '.json', JSON.stringify(steps, null, 1));  // the steps and their pictures, for the board
   }
   console.log('\nerrs', errs);
   await b.close();

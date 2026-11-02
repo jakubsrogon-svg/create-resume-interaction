@@ -1557,7 +1557,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback the Career Coach
   const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'coach', 'career-coach': 'coach', 'proofreading': 'proof' };
   // without a CV: the CV step (the method screen, worded for the feature: CV_WHY), then the tool or the new resume in the editor
-  const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit() });
+  const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit(), ...(tool ? {} : { cvThen: openDesign }) });  // the resume just made opens on Design
   /* The headline and subheadline above the card of every personalization, processing and processing-state screen
      (route.head, shown by routeHead): the question the screen asks, or what is happening. The shared wireframes'
      ones depend on the feature (o.f) and are looked up by their WIRE id (wireRoute). */

@@ -3401,7 +3401,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.40">v2.40</div>
+<div class="proto-ver" aria-label="Prototype version 2.40.1">v2.40.1</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -5020,7 +5020,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback the Career Coach
   const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'coach', 'career-coach': 'coach', 'proofreading': 'proof' };
   // without a CV: the CV step (the method screen, worded for the feature: CV_WHY), then the tool or the new resume in the editor
-  const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit() });
+  const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit(), ...(tool ? {} : { cvThen: openDesign }) });  // the resume just made opens on Design
   /* The headline and subheadline above the card of every personalization, processing and processing-state screen
      (route.head, shown by routeHead): the question the screen asks, or what is happening. The shared wireframes'
      ones depend on the feature (o.f) and are looked up by their WIRE id (wireRoute). */
