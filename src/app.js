@@ -383,7 +383,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function renderCreate() {
     clearTimers();
-    setHead(HEAD0.h, HEAD0.p, false);
+    setHead(headBase().h, headBase().p, false);
     screens.create.querySelector(':scope > .center').inert = false;
     // the upload modal (upmCreate) gives the methods their place back
     const slot = document.getElementById('create-upm');
@@ -580,6 +580,20 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      place like the headline does between screens; Back (or leaving) puts the original back. */
   const createHead = screens.create.querySelector(':scope > .page-head');
   const HEAD0 = { h: createHead.querySelector('h1').textContent, p: createHead.querySelector('p').textContent };
+  /* Why the method screen asks for a resume, by what it is for (cvNext.forPath): a check says what follows, and the
+     latest resume says there is none yet (the user's rule: never an empty My Documents) */
+  const CV_WHY = {
+    '/dashboard/analyse-resume/': ['Add your resume to check it', 'Upload, import or write it. We’ll check it for ATS right after.'],
+    '/latest-resume/analyze/': ['Add your resume to check it', 'Upload, import or write it. We’ll check it for ATS right after.'],
+    '/dashboard/proofreading/': ['Add your resume to proofread it', 'Upload, import or write it. We’ll proofread it right after.'],
+    '/latest-resume/proofread/': ['Add your resume to proofread it', 'Upload, import or write it. We’ll proofread it right after.'],
+    '/dashboard/recruiter-feedback/': ['Add your resume to get feedback', 'Upload, import or write it. A recruiter’s feedback follows right after.'],
+    '/latest-resume/recruiter-feedback/': ['Add your resume to get feedback', 'Upload, import or write it. A recruiter’s feedback follows right after.'],
+    '/dashboard/career-coach/': ['Add your resume to get feedback', 'Upload, import or write it. Your career coach’s feedback follows right after.'],
+    '/dashboard/translate-resume/': ['Add your resume to translate it', 'Upload, import or write it. You pick the language right after.'],
+    '/latest-resume/': ['You don’t have a resume yet', 'Create one in a minute: upload, import or write it, and it opens in the editor.']
+  };
+  const headBase = () => { const w = cvNext && CV_WHY[cvNext.forPath]; return w ? { h: w[0], p: w[1] } : HEAD0; };
   let headTok = 0;
   function setHead(h, p, animate = true) {
     const els = [createHead.querySelector('h1'), createHead.querySelector('p')], tok = ++headTok;
@@ -691,7 +705,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setOpen(card, false);
       head.removeAttribute('aria-disabled'); head.removeAttribute('tabindex');
     });
-    if (wrap.classList.contains('is-c')) setHead(HEAD0.h, HEAD0.p);
+    if (wrap.classList.contains('is-c')) setHead(headBase().h, headBase().p);
     settleSoon();
     focusLater(focus && focus.querySelector('.mhead'), wrap.classList.contains('is-c') ? DUR.slow : 0);  // C: once its header is back
   }
@@ -1542,7 +1556,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const toolWire = t => () => WIRE.tool({ tool: t });
   // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback the Career Coach
   const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'coach', 'career-coach': 'coach', 'proofreading': 'proof' };
-  const latest = tool => ({ run: () => !cvUploaded ? openDocs() : tool ? openTool(tool) : openEdit() });
+  // without a CV: the CV step (the method screen, worded for the feature: CV_WHY), then the tool or the new resume in the editor
+  const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit() });
   /* The headline and subheadline above the card of every personalization, processing and processing-state screen
      (route.head, shown by routeHead): the question the screen asks, or what is happening. The shared wireframes'
      ones depend on the feature (o.f) and are looked up by their WIRE id (wireRoute). */
@@ -1620,10 +1635,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         if (t === 'analyse-resume') return { ...base, run: () => analyseNow(findRoute(path)) };
         if (TOOL_PAGE[t]) return { ...base, run: () => toolNow(findRoute(path), TOOL_PAGE[t]) };
         return { ...base, needsCv: true, wire: true, head: { main: HEADS.tool[t] }, html: toolWire(t) }; }),
-    { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('') },
-    { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats') },
-    { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof') },
-    { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach') },
+    { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('', '/latest-resume/') },
+    { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats', '/latest-resume/analyze/') },
+    { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof', '/latest-resume/proofread/') },
+    { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach', '/latest-resume/recruiter-feedback/') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => cvUploaded ? openEdit() : askCvFor(findRoute('/edit/')) },
     { group: '7 · Jobs', path: '/jobs/', title: 'Job board (Find a job you’ll love)', noX: true, head: { main: HEADS.jobBoard }, html: jbHTML, init: initJb },
@@ -2472,7 +2487,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     summary: ['__ASSET:upload/summary.webp__', 'In just a few seconds, you’ll be able to generate an impactful summary for your resume.']
   };
   const UPM_FOR = { '/dashboard/analyse-resume/': 'ats', '/dashboard/create-interview/': 'interview', '/dashboard/career-coach/': 'coach', '/dashboard/recruiter-feedback/': 'feedback',
-    '/dashboard/rewrite-resume/': 'rewrite', '/dashboard/tailor-resume/': 'tailor', '/jobs/job/1234/tailor/': 'tailor', '/dashboard/summary-generator/': 'summary' };
+    '/dashboard/rewrite-resume/': 'rewrite', '/dashboard/tailor-resume/': 'tailor', '/jobs/job/1234/tailor/': 'tailor', '/dashboard/summary-generator/': 'summary',
+    '/latest-resume/analyze/': 'ats', '/latest-resume/recruiter-feedback/': 'feedback' };
   // a LinkedIn profile is imported, not uploaded: it starts on Importing resume..., with LinkedIn's note
   const UPM_RUN = ['Uploading resume...', 'Importing resume...', 'Finishing upload...'], UPM_MS = 1000;
   const UPM_INFO = { upload: 'If your resume does not get imported correctly, try uploading it in a different file format (e.g. .docx).', linkedin: 'Recent LinkedIn profile changes may take up to 30 days to update in our system.' };
@@ -2563,7 +2579,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (screenRun) screenRun.finish();
     clearTimers();
     o = { kind: upmKind(), ...o, back: () => { renderCreate(); flowTo('screen:create'); landFocus(screens.create); } };
-    if (variant === 'C') setHead(HEAD0.h, HEAD0.p);
+    if (variant === 'C') setHead(headBase().h, headBase().p);
     upmSlot.innerHTML = upmHTML(o);
     const card = upmSlot.firstElementChild, outs = [methodsEl, createBackEl].filter(shown);
     if (!reduce) await Promise.all(outs.map(el => play(el, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(-24px)' }], { duration: DUR.fast, easing: EASE.exit }).finished.catch(() => {})));
@@ -4111,7 +4127,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // the ATS check has no loading of its own: the CV made on the method screen is its processing, the ATS checker next
   const ATS = '/dashboard/analyse-resume/', atsOut = () => [S.tool('ATS checker', 'ats', ATS)];
   // after the building screen (not the upload modal, whose Analytics version is the analysis): Analyzing your resume
-  const ATS_LOAD = { label: 'Analyzing your resume (a CV from the building screen)', alt: true, match: `route:${ATS}#process`, run: () => atsAnalyze() };
+  const atsLoad = path => ({ label: 'Analyzing your resume (a CV from the building screen)', alt: true, match: `route:${path}#process`, run: () => atsAnalyze(path) });
+  const LATEST_ATS = '/latest-resume/analyze/', ATS_LOAD = atsLoad(ATS);
   /* Tailoring has its own processing screen (the route's process pane), which ends in its own Done! or Something went wrong */
   const trlRun = path => ({
     process: [S.route('Tailoring', path, 'process')],
@@ -4175,9 +4192,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     </div>`; };
   // in the app, on the ATS page itself (the user's rule): its heading, the card in the report's place, the resume beside
   const atlMainHTML = () => `<h1 class="tl-h tl-ats-h">ATS Metrics<img src="${TL_IMG.premiumWord}" alt="Premium"></h1><div class="tl-atl">${atsLoadHTML()}</div>`;
-  async function atsAnalyze() {
+  async function atsAnalyze(path = ATS) {
     cvNext = null;
-    await openTool('ats', ATS, true);
+    await openTool('ats', path, true);
     const card = toolEl.querySelector('.tl-atl .upm'), title = card && card.querySelector('.upm-h span');
     if (!card) return;
     const live = card.querySelector('[aria-live]'), info = card.querySelector('.upm-info span'), btn = card.querySelector('[data-atl="retry"]');
@@ -4347,7 +4364,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'translate-app-new', flow: 2, title: 'Translate resume · no CV yet', path: TR, cv: false, prep: [S.cv(TR), ...cvMade(TR)], process: false, dest: TR_DEST, noun: 'translation' },
     ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].flatMap(([t, label]) => [
       { id: 'latest-' + t, flow: 4, title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] },
-      { id: `latest-${t}-new`, flow: 4, title: `Latest resume · ${label}, no CV yet`, path: `/latest-resume/${t}/`, cv: false, dest: [S.latest('My Documents', `/latest-resume/${t}/`, false, 'route:/dashboard/resumes/')] }]),
+      // no CV yet: the CV step, then the page (the user's rule: never an empty My Documents)
+      { id: `latest-${t}-new`, flow: 2, title: `Latest resume · ${label}, no CV yet`, path: `/latest-resume/${t}/`, cv: false, prep: [S.cv(`/latest-resume/${t}/`)],
+        process: [...cvMade(`/latest-resume/${t}/`), ...(t === 'analyze' ? [atsLoad(LATEST_ATS)] : [])], dest: [S.latest(label, `/latest-resume/${t}/`, true)] }]),
 
     // Write something new: the writer's form is its data (a CV is optional, used if there)
     // its loading is the building screen (as for a resume) and it ends in Fill In with the cover letter (the user's rule)
@@ -4384,7 +4403,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { id: 'docs', flow: 4, title: 'My Documents', path: '/dashboard/resumes/', dest: [S.docs()] },
     ...needsCv('edit', 'Editor', '/edit/', [S.editor('Editor', '/edit/')], { noun: 'resume' }),
     { id: 'latest', flow: 4, title: 'Latest resume, returning user', path: '/latest-resume/', cv: true, dest: [S.latest('Editor (/edit/)', '/latest-resume/', true, 'screen:editor')] },
-    { id: 'latest-new', flow: 4, title: 'Latest resume, no CV yet', path: '/latest-resume/', cv: false, dest: [S.latest('My Documents', '/latest-resume/', false, 'route:/dashboard/resumes/')] },
+    { id: 'latest-new', flow: 2, title: 'Latest resume, no CV yet', path: '/latest-resume/', cv: false, prep: [S.cv('/latest-resume/')], process: cvMade('/latest-resume/'), dest: [S.editor('Editor · the new resume', '/edit/', 'design')], noun: 'resume' },
     ...PLAN_NAMES.map(pl => ({ id: 'upgrade-' + pl, flow: 4, title: pl === 'student' ? 'Verify student status' : `Upgrade · ${pl}`, path: `/upgrade/${pl}/`, dest: [S.upgrade(pl === 'student' ? 'Student verification' : `Premium plans · ${pl} picked`, pl)] })),
 
     // guests land straight in the app (the user's rule): no CV step, setup or loading; saving, the menu, AI and
@@ -4804,7 +4823,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      wall, the ATS checker) */
   function afterBuild() {
     const next = buildNext; buildNext = null;
-    if (next && next.forPath === ATS && (procResult === 'ok' || !flowNow)) return atsAnalyze();  // the ATS check's loading
+    if (next && (next.forPath === ATS || next.forPath === LATEST_ATS) && (procResult === 'ok' || !flowNow)) return atsAnalyze(next.forPath);  // the ATS check's loading
     if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process' && flowNow.steps[flowAt].match === 'screen:loading') {
       const k = afterProcessAt(), nx = flowNow.steps[k];
       if (nx && nx.match !== 'screen:editor') return flowGo(k);
