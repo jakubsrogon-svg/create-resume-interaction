@@ -380,7 +380,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
 
   function renderCreate() {
-    clearTimers();
+    clearTimers(); pageEl.style.setProperty('--room', '0px');
     setHead(headBase().h, headBase().p, false);
     screens.create.querySelector(':scope > .center').inert = false;
     // the upload modal (upmCreate) gives the methods their place back
@@ -452,6 +452,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   async function go(screen, picked, towards) {
     if (screenRun) screenRun.finish();
     if (screen === current) return;
+    if (screen !== 'create') pageEl.style.setProperty('--room', '0px');  // the room an open method card made below the page
     if (APPS[current]) return leaveApp(screen);
     // from: the screen on view (current runs ahead of it while an earlier change waits for the scroll)
     const to = screens[screen], from = Object.values(screens).find(s => !s.hidden && s !== to) || screens[current];
@@ -540,6 +541,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     return { height: g.height, top: c ? c.top - g.top : 0, bottom: c ? c.bottom - g.top : 0 };
   }
 
+  const setRoom = px => pageEl.style.setProperty('--room', px + 'px');
   /* Variant A: one card open at a time. Everything moves in one motion: the fold, the other cards
      shrinking or growing back, the top gap easing to fit and, when even that can't fit the open
      card (short windows), the scroll that brings its bottom into view. Nothing moves afterwards. */
@@ -550,11 +552,23 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       ghost => ghost.querySelector(`.mcard[data-id="${card.dataset.id}"]`));
     const fits = fitCut(after.height - list.getBoundingClientRect().height, opening);
     let target = 0;
-    if (!fits && opening) {
+    if (opening) {
       const vTop = framed() ? device.getBoundingClientRect().top + device.clientTop : 0, vH = framed() ? device.clientHeight : innerHeight;
       const listTop = list.getBoundingClientRect().top - vTop + scrollPos() - (anchorCut - cut0);  // where the list will start once the gap has eased
-      target = Math.max(0, Math.min(listTop + after.bottom + (framed() ? 16 : 24) - vH, listTop + after.top - (framed() ? 52 : 16)));
+      // the open card in the middle of what the sticky logo row (and a phone's status bar) leaves; a card taller than
+      // that starts just under the logo row
+      const bar = topbarEl.getBoundingClientRect().height + (framed() && document.body.classList.contains('is-mobile') ? 44 : 0), room = vH - bar;
+      const cardTop = listTop + after.top, cardH = after.bottom - after.top;
+      const shownTop = cardTop - scrollPos();  // where the card would sit without scrolling
+      target = fits && shownTop >= bar + 8 && shownTop + cardH <= vH - 16 ? scrollPos()  // already in view: nothing moves
+        : Math.max(0, cardH <= room - 16 ? cardTop + cardH / 2 - (bar + room / 2) : cardTop - bar - 8);
     }
+    // room below the page so the scroll isn't cut short: the fold's growth until it lands, then what the centred card needs
+    if (opening && target > scrollPos()) {
+      const vH = framed() ? device.clientHeight : innerHeight, docH = framed() ? device.scrollHeight : document.documentElement.scrollHeight;
+      const grow = Math.max(0, after.height - list.getBoundingClientRect().height), need = Math.max(0, Math.ceil(target + vH - docH - grow));
+      setRoom(grow + need); later(() => setRoom(need), DUR.slow + 40);
+    } else if (!opening) setRoom(0);
     if (Math.abs(target - scrollPos()) > 1) scroller().scrollTo({ top: target, behavior: reduce ? 'auto' : 'smooth' });
     methodsEl.querySelectorAll('.mcard.is-open').forEach(c => { if (c !== card) setOpen(c, false); });
     setOpen(card, opening);

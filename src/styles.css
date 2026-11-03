@@ -131,6 +131,10 @@ body.is-mobile .statusbar {
 
 /* ---------- Top bar ---------- */
 .topbar { position: relative; display: flex; align-items: center; padding-block: var(--sp-topbar); }
+/* the logo row stays at the top while the page scrolls (a card opened on a short screen is scrolled to the middle) */
+.topbar { position: sticky; top: 0; z-index: 4; }
+.topbar::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; background: var(--kr-background); }
+@media (min-width: 481px) { body.is-mobile .topbar { top: 44px; } }  /* under the framed phone's status bar */
 /* × in the top right corner of the full-screen modal screens (route screens' setup steps; see syncTopX), where the
    template page has its own: 32px from the edge, centred on the logo, out of the bar's flow so nothing moves */
 .top-x { position: absolute; top: 50%; right: 16px; display: grid; place-items: center; width: 40px; height: 40px; margin-top: -20px; padding: 0; border: 0; border-radius: 10px; background: none; color: var(--kr-grey-100); cursor: pointer; transition: background .2s; }
@@ -148,12 +152,13 @@ body.is-mobile .statusbar {
 :is(h1, h2, section, div)[tabindex="-1"]:focus { outline: none; }
 
 /* ---------- Page ---------- */
-.page { --anchor-cut: 0px; width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: calc(var(--sp-page-top) - var(--anchor-cut)) var(--sp-page-bottom); transition: padding-top var(--dur-slow) var(--ease-inout); }
+.page { --anchor-cut: 0px; --room: 0px; width: 100%; max-width: var(--content-w); margin-inline: auto; padding-block: calc(var(--sp-page-top) - var(--anchor-cut)) calc(var(--sp-page-bottom) + var(--room)); transition: padding-top var(--dur-slow) var(--ease-inout); }
 .page { position: relative; }
 .page-head { position: relative; text-align: center; display: grid; gap: var(--sp-head-gap); }
 .page-head h1 {
   font-family: var(--font-display); font-weight: 400; font-size: var(--h1); line-height: 1.17;
   letter-spacing: 0; margin: 0; text-wrap: balance;  /* Figma's Heading/H1: 48/56, no tracking */
+  max-width: 900px; justify-self: center;  /* never wider than this, however wide the screen */
 }
 .page-head p { margin: 0; text-wrap: balance; }
 
@@ -3293,7 +3298,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 @container (max-width: 560px) {
   .topbar { padding-block: 16px; padding-inline: 0; }
   .logo svg, .topbar .logo svg { width: 120px; }
-  .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) var(--sp-page-bottom); }
+  .page { padding-block: max(12px, calc(var(--sp-page-top) - var(--anchor-cut))) calc(var(--sp-page-bottom) + var(--room)); }
   .page-head h1 { font-size: min(34px, var(--h1)); letter-spacing: -1px; }
   /* headlines and subheadlines take one or two lines here: two are kept for all (a short headline sits on its
      subheadline), so the content below starts at the same place on every screen */
