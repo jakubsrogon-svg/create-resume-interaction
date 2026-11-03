@@ -491,6 +491,17 @@ div.mhead { cursor: default; }
 .dropzone .cloud svg.i { width: clamp(28px, calc(var(--vh) * 4.4), 40px); height: clamp(28px, calc(var(--vh) * 4.4), 40px); stroke-width: 1.75; }
 .dz-title { font-size: 16px; line-height: 24px; }
 .dz-meta { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
+.mform.is-processing > :not(.upp) { display: none; }
+.mbody:has(> .mform.is-processing) { padding: 0 16px 16px; } .mform.is-processing { margin: 0; }  /* the card as in Figma: 250px tall */
+/* Upload a resume, processing in its card (Figma Kickresume 3.0 › 61605:242929): three coral dots over Body/Large */
+.upp { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; height: 154px; }
+.upp:focus { outline: none; }
+.upp p { margin: 0; font-size: 16px; line-height: 24px; color: var(--kr-grey-100); text-align: center; }
+.upp-dots { display: flex; gap: 11px; }
+.upp-dots i { width: 16px; height: 16px; border-radius: 50%; background: var(--kr-primary); animation: upp-dot 1.2s var(--ease-inout, ease-in-out) infinite; }
+.upp-dots i:nth-child(2) { animation-delay: .15s; } .upp-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes upp-dot { 0%, 60%, 100% { transform: none; opacity: 1; } 30% { transform: translateY(-6px); opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .upp-dots i { animation: none; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Progress steps (building screen) */
@@ -3393,7 +3404,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.40.2">v2.40.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.41">v2.41</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -4236,7 +4247,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const as = opts && opts.as;
     if ((id === 'upload' || id === 'linkedin') && !as) {
       const o = { id, opts, file: id === 'upload' ? (form._file || { name: 'jana-cv.pdf' }).name : '' };
-      return current === 'route' ? upmRoute(form.closest('.rt-item'), routeNow, o) : upmCreate(o);
+      // the method screen's Upload a resume processes in its own card (Figma Kickresume 3.0 › 61605:242929); LinkedIn and the route screens use the upload modal
+      return current === 'route' ? upmRoute(form.closest('.rt-item'), routeNow, o) : id === 'upload' ? uppCreate(form, o) : upmCreate(o);
     }
     const btn = form.querySelector('[type="submit"]'), label = btn.innerHTML, at = current;
     btn.style.minWidth = btn.offsetWidth + 'px';
@@ -6043,6 +6055,29 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!reduce) play(card, [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => card.getAnimations().forEach(a => a.cancel()));
     runUpm(card, o);
   }
+  /* The method screen's Upload a resume (Figma Kickresume 3.0 › Upload / Expanded / Loading, 61605:242929): the file
+     picked or dropped is processed inside the open card (three dots, Processing your resume...), then straight on
+     like the upload modal's Continue (upmDone); a failure (the dock's Ends) puts the drop zone back with the error */
+  const UPP_MS = 2400;
+  function uppCreate(form, o) {
+    clearTimers();
+    form.querySelector('.upp')?.remove();
+    form.classList.add('is-processing');
+    form.insertAdjacentHTML('beforeend', `<div class="upp" role="status" aria-live="polite"><span class="upp-dots" aria-hidden="true"><i></i><i></i><i></i></span><p>Processing your resume...</p></div>`);
+    if (form.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body) { const st = form.querySelector('.upp'); st.tabIndex = -1; st.focus(); }
+    flowSeen('upm');  // uploading is the run's data processing
+    later(() => {
+      if (!form.isConnected || current !== 'create') return;
+      if (procResult === 'ok') return upmDone(form, o);
+      // Failed or Error: the drop zone comes back with what went wrong, to try again
+      form.querySelector('.upp')?.remove(); form.classList.remove('is-processing'); form._file = null;
+      const msg = UPM_FAIL[procResult === 'error' ? 'error' : 'upload'];
+      if (form.hasAttribute('data-c')) showUploadErrorC(form, msg);
+      else { const slot = form.querySelector('.file-slot'), err = slot.querySelector('.error'); err.dataset.msg = err.dataset.msg || err.textContent; err.textContent = msg; setError(slot, true); }
+      form.querySelector('.dropzone').focus();
+      flowSeen('upm-end');  // the run's processing state, when it shows one
+    }, UPP_MS);
+  }
   /* On the Upload and LinkedIn import screens: the modal takes the card's place, under the screen's headline */
   function upmRoute(item, r, o) {
     const pane = item.querySelector('.rt-pane:not([hidden])') || item.querySelector('.rt-pane');
@@ -7523,9 +7558,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
     // the CV made on the method screen, by uploading or importing it (the upload modal) or by creating it (the building
     // screen); for a tool (path) it then goes on to the tool
-    upm: path => ({ label: 'Upload modal (upload, LinkedIn)', tag: 'upm', match: 'screen:create', run: async () => {
+    upm: path => ({ label: 'Upload: Processing your resume (LinkedIn: the upload modal)', tag: 'upm', match: 'screen:create', run: async () => {
       if (current !== 'create' || (path && !cvNext)) await (path ? askCvFor(findRoute(path)) : go('create'));
-      if (current === 'create') upmCreate({ id: 'upload', file: 'jana-cv.pdf' });
+      if (current !== 'create') return;
+      const card = screens.create.querySelector('.mcard[data-id="upload"]'), form = () => card && card.querySelector('form[data-method="upload"]');
+      if (card && !card.classList.contains('is-open')) { card.querySelector('[data-action="toggle"], [data-action="open"]')?.click(); await new Promise(r => setTimeout(r, 450)); }
+      if (form()) uppCreate(form(), { id: 'upload', file: 'jana-cv.pdf' }); else upmCreate({ id: 'upload', file: 'jana-cv.pdf' });
     } }),
     buildFor: path => ({ label: 'Building screen (AI, paste)', match: 'screen:loading', run: () => {
       const then = current === 'create' && cvNext ? cvNext : cvFor(findRoute(path));
@@ -8378,6 +8416,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (form.hasAttribute('data-c')) return setFileC(form, file);
     const okType = file && /\.(pdf|docx?)$/i.test(file.name);
     form._file = okType ? file : null;
+    const err = form.querySelector('.file-slot .error'); if (err.dataset.msg) err.textContent = err.dataset.msg;
     setError(form.querySelector('.file-slot'), !!file && !okType);
     if (okType) startCreation(form, 'upload');  // the user's rule: straight into the upload modal, no attached-file step
   }
