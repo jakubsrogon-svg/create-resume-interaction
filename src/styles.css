@@ -488,14 +488,6 @@ div.mhead { cursor: default; }
 .dropzone .cloud svg.i { width: clamp(28px, calc(var(--vh) * 4.4), 40px); height: clamp(28px, calc(var(--vh) * 4.4), 40px); stroke-width: 1.75; }
 .dz-title { font-size: 16px; line-height: 24px; }
 .dz-meta { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); letter-spacing: 0.16px; }
-.file-row {
-  display: flex; align-items: center; gap: 12px; padding: 8px 4px 8px 12px; border: 1px solid var(--kr-grey-60);
-  border-radius: var(--radius-btn); background: var(--kr-grey-20);
-}
-.file-row .ftext { flex: 1; min-width: 0; display: grid; }
-.file-row .fname { font-size: 14px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.file-row .fsize { font-size: 12px; line-height: 16px; color: var(--kr-grey-80); }
-.file-row .icon-btn { position: static; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Progress steps (building screen) */

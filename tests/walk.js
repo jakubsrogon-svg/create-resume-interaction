@@ -64,7 +64,7 @@ const AUD = FIXTURES; const fs = require('fs'), crypto = require('crypto'); cons
         if (M === 'upload') { const inp = await p.$(`${card} input[type="file"]`); await inp.setInputFiles(AUD + 'resume.pdf'); await p.waitForTimeout(100); }
         if (M === 'linkedin') { await p.evaluate(c => { const i = document.querySelector(c + ' input'); i.value = 'https://www.linkedin.com/in/jana-novak'; }, card); }
         if (M === 'ai') await p.evaluate(c => { document.querySelector(c + ' [name="name"]').value = 'Jana Novak'; document.querySelector(c + ' [name="title"]').value = 'Designer'; }, card);
-        await click(`${card} [type="submit"]`); acted = 'method: ' + M;
+        if (M !== 'upload') await click(`${card} [type="submit"]`); acted = 'method: ' + M;  // a picked file goes straight into the upload modal
       }
       else if (sc === 'cm') {
         if (await vis('.cm-opt')) { await click('.cm-opt'); acted = 'Career Map: answer'; await p.waitForTimeout(400); }

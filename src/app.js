@@ -155,7 +155,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         </div>
         <input class="sr-only" id="${f}-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" tabindex="-1" aria-hidden="true">
         <div class="file-slot field"><span class="error" role="alert">That file type won’t work. Upload a PDF or a Word document.</span></div>
-        <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
       </form>`;
     if (id === 'paste') return `
       <form class="mform" data-method="paste" novalidate>
@@ -210,7 +209,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
         <div class="file-slot field" aria-live="polite">
           <div class="c-error" id="${f}-err" hidden><span class="c-msg"></span><span class="c-recover"><button class="inline-link" type="button" data-action="switch-method" data-to="paste">Paste the text instead</button></span></div>
         </div>
-        <div class="actions"><button class="btn btn-coral" type="submit" disabled>Upload</button></div>
       </form>`;
     if (id === 'paste') return bodyHTML(id, p);   // same form as B
   }
@@ -4879,31 +4877,18 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (id === 'upload') {
       if (!form._file) return;
       // Prototype stand-in for a file with no readable text: any file name containing "scan"
-      if (/scan/i.test(form._file.name)) return busy(form.querySelector('[type="submit"]'), 'Uploading…', 1100, () => {
-        setFile(form, null); form.querySelector('input[type="file"]').value = '';
-        showUploadErrorC(form, 'We couldn’t read the text in this file. It may be a scan.');
-      });
+      if (/scan/i.test(form._file.name)) { setFile(form, null); form.querySelector('input[type="file"]').value = ''; return showUploadErrorC(form, 'We couldn’t read the text in this file. It may be a scan.'); }
       return startCreation(form, id);
     }
   }
   function setFileC(form, file) {
-    const slot = form.querySelector('.file-slot');
-    slot.querySelector('.file-row')?.remove();
     form._file = null;
-    form.querySelector('[type="submit"]').disabled = true;
     if (!file) return showUploadErrorC(form, '');
     if (!/\.(pdf|docx?)$/i.test(file.name)) return showUploadErrorC(form, 'This file type isn’t supported. Use a PDF or DOCX.');
     if (file.size > 10 * 1024 * 1024) return showUploadErrorC(form, 'This file is over 10 MB. Try a smaller file or paste the text instead.');
     showUploadErrorC(form, '');
     form._file = file;
-    form.querySelector('[type="submit"]').disabled = false;
-    const kb = file.size / 1024;
-    const size = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.max(1, Math.round(kb)) + ' KB';
-    slot.insertAdjacentHTML('afterbegin', `
-      <div class="file-row">${icon('file')}
-        <span class="ftext"><span class="fname">${file.name.replace(/[<>&"]/g, '')}</span><span class="fsize">${size}</span></span>
-        <button class="icon-btn" type="button" data-action="remove-file" aria-label="Remove file">${icon('x')}</button>
-      </div>`);
+    submitC(form, 'upload');  // the user's rule: a file picked or dropped goes straight into the upload modal, no attached-file step
   }
 
   function handleSubmit(form) {
@@ -4936,20 +4921,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function setFile(form, file) {
     if (form.hasAttribute('data-c')) return setFileC(form, file);
-    const slot = form.querySelector('.file-slot');
     const okType = file && /\.(pdf|docx?)$/i.test(file.name);
-    slot.querySelector('.file-row')?.remove();
     form._file = okType ? file : null;
-    setError(slot, !!file && !okType);
-    form.querySelector('[type="submit"]').disabled = !okType;
-    if (!okType) return;
-    const kb = file.size / 1024;
-    const size = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.max(1, Math.round(kb)) + ' KB';
-    slot.insertAdjacentHTML('afterbegin', `
-      <div class="file-row">${icon('file')}
-        <span class="ftext"><span class="fname">${file.name.replace(/[<>&"]/g, '')}</span><span class="fsize">${size}</span></span>
-        <button class="icon-btn" type="button" data-action="remove-file" aria-label="Remove file">${icon('x')}</button>
-      </div>`);
+    setError(form.querySelector('.file-slot'), !!file && !okType);
+    if (okType) startCreation(form, 'upload');  // the user's rule: straight into the upload modal, no attached-file step
   }
 
   /* ---------- Events ---------- */
@@ -5047,7 +5022,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       setError(inp.closest('.field'), false); inp.focus();
     }
     else if (a === 'browse') form.querySelector('input[type="file"]').click();
-    else if (a === 'remove-file') { setFile(form, null); form.querySelector('input[type="file"]').value = ''; }
     else if (a === 'paste-sample') {
       const ta = form.querySelector('textarea'); ta.value = SAMPLE_TEXT;
       ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus();
