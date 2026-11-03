@@ -779,6 +779,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      straight on: to the screen that asked for it (askCv), else to the editor or the run's destination. */
   function startCreation(form, id, opts) {
     const as = opts && opts.as;
+    // Paste text on the method screen processes in its card too, like Upload a resume (the user's rule)
+    if (id === 'paste' && !as && current === 'create') return uppCreate(form, { id, opts });
     if ((id === 'upload' || id === 'linkedin') && !as) {
       const o = { id, opts, file: id === 'upload' ? (form._file || { name: 'jana-cv.pdf' }).name : '' };
       // the method screen's Upload a resume processes in its own card (Figma Kickresume 3.0 › 61605:242929); LinkedIn and the route screens use the upload modal
@@ -2564,7 +2566,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      building screen, the other way to a CV, nor the modal's own result or the shared one) or the editor */
   function upmDone(card, o) {
     person = buildPerson(o.id, o.opts); tailored = null;  // a new resume
-    if (o.id === 'upload') setCv(true, (o.file || '').replace(/\.[^.]+$/, ''));
+    if (o.id === 'upload') setCv(true, (o.file || '').replace(/\.[^.]+$/, '')); else if (o.id === 'paste') setCv(true);
     const then = cvNext;
     if (then) { if (!cvUploaded) setCv(true); return then(); }
     const k = flowNow ? flowNow.steps.findIndex((s, i) => i > flowAt && !s.alt && !s.result && s.tag !== 'upm-end') : -1;
@@ -2589,8 +2591,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (!reduce) play(card, [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'none' }], { duration: DUR.base, easing: EASE.standard }).finished.catch(() => {}).then(() => card.getAnimations().forEach(a => a.cancel()));
     runUpm(card, o);
   }
-  /* The method screen's Upload a resume (Figma Kickresume 3.0 › Upload / Expanded / Loading, 61605:242929): the file
-     picked or dropped is processed inside the open card (three dots, Processing your resume...), then straight on
+  /* The method screen's Upload a resume and Paste text (Figma Kickresume 3.0 › Upload / Expanded / Loading, 61605:242929): the file
+     picked or dropped, or the text pasted, is processed inside the open card (three dots, Processing your resume...), then straight on
      like the upload modal's Continue (upmDone); a failure (the dock's Ends) puts the drop zone back with the error */
   const UPP_MS = 2400;
   function uppCreate(form, o) {
@@ -2605,10 +2607,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (procResult === 'ok') return upmDone(form, o);
       // Failed or Error: the drop zone comes back with what went wrong, to try again
       form.querySelector('.upp')?.remove(); form.classList.remove('is-processing'); form._file = null;
-      const msg = UPM_FAIL[procResult === 'error' ? 'error' : 'upload'];
-      if (form.hasAttribute('data-c')) showUploadErrorC(form, msg);
-      else { const slot = form.querySelector('.file-slot'), err = slot.querySelector('.error'); err.dataset.msg = err.dataset.msg || err.textContent; err.textContent = msg; setError(slot, true); }
-      form.querySelector('.dropzone').focus();
+      const paste = o.id === 'paste', msg = procResult === 'error' ? UPM_FAIL.error : paste ? 'We couldn’t read this text. Check it and try again.' : UPM_FAIL.upload;
+      if (!paste && form.hasAttribute('data-c')) showUploadErrorC(form, msg);
+      else { const slot = form.querySelector(paste ? '.field' : '.file-slot'), err = slot.querySelector('.error'); err.dataset.msg = err.dataset.msg || err.textContent; err.textContent = msg; setError(slot, true); }
+      form.querySelector(paste ? 'textarea' : '.dropzone').focus();
       flowSeen('upm-end');  // the run's processing state, when it shows one
     }, UPP_MS);
   }
@@ -4092,14 +4094,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     cv: path => ({ label: 'Method screen · your resume', match: 'screen:create', run: () => askCvFor(findRoute(path)) }),
     // the CV made on the method screen, by uploading or importing it (the upload modal) or by creating it (the building
     // screen); for a tool (path) it then goes on to the tool
-    upm: path => ({ label: 'Upload: Processing your resume (LinkedIn: the upload modal)', tag: 'upm', match: 'screen:create', run: async () => {
+    upm: path => ({ label: 'Upload or paste: Processing your resume (LinkedIn: the upload modal)', tag: 'upm', match: 'screen:create', run: async () => {
       if (current !== 'create' || (path && !cvNext)) await (path ? askCvFor(findRoute(path)) : go('create'));
       if (current !== 'create') return;
       const card = screens.create.querySelector('.mcard[data-id="upload"]'), form = () => card && card.querySelector('form[data-method="upload"]');
       if (card && !card.classList.contains('is-open')) { card.querySelector('[data-action="toggle"], [data-action="open"]')?.click(); await new Promise(r => setTimeout(r, 450)); }
       if (form()) uppCreate(form(), { id: 'upload', file: 'jana-cv.pdf' }); else upmCreate({ id: 'upload', file: 'jana-cv.pdf' });
     } }),
-    buildFor: path => ({ label: 'Building screen (AI, paste)', match: 'screen:loading', run: () => {
+    buildFor: path => ({ label: 'Building screen (Write with AI)', match: 'screen:loading', run: () => {
       const then = current === 'create' && cvNext ? cvNext : cvFor(findRoute(path));
       person = buildPerson('ai'); if (!cvUploaded) setCv(true);
       cvNext = then; showBuilding('ai'); buildNext = then;
@@ -4142,7 +4144,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   ];
   /* The CV made on the method screen: uploaded or imported (the upload modal) or created (the building screen); two
      ways, so two steps, and a run goes on from whichever the person took. For a tool (path) it goes on to the tool. */
-  const cvMade = path => [S.upm(path), { ...(path ? S.buildFor(path) : { ...S.build(), label: 'Building screen (AI, paste)' }), alt: true }];
+  const cvMade = path => [S.upm(path), { ...(path ? S.buildFor(path) : { ...S.build(), label: 'Building screen (Write with AI)' }), alt: true }];
   /* A tool that needs a CV: the method screen when there is none and the CV made there, then its own form; its
      processing is its own loading */
   const toolPrep = (path, label) => () => {
@@ -4938,7 +4940,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     } else if (id === 'upload') {
       if (form._file) startCreation(form, id);
     } else if (id === 'paste') {
-      const ta = form.querySelector('textarea');
+      const ta = form.querySelector('textarea'), perr = ta.closest('.field').querySelector('.error');
+      if (perr.dataset.msg) perr.textContent = perr.dataset.msg;
       const bad = ta.value.trim().length < 80;
       setError(ta.closest('.field'), bad);
       if (bad) return ta.focus();
