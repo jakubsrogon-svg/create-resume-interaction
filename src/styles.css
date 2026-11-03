@@ -131,9 +131,13 @@ body.is-mobile .statusbar {
 
 /* ---------- Top bar ---------- */
 .topbar { position: relative; display: flex; align-items: center; padding-block: var(--sp-topbar); }
-/* the logo row stays at the top while the page scrolls (a card opened on a short screen is scrolled to the middle) */
-.topbar { position: sticky; top: 0; z-index: 4; }
-.topbar::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; background: var(--kr-background); }
+/* the logo stays at the top while the page scrolls (a card opened on a short screen is scrolled to the middle). On a
+   wide screen only the logo floats, transparent, clear of the headline (its max-width) and the 500px cards; where they
+   would run under it (a container under 900px) the row gets the page's background */
+.topbar { position: sticky; top: 0; z-index: 4; pointer-events: none; }
+.topbar > * { pointer-events: auto; }
+.topbar::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; }
+@container (max-width: 899px) { .topbar::before { background: var(--kr-background); } .page .page-head h1 { max-width: 900px; } }
 @media (min-width: 481px) { body.is-mobile .topbar { top: 44px; } }  /* under the framed phone's status bar */
 /* × in the top right corner of the full-screen modal screens (route screens' setup steps; see syncTopX), where the
    template page has its own: 32px from the edge, centred on the logo, out of the bar's flow so nothing moves */
@@ -158,7 +162,7 @@ body.is-mobile .statusbar {
 .page-head h1 {
   font-family: var(--font-display); font-weight: 400; font-size: var(--h1); line-height: 1.17;
   letter-spacing: 0; margin: 0; text-wrap: balance;  /* Figma's Heading/H1: 48/56, no tracking */
-  max-width: 900px; justify-self: center;  /* never wider than this, however wide the screen */
+  max-width: min(900px, calc(100cqw - 2 * 196px)); justify-self: center;  /* clear of the sticky logo (25px + 152px + a gap) on both sides */
 }
 .page-head p { margin: 0; text-wrap: balance; }
 
