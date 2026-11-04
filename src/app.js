@@ -1654,7 +1654,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof', '/latest-resume/proofread/') },
     { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('feedback', '/latest-resume/recruiter-feedback/') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
-    { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => cvUploaded ? openEdit() : askCvFor(findRoute('/edit/')) },
+    { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => cvUploaded ? openEdit() : askCvFor(findRoute('/edit/')), cvThen: openDesign },  // a new resume opens on Design
     { group: '7 · Jobs', path: '/jobs/', title: 'Job board (Find a job you’ll love)', noX: true, head: { main: HEADS.jobBoard }, html: jbHTML, init: initJb },
     { group: '7 · Jobs', path: '/jobs/search/', title: 'Jobs · search results (All Jobs)', run: () => openJobs('search') },
     // Jobs for You: the shared CV step (the method screen) when there is none, then Analyzing your resume…
@@ -1816,6 +1816,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (where === 'editor') return jumpEditor();
     if (where === 'tool') return openTool(toolKind, toolPath);
     if (where === 'tpl') return openTemplates();
+    if (where === 'jobs') return openJobs(jobsView, ['pick', 'setup', 'process'].includes(jobsState) ? (jobsView === 'match' ? 'dest' : 'main') : jobsState);
+    if (where === 'cm') return openCareer(cmState);
     if (where === 'route' && route) return openRoute(route);
     go(where === 'create' ? 'create' : 'intent');
   }
@@ -2379,7 +2381,10 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     };
     card._run = run; card._end = end;
     // Back to the setup (Close, or Retry when the job post couldn't be read); Retry after an error runs it again
-    const back = () => { flowTo(`route:${path}#main`); showPane(root, 'main', -1); };
+    const back = () => {
+      if (path === JTP) { flowTo(`route:${JOBS_PATH.job}#setup`); return openJobs('job', 'setup'); }  // the job page's setup modal, where Tailor Now was
+      flowTo(`route:${path}#main`); showPane(root, 'main', -1);
+    };
     x.addEventListener('click', back);
     retry.addEventListener('click', () => { if (procResult === 'fail') return back(); flowTo(`route:${path}#process`); run(); });
     cont.addEventListener('click', () => { if (!flowOn()) jumpEditor(); });
@@ -3614,7 +3619,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       const cv = e.target.closest('.tj-cv'), b = e.target.closest('[data-cvp]');
       if (cv) { pop.querySelectorAll('.tj-cv').forEach(c => { c.setAttribute('aria-checked', String(c === cv)); c.tabIndex = c === cv ? 0 : -1; }); pop.querySelector('[data-cvp="continue"]').disabled = false; return; }
       if (!b) return;
-      if (b.dataset.cvp === 'cancel') { cvPickClose(); return flowSync(); }
+      if (b.dataset.cvp === 'cancel') { cvPickClose(); if (!step()) { routeNow = null; markRoutes(); setHash(''); } return flowSync(); }  // the dashboard's own address
       const fresh = !!pop.querySelector('.cvp-new[aria-checked="true"]');
       const inRun = step(); cvPickClose();
       if (!fresh) return inRun ? flowNext() : go();
@@ -3720,13 +3725,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   jobsEl.addEventListener('click', e => {
     const b = e.target.closest('[data-jobs], [data-q], .jm-save, .jbs-chip');
     if (!b) return;
-    if (b.matches('.jm-save') && asGuest()) return openAuth('signup');
+    if (b.matches('.jm-save') && asGuest()) return signupPop('save jobs');
     if (b.matches('.jm-save')) { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'Saved' : 'Save'; return; }
     if (b.matches('.jbs-chip')) return b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
     const a = b.dataset.jobs;
     if (b.dataset.q) { jobsQuery = b.dataset.q; return openJobs('search'); }  // the landing page's companies and positions
     if (a === 'login') { guestBack = () => openRoute(findRoute('/jobs/')); return openAuth('login'); }  // back to the job board, signed in
-    if (a === 'signup') return openAuth('signup');
+    if (a === 'signup') { guestBack = null; endFlow(); return openAuth('signup'); }  // a new account: no longer a guest
     if (a === 'job') openRoute(findRoute('/jobs/job/1234/'));
     else if (a === 'all') openJobs('search');
     else if (a === 'upload' || a === 'drop') jobsEl.querySelector('.jm-file').click();
@@ -3912,9 +3917,9 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     if (w === 'site-cv' && cvUploaded) return toast('Your website is filled in from your resume.');
     if (w === 'site-cv' || w === 'site-linkedin') return askCv(siteEd, false, '/dashboard/create-website/');  // the method screen (LinkedIn import is one of its ways)
     if ((w === 'signup' || w === 'login') && guestBack) { const back = guestBack; guestBack = null; endFlow(); return back(); }  // a guest's work opens again
+    if (asGuest()) endFlow();  // signed up or logged in: no longer a guest
     if (w === 'signup') go('intent');
     else if (w === 'login') openDashboard();
-    else if (w === 'translate') openTool('proof', TR);
     else if (w === 'tool') {
       // a tool's button opens what it makes (its feature's destination), when that exists
       const f = routeNow && FEATURES.find(x => x.flow === 2 && x.path === routeNow.path), d = f && [].concat(typeof f.dest === 'function' ? f.dest() : f.dest)[0];
@@ -4079,7 +4084,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       if (cmState === 'cv' && cmLi) cmUser = cmEl.querySelector('#cm-li').value;
       return cmGo(CM_ORDER[at + 1]);
     }
-    if (a === 'back') return cmState === 'welcome' ? goBack() : openCareer(CM_ORDER[at - 1]);
+    if (a === 'back') return cmState === 'welcome' ? goBack('dashboard') : openCareer(CM_ORDER[at - 1]);
     if (a === 'li' || a === 'list') { cmLi = a === 'li'; return openCareer('cv'); }
     if (a === 'skip') return cmSkip();
     if (a === 'prefs') return openCareer('q1');
@@ -4740,6 +4745,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const flowBar = document.getElementById('flow-bar'), flowLive = document.getElementById('flow-live');
   function renderFlowBar() {
     syncBackLinks();
+    if (flowNow && flowNow.steps[flowAt] && flowNow.steps[flowAt].stage === 'process') flowNow.took = flowAt;  // the way the person took (Try again goes back to it)
     // the bar is drawn anew: focus on one of its buttons comes back to the same button (or the step now on)
     const had = flowBar.contains(document.activeElement) && document.activeElement, was = had && (had.matches('.fb-dot') ? '' : had.getAttribute('aria-label'));
     flowBar.hidden = !flowNow;
@@ -4807,10 +4813,11 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (w === 'state-retry') {
       // back to the input just given; a run whose input came before it (Flow 3: a landing page's CV, a template in
       // the URL) has no screen for it, so it goes on as the feature's own run that asks for it (redo)
-      const prep = flowNow.steps.findLastIndex(s => s.stage === 'prep');
+      // (the CV made on the method screen is not an input to change: its step is the method screen itself)
+      const prep = flowNow.steps.findLastIndex(s => s.stage === 'prep' && !s.alt && s.tag !== 'upm');
       if (prep >= 0) flowGo(prep); else if (flowNow.f.redo) startFeature(flowNow.f.redo); else flowGo(first('process'));
     }
-    else flowGo(first('process'));
+    else flowGo(flowNow.took >= 0 ? flowNow.took : first('process'));  // the processing the person went through: the building screen after Write with AI, never a fake upload
   }
   function setResult(r) {
     procResult = r;

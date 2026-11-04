@@ -1590,7 +1590,7 @@ body.has-note .cmp, body:has(.flow-bar:not([hidden])) .cmp { padding-bottom: 164
 /* Generate work experience / resume objective (/ai/resume/…): measured from 2x-ish screenshots at 1.3x */
 .aig { --w: 820px; padding: 55px 46px 45px; }
 /* the section writers pop up over Fill In (the user's rule for them): the same card, on a dimmed editor */
-.wr-pop { position: fixed; inset: 0; z-index: 18; display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+.wr-pop { position: fixed; inset: 0; z-index: 18; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 16px; overflow-y: auto; container-type: inline-size; }  /* the writers lay out for the pop-up's width, as on their route */
 .wr-back { position: fixed; inset: 0; background: rgba(13, 18, 38, .45); }
 .wr-box { position: relative; width: min(820px, 100%); }
 .wr-box .aig { width: 100%; border-color: transparent; box-shadow: var(--kr-shadow-modal); }
