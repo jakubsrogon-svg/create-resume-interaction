@@ -3130,12 +3130,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     </div>`;
   }
 
-  /* Recruiter feedback: no design yet,
-     so a Wire wireframe beside the resume; its note goes to the chrome note (syncNote) */
-  const FB_NOTE = 'Recruiter feedback: no design yet. What a recruiter would notice in the resume, section by section, with what to change.';
+  /* Recruiter Feedback, from the user's screenshot of the product page: Back, the title, what it does and Get AI Feedback
+     (generating the feedback isn't part of this prototype); the resume preview on the right as on the other tool pages */
   function feedbackHTML() {
-    const item = t => `<div class="wf-card wf-stack wf-gap-sm"><b>${t}</b>${wLines(2)}</div>`;
-    return `<div class="tl-col">${wShell('Recruiter feedback', `<h1 class="tl-h" tabindex="-1">Recruiter feedback</h1>${wLines(1)}<div class="wf-stack">${['First impression', 'Work experience', 'Skills', 'What to change first'].map(item).join('')}</div><button class="wf-btn wf-btn--primary" type="button" data-action="toast" data-msg="The feedback would be generated again here.">Get new feedback</button>`, '', 498)}</div>`;
+    return `<div class="tl-col tl-fb">
+      <div class="tl-fb-h"><button class="tl-fb-back" type="button" data-nav="dashboard" aria-label="Back">${TL_IC.arrowL24}</button><h1 class="tl-fb-t" tabindex="-1">Recruiter Feedback</h1></div>
+      <p class="tl-fb-p">Optimize your resume with Kickresume’s GPT-4.1 recruiter feedback. Our AI recruiter will help you pinpoint your resume’s weak points, reinforce its strongest parts, and apply tailored suggestions to make it stand out from the competition. (Only works in English.)</p>
+      <div><button class="tl-fb-go" type="button" data-tl="feedback">Get AI Feedback</button></div>
+    </div>`;
   }
   /* ---------- Job Interviews (Figma concepting-KR › 285:361) ----------
      The Interview questions' loading (285:185) and its result (285:5): an app page with the app menu (APPS.tool, kind
@@ -3824,12 +3826,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     else if (a === 'cat') { tlCat = (tlCat + +b.dataset.dir + TL_CATS.length) % TL_CATS.length; toolEl.querySelector('.tl-cat em').textContent = TL_CATS[tlCat]; }
     else if (a === 'proofbuy') notYet(b, 'Opening checkout…', 'Paying for proofreading isn’t part of this prototype.');
     else if (a === 'translate') busy(b, 'Translating…', 1400, () => toast('A Spanish copy of the resume would open in the editor.'));
-  });
-  toolEl.addEventListener('submit', e => {
-    e.preventDefault();
-    const input = e.target.querySelector('input');
-    if (!needFilled([input])) return;
-    busy(e.target.querySelector('[type="submit"]'), 'Generating…', 1400, () => toast(`Advice for “${input.value.trim()}” would replace the skills below.`));
+    else if (a === 'feedback') busy(b, 'Getting feedback…', 1400, () => toast('The recruiter’s feedback would show here, section by section.'));
   });
 
   /* ---------- Wireframes (Wire) for screens that have no design yet ----------
@@ -4833,7 +4830,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const note = document.getElementById('proto-note');
     const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
     const src = wire && wire.querySelector(':scope > .wf-note-src');
-    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'tool' && toolKind === 'feedback' ? FB_NOTE : current === 'editor' && edView === 'design' && dzTab !== 'templates' ? `The Design tab’s ${dzTab === 'format' ? 'Format' : 'Layout'}: no design yet.` : '';  // a designed page only when its flow step gives one
+    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'editor' && edView === 'design' && dzTab !== 'templates' ? `The Design tab’s ${dzTab === 'format' ? 'Format' : 'Layout'}: no design yet.` : '';  // a designed page only when its flow step gives one
     note.hidden = !text; document.body.classList.toggle('has-note', !!text);
     if (text) note.querySelector('.pn-text').innerHTML = text;
   }

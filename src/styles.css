@@ -2643,7 +2643,7 @@ body.has-note .jobs, body:has(.flow-bar:not([hidden])) .jobs { padding-bottom: 1
 
 /* ---------- Tool pages: ATS checker, Proofreading, Recruiter feedback (/latest-resume/…) ----------
    The first two recreated from Figma (Kickresume 3.0 › Analytics 4 PREVIEW, Download/share link active - update);
-   Recruiter feedback has no design yet (a Wire wireframe in the column). Each is the resume tool with its own top bar, left menu and the resume preview on the right, so
+   Recruiter Feedback from a screenshot of the product page. Each is the resume tool with its own top bar, left menu and the resume preview on the right, so
    they are an app screen too (APPS.tool). Sizes are Figma's (a 1440px-wide frame). In the proofreading design
    the top bar, the Upgrade button and the preview tabs are blurred; they are here too. */
 .tl {
@@ -2662,7 +2662,19 @@ body.has-note .tl, body:has(.flow-bar:not([hidden])) .tl { padding-bottom: 108px
 .tl-atl .upm { width: 100%; max-width: 393px; }
 .tl-col { display: grid; gap: 24px; width: 490px; max-width: 100%; }
 .is-proof .tl-col { gap: 40px; width: 500px; }
-.is-feedback .tl-col { width: 498px; }
+.is-feedback .tl-col { width: 474px; }
+/* Recruiter Feedback (the product page): Back + title, the intro and Get AI Feedback */
+.tl-fb { gap: 0; padding-top: 22px; }
+.tl-fb-h { display: flex; align-items: center; gap: 9px; }
+.tl-fb-back { display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: var(--kr-grey-40); color: #5b5b5b; cursor: pointer; transition: background .2s; }
+.tl-fb-back:hover { background: var(--kr-grey-60); }
+.tl-fb-back svg { width: 16px; height: 16px; }
+.tl-fb-t { margin: 0; font: 500 18px/24px var(--font-sans); color: var(--kr-grey-100); }
+.tl-fb-t:focus { outline: none; }
+.tl-fb-p { margin: 33px 0 16px; font: 400 13px/19px var(--font-sans); color: var(--kr-grey-80); }
+.tl-fb-go { height: 27px; padding: 0 16px; border: 0; border-radius: 6px; background: linear-gradient(90deg, #5345ff, #9b3eff); color: var(--kr-white); font: 500 12px/16px var(--font-sans); cursor: pointer; transition: filter .2s; }
+.tl-fb-go:hover { filter: brightness(1.07); }
+.tl-fb-go:disabled { opacity: .8; cursor: default; }
 .tl-h { display: flex; align-items: center; gap: 8px; margin: 0; font: 500 24px/28px var(--font-sans); white-space: nowrap; }
 .tl-h img { display: block; width: 95px; height: 20px; margin: 0 -3px 0 -2px; }
 /* Job Interviews (Figma concepting-KR › 285:361: loading 285:185, questions 285:5): the page spans both right columns */
