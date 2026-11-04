@@ -601,7 +601,6 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     '/latest-resume/proofread/': ['Add your resume to proofread it', 'Upload, import or write it. We’ll proofread it right after.'],
     '/dashboard/recruiter-feedback/': ['Add your resume to get feedback', 'Upload, import or write it. A recruiter’s feedback follows right after.'],
     '/latest-resume/recruiter-feedback/': ['Add your resume to get feedback', 'Upload, import or write it. A recruiter’s feedback follows right after.'],
-    '/dashboard/career-coach/': ['Add your resume to get feedback', 'Upload, import or write it. Your career coach’s feedback follows right after.'],
     '/dashboard/translate-resume/': ['Add your resume to translate it', 'Upload, import or write it. You pick the language right after.'],
     '/latest-resume/': ['You don’t have a resume yet', 'Create one in a minute: upload, import or write it, and it opens in the editor.']
   };
@@ -1021,14 +1020,14 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   /* The app's menu: the same left sidebar on every page inside the app (editor, dashboard, My Documents, the
      resume tools), and the same top bar on phones. `at` marks the page: dashboard, docs, fill (the editor), ats,
-     design (the editor's Design tab), proof or coach. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
+     design (the editor's Design tab), proof or feedback. The current resume's group shows on the resume pages, and elsewhere once there is a CV. */
   const NAV_SOON = { download: 'Download &amp; Share' };
   function appNavHTML(at) {
     const P = person, logo = document.querySelector('#topbar .logo').innerHTML;
     const here = key => at === key ? ' is-active" aria-current="page' : '';
     const item = (ic, label, key, extra = '') => `<li><button class="nav-item${here(key)}" type="button"${at === key ? '' : ` data-nav="${key}"`}>${icon(ic)}${label}${extra}</button></li>`;
     const sub = (label, key, nav = key) => `<button class="nav-item nav-sub${here(key)}" type="button"${at === key ? '' : ` data-nav="${nav}"`}>${label}</button>`;
-    const doc = ['fill', 'design', 'ats', 'proof', 'coach'].includes(at) || cvUploaded ? `<li class="nav-doc">
+    const doc = ['fill', 'design', 'ats', 'proof', 'feedback'].includes(at) || cvUploaded ? `<li class="nav-doc">
         <button class="nav-item" type="button"${['fill', 'design'].includes(at) ? ' aria-current="true"' : ' data-nav="edit"'}>${icon('pen')}<span class="doc-title" data-out="docname">${esc(docName())}</span></button>
         ${sub('Fill In', 'fill', 'edit')}${sub('Design', 'design')}${sub('ATS Checker', 'ats')}${sub('Proofread &amp; Translate', 'proof')}${sub('Download &amp; Share', 'download')}
       </li>` : '';
@@ -1569,8 +1568,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
      add a ROUTES entry. needsCv = it works on the person's resume, so without a CV it asks for one first. */
   const PLAN_NAMES = ['yearly', 'quarterly', 'monthly', 'student'];
   const toolWire = t => () => WIRE.tool({ tool: t });
-  // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback the Career Coach
-  const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'coach', 'career-coach': 'coach', 'proofreading': 'proof' };
+  // a tool with nothing to ask opens its page: Translate resume the Proofread & Translate page, recruiter feedback its own (a wireframe)
+  const TOOL_PAGE = { 'translate-resume': 'proof', 'recruiter-feedback': 'feedback', 'proofreading': 'proof' };
   // without a CV: the CV step (the method screen, worded for the feature: CV_WHY), then the tool or the new resume in the editor
   const latest = (tool, path) => ({ run: () => !cvUploaded ? askCvFor(findRoute(path)) : tool ? openTool(tool) : openEdit(), ...(tool ? {} : { cvThen: openDesign }) });  // the resume just made opens on Design
   /* The headline and subheadline above the card of every personalization, processing and processing-state screen
@@ -1613,7 +1612,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   const KINDS = [
     ['Get a resume', ['', '/dashboard/create-resume/', '/dashboard/create-resume/modern/', '/dashboard/create/marketing-manager/', '/dashboard/create-ai-resume/', '/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/guest-edit-start/']],
     ['Improve my resume', ['/dashboard/tailor-resume/', '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', '/dashboard/summary-generator/', '/ai/resume/', '/ai/resume/experience/', '/ai/resume/general/']],
-    ['Check my resume', ['/dashboard/analyse-resume/', '/dashboard/proofreading/', '/dashboard/translate-resume/', '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/']],
+    ['Check my resume', ['/dashboard/analyse-resume/', '/dashboard/proofreading/', '/dashboard/translate-resume/', '/dashboard/recruiter-feedback/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/']],
     ['Write something new', ['/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/', '/dashboard/create-cover/', '/dashboard/create-cover/modern/', '/dashboard/create-website/', '/dashboard/create-website/modern/', '/cv/creative/']],
     ['Find jobs', ['/jobs/', '/jobs/search/', '/jobs/matcher/', '/jobs/job/1234/', '/jobs/organization/kickresume/', '/jobs/job-tracker/']],
     ['Just open', ['/register/', '/login/', '/dashboard/', '/dashboard/resumes/', '/edit/', '/latest-resume/', ...PLAN_NAMES.map(pl => `/upgrade/${pl}/`)]]
@@ -1641,7 +1640,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     // generator is a section writer (the pop-up over Fill In); the others open their page (analyseNow, toolNow), and
     // Translate resume opens its page straight away (the language is picked there, or came from a landing page). Without a CV the method screen comes first (from a landing page only).
     ...[['analyse-resume', 'Analyse resume'], ['rewrite-resume', 'Rewrite resume'], ['tailor-resume', 'Tailor resume'], ['translate-resume', 'Translate resume'], ['recruiter-feedback', 'Recruiter feedback'],
-      ['summary-generator', 'Summary generator'], ['career-coach', 'Career coach'], ['proofreading', 'Proofreading']]
+      ['summary-generator', 'Summary generator'], ['proofreading', 'Proofreading']]
       .map(([t, title]) => { const path = `/dashboard/${t}/`, base = { group: '5 · Bring a resume to a tool', path, title };
         if (t === 'tailor-resume') return { ...base, needsCv: true, head: TRL_HEAD.url, html: () => trlHTML(false), init: initTrl, more: { process: tldHTML } };
         if (t === 'summary-generator') return { ...base, run: () => openWriter('summary') };
@@ -1653,7 +1652,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     { group: '6 · Latest resume', path: '/latest-resume/', title: 'Latest resume (editor)', ...latest('', '/latest-resume/') },
     { group: '6 · Latest resume', path: '/latest-resume/analyze/', title: 'Latest resume · ATS checker', ...latest('ats', '/latest-resume/analyze/') },
     { group: '6 · Latest resume', path: '/latest-resume/proofread/', title: 'Latest resume · proofreading', ...latest('proof', '/latest-resume/proofread/') },
-    { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('coach', '/latest-resume/recruiter-feedback/') },
+    { group: '6 · Latest resume', path: '/latest-resume/recruiter-feedback/', title: 'Latest resume · recruiter feedback', ...latest('feedback', '/latest-resume/recruiter-feedback/') },
     { group: '6 · Latest resume', path: '/dashboard/resumes/', title: 'My Documents', run: () => openDocs() },
     { group: '6 · Latest resume', path: '/edit/', title: 'Editor', run: () => cvUploaded ? openEdit() : askCvFor(findRoute('/edit/')) },
     { group: '7 · Jobs', path: '/jobs/', title: 'Job board (Find a job you’ll love)', noX: true, head: { main: HEADS.jobBoard }, html: jbHTML, init: initJb },
@@ -1672,7 +1671,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* A logged-in person with a CV picks which one a feature uses, or creates a new one (the user's rule; cvPick): the
      features that need a CV, but not Career Map and the job page, which have their own picker */
   const PICK_VERB = { '/dashboard/analyse-resume/': 'to check', '/dashboard/proofreading/': 'to proofread', '/dashboard/translate-resume/': 'to translate',
-    '/dashboard/recruiter-feedback/': 'for recruiter feedback', '/dashboard/career-coach/': 'for career coaching', '/dashboard/rewrite-resume/': 'to rewrite',
+    '/dashboard/recruiter-feedback/': 'for recruiter feedback', '/dashboard/rewrite-resume/': 'to rewrite',
     '/dashboard/tailor-resume/': 'to tailor', '/jobs/matcher/': 'to match jobs to' };
   ROUTES.forEach(r => { if (PICK_VERB[r.path]) r.pick = true; });
   let routeNow = null, routeBack = 'intent', pickPass = false, pickOpen = null;  // pickPass: the CV is picked or just made; pickOpen: the picker's URL
@@ -2495,13 +2494,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     upload: ['__ASSET:upload/upload.webp__', 'You’re only a few seconds away from a polished resume that will get you invited to interviews.'],
     ats: ['__ASSET:upload/analytics.webp__', 'You’re about to discover your resume score and see how your resume compares against others.'],
     interview: ['__ASSET:upload/interview.webp__', 'In just a few seconds you’ll be able to practice for your next interview with AI-generated questions.'],
-    coach: ['__ASSET:upload/coach.webp__', 'Our AI Counsellor will help you fill in the gaps in your skillset based on your current resume.'],
     feedback: ['__ASSET:upload/feedback.webp__', 'Our AI Recruiter is analyzing your resume. It should be done in just a few seconds!'],
     rewrite: ['__ASSET:upload/rewrite.webp__', 'You’re only a few seconds away from an AI-rewritten and polished resume.'],
     tailor: ['__ASSET:upload/tailor.webp__', 'You’re about to have your resume tailored to the job you want—in just a few seconds!'],
     summary: ['__ASSET:upload/summary.webp__', 'In just a few seconds, you’ll be able to generate an impactful summary for your resume.']
   };
-  const UPM_FOR = { '/dashboard/analyse-resume/': 'ats', '/dashboard/create-interview/': 'interview', '/dashboard/career-coach/': 'coach', '/dashboard/recruiter-feedback/': 'feedback',
+  const UPM_FOR = { '/dashboard/analyse-resume/': 'ats', '/dashboard/create-interview/': 'interview', '/dashboard/recruiter-feedback/': 'feedback',
     '/dashboard/rewrite-resume/': 'rewrite', '/dashboard/tailor-resume/': 'tailor', '/jobs/job/1234/tailor/': 'tailor', '/dashboard/summary-generator/': 'summary',
     '/latest-resume/analyze/': 'ats', '/latest-resume/recruiter-feedback/': 'feedback' };
   // a LinkedIn profile is imported, not uploaded: it starts on Importing resume..., with LinkedIn's note
@@ -2989,8 +2987,8 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   /* ---------- My Documents and the resume tools (/dashboard/resumes/, /latest-resume/…) ----------
      Recreated from Figma. Pages of their own (their own top bar and menu), so like the dashboard they replace the
      logo bar and the page: APPS.docs is My Documents, APPS.tool the resume tools (ATS checker, Proofreading,
-     Career Coach). /latest-resume/… opens the editor or a tool on the latest resume when there is a CV, and
-     My Documents when there isn't. The design for recruiter feedback is the Career Coach page. */
+     Recruiter feedback, a wireframe: no design yet). /latest-resume/… opens the editor or a tool on the latest resume
+     when there is a CV, and the CV step first when there isn't. */
   const TL_IMG = {
     premiumWord: '__ASSET:tools/premium-word.svg__', resume: '__ASSET:tools/resume.webp__',
     hlManager: '__ASSET:tools/hl-manager.svg__', hlAssistant: '__ASSET:tools/hl-assistant.svg__', gauss: '__ASSET:tools/gauss.svg__',
@@ -3028,7 +3026,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   };
   const docsEl = document.getElementById('screen-docs'), toolEl = document.getElementById('screen-tool');
   APPS.docs = docsEl; APPS.tool = toolEl;
-  const TOOL_PATH = { ats: '/latest-resume/analyze/', proof: '/latest-resume/proofread/', coach: '/latest-resume/recruiter-feedback/' };
+  const TOOL_PATH = { ats: '/latest-resume/analyze/', proof: '/latest-resume/proofread/', feedback: '/latest-resume/recruiter-feedback/' };
   let toolKind = 'ats', toolPath = TOOL_PATH.ats, atsBusy = false;  // the tool page on screen and the URL it shows; atsBusy: the ATS page analysing a CV (atsAnalyze)
 
   /* My Documents: the "create" card, then the resumes (only with a CV) and their pages */
@@ -3132,18 +3130,12 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     </div>`;
   }
 
-  /* Career Coach (Beta): the design for /latest-resume/recruiter-feedback/ */
-  function coachHTML() {
-    const skill = `<article class="tl-skill"><h3>Wireframing and prototyping</h3><div><p>To possess expertise in cloud-based infrastructure, with a strong understanding of AI and blockchain technologies. To be skilled in agile development methodologies, DevOps practices, and microservices architecture.</p><hr>
-      <div class="tl-res"><div><b>The Guide to Wireframing, eBook, Chris Bank</b><p>User experience remains a priority for digital platforms and products. We will be taking a closer look at the power of wireframing and the examples, comparisons</p></div><button type="button" data-action="toast" data-msg="Resources open on the publisher’s site.">Resource</button></div></div></article>`;
-    return `<div class="tl-col">
-      <div class="tl-cc"><div class="tl-cc-top"><h1 class="tl-h is-top"><b class="tl-ai">AI</b>Career Coach (Beta)</h1>
-          <div class="tl-intro"><p>Don’t know what separates you from your dream career? Our AI Career Counsellor will help you identify gaps in your skillset based on your resume and tell you how to become the ideal candidate for the job you want.</p>
-            <p>Enter the name of your desired role and the AI will recommend books and resources that will help you grow into the professional you dream to be.</p></div>
-          <div class="tl-gen"><p>${TL_IC.starsAi}Generate career advice for</p><form data-tl="gen" novalidate><label class="sr-only" for="tl-job">Your job title</label><input id="tl-job" placeholder="Your job title (include seniority)" autocomplete="off"><button type="submit">Generate</button></form></div></div>
-        <p class="tl-note">AI-generated responses may sometimes be inaccurate. We recommend to verify any information provided with other reliable sources.</p></div>
-      <section class="tl-skills" aria-labelledby="tl-sk"><h2 id="tl-sk">Focus on these skills to increase your professional value in the job market:</h2>${skill.repeat(3)}</section>
-    </div>`;
+  /* Recruiter feedback: no design yet,
+     so a Wire wireframe beside the resume; its note goes to the chrome note (syncNote) */
+  const FB_NOTE = 'Recruiter feedback: no design yet. What a recruiter would notice in the resume, section by section, with what to change.';
+  function feedbackHTML() {
+    const item = t => `<div class="wf-card wf-stack wf-gap-sm"><b>${t}</b>${wLines(2)}</div>`;
+    return `<div class="tl-col">${wShell('Recruiter feedback', `<h1 class="tl-h" tabindex="-1">Recruiter feedback</h1>${wLines(1)}<div class="wf-stack">${['First impression', 'Work experience', 'Skills', 'What to change first'].map(item).join('')}</div><button class="wf-btn wf-btn--primary" type="button" data-action="toast" data-msg="The feedback would be generated again here.">Get new feedback</button>`, '', 498)}</div>`;
   }
   /* ---------- Job Interviews (Figma concepting-KR › 285:361) ----------
      The Interview questions' loading (285:185) and its result (285:5): an app page with the app menu (APPS.tool, kind
@@ -3238,7 +3230,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
   function toolHTML(kind) {
     if (kind === 'iq') return `${appNavHTML('interviews')}<main class="tl-main">${iqHTML()}</main>`;
-    const main = kind === 'ats' ? (atsBusy ? atlMainHTML() : atsHTML()) : kind === 'proof' ? proofHTML() : coachHTML();
+    const main = kind === 'ats' ? (atsBusy ? atlMainHTML() : atsHTML()) : kind === 'proof' ? proofHTML() : feedbackHTML();
     return `${appNavHTML(kind)}<main class="tl-main">${main}</main>${tlPrevHTML(kind)}`;
   }
 
@@ -4397,13 +4389,13 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
 
     // Check my resume: the page needs a CV (ATS has no loading of its own); Translate also needs the language
     ...needsCv('analyse-resume', 'Analyse resume', ATS, atsOut, { noun: 'ATS report' }),
-    ...[['proofreading', 'Proofreading', 'Proofreading'], ['recruiter-feedback', 'Recruiter feedback', 'Career Coach · recruiter feedback'], ['career-coach', 'Career coach', 'Career Coach']]
+    ...[['proofreading', 'Proofreading', 'Proofreading'], ['recruiter-feedback', 'Recruiter feedback', 'Recruiter feedback']]
       .flatMap(([t, title, label]) => needsCv(t, title, `/dashboard/${t}/`, [S.tool(label, TOOL_PAGE[t], `/dashboard/${t}/`)], { noun: label.toLowerCase() })),
     // in the app Translate is the document's Proofread & Translate (its second navigation), there only with a CV: like the
     // ATS check it opens straight away (Flow 4), the language is picked on the page (the user's rule)
     { id: 'translate-app', flow: 4, title: 'Translate resume', path: TR, cv: true, dest: TR_DEST, noun: 'translation' },
     { id: 'translate-app-new', flow: 2, title: 'Translate resume · no CV yet', path: TR, cv: false, prep: [S.cv(TR), ...cvMade(TR)], process: false, dest: TR_DEST, noun: 'translation' },
-    ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Career Coach']].flatMap(([t, label]) => [
+    ...[['analyze', 'ATS checker'], ['proofread', 'Proofreading'], ['recruiter-feedback', 'Recruiter feedback']].flatMap(([t, label]) => [
       { id: 'latest-' + t, flow: 4, title: `Latest resume · ${label}`, path: `/latest-resume/${t}/`, cv: true, dest: [S.latest(label, `/latest-resume/${t}/`, true)] },
       // no CV yet: the CV step, then the page (the user's rule: never an empty My Documents)
       { id: `latest-${t}-new`, flow: 2, title: `Latest resume · ${label}, no CV yet`, path: `/latest-resume/${t}/`, cv: false, prep: [S.cv(`/latest-resume/${t}/`)],
@@ -4490,7 +4482,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
   // not the resume-building URLs (New resume, a template, Create Resume with AI): someone there has no resume yet, and
   // a landing page with an upload block leads to Upload resume (the user's rule)
   const LP_CV = ['/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/dashboard/tailor-resume/',
-    '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', ATS, '/dashboard/proofreading/', TR, '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', JM,
+    '/jobs/job/1234/tailor/', '/dashboard/rewrite-resume/', ATS, '/dashboard/proofreading/', TR, '/dashboard/recruiter-feedback/', JM,
     '/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/'];
   function lpVariant(base, cv, data) {
     const list = x => [].concat(typeof x === 'function' ? x() : x || []), li = base.id === 'linkedin';
@@ -4522,7 +4514,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
       .filter(([cv, data]) => !here.some(f => f.cv === cv && !!f.data === data)).map(([cv, data]) => lpVariant(pick(cv), cv, data));
   }));
   // in the app a feature that needs a CV runs only with one (the user's rule: the app never goes through resume
-  // creation). The resume checks (ATS, Recruiter feedback, Career coach, Proofreading, Translate) aren't even shown
+  // creation). The resume checks (ATS, Recruiter feedback, Proofreading, Translate) aren't even shown
   // without a CV; Tailor, Rewrite, Jobs for You and the editor are shown but can't be reached without one. Their no-CV
   // runs are not offered from the app; they stay as the landing-page runs' base and as a failed upload's redo
   // the app runs without a CV now go through CV creation (the user's rule), except the editor's: /edit/ needs a document
@@ -4841,7 +4833,7 @@ Skills: Figma, user research, prototyping, design systems, accessibility, worksh
     const note = document.getElementById('proto-note');
     const wire = current === 'route' && [...screens.route.querySelectorAll('.rt-wire')].find(el => !el.closest('[hidden]'));
     const src = wire && wire.querySelector(':scope > .wf-note-src');
-    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'editor' && edView === 'design' && dzTab !== 'templates' ? `The Design tab’s ${dzTab === 'format' ? 'Format' : 'Layout'}: no design yet.` : '';  // a designed page only when its flow step gives one
+    const text = src ? src.innerHTML : current === 'auth' ? authNote : current === 'tool' && toolKind === 'feedback' ? FB_NOTE : current === 'editor' && edView === 'design' && dzTab !== 'templates' ? `The Design tab’s ${dzTab === 'format' ? 'Format' : 'Layout'}: no design yet.` : '';  // a designed page only when its flow step gives one
     note.hidden = !text; document.body.classList.toggle('has-note', !!text);
     if (text) note.querySelector('.pn-text').innerHTML = text;
   }

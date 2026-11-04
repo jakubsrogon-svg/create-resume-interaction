@@ -2,7 +2,7 @@
 const { chromium, PAGE: URL } = require('./env.js');
 const PATHS = ['/register/', '/dashboard/create-resume/', '/dashboard/create-resume/modern/', '/dashboard/create/marketing-manager/', '/dashboard/create-ai-resume/', '/dashboard/upload-resume/', '/dashboard/linkedin-import/', '/guest-edit-start/',
  '/dashboard/tailor-resume/', '/dashboard/rewrite-resume/', '/dashboard/summary-generator/', '/ai/resume/', '/ai/resume/experience/', '/ai/resume/general/',
- '/dashboard/analyse-resume/', '/dashboard/proofreading/', '/dashboard/translate-resume/', '/dashboard/recruiter-feedback/', '/dashboard/career-coach/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/',
+ '/dashboard/analyse-resume/', '/dashboard/proofreading/', '/dashboard/translate-resume/', '/dashboard/recruiter-feedback/', '/latest-resume/analyze/', '/latest-resume/proofread/', '/latest-resume/recruiter-feedback/',
  '/dashboard/create-ai-cover-from-job/', '/dashboard/create-interview/', '/ai/resignation/', '/career-map/', '/dashboard/create-cover/', '/dashboard/create-cover/modern/', '/dashboard/create-website/', '/dashboard/create-website/modern/', '/cv/creative/',
  '/jobs/', '/jobs/search/', '/jobs/matcher/', '/jobs/job/1234/', '/jobs/organization/kickresume/', '/jobs/job-tracker/',
  '/login/', '/dashboard/', '/dashboard/resumes/', '/edit/', '/latest-resume/', '/upgrade/yearly/', '/upgrade/quarterly/', '/upgrade/monthly/', '/upgrade/student/'];
