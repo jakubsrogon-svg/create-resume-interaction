@@ -58,26 +58,34 @@
   /* ---------- Goal cards ----------
      Figma: Kickresume 3.0 › Intent screen [new] (61797:3677). Copy is task-first, the benefit in the description.
      Each picture shows the outcome its card promises and only moves on hover or keyboard focus (CSS, .ga-*). */
-  const gl = (w, cls) => `<i class="ga-ln${cls ? ' ' + cls : ''}" style="width:${w}px"></i>`;
-  const gaHead = `<span class="ga-row"><span class="ga-av"></span><span class="ga-col">${gl(46, 'dk')}${gl(28)}</span></span>`;
+  /* Goal card pictures, in the Greeked Illustration System (the user's design system: greeked resume documents with a
+     navy header band, grey bars and exactly one coloured accent per picture, the idea the card is about) */
+  const gb = w => `<i class="ga-b" style="width:${w}%"></i>`;
+  const gaChips = `<span class="ga-chips">${[14, 18, 12, 16, 10].map(w => `<i style="width:${w}px"></i>`).join('')}</span>`;
+  const gaDoc = (cls = '', style = '', extra = '') => `<div class="ga-doc ${cls}" style="${style}">
+      <div class="ga-band"><span class="ga-av"></span><span class="ga-col"><i style="width:55%"></i><i style="width:92%"></i><i style="width:74%"></i></span></div>
+      <div class="ga-body"><i class="ga-h"></i>${gb(100)}${gb(90)}${gb(66)}${extra}
+        <div class="ga-cols"><span class="ga-col"><i class="ga-h"></i>${gb(92)}${gb(70)}<i class="ga-h"></i>${gb(84)}${gb(58)}</span><span class="ga-col"><i class="ga-h"></i>${gaChips}</span></div></div></div>`;
+  const gaLogo = (cls, style) => `<div class="ga-logo ${cls}" style="${style}"><span class="ga-row"><span class="ga-sq"></span><span class="ga-col">${gb(80)}${gb(52)}</span></span>${gb(100)}${gb(76)}</div>`;
+  const gaStar = (cls, size) => `<svg class="ga-star ${cls}" viewBox="0 0 24 24" width="${size}" height="${size}"><path d="M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z"/></svg>`;
+  const gaTick = '<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const GOALS = [
+    // Solo · magic: one resume, the AI sparkles at its corner
     { id: 'build', title: 'Build my resume', desc: 'Start from LinkedIn or a file. AI helps with the rest.', icon: 'file',
-      art: `<div class="ga-stage">
-        <div class="ga-paper old">${gl(44, 'dk')}${gl(66)}${gl(56)}${gl(70)}${gl(30, 'dk sec')}${gl(62)}${gl(48)}</div>
-        <div class="ga-paper">${gaHead}${gl(82)}${gl(64)}${gl(74)}${gl(34, 'dk sec')}${gl(78)}${gl(56)}<i class="ga-ln ai"></i></div>
-        <span class="ga-badge">${icon('aiSpark')}</span></div>` },
+      art: `<div class="ga-stage">${gaDoc('is-main', 'left:26px;top:7px', '<i class="ga-b ai"></i>')}
+        <span class="ga-stars">${gaStar('s1', 24)}${gaStar('s2', 14)}${gaStar('s3', 10)}</span></div>` },
+    // a job ad behind the resume · label: the plate saying the resume now matches it
     { id: 'tailor', title: 'Tailor my resume', desc: 'Paste a job ad and match your resume to its keywords.', icon: 'target',
-      art: `<div class="ga-stage">
-        <div class="ga-paper">${gaHead}<span class="ga-row" style="gap:3px">${gl(36)}${gl(40, 'kw')}</span>${gl(64)}<span class="ga-row" style="gap:3px">${gl(30, 'kw')}${gl(42)}</span>${gl(34, 'dk sec')}${gl(70)}${gl(52)}</div>
-        <div class="ga-float ga-ad"><span class="ga-row" style="gap:6px"><span class="ga-sq"></span><span class="ga-col">${gl(44, 'dk')}${gl(30)}</span></span>${gl(66)}${gl(52)}<span class="ga-pill match ga-tiny">${icon('check')}92% match</span></div></div>` },
+      art: `<div class="ga-stage">${gaLogo('ad', 'left:0;top:12px')}${gaDoc('is-main', 'left:44px;top:7px')}
+        <span class="ga-plate label" style="left:2px;top:96px">${gaTick}Keywords matched</span></div>` },
+    // Overlay · the ATS Score meter crossing the resume
     { id: 'ats', title: 'Pass the ATS check', desc: 'Find and fix what could get your resume auto-rejected.', icon: 'shield',
-      art: `<div class="ga-stage is-center"><div class="ga-float ga-report">
-        <span class="ga-row" style="gap:10px"><span class="ga-score"><svg viewBox="0 0 38 38" width="38" height="38"><circle cx="19" cy="19" r="17" fill="none" stroke="var(--kr-grey-40)" stroke-width="4"/><circle class="ga-arc" cx="19" cy="19" r="17" fill="none" stroke-width="4" pathLength="100"/></svg><b class="before">72</b><b class="after">94</b></span><span class="ga-col"><span class="ga-tiny">ATS score</span>${gl(54)}</span></span>
-        <i class="ga-hr"></i>
-        <span class="ga-chk"><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(78)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark">${icon('check')}</span>${gl(64)}</span><span class="ga-row" style="gap:7px"><span class="ga-mark flag">${icon('alert', 'issue')}${icon('check', 'fixed')}</span>${gl(56)}</span></span></div></div>` },
+      art: `<div class="ga-stage">${gaDoc('', 'left:26px;top:7px')}
+        <span class="ga-meter"><span class="ga-meter-l">ATS Score</span><span class="ga-track"><i class="ga-fill"></i><span class="ga-knob"><b class="before">72</b><b class="after">94</b></span></span></span></div>` },
+    // Match · company cards around the resume, affirm: the match plate
     { id: 'jobs', title: 'Find jobs that fit me', desc: 'Get open roles matched to your skills and experience.', icon: 'briefcase',
-      art: `<div class="ga-stage is-center"><div class="ga-jobs">${[['var(--kr-blue-tint)', 46, 30, '96% match'], ['var(--kr-primary-tint)', 72, 44], ['rgba(29, 163, 110, .08)', 88, 54]]
-        .map(([bg, a, b, fit]) => `<span class="ga-float ga-job"><span class="ga-sq" style="background:${bg}"></span><span class="ga-col">${gl(a, 'dk')}${gl(b)}</span>${fit ? `<span class="ga-pill fit ga-tiny">${fit}</span>` : ''}</span>`).join('')}</div></div>` }
+      art: `<div class="ga-stage">${gaDoc('is-sm', 'left:36px;top:14px')}${gaLogo('l1', 'left:-8px;top:0')}${gaLogo('l2', 'left:114px;top:38px')}${gaLogo('l3', 'left:-4px;top:110px')}
+        <span class="ga-plate affirm" style="left:30px;top:68px">${gaTick}96% match</span></div>` }
   ];
 
   let intentLayout = 'grid';

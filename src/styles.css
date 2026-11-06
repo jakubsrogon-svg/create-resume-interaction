@@ -223,61 +223,65 @@ body.is-mobile .statusbar {
 /* Hover: the picture's background deepens with a tint of its colour */
 .ga::before { content: ""; position: absolute; inset: 0; background: var(--ga-tint); opacity: 0; transition: opacity var(--ga-dur) var(--ga-ease); }
 .intent:is(:hover, :focus-visible) .ga::before { opacity: 1; }
-.ga-stage { position: relative; width: 156px; height: 156px; }
-.ga-stage.is-center { display: grid; place-items: center; }
-.ga-ln { display: block; height: 4px; border-radius: 2px; background: var(--kr-grey-60); flex: none; }
-.ga-ln.dk { background: rgba(140, 140, 140, .4); }
-.ga-row { display: flex; align-items: center; gap: 8px; }
+.ga-stage { position: relative; width: 156px; height: 156px; --ga-band: var(--kr-blue-dark); --ga-bar-strong: #c7cbd1; --ga-bar: #dfe2e7; --ga-chip: #e4e7eb; --ga-shadow: 0 6px 16px rgba(8, 20, 48, .12); }
+/* The greeked document: navy header band, then grey bars (never real content) */
+.ga-doc { position: absolute; width: 104px; height: 142px; overflow: hidden; border-radius: 4px; background: var(--kr-white); box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
+.ga-doc.is-sm { width: 84px; height: 118px; }
+.ga-band { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 9px; background: var(--ga-band); }
+.ga-doc.is-sm .ga-band { height: 25px; padding: 0 7px; }
+.ga-band .ga-av { width: 15px; height: 15px; background: var(--kr-white); }
+.ga-doc.is-sm .ga-av { width: 12px; height: 12px; }
+.ga-band .ga-col { gap: 3px; }
+.ga-band .ga-col i { display: block; height: 2.5px; border-radius: 1.5px; background: var(--kr-white); }
+.ga-band .ga-col i:first-child { height: 3.5px; }
+.ga-body { display: grid; gap: 4px; padding: 8px 9px; }
+.ga-doc.is-sm .ga-body { padding: 7px; gap: 3.5px; }
+.ga-h { display: block; width: 24px; height: 5px; border-radius: 2.5px; background: var(--ga-bar-strong); }
+.ga-b { display: block; height: 3px; border-radius: 1.5px; background: var(--ga-bar); }
+.ga-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 3px; }
+.ga-cols .ga-col { align-content: start; gap: 4px; }
+.ga-chips { display: flex; flex-wrap: wrap; gap: 3px; }
+.ga-chips i { display: block; height: 5px; border-radius: 2.5px; background: var(--ga-chip); }
+.ga-av { border-radius: 50%; flex: none; }
+.ga-row { display: flex; align-items: center; gap: 5px; }
 .ga-col { display: grid; gap: 4px; flex: 1; min-width: 0; }
-.ga-paper { position: absolute; top: 0; display: flex; flex-direction: column; gap: 6.4px; width: 120px; height: 156px; padding: 12px; background: var(--kr-white); border-radius: 3px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
-.ga-paper > .ga-row:first-child { margin-bottom: 2px; }
-.ga-paper .sec { margin-top: 4px; }
-.ga-av { width: 20px; height: 20px; border-radius: 50%; background: var(--kr-grey-60); flex: none; }
-.ga-float { background: var(--kr-white); border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, .08); }
-.ga-tiny { font-size: 9px; line-height: 12px; font-weight: 500; letter-spacing: .06px; white-space: nowrap; }
-.ga-pill { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; border-radius: 999px; }
-.ga-pill svg.i { width: 9px; height: 9px; stroke-width: 3; }
-.ga-sq { width: 20px; height: 20px; border-radius: 4px; flex: none; }
-/* Build: an old file behind, the resume AI is writing in front. Hover: the AI line grows, the badge lifts */
-.t-build .ga-paper { left: 26px; }
-.t-build .ga-paper.old { left: 0; top: 16px; width: 96px; height: 124px; padding: 10px; gap: 6px; opacity: .6; }
-.ga-ln.ai { width: 20px; background: rgba(151, 149, 242, .5); transition: width var(--ga-dur) var(--ga-ease); }
-.ga-badge { position: absolute; left: 126px; top: 112px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--kr-white); box-shadow: var(--kr-shadow-dropdown); color: #9795f2; transition: transform var(--ga-dur) var(--ga-ease); }
-.ga-badge svg.i { width: 14px; height: 14px; }
-.intent:is(:hover, :focus-visible) .ga-ln.ai { width: 74px; }
-.intent:is(:hover, :focus-visible) .ga-badge { transform: translateY(-4px) rotate(-12deg); }
-/* Tailor. Hover: the job ad slides onto the resume and its keywords light up */
-.t-tailor .ga-paper { left: 0; }
-.ga-ln.kw { transition: background-color var(--ga-dur) var(--ga-ease); }
-.ga-ad { position: absolute; right: 0; bottom: 0; width: 92px; display: grid; gap: 5px; padding: 9px; transition: transform var(--ga-dur) var(--ga-ease); }
-.ga-ad .ga-sq { width: 16px; height: 16px; background: var(--kr-blue-tint); }
-.ga-pill.match { justify-self: start; background: var(--kr-blue-tint); color: #9795f2; }
-.intent:is(:hover, :focus-visible) .ga-ad { transform: translate(-6px, -6px); }
-.intent:is(:hover, :focus-visible) .ga-ln.kw { background-color: rgba(151, 149, 242, .5); }
-/* ATS check. Hover: the flagged issue gets fixed and the score ring fills further */
-.ga-report { width: 156px; height: 156px; display: grid; align-content: space-between; padding: 14px; border-radius: 8px; box-shadow: 0 8px 20px rgba(140, 140, 140, .18); }
-.ga-score { position: relative; width: 38px; height: 38px; flex: none; display: grid; place-items: center; }
-.ga-score svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-.ga-score b { grid-area: 1 / 1; font-size: 12px; line-height: 1; font-weight: 600; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease); }
-.ga-score .after { opacity: 0; }
-.ga-arc { stroke: rgba(29, 163, 110, .5); stroke-dasharray: 100; stroke-dashoffset: 28; transition: stroke-dashoffset var(--ga-dur) var(--ga-ease); }
-.ga-hr { display: block; height: 1px; background: var(--kr-grey-40); }
-.ga-chk { display: grid; gap: 8px; }
-.ga-mark { position: relative; width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; flex: none; background: rgba(29, 163, 110, .08); color: #1da36e; transition: background-color var(--ga-dur) var(--ga-ease), color var(--ga-dur) var(--ga-ease); }
-.ga-mark svg.i { grid-area: 1 / 1; width: 8px; height: 8px; stroke-width: 3.5; transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease), transform var(--ga-dur) var(--ga-ease); }
-.ga-mark.flag { background: rgba(255, 193, 7, .2); color: #ffc107; }
-.ga-mark.flag .fixed { opacity: 0; transform: scale(.4); }
-.intent:is(:hover, :focus-visible) .ga-arc { stroke-dashoffset: 6; }
-.intent:is(:hover, :focus-visible) .ga-score .before { opacity: 0; }
-.intent:is(:hover, :focus-visible) .ga-score .after { opacity: 1; }
-.intent:is(:hover, :focus-visible) .ga-mark.flag { background: rgba(29, 163, 110, .08); color: #1da36e; }
-.intent:is(:hover, :focus-visible) .ga-mark.flag .issue { opacity: 0; transform: scale(.4); }
-.intent:is(:hover, :focus-visible) .ga-mark.flag .fixed { opacity: 1; transform: none; }
-/* Find jobs. Hover: the best match rises out of the list */
-.ga-jobs { width: 156px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-.ga-job { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 12px 9px; border-radius: 6px; box-shadow: 0 1px 1px rgba(0, 0, 0, .04); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
-.ga-pill.fit { background: rgba(29, 163, 110, .08); color: #1da36e; }
-.intent:is(:hover, :focus-visible) .ga-job:first-child { transform: translateY(-3px) scale(1.04); box-shadow: var(--kr-shadow-dropdown); }
+/* A company card or a job ad: a greeked logo square and bars */
+.ga-logo { position: absolute; width: 50px; display: grid; gap: 4px; padding: 6px; border-radius: 4px; background: var(--kr-white); box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-logo .ga-sq { width: 12px; height: 12px; border-radius: 3px; background: var(--ga-chip); flex: none; }
+.ga-logo .ga-col { gap: 3px; }
+.ga-logo.ad { width: 62px; padding: 8px 7px; gap: 5px; }
+/* The one accent: a plate carrying one phrase (white text on its colour, a white rim), sparkles or the meter */
+.ga-plate { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px 0 7px; border: 2px solid var(--kr-white); border-radius: 12px; color: var(--kr-white); font-size: 10px; line-height: 1; font-weight: 600; white-space: nowrap; box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-plate.label { background: var(--kr-blue); }
+.ga-plate.affirm { background: var(--kr-mint); }
+.ga-stars { position: absolute; left: 0; top: 0; }
+.ga-star { position: absolute; fill: var(--kr-yellow); transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-star.s1 { left: 118px; top: -8px; }
+.ga-star.s2 { left: 142px; top: 16px; }
+.ga-star.s3 { left: 145px; top: -7px; }
+.ga-b.ai { width: 24%; transition: width var(--ga-dur) var(--ga-ease); }
+.ga-meter { position: absolute; left: 0; right: 0; top: 58px; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 9px; border-radius: 15px; background: var(--kr-white); box-shadow: var(--ga-shadow); }
+.ga-meter-l { font-size: 8.5px; line-height: 1; font-weight: 600; color: var(--kr-grey-100); white-space: nowrap; }
+.ga-track { --v: 62%; position: relative; flex: 1; height: 6px; border-radius: 3px; background: #eff1f3; }
+.ga-fill { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(90deg, #e80029 0%, var(--kr-yellow) 55%, var(--kr-mint) 100%); clip-path: inset(0 calc(100% - var(--v)) 0 0 round 3px); transition: clip-path var(--ga-dur) var(--ga-ease); }
+.ga-knob { position: absolute; top: 50%; left: var(--v); width: 22px; height: 22px; display: grid; place-items: center; border: 2px solid var(--kr-mint); border-radius: 50%; background: var(--kr-white); transform: translate(-50%, -50%); transition: left var(--ga-dur) var(--ga-ease); }
+.ga-knob b { grid-area: 1 / 1; font-size: 8.5px; line-height: 1; font-weight: 600; color: var(--kr-mint); transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease); }
+.ga-knob .after { opacity: 0; }
+/* Hover or keyboard focus: one or two pieces ease into place and back */
+.intent:is(:hover, :focus-visible) .ga-doc.is-main { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(8, 20, 48, .16); }
+.intent:is(:hover, :focus-visible) .ga-b.ai { width: 86%; }
+.intent:is(:hover, :focus-visible) .ga-star.s1 { transform: scale(1.18) rotate(18deg); }
+.intent:is(:hover, :focus-visible) .ga-star.s2 { transform: scale(.8) rotate(-12deg); }
+.intent:is(:hover, :focus-visible) .ga-star.s3 { transform: scale(1.25); }
+.intent:is(:hover, :focus-visible) .ga-logo.ad { transform: translate(-3px, -3px); }
+.intent:is(:hover, :focus-visible) .ga-plate.label { transform: translateX(4px); }
+.intent:is(:hover, :focus-visible) .ga-track { --v: 92%; }
+.intent:is(:hover, :focus-visible) .ga-knob .before { opacity: 0; }
+.intent:is(:hover, :focus-visible) .ga-knob .after { opacity: 1; }
+.intent:is(:hover, :focus-visible) .ga-logo.l1 { transform: translate(-3px, -3px); }
+.intent:is(:hover, :focus-visible) .ga-logo.l2 { transform: translate(3px, 0); }
+.intent:is(:hover, :focus-visible) .ga-logo.l3 { transform: translate(-3px, 3px); }
+.intent:is(:hover, :focus-visible) .ga-plate.affirm { transform: scale(1.06); }
 
 /* ---------- Creation screen ---------- */
 .methods { width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
