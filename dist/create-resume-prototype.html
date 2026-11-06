@@ -226,25 +226,14 @@ body.is-mobile .statusbar {
 /* Hover: the picture's background deepens with a tint of its colour */
 .ga::before { content: ""; position: absolute; inset: 0; background: var(--ga-tint); opacity: 0; transition: opacity var(--ga-dur) var(--ga-ease); }
 .intent:is(:hover, :focus-visible) .ga::before { opacity: 1; }
-.ga-stage { position: relative; width: 156px; height: 156px; --ga-band: var(--kr-blue-dark); --ga-bar-strong: #c7cbd1; --ga-bar: #dfe2e7; --ga-chip: #e4e7eb; --ga-shadow: 0 6px 16px rgba(8, 20, 48, .12); }
-/* The greeked document: navy header band, then grey bars (never real content) */
-.ga-doc { position: absolute; width: 104px; height: 142px; overflow: hidden; border-radius: 4px; background: var(--kr-white); box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
-.ga-doc.is-sm { width: 84px; height: 118px; }
-.ga-band { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 9px; background: var(--ga-band); }
-.ga-doc.is-sm .ga-band { height: 25px; padding: 0 7px; }
-.ga-band .ga-av { width: 15px; height: 15px; background: var(--kr-white); }
-.ga-doc.is-sm .ga-av { width: 12px; height: 12px; }
-.ga-band .ga-col { gap: 3px; }
-.ga-band .ga-col i { display: block; height: 2.5px; border-radius: 1.5px; background: var(--kr-white); }
-.ga-band .ga-col i:first-child { height: 3.5px; }
-.ga-body { display: grid; gap: 4px; padding: 8px 9px; }
-.ga-doc.is-sm .ga-body { padding: 7px; gap: 3.5px; }
-.ga-h { display: block; width: 24px; height: 5px; border-radius: 2.5px; background: var(--ga-bar-strong); }
+.ga-stage { position: relative; width: 156px; height: 156px; --ga-bar: var(--kr-grey-60); --ga-chip: var(--kr-grey-60); --ga-shadow: 0 4px 14px rgba(0, 0, 0, .1); }
+/* The resume (Figma's light Template/CV): a grey header band with a white avatar and bars, grey bars below */
+.ga-doc { position: absolute; width: 104px; height: 143px; overflow: hidden; border-radius: 8px; background: var(--kr-white); box-shadow: 2.6px 5.2px 26px rgba(0, 0, 0, .1); transition: transform var(--ga-dur) var(--ga-ease), box-shadow var(--ga-dur) var(--ga-ease); }
+.ga-doc.is-sm { width: 84px; height: 115.5px; border-radius: 6.4px; }
+.ga-doc svg { display: block; width: 100%; height: 100%; fill: var(--kr-grey-60); }
+.ga-doc svg .lt { fill: var(--kr-grey-20); }
+.ga-doc svg .ai { transform-box: fill-box; transform-origin: 0 50%; transform: scaleX(.22); transition: transform var(--ga-dur) var(--ga-ease); }
 .ga-b { display: block; height: 3px; border-radius: 1.5px; background: var(--ga-bar); }
-.ga-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 3px; }
-.ga-cols .ga-col { align-content: start; gap: 4px; }
-.ga-chips { display: flex; flex-wrap: wrap; gap: 3px; }
-.ga-chips i { display: block; height: 5px; border-radius: 2.5px; background: var(--ga-chip); }
 .ga-av { border-radius: 50%; flex: none; }
 .ga-row { display: flex; align-items: center; gap: 5px; }
 .ga-col { display: grid; gap: 4px; flex: 1; min-width: 0; }
@@ -254,15 +243,15 @@ body.is-mobile .statusbar {
 .ga-logo .ga-col { gap: 3px; }
 .ga-logo.ad { width: 62px; padding: 8px 7px; gap: 5px; }
 /* The one accent: a plate carrying one phrase (white text on its colour, a white rim), sparkles or the meter */
-.ga-plate { position: absolute; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px 0 7px; border: 2px solid var(--kr-white); border-radius: 12px; color: var(--kr-white); font-size: 10px; line-height: 1; font-weight: 600; white-space: nowrap; box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease); }
-.ga-plate.label { background: var(--kr-blue); }
-.ga-plate.affirm { background: var(--kr-mint); }
+.ga-plate { position: absolute; display: inline-flex; align-items: center; gap: 3px; height: 24px; padding: 0 8px 0 8px; border: 2px solid var(--kr-white); border-radius: 12px; color: var(--kr-white); font-size: 10px; line-height: 1; font-weight: 600; white-space: nowrap; box-shadow: var(--ga-shadow); transition: transform var(--ga-dur) var(--ga-ease); }
+.ga-plate svg { flex: none; }
+.ga-plate.is-label { background: var(--kr-blue); }
+.ga-plate.is-affirm { background: var(--kr-mint); }
 .ga-stars { position: absolute; left: 0; top: 0; }
 .ga-star { position: absolute; fill: var(--kr-yellow); transition: transform var(--ga-dur) var(--ga-ease); }
 .ga-star.s1 { left: 118px; top: -8px; }
 .ga-star.s2 { left: 142px; top: 16px; }
 .ga-star.s3 { left: 145px; top: -7px; }
-.ga-b.ai { width: 24%; transition: width var(--ga-dur) var(--ga-ease); }
 .ga-meter { position: absolute; left: 0; right: 0; top: 58px; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 9px; border-radius: 15px; background: var(--kr-white); box-shadow: var(--ga-shadow); }
 .ga-meter-l { font-size: 8.5px; line-height: 1; font-weight: 600; color: var(--kr-grey-100); white-space: nowrap; }
 .ga-track { --v: 62%; position: relative; flex: 1; height: 6px; border-radius: 3px; background: #eff1f3; }
@@ -271,20 +260,20 @@ body.is-mobile .statusbar {
 .ga-knob b { grid-area: 1 / 1; font-size: 8.5px; line-height: 1; font-weight: 600; color: var(--kr-mint); transition: opacity calc(var(--ga-dur) * .6) var(--ga-ease); }
 .ga-knob .after { opacity: 0; }
 /* Hover or keyboard focus: one or two pieces ease into place and back */
-.intent:is(:hover, :focus-visible) .ga-doc.is-main { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(8, 20, 48, .16); }
-.intent:is(:hover, :focus-visible) .ga-b.ai { width: 86%; }
+.intent:is(:hover, :focus-visible) .ga-doc.is-main { transform: translateY(-3px); box-shadow: 3px 8px 30px rgba(0, 0, 0, .14); }
+.intent:is(:hover, :focus-visible) .ga-doc svg .ai { transform: none; }
 .intent:is(:hover, :focus-visible) .ga-star.s1 { transform: scale(1.18) rotate(18deg); }
 .intent:is(:hover, :focus-visible) .ga-star.s2 { transform: scale(.8) rotate(-12deg); }
 .intent:is(:hover, :focus-visible) .ga-star.s3 { transform: scale(1.25); }
 .intent:is(:hover, :focus-visible) .ga-logo.ad { transform: translate(-3px, -3px); }
-.intent:is(:hover, :focus-visible) .ga-plate.label { transform: translateX(4px); }
+.intent:is(:hover, :focus-visible) .ga-plate.is-label { transform: translateX(4px); }
 .intent:is(:hover, :focus-visible) .ga-track { --v: 92%; }
 .intent:is(:hover, :focus-visible) .ga-knob .before { opacity: 0; }
 .intent:is(:hover, :focus-visible) .ga-knob .after { opacity: 1; }
 .intent:is(:hover, :focus-visible) .ga-logo.l1 { transform: translate(-3px, -3px); }
 .intent:is(:hover, :focus-visible) .ga-logo.l2 { transform: translate(3px, 0); }
 .intent:is(:hover, :focus-visible) .ga-logo.l3 { transform: translate(-3px, 3px); }
-.intent:is(:hover, :focus-visible) .ga-plate.affirm { transform: scale(1.06); }
+.intent:is(:hover, :focus-visible) .ga-plate.is-affirm { transform: scale(1.06); }
 
 /* ---------- Creation screen ---------- */
 .methods { width: 100%; max-width: var(--card-w); margin: var(--sp-section) auto 0; }
@@ -3394,7 +3383,7 @@ body.has-note .au-main { padding-bottom: 96px; }
 <p class="sr-only" id="flow-live" aria-live="polite"></p>
 <aside class="proto-note" id="proto-note" aria-label="Wireframe note" hidden><b>Note</b><span class="pn-text"></span></aside>
 <!-- Prototype version: bumped with every update, patch or minor by its size, the major only when asked (see CLAUDE.md) -->
-<div class="proto-ver" aria-label="Prototype version 2.45.2">v2.45.2</div>
+<div class="proto-ver" aria-label="Prototype version 2.45.3">v2.45.3</div>
 
 <div class="proto" role="group" aria-label="Prototype controls">
   <button class="proto-reset proto-toggle" type="button" data-action="proto-toggle" aria-expanded="false" aria-label="Prototype controls">
@@ -3517,23 +3506,28 @@ body.has-note .au-main { padding-bottom: 96px; }
   /* Goal card pictures, in the Greeked Illustration System (the user's design system: greeked resume documents with a
      navy header band, grey bars and exactly one coloured accent per picture, the idea the card is about) */
   const gb = w => `<i class="ga-b" style="width:${w}%"></i>`;
-  const gaChips = `<span class="ga-chips">${[14, 18, 12, 16, 10].map(w => `<i style="width:${w}px"></i>`).join('')}</span>`;
-  const gaDoc = (cls = '', style = '', extra = '') => `<div class="ga-doc ${cls}" style="${style}">
-      <div class="ga-band"><span class="ga-av"></span><span class="ga-col"><i style="width:55%"></i><i style="width:92%"></i><i style="width:74%"></i></span></div>
-      <div class="ga-body"><i class="ga-h"></i>${gb(100)}${gb(90)}${gb(66)}${extra}
-        <div class="ga-cols"><span class="ga-col"><i class="ga-h"></i>${gb(92)}${gb(70)}<i class="ga-h"></i>${gb(84)}${gb(58)}</span><span class="ga-col"><i class="ga-h"></i>${gaChips}</span></div></div></div>`;
+  /* The resume: Figma's light Template/CV (Kickresume 3.0 › 62887:11907), drawn at its own 157 × 216 and scaled to fit */
+  const GA_CV = [
+    [0, 0, 157.2, 39.3, 0, 'hd'], [7.9, 7.9, 23.6, 23.6, 11.8, 'lt'], [39.3, 7.9, 39.3, 7.9, 3.45, 'lt'], [39.3, 19.7, 90.4, 3.9, 1.95, 'lt'], [39.3, 27.5, 90.4, 3.9, 1.95, 'lt'],
+    [7.9, 47.2, 35.4, 11.8], [7.9, 62.9, 141.5, 3.9], [7.9, 70.8, 141.5, 3.9], [7.9, 78.6, 141.5, 3.9], [7.9, 86.5, 51.1, 3.9],
+    [7.9, 102.2, 35.4, 11.8], [7.9, 117.9, 43.2, 3.9], [7.9, 125.8, 19.7, 3.9], [7.9, 133.6, 31.4, 3.9],
+    [7.9, 145.4, 35.4, 11.8], [7.9, 161.1, 59, 3.9], [7.9, 169, 51.1, 3.9], [7.9, 176.9, 39.3, 3.9], [7.9, 184.7, 39.3, 3.9], [7.9, 192.6, 23.6, 3.9],
+    [78.6, 102.2, 35.4, 11.8], [78.6, 121.8, 43.2, 3.9], [78.6, 129.7, 43.2, 3.9], [78.6, 141.5, 35.4, 11.8],
+    [78.6, 161.1, 15.7, 7.9], [98.3, 161.1, 15.7, 7.9], [117.9, 161.1, 15.7, 7.9], [78.6, 172.9, 15.7, 7.9], [98.3, 172.9, 31.4, 7.9], [78.6, 184.7, 31.4, 7.9], [114, 184.7, 19.7, 7.9]
+  ].map(([x, y, w, h, r = 3.45, c = '']) => `<rect${c ? ` class="${c}"` : ''} x="${x}" y="${y}" width="${w}" height="${h}" rx="${Math.min(r, h / 2)}"/>`).join('');
+  const gaDoc = (cls = '', style = '', extra = '') => `<div class="ga-doc ${cls}" style="${style}"><svg viewBox="0 0 157.2 216.2" preserveAspectRatio="none">${GA_CV}${extra}</svg></div>`;
   const gaLogo = (cls, style) => `<div class="ga-logo ${cls}" style="${style}"><span class="ga-row"><span class="ga-sq"></span><span class="ga-col">${gb(80)}${gb(52)}</span></span>${gb(100)}${gb(76)}</div>`;
   const gaStar = (cls, size) => `<svg class="ga-star ${cls}" viewBox="0 0 24 24" width="${size}" height="${size}"><path d="M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z"/></svg>`;
-  const gaTick = '<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const gaTick = '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.2 6l2.6 2.6 5-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const GOALS = [
     // Solo · magic: one resume, the AI sparkles at its corner
     { id: 'build', title: 'Build my resume', desc: 'Start from LinkedIn or a file. AI helps with the rest.', icon: 'file',
-      art: `<div class="ga-stage">${gaDoc('is-main', 'left:26px;top:7px', '<i class="ga-b ai"></i>')}
+      art: `<div class="ga-stage">${gaDoc('is-main', 'left:26px;top:7px', '<rect class="ai" x="7.9" y="202.4" width="141.5" height="3.9" rx="1.95"/>')}
         <span class="ga-stars">${gaStar('s1', 24)}${gaStar('s2', 14)}${gaStar('s3', 10)}</span></div>` },
     // a job ad behind the resume · label: the plate saying the resume now matches it
     { id: 'tailor', title: 'Tailor my resume', desc: 'Paste a job ad and match your resume to its keywords.', icon: 'target',
       art: `<div class="ga-stage">${gaLogo('ad', 'left:0;top:12px')}${gaDoc('is-main', 'left:44px;top:7px')}
-        <span class="ga-plate label" style="left:2px;top:96px">${gaTick}Keywords matched</span></div>` },
+        <span class="ga-plate is-label" style="left:2px;top:96px">${gaTick}Keywords matched</span></div>` },
     // Overlay · the ATS Score meter crossing the resume
     { id: 'ats', title: 'Pass the ATS check', desc: 'Find and fix what could get your resume auto-rejected.', icon: 'shield',
       art: `<div class="ga-stage">${gaDoc('', 'left:26px;top:7px')}
@@ -3541,7 +3535,7 @@ body.has-note .au-main { padding-bottom: 96px; }
     // Match · company cards around the resume, affirm: the match plate
     { id: 'jobs', title: 'Find jobs that fit me', desc: 'Get open roles matched to your skills and experience.', icon: 'briefcase',
       art: `<div class="ga-stage">${gaDoc('is-sm', 'left:36px;top:14px')}${gaLogo('l1', 'left:-8px;top:0')}${gaLogo('l2', 'left:114px;top:38px')}${gaLogo('l3', 'left:-4px;top:110px')}
-        <span class="ga-plate affirm" style="left:30px;top:68px">${gaTick}96% match</span></div>` }
+        <span class="ga-plate is-affirm" style="left:30px;top:68px">${gaTick}96% match</span></div>` }
   ];
 
   let intentLayout = 'grid';

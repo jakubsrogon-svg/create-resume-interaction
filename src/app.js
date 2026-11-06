@@ -61,23 +61,28 @@
   /* Goal card pictures, in the Greeked Illustration System (the user's design system: greeked resume documents with a
      navy header band, grey bars and exactly one coloured accent per picture, the idea the card is about) */
   const gb = w => `<i class="ga-b" style="width:${w}%"></i>`;
-  const gaChips = `<span class="ga-chips">${[14, 18, 12, 16, 10].map(w => `<i style="width:${w}px"></i>`).join('')}</span>`;
-  const gaDoc = (cls = '', style = '', extra = '') => `<div class="ga-doc ${cls}" style="${style}">
-      <div class="ga-band"><span class="ga-av"></span><span class="ga-col"><i style="width:55%"></i><i style="width:92%"></i><i style="width:74%"></i></span></div>
-      <div class="ga-body"><i class="ga-h"></i>${gb(100)}${gb(90)}${gb(66)}${extra}
-        <div class="ga-cols"><span class="ga-col"><i class="ga-h"></i>${gb(92)}${gb(70)}<i class="ga-h"></i>${gb(84)}${gb(58)}</span><span class="ga-col"><i class="ga-h"></i>${gaChips}</span></div></div></div>`;
+  /* The resume: Figma's light Template/CV (Kickresume 3.0 › 62887:11907), drawn at its own 157 × 216 and scaled to fit */
+  const GA_CV = [
+    [0, 0, 157.2, 39.3, 0, 'hd'], [7.9, 7.9, 23.6, 23.6, 11.8, 'lt'], [39.3, 7.9, 39.3, 7.9, 3.45, 'lt'], [39.3, 19.7, 90.4, 3.9, 1.95, 'lt'], [39.3, 27.5, 90.4, 3.9, 1.95, 'lt'],
+    [7.9, 47.2, 35.4, 11.8], [7.9, 62.9, 141.5, 3.9], [7.9, 70.8, 141.5, 3.9], [7.9, 78.6, 141.5, 3.9], [7.9, 86.5, 51.1, 3.9],
+    [7.9, 102.2, 35.4, 11.8], [7.9, 117.9, 43.2, 3.9], [7.9, 125.8, 19.7, 3.9], [7.9, 133.6, 31.4, 3.9],
+    [7.9, 145.4, 35.4, 11.8], [7.9, 161.1, 59, 3.9], [7.9, 169, 51.1, 3.9], [7.9, 176.9, 39.3, 3.9], [7.9, 184.7, 39.3, 3.9], [7.9, 192.6, 23.6, 3.9],
+    [78.6, 102.2, 35.4, 11.8], [78.6, 121.8, 43.2, 3.9], [78.6, 129.7, 43.2, 3.9], [78.6, 141.5, 35.4, 11.8],
+    [78.6, 161.1, 15.7, 7.9], [98.3, 161.1, 15.7, 7.9], [117.9, 161.1, 15.7, 7.9], [78.6, 172.9, 15.7, 7.9], [98.3, 172.9, 31.4, 7.9], [78.6, 184.7, 31.4, 7.9], [114, 184.7, 19.7, 7.9]
+  ].map(([x, y, w, h, r = 3.45, c = '']) => `<rect${c ? ` class="${c}"` : ''} x="${x}" y="${y}" width="${w}" height="${h}" rx="${Math.min(r, h / 2)}"/>`).join('');
+  const gaDoc = (cls = '', style = '', extra = '') => `<div class="ga-doc ${cls}" style="${style}"><svg viewBox="0 0 157.2 216.2" preserveAspectRatio="none">${GA_CV}${extra}</svg></div>`;
   const gaLogo = (cls, style) => `<div class="ga-logo ${cls}" style="${style}"><span class="ga-row"><span class="ga-sq"></span><span class="ga-col">${gb(80)}${gb(52)}</span></span>${gb(100)}${gb(76)}</div>`;
   const gaStar = (cls, size) => `<svg class="ga-star ${cls}" viewBox="0 0 24 24" width="${size}" height="${size}"><path d="M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z"/></svg>`;
-  const gaTick = '<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const gaTick = '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.2 6l2.6 2.6 5-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const GOALS = [
     // Solo · magic: one resume, the AI sparkles at its corner
     { id: 'build', title: 'Build my resume', desc: 'Start from LinkedIn or a file. AI helps with the rest.', icon: 'file',
-      art: `<div class="ga-stage">${gaDoc('is-main', 'left:26px;top:7px', '<i class="ga-b ai"></i>')}
+      art: `<div class="ga-stage">${gaDoc('is-main', 'left:26px;top:7px', '<rect class="ai" x="7.9" y="202.4" width="141.5" height="3.9" rx="1.95"/>')}
         <span class="ga-stars">${gaStar('s1', 24)}${gaStar('s2', 14)}${gaStar('s3', 10)}</span></div>` },
     // a job ad behind the resume · label: the plate saying the resume now matches it
     { id: 'tailor', title: 'Tailor my resume', desc: 'Paste a job ad and match your resume to its keywords.', icon: 'target',
       art: `<div class="ga-stage">${gaLogo('ad', 'left:0;top:12px')}${gaDoc('is-main', 'left:44px;top:7px')}
-        <span class="ga-plate label" style="left:2px;top:96px">${gaTick}Keywords matched</span></div>` },
+        <span class="ga-plate is-label" style="left:2px;top:96px">${gaTick}Keywords matched</span></div>` },
     // Overlay · the ATS Score meter crossing the resume
     { id: 'ats', title: 'Pass the ATS check', desc: 'Find and fix what could get your resume auto-rejected.', icon: 'shield',
       art: `<div class="ga-stage">${gaDoc('', 'left:26px;top:7px')}
@@ -85,7 +90,7 @@
     // Match · company cards around the resume, affirm: the match plate
     { id: 'jobs', title: 'Find jobs that fit me', desc: 'Get open roles matched to your skills and experience.', icon: 'briefcase',
       art: `<div class="ga-stage">${gaDoc('is-sm', 'left:36px;top:14px')}${gaLogo('l1', 'left:-8px;top:0')}${gaLogo('l2', 'left:114px;top:38px')}${gaLogo('l3', 'left:-4px;top:110px')}
-        <span class="ga-plate affirm" style="left:30px;top:68px">${gaTick}96% match</span></div>` }
+        <span class="ga-plate is-affirm" style="left:30px;top:68px">${gaTick}96% match</span></div>` }
   ];
 
   let intentLayout = 'grid';
